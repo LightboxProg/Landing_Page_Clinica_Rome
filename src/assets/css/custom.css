@@ -203,8 +203,6 @@ a {
   z-index: 9999 !important;
 }
 
-  color: #a87b05 !important;
-  box-shadow: 0 2px 16px 0 rgba(168,123,5,0.10);
   opacity: 1 !important;
   z-index: 9999 !important;
 }
@@ -255,8 +253,6 @@ body {
   background: #fff !important;
 }
 }
-}
-
 /* Navbar blanco (repetido para asegurar prioridad) */
 #Header_wrapper,
 #Top_bar {
