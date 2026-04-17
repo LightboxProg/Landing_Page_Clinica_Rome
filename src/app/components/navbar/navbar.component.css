@@ -1,0 +1,345 @@
+/* ===== VARIABLES ===== */
+:host {
+  --gold-dark: #7a5704;
+  --gold-primary: #a87b05;
+  --gold-medium: #b0994e;
+  --gold-light: #c2ad61;
+  --gold-pale: #e8dcae;
+  --white-soft: #fcfcfc;
+  --white-pure: #ffffff;
+  --text-dark: #1e1e1e;
+  --shadow-sm: 0 2px 16px rgba(168, 123, 5, 0.1);
+  --shadow-md: 0 4px 20px rgba(168, 123, 5, 0.15);
+  --transition: all 0.3s ease;
+
+  /* Tonos rosa cálidos */
+  --pink-light: #f9a8d4;   /* rosa claro */
+  --pink-soft: #f472b6;    /* rosa medio */
+  --pink-deep: #db2777;    /* rosa oscuro */
+  --pink-dark: #be185d;    /* rosa intenso */
+}
+
+/* ===== ACTION BAR (sin cambios) ===== */
+.action-bar {
+  color: var(--gold-pale);
+  padding: 8px 0;
+  font-size: 0.9rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.action-bar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.contact-details {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--gold-pale);
+}
+
+.contact-item a {
+  color: var(--gold-pale);
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.contact-item a:hover {
+  color: var(--white-pure);
+}
+
+.contact-item i {
+  font-size: 1rem;
+}
+
+.social-links {
+  display: flex;
+  gap: 12px;
+}
+
+.social-link {
+  color: var(--gold-pale);
+  font-size: 1.1rem;
+  transition: var(--transition);
+}
+
+.social-link:hover {
+  color: var(--gold-dark);
+  transform: translateY(-2px);
+}
+
+.phone:hover {
+  color: var(--gold-dark) !important;
+}
+
+.mail:hover {
+  color: var(--gold-dark) !important;
+}
+
+/* ===== TOP BAR (NAVEGACIÓN PRINCIPAL) ===== */
+.top-bar {
+  background: linear-gradient(90deg, #c2ae6f 0%, #c2ad61 25%, #e8dcae 60%, #b0994e 100%);
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  padding: 12px 0;
+}
+
+.top-bar-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Alinea logo y menú a la izquierda */
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  gap: 30px; /* Espacio entre logo y menú */
+}
+
+/* Logo */
+.logo-wrapper {
+  flex-shrink: 0;
+}
+
+.logo-img {
+  height: 50px;
+  width: auto;
+  display: block;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  transition: var(--transition);
+}
+
+.logo-img:hover {
+  transform: scale(1.02);
+}
+
+/* Menú principal */
+.main-nav {
+  margin-left: 0; /* Se pega a la izquierda después del logo */
+}
+
+.nav-menu {
+  display: flex;
+  list-style: none;
+  gap: 0; /* Sin gap, porque usaremos separadores */
+  padding: 0;
+  margin: 0;
+}
+
+.nav-menu li {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Separador vertical entre elementos */
+.nav-menu li:not(:last-child)::after {
+  content: '';
+  display: block;
+  height: 20px;
+  width: 1px;
+  background-color: rgba(255, 255, 255, 0.5);
+  margin: 0 8px;
+}
+
+.nav-menu a {
+  display: block;
+  padding: 10px 0; /* Menos padding horizontal para que el separador esté cerca */
+  color: var(--white-pure);
+  font-weight: 500;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: var(--transition);
+  background: transparent;
+  letter-spacing: 0.3px;
+  position: relative;
+}
+
+/* Indicador de página activa: rectángulo rosa encima */
+.active-link a::before {
+  content: '';
+  position: absolute;
+  top: -8px;      /* coloca encima del texto */
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(to right, var(--pink-light), var(--pink-deep));
+  border-radius: 3px 3px 0 0;
+}
+
+/* Elimina el fondo blanco del enlace activo anterior */
+.active-link a {
+  background: transparent !important;
+  font-weight: 600;
+  box-shadow: none !important;
+}
+
+/* Botón CTA (empujado a la derecha) */
+.header-cta {
+  margin-left: auto; /* Lo manda a la derecha */
+}
+
+.cta-button {
+  display: inline-block;
+  background: linear-gradient(1000deg, var(--pink-light), var(--pink-soft), var(--pink-deep));
+  color: var(--white-pure);
+  padding: 12px 24px;
+  font-weight: 700;
+  text-decoration: none;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 12px rgba(136, 5, 64, 0.2);
+  transition: var(--transition);
+  border: none;
+  white-space: nowrap;
+  background-size: 150% auto;
+}
+
+.cta-button:hover {
+  background: linear-gradient(135deg, var(--pink-soft), var(--pink-deep), var(--pink-dark));
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(190, 24, 93, 0.35);
+  color: white;
+}
+
+/* Hamburguesa móvil (sin cambios) */
+.mobile-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 30px;
+  height: 24px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 10;
+}
+
+.mobile-toggle span {
+  width: 100%;
+  height: 3px;
+  background: var(--white-pure);
+  border-radius: 10px;
+  transition: var(--transition);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.mobile-toggle.open span:nth-child(1) {
+  transform: rotate(45deg) translate(6px, 6px);
+  background: var(--gold-dark);
+}
+
+.mobile-toggle.open span:nth-child(2) {
+  opacity: 0;
+}
+
+.mobile-toggle.open span:nth-child(3) {
+  transform: rotate(-45deg) translate(6px, -6px);
+  background: var(--gold-dark);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 992px) {
+  .action-bar-container {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .contact-details {
+    justify-content: center;
+  }
+
+  .top-bar-container {
+    flex-wrap: wrap;
+    justify-content: space-between; /* Para móvil: logo izq, botón der, toggle */
+    gap: 0;
+  }
+
+  .main-nav {
+    order: 3;
+    width: 100%;
+    margin: 16px 0 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out;
+  }
+
+  .main-nav.active {
+    max-height: 500px;
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    padding-top: 16px;
+  }
+
+  .nav-menu {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  /* En móvil los separadores verticales se ocultan o se cambian */
+  .nav-menu li:not(:last-child)::after {
+    display: none;
+  }
+
+  .nav-menu a {
+    padding: 14px 20px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(4px);
+    border-radius: 30px;
+  }
+
+  .nav-menu a:hover {
+    background: rgba(255, 255, 255, 0.4);
+  }
+
+  /* Ajuste del indicador activo en móvil */
+  .active-link a::before {
+    top: -6px;
+    height: 4px;
+  }
+
+  .mobile-toggle {
+    display: flex;
+  }
+
+  .header-cta {
+    margin-left: 0; /* en móvil se coloca automáticamente por flex */
+  }
+}
+
+@media (max-width: 576px) {
+  .contact-details {
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .slogan {
+    display: none;
+  }
+
+  .logo-img {
+    height: 40px;
+  }
+
+  .cta-button {
+    padding: 10px 16px;
+    font-size: 0.85rem;
+  }
+
+  .top-bar {
+    padding: 8px 0;
+  }
+}

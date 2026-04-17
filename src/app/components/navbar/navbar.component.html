@@ -1,65 +1,71 @@
-<div id="Header_wrapper">
-  <header id="Header">
-    <div id="Action_bar">
-      <div class="container">
-        <div class="column one">
-          <ul class="contact_details">
-            <li class="slogan" style="color:#bfa046;">¿Tienes alguna pregunta?</li>
-            <li class="phone" style="color:#bfa046;">
-              <i class="icon-phone"></i><a href="tel:+524491234567" style="color:#bfa046;">+52 449 123 4567</a>
-            </li>
-            <li class="mail" style="color:#bfa046;">
-              <i class="icon-mail-line"></i><a href="mailto:contacto&#64;clinicarome.com" style="color:#bfa046;">contacto&#64;clinicarome.com</a>
-            </li>
-          </ul>
-          <ul class="social">
-            <li><a href="#" title="Facebook"><i class="fab fa-facebook-f" style="color:#bfa046;"></i></a></li>
-            <li><a href="#" title="Instagram"><i class="fab fa-instagram" style="color:#bfa046;"></i></a></li>
-          </ul>
-        </div>
+<header id="header" class="navbar-header">
+  <!-- Action Bar superior con contacto y redes -->
+  <div class="action-bar">
+    <div class="container action-bar-container">
+      <div class="contact-details">
+        <span class="contact-item slogan">¿Tienes alguna pregunta?</span>
+        <span class="contact-item phone">
+          <i class="icon-phone"></i>
+          <a class="phone" href="tel:+524491234567">+52 449 123 4567</a>
+        </span>
+        <span class="contact-item email">
+          <i class="icon-mail-line"></i>
+          <a class="mail" href="mailto:contacto&#64;clinicarome.com">contacto&#64;clinicarome.com</a>
+        </span>
+      </div>
+      <div class="social-links">
+        <a href="#" aria-label="Facebook" class="social-link">
+          <i class="fab fa-facebook-f"></i>
+        </a>
+        <a href="#" aria-label="Instagram" class="social-link">
+          <i class="fab fa-instagram"></i>
+        </a>
       </div>
     </div>
-    
-    <div id="Top_bar">
-      <div class="container">
-        <div class="column one">
-          <div class="top_bar_left clearfix">
-            <div class="logo">
-              <a id="logo" routerLink="/" title="Clínica Rome">
-                <img class="scale-with-grid" src="assets/images/rome-logo-blanco.webp" alt="Logo Rome" />
-              </a>
-            </div>
-            
-            <div class="menu_wrapper">
-              <nav id="menu">
-                <ul id="menu-main-menu" class="menu">
-                  <li routerLinkActive="current_page_item" [routerLinkActiveOptions]="{exact: true}">
-                    <a routerLink="/"><span>Inicio</span></a>
-                  </li>
-                  <li routerLinkActive="current_page_item">
-                    <a routerLink="/servicios"><span>Servicios</span></a>
-                  </li>
-                  <li routerLinkActive="current_page_item">
-                    <a routerLink="/membresias"><span>Membresías</span></a>
-                  </li>
-                  <li routerLinkActive="current_page_item">
-                    <a routerLink="/nosotros"><span>Nosotros</span></a>
-                  </li>
-                </ul>
-              </nav>
-              <a class="responsive-menu-toggle" href="#"><i class="icon-menu"></i></a>
-            </div>
-            
-          </div>
-          <div class="top_bar_right">
-            <div class="top_bar_right_wrapper">
-              <a href="#" id="BookVisitPink" class="button button_theme button_js action_button">
-                <span class="button_label">Agendar Cita</span>
-              </a>
-            </div>
-          </div>
-        </div>
+  </div>
+
+  <!-- Barra de navegación principal -->
+  <div class="top-bar">
+    <div class="container top-bar-container">
+      <!-- Logo -->
+      <div class="logo-wrapper">
+        <a routerLink="/" class="logo-link" aria-label="Inicio">
+          <img src="assets/images/rome-logo-blanco.webp" alt="Clínica Rome" class="logo-img" />
+        </a>
       </div>
+
+      <!-- Menú de navegación -->
+      <nav class="main-nav" [class.active]="menuOpen">
+        <ul class="nav-menu">
+          <li routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">
+            <a routerLink="/">Inicio</a>
+          </li>
+          <li routerLinkActive="active-link">
+            <a routerLink="/servicios">Servicios</a>
+          </li>
+          <li routerLinkActive="active-link">
+            <a routerLink="/membresias">Membresías</a>
+          </li>
+          <li routerLinkActive="active-link">
+            <a routerLink="/nosotros">Nosotros</a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Botón de acción -->
+      <div class="header-cta">
+        <!-- Si la ruta /agendar-cita aún no existe, puedes cambiarla temporalmente a '#' o crearla después -->
+        <a routerLink="/agendar-cita" class="cta-button">
+          <span>Agendar Cita</span>
+        </a>
+      </div>
+
+      <!-- Hamburguesa móvil -->
+      <button class="mobile-toggle" (click)="toggleMenu()" [class.open]="menuOpen" aria-label="Menú">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
     </div>
-  </header>
-</div>
+  </div>
+</header>
