@@ -1,0 +1,99 @@
+.memberships-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: 'Inter', 'Roboto', sans-serif;
+}
+
+.text-center {
+    text-align: center;
+    color: #333;
+    margin-bottom: 2rem;
+}
+
+.loading-state, .empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: #666;
+    font-size: 1.2rem;
+}
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.membership-card {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.membership-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+}
+
+.card-image {
+    height: 200px;
+    background-size: cover;
+    background-position: center;
+    background-color: #f5f5f5;
+}
+
+.card-content {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.card-content h2 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    color: #2c3e50;
+    font-size: 1.5rem;
+}
+
+.description {
+    color: #7f8c8d;
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+    flex-grow: 1;
+}
+
+.price {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #27ae60;
+    margin: 0.5rem 0;
+}
+
+.price-details, .payment-info {
+    font-size: 0.9rem;
+    color: #555;
+    margin: 0.25rem 0;
+}
+
+.btn-contratar {
+    margin-top: 1.5rem;
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-contratar:hover {
+    background-color: #2980b9;
+}

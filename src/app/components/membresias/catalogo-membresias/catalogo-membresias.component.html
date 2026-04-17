@@ -1,1 +1,26 @@
-<p>catalogo-membresias works!</p>
+<div class="memberships-container">
+    <h1 class="text-center">Catálogo de Membresías</h1>
+    
+    <div *ngIf="loading" class="loading-state">
+        <p>Cargando membresías disponibles...</p>
+    </div>
+
+    <div *ngIf="!loading && membresias.length === 0" class="empty-state">
+        <p>No hay membresías disponibles en este momento.</p>
+    </div>
+
+    <div class="cards-grid" *ngIf="!loading && membresias.length > 0">
+        <div class="membership-card" *ngFor="let m of membresias">
+            <div class="card-image" [ngStyle]="{'background-image': 'url(' + (m.photoUrl || 'assets/placeholder.jpg') + ')'}"></div>
+            <div class="card-content">
+                <h2>{{ m.nombreTratamiento }}</h2>
+                <p class="description">{{ m.descripcion }}</p>
+                <p class="price">Enganche: ${{ m.enganche }}</p>
+                <p class="price-details">Costo total: ${{ m.costoTotal }}</p>
+                <p class="payment-info">Pagos: {{ m.installmentsCount }} ({{ m.paymentFrequency }})</p>
+                
+                <button class="btn-contratar" (click)="contratar(m._id)">Contratar Membresía</button>
+            </div>
+        </div>
+    </div>
+</div>
