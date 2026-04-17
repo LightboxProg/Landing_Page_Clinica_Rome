@@ -1,19 +1,13 @@
 import { Routes } from '@angular/router';
+import { InicioComponent } from './pages/inicio/inicio.component';
+import { ServiciosComponent } from './pages/servicios/servicios.component';
+import { CatalogoMembresiasComponent } from './components/membresias/catalogo-membresias/catalogo-membresias.component';
 
 export const routes: Routes = [
-  {
-    path: '',
-    loadComponent: () => import('./pages/inicio/inicio.component').then(m => m.InicioComponent)
-  },
-  {
-    path: 'servicios',
-    loadComponent: () => import('./pages/servicios/servicios.component').then(m => m.ServiciosComponent)
-  },
-  // PROTOCOLOS
-  {
-    path: 'membresias',
-    loadComponent: () => import('./components/membresias/catalogo-membresias/catalogo-membresias.component').then(m => m.CatalogoMembresiasComponent)
-  },
+
+  { path: '', component: InicioComponent },
+  { path: 'servicios', component: ServiciosComponent },
+  { path: 'membresias', component: CatalogoMembresiasComponent },
   {
     path: '**',
     redirectTo: '',
