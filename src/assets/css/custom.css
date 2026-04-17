@@ -1,0 +1,222 @@
+/*
+|------------------------------------------------------------
+| Paleta personalizada: Blanco, Dorado Elegante y Rosa
+|------------------------------------------------------------
+*/
+:root {
+  --gold-elegant: #a87b05;
+  --gold-elegant-light: #e6c77c;
+  --gold-elegant-dark: #7a5704;
+  --gold-logo: #B0994A;
+  --white-pure: #fff;
+  --white-soft: #fcfcfc;
+  --pink-main: #e7276f;
+  --pink-hover: #b81b53;
+  --pink-special: #f4218c;
+  --pink-special-hover: #c2186c;
+  --blue-fb: #1877F2;
+  --pink-ig: #E1306C;
+  --black-tk: #000000;
+}
+
+/* --- Base & Scrollbar --- */
+body {
+  background: var(--white-pure);
+}
+*::selection {
+  background: var(--gold-elegant-light);
+  color: var(--gold-elegant-dark);
+}
+::-webkit-scrollbar {
+  width: 10px;
+  background: var(--white-soft);
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, var(--gold-elegant), var(--gold-elegant-light));
+  border-radius: 8px;
+}
+
+/* --- Tipografía y Enlaces --- */
+a, a:visited {
+  color: var(--pink-main);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+a:hover, a:focus {
+  color: var(--gold-elegant);
+}
+.fancy_heading .title, h1, h2, h3, h4, h5, h6 {
+  color: var(--gold-elegant-dark);
+  letter-spacing: 1px;
+  text-shadow: 0 1px 0 var(--gold-elegant-light);
+  font-family: 'Patua One', 'Lato', serif;
+}
+
+/* --- Layout Global --- */
+#Header_wrapper, #Top_bar {
+  background: var(--white-pure);
+  color: var(--gold-elegant);
+  box-shadow: 0 2px 16px 0 rgba(168,123,5,0.10);
+  z-index: 9999;
+}
+#Top_bar .menu > li > a,
+#Top_bar .menu > li > a span,
+#Top_bar .top_bar_right .button_theme,
+#Top_bar .top_bar_right .button {
+  color: var(--white-pure);
+}
+.section, .section_wrapper, .content_wrapper, .card, .box {
+  background: var(--white-pure);
+  box-shadow: 0 2px 24px 0 rgba(168,123,5,0.08);
+  border-radius: 18px;
+  margin-bottom: 32px;
+}
+.section-highlight {
+  padding: 32px 24px;
+  box-shadow: 0 2px 24px 0 rgba(231,39,111,0.10);
+}
+
+/* --- Botones --- */
+.button_theme, button, input[type="submit"], input[type="reset"], input[type="button"] {
+  background: linear-gradient(90deg, var(--pink-main), var(--pink-hover));
+  color: var(--white-pure);
+  border: none;
+  border-radius: 30px;
+  box-shadow: 0 2px 8px rgba(231,39,111,0.10);
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 10px 32px;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+.button_theme:hover, button:hover, input[type="submit"]:hover, input[type="reset"]:hover, input[type="button"]:hover {
+  background: var(--pink-hover);
+  box-shadow: 0 4px 16px rgba(231,39,111,0.18);
+}
+#BookVisitPink.button_theme {
+  background: var(--pink-special);
+  box-shadow: 0 2px 12px 0 rgba(244,33,140,0.15);
+  transition: all 0.3s ease;
+}
+#BookVisitPink.button_theme:hover {
+  background: var(--pink-special-hover);
+  box-shadow: 0 6px 24px 0 rgba(244,33,140,0.25);
+  transform: translateY(-2px) scale(1.04);
+}
+#back_to_top.button.button_left.button_js {
+  background: var(--pink-main);
+  border-radius: 50%;
+  box-shadow: 0 2px 8px 0 rgba(231,39,111,0.12);
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+#back_to_top.button_left.button_js:hover {
+  background: var(--pink-hover);
+}
+#back_to_top .button_icon i {
+  color: var(--white-pure);
+  font-size: 24px;
+}
+
+/* --- Elementos de Interfaz --- */
+.icon_bar { 
+  border-radius: 8px; 
+  overflow: hidden; 
+}
+.icon_bar i { 
+  font-size: 24px; 
+  transition: 0.3s ease; 
+}
+.icon_bar i.facebook { color: var(--blue-fb); }
+.icon_bar i.instagram { color: var(--pink-ig); }
+.icon_bar i.tiktok { color: var(--black-tk); }
+.icon_bar i:hover { 
+  transform: scale(1.2); 
+  opacity: 0.8; 
+}
+
+.portfolio_group .entry-title,
+.portfolio_group .entry-title a,
+.portfolio_group .entry-title a:hover {
+  color: var(--gold-logo);
+  text-shadow: none;
+}
+.image_frame .image_wrapper .image_links a:hover i {
+  color: #f000dc;
+  fill: var(--white-pure);
+}
+
+/* Fix: Lista de características limpia */
+.feature_list ul li,
+.feature_list ul li.active,
+.feature_list ul li.selected,
+.feature_list ul li.current,
+.feature_list ul li.is-active,
+.feature_list ul li.is-selected,
+.feature_list ul li[aria-current="true"],
+.feature_list a:hover {
+  background: transparent;
+  box-shadow: none;
+  transition: none;
+}
+.feature_list a:hover .icon,
+.feature_list a:hover i,
+.feature_list a:hover p {
+  color: var(--gold-logo);
+  fill: var(--gold-logo);
+  transition: color 0.2s ease;
+}
+
+.sliding_box .desc_wrapper,
+.sliding_box h4 {
+  color: var(--white-pure);
+}
+.sliding_box .photo_wrapper img,
+.sliding_box img.scale-with-grid {
+  border: 2px solid var(--pink-main);
+}
+img, .image_frame img {
+  border: 2px solid var(--gold-elegant-light);
+  border-radius: 8px;
+  box-shadow: 0 2px 12px 0 rgba(168,123,5,0.08);
+}
+
+/* --- Separadores y Misceláneos --- */
+hr, .hr_color, .hr_color hr, .hr_dots span, .hr_zigzag i {
+  border-color: var(--gold-elegant);
+  background: var(--gold-elegant);
+}
+[class^="icon-"], [class*=" icon-"] {
+  color: var(--white-pure);
+}
+
+/* --- Animaciones Elegantes --- */
+.elegant-detail, .elegant-detail-animated {
+  width: 60px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--gold-logo) 0%, var(--gold-elegant-dark) 100%);
+  border-radius: 2px;
+  margin: 24px auto;
+  transition: background 0.3s ease;
+}
+.elegant-detail:hover {
+  background: linear-gradient(90deg, var(--gold-elegant-dark) 0%, var(--gold-logo) 100%);
+}
+.elegant-detail-animated {
+  animation: gold-glow 2.5s infinite;
+}
+
+@keyframes gold-glow {
+  0% { box-shadow: 0 0 8px 0 var(--gold-elegant-light); }
+  50% { box-shadow: 0 0 24px 4px var(--gold-elegant); }
+  100% { box-shadow: 0 0 8px 0 var(--gold-elegant-light); }
+}
+
+@keyframes pink-glow {
+  0% { box-shadow: 0 0 8px 0 #f7a3c1; }
+  50% { box-shadow: 0 0 24px 4px var(--pink-main); }
+  100% { box-shadow: 0 0 8px 0 #f7a3c1; }
+}

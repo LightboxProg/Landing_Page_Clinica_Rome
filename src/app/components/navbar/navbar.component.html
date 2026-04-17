@@ -1,1 +1,65 @@
-<p>navbar works!</p>
+<div id="Header_wrapper">
+  <header id="Header">
+    <div id="Action_bar">
+      <div class="container">
+        <div class="column one">
+          <ul class="contact_details">
+            <li class="slogan" style="color:#bfa046;">¿Tienes alguna pregunta?</li>
+            <li class="phone" style="color:#bfa046;">
+              <i class="icon-phone"></i><a href="tel:+524491234567" style="color:#bfa046;">+52 449 123 4567</a>
+            </li>
+            <li class="mail" style="color:#bfa046;">
+              <i class="icon-mail-line"></i><a href="mailto:contacto&#64;clinicarome.com" style="color:#bfa046;">contacto&#64;clinicarome.com</a>
+            </li>
+          </ul>
+          <ul class="social">
+            <li><a href="#" title="Facebook"><i class="fab fa-facebook-f" style="color:#bfa046;"></i></a></li>
+            <li><a href="#" title="Instagram"><i class="fab fa-instagram" style="color:#bfa046;"></i></a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+    <div id="Top_bar">
+      <div class="container">
+        <div class="column one">
+          <div class="top_bar_left clearfix">
+            <div class="logo">
+              <a id="logo" routerLink="/" title="Clínica Rome">
+                <img class="scale-with-grid" src="assets/images/rome-logo-blanco.webp" alt="Logo Rome" />
+              </a>
+            </div>
+            
+            <div class="menu_wrapper">
+              <nav id="menu">
+                <ul id="menu-main-menu" class="menu">
+                  <li routerLinkActive="current_page_item" [routerLinkActiveOptions]="{exact: true}">
+                    <a routerLink="/"><span>Inicio</span></a>
+                  </li>
+                  <li routerLinkActive="current_page_item">
+                    <a routerLink="/servicios"><span>Servicios</span></a>
+                  </li>
+                  <li routerLinkActive="current_page_item">
+                    <a routerLink="/membresias"><span>Membresías</span></a>
+                  </li>
+                  <li routerLinkActive="current_page_item">
+                    <a routerLink="/nosotros"><span>Nosotros</span></a>
+                  </li>
+                </ul>
+              </nav>
+              <a class="responsive-menu-toggle" href="#"><i class="icon-menu"></i></a>
+            </div>
+            
+          </div>
+          <div class="top_bar_right">
+            <div class="top_bar_right_wrapper">
+              <a href="#" id="BookVisitPink" class="button button_theme button_js action_button">
+                <span class="button_label">Agendar Cita</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+</div>
