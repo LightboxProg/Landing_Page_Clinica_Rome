@@ -1,75 +1,26 @@
-<div class="section section-highlight" style="padding-top: 80px; padding-bottom: 80px; background: #fff;">
-  <div class="container">
+<div class="memberships-container">
+    <h1 class="text-center">Catálogo de Membresías</h1>
     
-    <div class="column one column_column">
-      <div class="fancy_heading" style="text-align: center; margin-bottom: 60px;">
-        <h2 class="title" style="font-size: 48px; color: var(--gold-elegant-dark);">Tratamientos y Protocolos</h2>
-        <h3 style="color: var(--pink-main); font-family: 'Lato';">Dra. Corazón</h3>
-        <div class="elegant-detail-animated"></div>
-        <div style="background: var(--white-soft); border-radius: 12px; padding: 20px; display: inline-block; border: 1px solid var(--gold-elegant-light);">
-          <p style="margin: 0; font-weight: 700; color: #444;">
-            ✨ Inicia con un anticipo de <span style="color: var(--pink-main);">{{infoGeneral.anticipo}}</span> 
-            y liquida el resto en <span style="color: var(--gold-elegant);">{{infoGeneral.pagos}}</span>.
-          </p>
-          <p style="margin: 5px 0 0 0; font-size: 14px; color: #777;">Resultados naturales, armónicos y personalizados.</p>
+    <div *ngIf="loading" class="loading-state">
+        <p>Cargando membresías disponibles...</p>
+    </div>
+
+    <div *ngIf="!loading && membresias.length === 0" class="empty-state">
+        <p>No hay membresías disponibles en este momento.</p>
+    </div>
+
+    <div class="cards-grid" *ngIf="!loading && membresias.length > 0">
+        <div class="membership-card" *ngFor="let m of membresias">
+            <div class="card-image" [ngStyle]="{'background-image': 'url(' + (m.photoUrl || 'assets/placeholder.jpg') + ')'}"></div>
+            <div class="card-content">
+                <h2>{{ m.nombreTratamiento }}</h2>
+                <p class="description">{{ m.descripcion }}</p>
+                <p class="price">Enganche: ${{ m.enganche }}</p>
+                <p class="price-details">Costo total: ${{ m.costoTotal }}</p>
+                <p class="payment-info">Pagos: {{ m.installmentsCount }} ({{ m.paymentFrequency }})</p>
+                
+                <button class="btn-contratar" (click)="contratar(m._id)">Contratar Membresía</button>
+            </div>
         </div>
-      </div>
     </div>
-
-    <div class="column one">
-      <h3 style="margin-bottom: 30px; border-left: 5px solid var(--pink-main); padding-left: 15px;">Individuales</h3>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; margin-bottom: 60px;">
-        @for (item of tratamientosIndividuales; track item.titulo) {
-          <div class="card" style="padding: 30px; border: 1px solid #f0f0f0;">
-            <h4 style="color: var(--pink-main) !important; margin-bottom: 5px;">{{item.titulo}}</h4>
-            <p style="font-size: 13px; font-weight: bold; color: var(--gold-elegant-dark);">Se utiliza: {{item.utiliza}}</p>
-            <div class="elegant-detail" style="width: 30px; margin: 15px 0;"></div>
-            
-            <p style="font-size: 14px;"><strong>Para ti si:</strong> {{item.paraTi}}.</p>
-            <p style="font-size: 14px; color: #555;"><strong>Resultado:</strong> {{item.resultado}}.</p>
-            
-            <hr style="margin: 20px 0;">
-            <div style="text-align: center;">
-              <p style="margin: 0; font-size: 14px; color: #888;">Inversión Total: {{item.total}}</p>
-              <p style="font-size: 22px; font-weight: 700; color: #333; margin: 5px 0;">{{item.pagoQuincenal}} <span style="font-size: 12px; color: #999;">quincenal</span></p>
-              <button class="button_theme" style="width: 100%; margin-top: 15px;">Apartar Tratamiento</button>
-            </div>
-          </div>
-        }
-      </div>
-    </div>
-
-    <div class="column one">
-      <h3 style="margin-bottom: 30px; border-left: 5px solid var(--gold-elegant); padding-left: 15px;">Protocolos Premium</h3>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px;">
-        @for (proto of protocolosFaciales; track proto.titulo) {
-          <div class="card" style="padding: 30px; border: 2px solid var(--gold-elegant-light); background: var(--white-soft) !important;">
-            <div style="background: var(--gold-elegant); color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 11px; display: inline-block; margin-bottom: 10px;">PROTOCOLOS EXCLUSIVOS</div>
-            <h4 style="color: var(--gold-elegant-dark) !important; margin-bottom: 5px;">{{proto.titulo}}</h4>
-            <p style="font-size: 13px; font-weight: bold; color: var(--pink-main);">Mix: {{proto.utiliza}}</p>
-            
-            <div class="elegant-detail-animated" style="width: 50px; margin: 20px 0; height: 3px;"></div>
-            
-            <p style="font-size: 14px;"><strong>Ideal si:</strong> {{proto.paraTi}}.</p>
-            <p style="font-size: 14px; color: #555;"><strong>Efecto:</strong> {{proto.resultado}}.</p>
-            
-            <div style="margin-top: 25px; padding: 15px; background: #fff; border-radius: 10px; text-align: center; border: 1px dashed var(--gold-elegant);">
-              <p style="margin: 0; font-size: 14px; color: #888;">Total: {{proto.total}}</p>
-              <p style="font-size: 26px; font-weight: 700; color: var(--gold-elegant-dark); margin: 5px 0;">{{proto.pagoQuincenal}} <span style="font-size: 12px; color: #999;">/ quincena</span></p>
-              <button id="BookVisitPink" class="button_theme" style="width: 100%; margin-top: 10px;">Agendar Protocolo</button>
-            </div>
-          </div>
-        }
-      </div>
-    </div>
-
-    <div class="column one" style="margin-top: 60px;">
-      <div style="background: linear-gradient(90deg, #e7276f 0%, #b81b53 100%); padding: 30px; border-radius: 18px; color: #fff; text-align: center; box-shadow: 0 10px 30px rgba(231,39,111,0.3);">
-        <h3 style="color: #fff !important; margin: 0;">🎁 ¡BONO EXCLUSIVO!</h3>
-        <p style="font-size: 18px; margin: 10px 0;">Las primeras 20 pacientes reciben un <strong>bono de $500</strong> aplicable a su apartado.</p>
-        <small>*Válido al realizar tu diagnóstico facial inicial.</small>
-      </div>
-    </div>
-
-  </div>
 </div>
