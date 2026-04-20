@@ -14,7 +14,7 @@
           "builder": "@angular-devkit/build-angular:application",
           "options": {
             "outputPath": "dist/landing-page-clinica-rome",
-            "baseHref": "/Landing_Page_Clinica_Rome/", 
+            "baseHref": "/Landing_Page_Clinica_Rome/",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -58,13 +58,13 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumWarning": "2mb",
+                  "maximumError": "3mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumWarning": "10kb",
+                  "maximumError": "20kb"
                 }
               ],
               "outputHashing": "all"
@@ -108,7 +108,12 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.css",
+              "src/assets/css/global.css",
+              "src/assets/css/structure.css",
+              "src/assets/css/beauty.css",
+              "src/assets/css/custom.css",
+              "src/assets/plugins/rs-plugin/css/settings.css"
             ],
             "scripts": []
           }
