@@ -1,0 +1,468 @@
+/* ===== VARIABLES (coherentes con el resto del sitio) ===== */
+:host {
+  --gold-primary: #a87b05;
+  --gold-dark: #7a5704;
+  --gold-medium: #b0994e;
+  --gold-light: #c2ad61;
+  --gold-pale: #e8dcae;
+  --white-soft: #fcfcfc;
+  --white-pure: #ffffff;
+  --text-dark: #1e1e1e;
+  --text-light: #555555;
+  --shadow-sm: 0 2px 16px rgba(168, 123, 5, 0.08);
+  --shadow-md: 0 8px 24px rgba(168, 123, 5, 0.12);
+  --transition: all 0.3s ease;
+  --border-radius: 12px;
+
+  /* Tonos rosa */
+  --pink-light: #f9a8d4;
+  --pink-soft: #f472b6;
+  --pink-deep: #db2777;
+  --pink-dark: #be185d;
+  --pink-main: #e7276f;
+}
+
+/* ===== ESTRUCTURA GENERAL ===== */
+.servicios-page {
+  background-color: var(--white-soft);
+  color: var(--text-dark);
+  font-family: 'Lato', 'Roboto', sans-serif;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.section {
+  padding: 70px 0;
+}
+
+/* Cabecera de página */
+.page-header {
+  background: linear-gradient(135deg, #fdf8f0 0%, #fff5e6 100%);
+  padding: 60px 0 40px;
+  text-align: center;
+  border-bottom: 1px solid rgba(168, 123, 5, 0.15);
+}
+
+.page-title {
+  font-size: 48px;
+  font-weight: 600;
+  color: var(--gold-primary);
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+}
+
+.page-subtitle {
+  font-size: 18px;
+  color: var(--text-light);
+  margin-top: 15px;
+}
+
+.elegant-detail {
+  width: 80px;
+  height: 2px;
+  background: var(--gold-primary);
+  margin: 15px auto 20px;
+}
+
+/* ===== TÍTULOS SECCIONES ===== */
+.fancy_heading {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.fancy_heading .title {
+  font-size: 38px;
+  font-weight: 600;
+  color: var(--gold-primary);
+  margin-bottom: 15px;
+}
+
+.fancy_heading .inside {
+  font-size: 18px;
+  color: var(--text-light);
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* Condiciones generales */
+.condiciones-card {
+  background: linear-gradient(to right, #fff9ef, #fff);
+  border-left: 5px solid var(--pink-main);
+  padding: 18px 25px;
+  border-radius: 50px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 40px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-size: 16px;
+  color: var(--text-dark);
+}
+
+.condiciones-card i {
+  color: var(--pink-main);
+  font-size: 24px;
+}
+
+/* ===== GRID DE CATEGORÍAS (FACIAL) ===== */
+.categorias-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
+  margin-bottom: 40px;
+}
+
+.categoria-card {
+  background: var(--white-pure);
+  border-radius: var(--border-radius);
+  padding: 25px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(168, 123, 5, 0.1);
+  transition: var(--transition);
+}
+
+.categoria-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-4px);
+}
+
+.categoria-titulo {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--gold-dark);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px dashed var(--gold-pale);
+  padding-bottom: 12px;
+}
+
+.categoria-titulo i {
+  color: var(--pink-main);
+}
+
+/* Lista de tratamientos */
+.tratamiento-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.tratamiento-item {
+  border-bottom: 1px solid #f0e7d5;
+  padding-bottom: 12px;
+}
+
+.tratamiento-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.tratamiento-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+
+.nombre {
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--text-dark);
+}
+
+.tecnica {
+  font-weight: 400;
+  font-size: 14px;
+  color: var(--text-light);
+}
+
+.precio-total {
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--pink-deep);
+  background: #fce4ec;
+  padding: 4px 10px;
+  border-radius: 30px;
+}
+
+.tratamiento-detalle {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: var(--text-light);
+}
+
+.pagos {
+  font-weight: 500;
+  color: var(--gold-dark);
+}
+
+.descripcion {
+  font-style: italic;
+}
+
+.paquete .tratamiento-header {
+  margin-bottom: 0;
+}
+
+.nota {
+  font-size: 13px;
+  color: #999;
+  margin-top: 15px;
+  text-align: right;
+}
+
+/* Promociones destacadas */
+.promo-card {
+  grid-column: span 2; /* Ocupa ambas columnas */
+}
+
+.promo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px 20px;
+}
+
+.promo-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px dotted var(--gold-pale);
+}
+
+.promo-nombre {
+  font-weight: 500;
+}
+
+.promo-precio {
+  font-weight: 700;
+  color: var(--pink-main);
+  background: #fff0f5;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+/* Precios adicionales */
+.precios-adicionales {
+  margin-top: 40px;
+  background: #fffaf2;
+  border-radius: var(--border-radius);
+  padding: 30px;
+  box-shadow: inset 0 1px 4px rgba(0,0,0,0.02);
+}
+
+.precios-adicionales h4 {
+  font-size: 22px;
+  color: var(--gold-primary);
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.precios-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 25px;
+}
+
+.precio-bloque h5 {
+  font-size: 18px;
+  color: var(--pink-dark);
+  margin-bottom: 12px;
+  border-left: 3px solid var(--gold-primary);
+  padding-left: 12px;
+}
+
+.precio-bloque ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.precio-bloque li {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+  font-size: 15px;
+}
+
+.precio-bloque li span:last-child {
+  font-weight: 600;
+  color: var(--gold-dark);
+}
+
+/* ===== SECCIÓN DENTAL ===== */
+.dental-section {
+  background: var(--white-pure);
+  border-top: 1px solid rgba(168, 123, 5, 0.1);
+}
+
+.dental-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 30px;
+}
+
+.dental-categoria {
+  background: #fefcf8;
+  border-radius: var(--border-radius);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(168, 123, 5, 0.08);
+  transition: var(--transition);
+}
+
+.dental-categoria:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.dental-categoria h4 {
+  font-size: 20px;
+  color: var(--pink-dark);
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 2px solid var(--gold-pale);
+  padding-bottom: 10px;
+}
+
+.dental-categoria h4 i {
+  color: var(--gold-primary);
+  width: 24px;
+  text-align: center;
+}
+
+.dental-lista {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.dental-lista li {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px dashed #e0d6c8;
+  font-size: 15px;
+}
+
+.dental-lista li:last-child {
+  border-bottom: none;
+}
+
+.dental-lista li span:first-child {
+  color: var(--text-dark);
+}
+
+.dental-lista li span:last-child {
+  font-weight: 600;
+  color: var(--gold-dark);
+  background: #fff3e0;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
+.dental-nota {
+  text-align: right;
+  margin-top: 30px;
+  font-size: 14px;
+  color: #888;
+}
+
+/* ===== CTA FINAL ===== */
+.cta-section {
+  background: linear-gradient(1000deg, var(--pink-light), var(--pink-soft), var(--pink-deep));
+  padding: 50px 0;
+  color: white;
+  text-align: center;
+}
+
+.cta-content h3 {
+  font-size: 36px;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.cta-content p {
+  font-size: 18px;
+  margin-bottom: 30px;
+  opacity: 0.9;
+}
+
+.cta-button {
+  display: inline-block;
+  background: white;
+  color: var(--pink-deep);
+  padding: 14px 36px;
+  font-weight: 700;
+  font-size: 18px;
+  text-decoration: none;
+  border-radius: 40px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  transition: var(--transition);
+  border: none;
+  cursor: pointer;
+}
+
+.cta-button:hover {
+  background: var(--gold-pale);
+  color: var(--gold-dark);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 992px) {
+  .categorias-grid {
+    grid-template-columns: 1fr;
+  }
+  .promo-card {
+    grid-column: span 1;
+  }
+  .promo-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .page-title {
+    font-size: 38px;
+  }
+  .fancy_heading .title {
+    font-size: 32px;
+  }
+  .condiciones-card {
+    flex-direction: column;
+    text-align: center;
+    border-radius: 20px;
+  }
+  .promo-grid {
+    grid-template-columns: 1fr;
+  }
+  .dental-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .tratamiento-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .precio-total {
+    align-self: flex-start;
+  }
+  .tratamiento-detalle {
+    flex-direction: column;
+    gap: 5px;
+  }
+}
