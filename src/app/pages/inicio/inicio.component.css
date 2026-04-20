@@ -217,66 +217,75 @@
 /* ===== LISTA DE CARACTERÍSTICAS (GRID DE ICONOS) ===== */
 .feature_list {
   margin-top: 20px;
+  width: 100%;
 }
 
 .feature-grid {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 30px 40px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 .feature-grid li {
-  width: 22%;
-  min-width: 140px;
+  width: 25%; /* 4 columnas exactas */
+  box-sizing: border-box;
+  padding: 30px 15px; /* Espacio vertical para separar de la línea */
+}
+
+/* Crea la línea divisoria dorada continua bajo la primera fila */
+.feature-grid li:nth-child(-n+4) {
+  border-bottom: 1px solid #cca13b;
 }
 
 .feature-grid a {
   text-decoration: none;
   color: inherit;
-  display: block;
-  transition: var(--transition);
+  display: flex; /* Alinea icono y texto horizontalmente */
+  align-items: center; /* Centra ambos elementos verticalmente */
+  gap: 20px; /* Espacio entre el icono y el texto */
+  transition: var(--transition, 0.3s ease);
 }
 
 .feature-grid a:hover {
-  transform: translateY(-5px);
+  transform: translateY(-3px);
 }
 
 .feature-grid i {
-  font-size: 48px;
-  color: var(--pink-main);
-  margin-bottom: 15px;
+  font-size: 38px;
+  color: #e91e63; /* Color fucsia/magenta de los iconos */
   display: block;
-  transition: var(--transition);
+  transition: var(--transition, 0.3s ease);
+  width: 45px; /* Fija un ancho para que todos los textos inicien en la misma línea */
+  text-align: center;
 }
 
 .feature-grid a:hover i {
-  color: var(--pink-deep);
+  color: #c2185b; /* Tono un poco más oscuro al pasar el mouse */
 }
 
 .feature-grid p {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 500;
-  color: var(--text-dark);
+  color: #757575; /* Color gris de la imagen */
   margin: 0;
+  line-height: 1.2;
 }
 
 /* ===== RESPONSIVE ===== */
+/* Ajustamos para que en pantallas más pequeñas las líneas divisorias no se rompan */
 @media (max-width: 992px) {
-  .tp-caption.mfnrs_beauty {
-    font-size: 48px;
-  }
-
-  .fancy_heading .title {
-    font-size: 36px;
-  }
-
-  .col.one-third {
-    width: 50%;
-  }
-
   .feature-grid li {
-    width: 20%;
+    width: 50%; /* 2 columnas en tablets */
+  }
+  
+  /* Reseteamos y reasignamos las líneas para 2 columnas */
+  .feature-grid li {
+    border-bottom: 1px solid #cca13b;
+  }
+  .feature-grid li:nth-last-child(-n+2) {
+    border-bottom: none; /* Quitamos la línea en la última fila */
   }
 }
 
@@ -284,35 +293,21 @@
   .section {
     padding: 50px 0;
   }
-
-  .fancy_heading .title {
-    font-size: 30px;
-  }
-
-  .fancy_heading .inside {
-    font-size: 16px;
-  }
-
-  .col.one-third {
-    width: 100%;
-  }
-
-  .feature-grid li {
-    width: 33.333%;
-  }
-
-  .tp-caption.mfnrs_beauty {
-    font-size: 36px;
-  }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 576px) {
   .feature-grid li {
-    width: 50%;
+    width: 100%; /* 1 columna en móviles */
   }
-
-  .tp-caption .button_theme {
-    padding: 10px 20px;
-    font-size: 0.9rem;
+  
+  /* Reseteamos y reasignamos las líneas para 1 columna */
+  .feature-grid li:nth-last-child(-n+2) {
+    border-bottom: 1px solid #cca13b; 
+  }
+  .feature-grid li:last-child {
+    border-bottom: none; /* Solo el último elemento va sin línea */
+  }
+  .col.one-third {
+    width: 100%;
   }
 }
