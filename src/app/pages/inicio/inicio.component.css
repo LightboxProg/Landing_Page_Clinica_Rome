@@ -262,7 +262,7 @@
 }
 
 .feature-grid a:hover i {
-  color: #c2185b; /* Tono un poco más oscuro al pasar el mouse */
+  color: #ffffff; /* Tono un poco más oscuro al pasar el mouse */
 }
 
 .feature-grid p {
@@ -310,4 +310,126 @@
   .col.one-third {
     width: 100%;
   }
+}
+
+/* ===== SECCIÓN GALERÍA ===== */
+.section-gallery {
+  padding-top: 40px;
+  padding-bottom: 80px;
+}
+
+.gallery-item {
+  margin-bottom: 40px;
+}
+
+/* Contenedor de la imagen y los efectos */
+.gallery-img-wrapper {
+  position: relative;
+  overflow: hidden;
+  border: 4px solid var(--white-pure);
+  box-shadow: var(--shadow-sm);
+  border-radius: var(--border-radius, 4px);
+}
+
+.gallery-img-wrapper img {
+  width: 100%;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+/* Efecto opcional de zoom ligero al hacer hover */
+.gallery-img-wrapper:hover img {
+  transform: scale(1.02);
+}
+
+/* Insignia circular del centro */
+.gallery-badge {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 45px;
+  height: 45px;
+  background: var(--white-pure);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--gold-primary);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  z-index: 2;
+}
+
+/* Panel Rosa (oculto por defecto) */
+.gallery-overlay {
+  position: absolute;
+  bottom: -100%; /* Oculto debajo de la imagen */
+  left: 0;
+  width: 100%;
+  height: 25%; /* Altura del panel rosa */
+  display: flex;
+  transition: bottom 0.35s ease-in-out;
+  z-index: 3;
+}
+
+/* Deslizar hacia arriba al hacer hover */
+.gallery-img-wrapper:hover .gallery-overlay {
+  bottom: 0;
+}
+
+/* Mitades del panel (Antes y Después) */
+.overlay-half {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--white-pure);
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: 1px;
+}
+
+/* Colores ligeramente distintos para diferenciar lados (como en la imagen) */
+.overlay-left {
+  background: rgba(231, 39, 111, 0.9); /* Usa un poco de transparencia */
+}
+
+.overlay-right {
+  background: rgba(219, 39, 119, 0.9);
+}
+
+/* Contenido de texto debajo de la imagen */
+.gallery-info {
+  padding: 20px 5px 0;
+}
+
+.gallery-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 12px;
+}
+
+.gallery-title {
+  color: var(--gold-primary);
+  font-size: 18px;
+  font-weight: 800;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.gallery-num {
+  color: #b0b0b0;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.gallery-desc {
+  color: #a19985; /* Tono grisáceo/dorado para el texto */
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
 }
