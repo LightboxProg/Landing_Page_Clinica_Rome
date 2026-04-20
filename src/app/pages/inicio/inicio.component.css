@@ -1,19 +1,22 @@
-/* ===== VARIABLES ===== */
 :host {
-  --primary-green: #5E6350;
-  --primary-dark: #3F4335;
-  --white-soft: #FDFAF5;
-  --white-pure: #FFFFFF;
-  --text-dark: #171515;
-  --text-light: #5A5A5A;
-  --accent-soft: #E9DBD6;
-  --shadow-sm: 0 2px 16px rgba(94, 99, 80, 0.08);
-  --shadow-md: 0 8px 24px rgba(94, 99, 80, 0.12);
+  --coffee-dark: #3e2723;
+  --coffee-medium: #5d4037;
+  --coffee-light: #8d6e63;
+  --coffee-soft: #d7ccc8;
+  --coffee-cream: #f5f0e6;
+  --gold-primary: #c5a028;
+  --gold-light: #f4d03f;
+  --gold-dark: #9a7d0a;
+  --white-pure: #ffffff;
+  --text-dark: #2c1e1a;
+  --text-light: #6d4c41;
+  --shadow-sm: 0 2px 16px rgba(62, 39, 35, 0.08);
+  --shadow-md: 0 8px 24px rgba(62, 39, 35, 0.12);
   --transition: all 0.3s ease;
   --border-radius: 8px;
 }
 
-/* ===== SLIDER REVOLUTION ===== */
+/* Slider */
 .mfn-main-slider {
   position: relative;
   z-index: 1;
@@ -25,10 +28,6 @@
   overflow: hidden;
 }
 
-.rev_slider img {
-  max-width: none;
-}
-
 .tp-caption.mfnrs_beauty {
   font-size: 64px;
   line-height: 1.2;
@@ -38,13 +37,13 @@
 }
 
 .tp-caption .button_theme {
-  background: var(--primary-green);
+  background: var(--gold-primary);
   color: white;
   padding: 14px 32px;
   font-weight: 700;
   text-decoration: none;
   font-size: 1rem;
-  box-shadow: 0 4px 12px rgba(94, 99, 80, 0.3);
+  box-shadow: 0 4px 12px rgba(197, 160, 40, 0.3);
   transition: var(--transition);
   display: inline-block;
   border: none;
@@ -52,12 +51,12 @@
 }
 
 .tp-caption .button_theme:hover {
-  background: var(--primary-dark);
+  background: var(--gold-dark);
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(94, 99, 80, 0.4);
+  box-shadow: 0 8px 20px rgba(197, 160, 40, 0.4);
 }
 
-/* ===== SECCIONES GENERALES ===== */
+/* Secciones */
 .section {
   padding: 80px 0;
 }
@@ -68,7 +67,7 @@
 }
 
 .section-highlight {
-  background-color: var(--white-soft);
+  background-color: var(--coffee-cream);
   padding-top: 60px;
   padding-bottom: 40px;
 }
@@ -98,7 +97,7 @@
   width: 33.333%;
 }
 
-/* ===== TÍTULOS Y DETALLES ===== */
+/* Títulos */
 .fancy_heading {
   text-align: center;
   margin-bottom: 50px;
@@ -108,7 +107,7 @@
   font-size: 42px;
   line-height: 1.3;
   font-weight: 600;
-  color: var(--primary-green) !important;
+  color: var(--coffee-dark) !important;
   margin-bottom: 20px;
 }
 
@@ -123,14 +122,14 @@
 .elegant-detail {
   width: 80px;
   height: 2px;
-  background: var(--primary-green);
+  background: var(--gold-primary);
   margin: 15px auto 20px;
 }
 
 .elegant-detail-animated {
   width: 80px;
   height: 2px;
-  background: var(--primary-green);
+  background: var(--gold-primary);
   margin: 15px auto 20px;
   transition: width 0.4s ease;
 }
@@ -139,7 +138,7 @@
   width: 120px;
 }
 
-/* ===== IMÁGENES CON MARCO ===== */
+/* Imágenes con marco */
 .image_frame {
   margin-bottom: 30px;
 }
@@ -169,7 +168,7 @@
 }
 
 .princ {
-  color: var(--primary-green);
+  color: var(--coffee-dark);
   font-size: 50px;
   line-height: 1.2;
   font-weight: 700;
@@ -183,7 +182,7 @@
 }
 
 .step-label {
-  background: var(--primary-green);
+  background: var(--coffee-medium);
   color: white;
   text-align: center;
   padding: 12px 0;
@@ -194,7 +193,7 @@
   letter-spacing: 0.5px;
 }
 
-/* ===== LISTA DE CARACTERÍSTICAS ===== */
+/* Feature List */
 .feature_list {
   margin-top: 20px;
   width: 100%;
@@ -214,8 +213,8 @@
   padding: 30px 15px;
 }
 
-.feature-grid li:nth-child(-n+4) {
-  border-bottom: 1px solid var(--primary-light);
+.feature-grid li:nth-child(-n + 4) {
+  border-bottom: 1px solid var(--coffee-light) !important;
 }
 
 .feature-grid a {
@@ -224,16 +223,25 @@
   display: flex;
   align-items: center;
   gap: 20px;
+  padding: 8px 12px; /* Añadimos padding para que el fondo se vea mejor */
+  border-radius: 40px; /* Bordes redondeados elegantes */
   transition: var(--transition);
+  background-color: transparent; /* Aseguramos fondo transparente por defecto */
 }
 
 .feature-grid a:hover {
   transform: translateY(-3px);
+  background-color: var(--coffee-soft) !important; /* Café claro #D7CCC8 */
+  color: var(--coffee-dark) !important; /* Texto oscuro para contraste */
+}
+
+.feature-grid a:hover p {
+  color: var(--coffee-dark) !important;
 }
 
 .feature-grid i {
   font-size: 38px;
-  color: var(--primary-green);
+  color: var(--gold-primary) !important;
   display: block;
   transition: var(--transition);
   width: 45px;
@@ -241,18 +249,18 @@
 }
 
 .feature-grid a:hover i {
-  color: var(--primary-dark);
+  color: var(--gold-primary) !important;
 }
 
 .feature-grid p {
   font-size: 15px;
   font-weight: 500;
-  color: var(--text-light);
+  color: var(--text-light) !important;
   margin: 0;
   line-height: 1.2;
 }
 
-/* ===== SECCIÓN GALERÍA ===== */
+/* Galería */
 .section-gallery {
   padding-top: 40px;
   padding-bottom: 80px;
@@ -294,8 +302,8 @@
   justify-content: center;
   font-weight: 700;
   font-size: 14px;
-  color: var(--primary-green);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  color: var(--coffee-dark);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
   z-index: 2;
 }
 
@@ -327,11 +335,11 @@
 }
 
 .overlay-left {
-  background: rgba(94, 99, 80, 0.9);
+  background: rgba(93, 64, 55, 0.9);
 }
 
 .overlay-right {
-  background: rgba(63, 67, 53, 0.9);
+  background: rgba(62, 39, 35, 0.9);
 }
 
 .gallery-info {
@@ -346,7 +354,7 @@
 }
 
 .gallery-title {
-  color: var(--primary-green);
+  color: var(--coffee-dark);
   font-size: 18px;
   font-weight: 800;
   margin: 0;
@@ -366,16 +374,15 @@
   margin: 0;
 }
 
-/* ===== RESPONSIVE ===== */
+/* Responsive */
 @media (max-width: 992px) {
   .feature-grid li {
     width: 50%;
   }
-  
   .feature-grid li {
-    border-bottom: 1px solid var(--primary-light);
+    border-bottom: 1px solid var(--coffee-light);
   }
-  .feature-grid li:nth-last-child(-n+2) {
+  .feature-grid li:nth-last-child(-n + 2) {
     border-bottom: none;
   }
 }
@@ -390,9 +397,8 @@
   .feature-grid li {
     width: 100%;
   }
-  
-  .feature-grid li:nth-last-child(-n+2) {
-    border-bottom: 1px solid var(--primary-light);
+  .feature-grid li:nth-last-child(-n + 2) {
+    border-bottom: 1px solid var(--coffee-light);
   }
   .feature-grid li:last-child {
     border-bottom: none;
@@ -400,4 +406,44 @@
   .col.one-third {
     width: 100%;
   }
+}
+
+/* ===== SOBRESCRITURA AGRESIVA PARA ELIMINAR FONDO ROSA EN FEATURE LIST ===== */
+.feature_list .feature-grid li,
+.feature_list .feature-grid li a,
+.feature_list .feature-grid li a:hover,
+.feature_list .feature-grid li a:focus,
+.feature_list .feature-grid li a:active {
+  background-color: transparent !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Fondo café claro solo en hover del enlace */
+.feature_list .feature-grid li a:hover {
+  background-color: var(--coffee-soft) !important;
+  border-radius: 40px !important;
+  padding: 8px 12px !important;
+}
+
+/* Aseguramos que los textos y los íconos tengan los colores correctos */
+.feature_list .feature-grid li a:hover p,
+.feature_list .feature-grid li a:hover i {
+  color: var(--coffee-dark) !important;
+}
+
+.feature_list .feature-grid li a:hover i {
+  color: var(--gold-primary) !important;
+}
+
+/* ===== ELIMINAR BORDES DE PÉTALOS EN SLIDER ===== */
+.tp-caption img,
+.rev_slider .tp-caption img,
+.rev_slider_wrapper .tp-caption img {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
 }

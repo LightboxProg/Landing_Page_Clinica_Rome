@@ -1,24 +1,27 @@
-/* ===== VARIABLES ===== */
 :host {
-  --primary-green: #5E6350;      /* Verde oliva */
-  --primary-dark: #3F4335;       /* Verde oscuro */
-  --primary-light: #8A907A;      /* Verde claro */
-  --white-soft: #FDFAF5;         /* Crema */
-  --white-pure: #FFFFFF;         /* Blanco */
-  --text-dark: #171515;          /* Casi negro */
-  --text-light: #5A5A5A;         /* Gris medio */
-  --shadow-sm: 0 2px 16px rgba(94, 99, 80, 0.08);
-  --shadow-md: 0 8px 24px rgba(94, 99, 80, 0.12);
+  --coffee-dark: #3E2723;
+  --coffee-medium: #5D4037;
+  --coffee-light: #8D6E63;
+  --coffee-soft: #D7CCC8;
+  --coffee-cream: #F5F0E6;
+  --gold-primary: #C5A028;
+  --gold-light: #F4D03F;
+  --gold-dark: #9A7D0A;
+  --white-pure: #FFFFFF;
+  --text-dark: #2C1E1A;
+  --text-light: #6D4C41;
+  --shadow-sm: 0 2px 16px rgba(62, 39, 35, 0.08);
+  --shadow-md: 0 8px 24px rgba(62, 39, 35, 0.12);
   --transition: all 0.3s ease;
 }
 
-/* ===== ACTION BAR ===== */
+/* Action Bar */
 .action-bar {
-  background: var(--white-soft);
+  background: var(--coffee-cream);
   color: var(--text-light);
   padding: 8px 0;
   font-size: 0.9rem;
-  border-bottom: 1px solid rgba(94, 99, 80, 0.1);
+  border-bottom: 1px solid rgba(93, 64, 55, 0.1);
 }
 
 .action-bar-container {
@@ -50,12 +53,12 @@
 }
 
 .contact-item a:hover {
-  color: var(--primary-green);
+  color: var(--gold-primary);
 }
 
 .contact-item i {
   font-size: 1rem;
-  color: var(--primary-green);
+  color: var(--gold-primary);
 }
 
 .social-links {
@@ -70,11 +73,11 @@
 }
 
 .social-link:hover {
-  color: var(--primary-green);
+  color: var(--gold-primary);
   transform: translateY(-2px);
 }
 
-/* ===== TOP BAR (NAVEGACIÓN PRINCIPAL) ===== */
+/* Top Bar */
 .top-bar {
   background: var(--white-pure);
   box-shadow: var(--shadow-sm);
@@ -82,7 +85,7 @@
   top: 0;
   z-index: 1000;
   padding: 12px 0;
-  border-bottom: 1px solid rgba(94, 99, 80, 0.1);
+  border-bottom: 1px solid rgba(93, 64, 55, 0.1);
 }
 
 .top-bar-container {
@@ -95,7 +98,6 @@
   gap: 30px;
 }
 
-/* Logo */
 .logo-wrapper {
   flex-shrink: 0;
 }
@@ -104,16 +106,15 @@
   height: 50px;
   width: auto;
   display: block;
-  filter: brightness(0.8);
+  filter: brightness(0.9);
   transition: var(--transition);
 }
 
 .logo-img:hover {
   transform: scale(1.02);
-  filter: brightness(0.6);
+  filter: brightness(0.75);
 }
 
-/* Menú principal */
 .main-nav {
   margin-left: 0;
 }
@@ -132,13 +133,12 @@
   align-items: center;
 }
 
-/* Separador vertical */
 .nav-menu li:not(:last-child)::after {
   content: '';
   display: block;
   height: 20px;
   width: 1px;
-  background-color: rgba(94, 99, 80, 0.2);
+  background-color: rgba(93, 64, 55, 0.2);
   margin: 0 8px;
 }
 
@@ -156,10 +156,9 @@
 }
 
 .nav-menu a:hover {
-  color: var(--primary-green);
+  color: var(--gold-primary);
 }
 
-/* Indicador de página activa */
 .active-link a::before {
   content: '';
   position: absolute;
@@ -167,7 +166,7 @@
   left: 0;
   width: 100%;
   height: 3px;
-  background: var(--primary-green);
+  background: var(--gold-primary);
   border-radius: 3px 3px 0 0;
 }
 
@@ -177,21 +176,20 @@
   box-shadow: none !important;
 }
 
-/* Botón CTA */
 .header-cta {
   margin-left: auto;
 }
 
 .cta-button {
   display: inline-block;
-  background: var(--primary-green);
+  background: var(--gold-primary);
   color: var(--white-pure);
   padding: 12px 24px;
   font-weight: 700;
   text-decoration: none;
   font-size: 0.95rem;
   letter-spacing: 0.5px;
-  box-shadow: 0 4px 12px rgba(94, 99, 80, 0.2);
+  box-shadow: 0 4px 12px rgba(197, 160, 40, 0.25);
   transition: var(--transition);
   border: none;
   white-space: nowrap;
@@ -199,13 +197,13 @@
 }
 
 .cta-button:hover {
-  background: var(--primary-dark);
+  background: var(--gold-dark);
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(94, 99, 80, 0.35);
+  box-shadow: 0 8px 20px rgba(197, 160, 40, 0.4);
   color: white;
 }
 
-/* Hamburguesa móvil */
+/* Mobile */
 .mobile-toggle {
   display: none;
   flex-direction: column;
@@ -222,15 +220,15 @@
 .mobile-toggle span {
   width: 100%;
   height: 3px;
-  background: var(--primary-green);
+  background: var(--gold-primary);
   border-radius: 10px;
   transition: var(--transition);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
 .mobile-toggle.open span:nth-child(1) {
   transform: rotate(45deg) translate(6px, 6px);
-  background: var(--primary-dark);
+  background: var(--coffee-dark);
 }
 
 .mobile-toggle.open span:nth-child(2) {
@@ -239,26 +237,23 @@
 
 .mobile-toggle.open span:nth-child(3) {
   transform: rotate(-45deg) translate(6px, -6px);
-  background: var(--primary-dark);
+  background: var(--coffee-dark);
 }
 
-/* ===== RESPONSIVE ===== */
+/* Responsive */
 @media (max-width: 992px) {
   .action-bar-container {
     flex-direction: column;
     gap: 8px;
   }
-
   .contact-details {
     justify-content: center;
   }
-
   .top-bar-container {
     flex-wrap: wrap;
     justify-content: space-between;
     gap: 0;
   }
-
   .main-nav {
     order: 3;
     width: 100%;
@@ -267,44 +262,36 @@
     overflow: hidden;
     transition: max-height 0.4s ease-out;
   }
-
   .main-nav.active {
     max-height: 500px;
-    border-top: 1px solid rgba(94, 99, 80, 0.2);
+    border-top: 1px solid rgba(93, 64, 55, 0.2);
     padding-top: 16px;
   }
-
   .nav-menu {
     flex-direction: column;
     gap: 4px;
   }
-
   .nav-menu li:not(:last-child)::after {
     display: none;
   }
-
   .nav-menu a {
     padding: 14px 20px;
     text-align: center;
-    background: rgba(94, 99, 80, 0.05);
+    background: rgba(93, 64, 55, 0.05);
     backdrop-filter: blur(4px);
     border-radius: 30px;
     color: var(--text-dark);
   }
-
   .nav-menu a:hover {
-    background: rgba(94, 99, 80, 0.15);
+    background: rgba(93, 64, 55, 0.15);
   }
-
   .active-link a::before {
     top: -6px;
     height: 4px;
   }
-
   .mobile-toggle {
     display: flex;
   }
-
   .header-cta {
     margin-left: 0;
   }
@@ -316,20 +303,16 @@
     align-items: center;
     gap: 4px;
   }
-
   .slogan {
     display: none;
   }
-
   .logo-img {
     height: 40px;
   }
-
   .cta-button {
     padding: 10px 16px;
     font-size: 0.85rem;
   }
-
   .top-bar {
     padding: 8px 0;
   }

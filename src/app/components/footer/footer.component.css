@@ -1,11 +1,14 @@
 :host {
-  --primary-green: #5E6350;
-  --primary-dark: #3F4335;
-  --white-soft: #FDFAF5;
+  --coffee-dark: #3E2723;
+  --coffee-medium: #5D4037;
+  --coffee-soft: #D7CCC8;
+  --coffee-cream: #F5F0E6;
+  --gold-primary: #C5A028;
+  --gold-light: #F4D03F;
   --white-pure: #FFFFFF;
-  --text-dark: #171515;
-  --text-light: #5A5A5A;
-  --shadow-sm: 0 2px 16px rgba(94, 99, 80, 0.08);
+  --text-dark: #2C1E1A;
+  --text-light: #6D4C41;
+  --shadow-sm: 0 2px 16px rgba(62, 39, 35, 0.08);
   --transition: all 0.3s ease;
 }
 
@@ -18,7 +21,7 @@
 }
 
 #Footer.rome-contact-footer .widgets_wrapper {
-  background: var(--white-soft);
+  background: var(--coffee-cream);
   padding: 72px 0 52px;
   box-shadow: none !important;
 }
@@ -41,7 +44,7 @@
   font-size: 58px;
   line-height: 0.9;
   letter-spacing: 2px;
-  color: var(--primary-green);
+  color: var(--coffee-dark);
   margin-bottom: 32px;
   text-transform: uppercase;
 }
@@ -60,7 +63,7 @@
   font-family: "Patua One", "Lato", serif;
   font-size: 72px;
   line-height: 1.05;
-  color: var(--primary-green) !important;
+  color: var(--gold-primary) !important;
   margin: 0 0 24px;
   text-shadow: none !important;
 }
@@ -97,11 +100,11 @@
   opacity: 0.88;
   transform: translateY(-1px);
   text-decoration: none;
-  color: var(--primary-green) !important;
+  color: var(--gold-primary) !important;
 }
 
 #Footer.rome-contact-footer .rome-footer-contact-link i {
-  color: var(--primary-green) !important;
+  color: var(--gold-primary) !important;
   font-size: 22px;
   min-width: 24px;
   text-align: center;
@@ -127,12 +130,12 @@
 #Footer.rome-contact-footer .rome-footer-social a:hover {
   transform: translateY(-2px);
   opacity: 0.88;
-  color: var(--primary-green) !important;
+  color: var(--gold-primary) !important;
 }
 
 #Footer.rome-contact-footer .footer_copy {
-  background: var(--white-soft) !important;
-  border-top: 1px solid rgba(94, 99, 80, 0.1);
+  background: var(--coffee-cream) !important;
+  border-top: 1px solid rgba(93, 64, 55, 0.15);
   padding: 34px 0 38px;
   box-shadow: none !important;
 }
@@ -158,13 +161,13 @@
 
 #Footer.rome-contact-footer .rome-footer-legal a:hover {
   opacity: 0.86;
-  color: var(--primary-green) !important;
+  color: var(--gold-primary) !important;
 }
 
 #Footer.rome-contact-footer .rome-footer-separator {
   display: inline-block;
   margin: 0 28px;
-  color: rgba(94, 99, 80, 0.5);
+  color: rgba(93, 64, 55, 0.5);
   font-weight: 400;
 }
 
