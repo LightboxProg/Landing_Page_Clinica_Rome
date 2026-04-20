@@ -1,20 +1,24 @@
+:host {
+  --primary-green: #5E6350;
+  --primary-dark: #3F4335;
+  --white-soft: #FDFAF5;
+  --white-pure: #FFFFFF;
+  --text-dark: #171515;
+  --text-light: #5A5A5A;
+  --shadow-sm: 0 2px 16px rgba(94, 99, 80, 0.08);
+  --transition: all 0.3s ease;
+}
+
 #Footer.rome-contact-footer {
-  background: #c2185b !important;
-  color: #fff;
+  background: var(--white-pure) !important;
+  color: var(--text-dark);
   border-radius: 0 !important;
   box-shadow: none !important;
   overflow: hidden;
 }
 
 #Footer.rome-contact-footer .widgets_wrapper {
-  background:
-    radial-gradient(circle at 10% 20%, rgba(230, 199, 124, 0.22) 0 3px, transparent 12px),
-    radial-gradient(circle at 22% 75%, rgba(230, 199, 124, 0.18) 0 4px, transparent 14px),
-    radial-gradient(circle at 50% 18%, rgba(230, 199, 124, 0.16) 0 4px, transparent 14px),
-    radial-gradient(circle at 70% 45%, rgba(230, 199, 124, 0.18) 0 4px, transparent 14px),
-    radial-gradient(circle at 88% 30%, rgba(230, 199, 124, 0.2) 0 4px, transparent 14px),
-    radial-gradient(circle at 85% 78%, rgba(230, 199, 124, 0.2) 0 5px, transparent 16px),
-    linear-gradient(180deg, #b51654 0%, #c2185b 100%);
+  background: var(--white-soft);
   padding: 72px 0 52px;
   box-shadow: none !important;
 }
@@ -29,7 +33,7 @@
   max-width: 920px;
   margin: 0 auto;
   text-align: center;
-  color: #fff;
+  color: var(--text-dark);
 }
 
 #Footer.rome-contact-footer .rome-footer-brand {
@@ -37,7 +41,7 @@
   font-size: 58px;
   line-height: 0.9;
   letter-spacing: 2px;
-  color: #f2d27d;
+  color: var(--primary-green);
   margin-bottom: 32px;
   text-transform: uppercase;
 }
@@ -49,13 +53,14 @@
   font-weight: 700;
   letter-spacing: 4px;
   margin-top: 10px;
+  color: var(--text-light);
 }
 
 #Footer.rome-contact-footer .rome-footer-title {
   font-family: "Patua One", "Lato", serif;
   font-size: 72px;
   line-height: 1.05;
-  color: #fff !important;
+  color: var(--primary-green) !important;
   margin: 0 0 24px;
   text-shadow: none !important;
 }
@@ -63,7 +68,7 @@
 #Footer.rome-contact-footer .rome-footer-subtitle {
   font-size: 20px;
   line-height: 1.8;
-  color: rgba(255, 255, 255, 0.95);
+  color: var(--text-dark);
   margin: 0 0 34px;
 }
 
@@ -80,7 +85,7 @@
   align-items: center;
   justify-content: center;
   gap: 14px;
-  color: #fff !important;
+  color: var(--text-dark) !important;
   font-size: 18px;
   line-height: 1.7;
   font-weight: 500;
@@ -92,10 +97,11 @@
   opacity: 0.88;
   transform: translateY(-1px);
   text-decoration: none;
+  color: var(--primary-green) !important;
 }
 
 #Footer.rome-contact-footer .rome-footer-contact-link i {
-  color: #f2d27d !important;
+  color: var(--primary-green) !important;
   font-size: 22px;
   min-width: 24px;
   text-align: center;
@@ -112,7 +118,7 @@
   width: 52px;
   height: 52px;
   margin: 0 8px;
-  color: #fff !important;
+  color: var(--text-dark) !important;
   text-decoration: none;
   font-size: 32px;
   transition: transform 0.25s ease, opacity 0.25s ease;
@@ -121,11 +127,12 @@
 #Footer.rome-contact-footer .rome-footer-social a:hover {
   transform: translateY(-2px);
   opacity: 0.88;
+  color: var(--primary-green) !important;
 }
 
 #Footer.rome-contact-footer .footer_copy {
-  background: #c2185b !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.22);
+  background: var(--white-soft) !important;
+  border-top: 1px solid rgba(94, 99, 80, 0.1);
   padding: 34px 0 38px;
   box-shadow: none !important;
 }
@@ -142,7 +149,7 @@
 }
 
 #Footer.rome-contact-footer .rome-footer-legal a {
-  color: #fff !important;
+  color: var(--text-dark) !important;
   font-size: 17px;
   font-weight: 600;
   text-decoration: none;
@@ -151,17 +158,18 @@
 
 #Footer.rome-contact-footer .rome-footer-legal a:hover {
   opacity: 0.86;
+  color: var(--primary-green) !important;
 }
 
 #Footer.rome-contact-footer .rome-footer-separator {
   display: inline-block;
   margin: 0 28px;
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(94, 99, 80, 0.5);
   font-weight: 400;
 }
 
 #Footer.rome-contact-footer .copyright {
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--text-light);
   font-size: 16px;
   line-height: 1.7;
   float: none !important;

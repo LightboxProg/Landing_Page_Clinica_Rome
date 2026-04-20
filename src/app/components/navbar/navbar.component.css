@@ -1,30 +1,24 @@
 /* ===== VARIABLES ===== */
 :host {
-  --gold-dark: #7a5704;
-  --gold-primary: #a87b05;
-  --gold-medium: #b0994e;
-  --gold-light: #c2ad61;
-  --gold-pale: #e8dcae;
-  --white-soft: #fcfcfc;
-  --white-pure: #ffffff;
-  --text-dark: #1e1e1e;
-  --shadow-sm: 0 2px 16px rgba(168, 123, 5, 0.1);
-  --shadow-md: 0 4px 20px rgba(168, 123, 5, 0.15);
+  --primary-green: #5E6350;      /* Verde oliva */
+  --primary-dark: #3F4335;       /* Verde oscuro */
+  --primary-light: #8A907A;      /* Verde claro */
+  --white-soft: #FDFAF5;         /* Crema */
+  --white-pure: #FFFFFF;         /* Blanco */
+  --text-dark: #171515;          /* Casi negro */
+  --text-light: #5A5A5A;         /* Gris medio */
+  --shadow-sm: 0 2px 16px rgba(94, 99, 80, 0.08);
+  --shadow-md: 0 8px 24px rgba(94, 99, 80, 0.12);
   --transition: all 0.3s ease;
-
-  /* Tonos rosa cálidos */
-  --pink-light: #f9a8d4;   /* rosa claro */
-  --pink-soft: #f472b6;    /* rosa medio */
-  --pink-deep: #db2777;    /* rosa oscuro */
-  --pink-dark: #be185d;    /* rosa intenso */
 }
 
-/* ===== ACTION BAR (sin cambios) ===== */
+/* ===== ACTION BAR ===== */
 .action-bar {
-  color: var(--gold-pale);
+  background: var(--white-soft);
+  color: var(--text-light);
   padding: 8px 0;
   font-size: 0.9rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(94, 99, 80, 0.1);
 }
 
 .action-bar-container {
@@ -46,21 +40,22 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  color: var(--gold-pale);
+  color: var(--text-light);
 }
 
 .contact-item a {
-  color: var(--gold-pale);
+  color: var(--text-light);
   text-decoration: none;
   transition: var(--transition);
 }
 
 .contact-item a:hover {
-  color: var(--white-pure);
+  color: var(--primary-green);
 }
 
 .contact-item i {
   font-size: 1rem;
+  color: var(--primary-green);
 }
 
 .social-links {
@@ -69,42 +64,35 @@
 }
 
 .social-link {
-  color: var(--gold-pale);
+  color: var(--text-light);
   font-size: 1.1rem;
   transition: var(--transition);
 }
 
 .social-link:hover {
-  color: var(--gold-dark);
+  color: var(--primary-green);
   transform: translateY(-2px);
-}
-
-.phone:hover {
-  color: var(--gold-dark) !important;
-}
-
-.mail:hover {
-  color: var(--gold-dark) !important;
 }
 
 /* ===== TOP BAR (NAVEGACIÓN PRINCIPAL) ===== */
 .top-bar {
-  background: linear-gradient(90deg, #c2ae6f 0%, #c2ad61 25%, #e8dcae 60%, #b0994e 100%);
+  background: var(--white-pure);
   box-shadow: var(--shadow-sm);
   position: sticky;
   top: 0;
   z-index: 1000;
   padding: 12px 0;
+  border-bottom: 1px solid rgba(94, 99, 80, 0.1);
 }
 
 .top-bar-container {
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* Alinea logo y menú a la izquierda */
+  justify-content: flex-start;
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
-  gap: 30px; /* Espacio entre logo y menú */
+  gap: 30px;
 }
 
 /* Logo */
@@ -116,23 +104,24 @@
   height: 50px;
   width: auto;
   display: block;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  filter: brightness(0.8);
   transition: var(--transition);
 }
 
 .logo-img:hover {
   transform: scale(1.02);
+  filter: brightness(0.6);
 }
 
 /* Menú principal */
 .main-nav {
-  margin-left: 0; /* Se pega a la izquierda después del logo */
+  margin-left: 0;
 }
 
 .nav-menu {
   display: flex;
   list-style: none;
-  gap: 0; /* Sin gap, porque usaremos separadores */
+  gap: 0;
   padding: 0;
   margin: 0;
 }
@@ -143,20 +132,20 @@
   align-items: center;
 }
 
-/* Separador vertical entre elementos */
+/* Separador vertical */
 .nav-menu li:not(:last-child)::after {
   content: '';
   display: block;
   height: 20px;
   width: 1px;
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(94, 99, 80, 0.2);
   margin: 0 8px;
 }
 
 .nav-menu a {
   display: block;
-  padding: 10px 0; /* Menos padding horizontal para que el separador esté cerca */
-  color: var(--white-pure);
+  padding: 10px 0;
+  color: var(--text-dark);
   font-weight: 500;
   text-decoration: none;
   font-size: 1rem;
@@ -166,54 +155,57 @@
   position: relative;
 }
 
-/* Indicador de página activa: rectángulo rosa encima */
+.nav-menu a:hover {
+  color: var(--primary-green);
+}
+
+/* Indicador de página activa */
 .active-link a::before {
   content: '';
   position: absolute;
-  top: -8px;      /* coloca encima del texto */
+  top: -8px;
   left: 0;
   width: 100%;
   height: 3px;
-  background: linear-gradient(to right, var(--pink-light), var(--pink-deep));
+  background: var(--primary-green);
   border-radius: 3px 3px 0 0;
 }
 
-/* Elimina el fondo blanco del enlace activo anterior */
 .active-link a {
   background: transparent !important;
   font-weight: 600;
   box-shadow: none !important;
 }
 
-/* Botón CTA (empujado a la derecha) */
+/* Botón CTA */
 .header-cta {
-  margin-left: auto; /* Lo manda a la derecha */
+  margin-left: auto;
 }
 
 .cta-button {
   display: inline-block;
-  background: linear-gradient(1000deg, var(--pink-light), var(--pink-soft), var(--pink-deep));
+  background: var(--primary-green);
   color: var(--white-pure);
   padding: 12px 24px;
   font-weight: 700;
   text-decoration: none;
   font-size: 0.95rem;
   letter-spacing: 0.5px;
-  box-shadow: 0 4px 12px rgba(136, 5, 64, 0.2);
+  box-shadow: 0 4px 12px rgba(94, 99, 80, 0.2);
   transition: var(--transition);
   border: none;
   white-space: nowrap;
-  background-size: 150% auto;
+  border-radius: 4px;
 }
 
 .cta-button:hover {
-  background: linear-gradient(135deg, var(--pink-soft), var(--pink-deep), var(--pink-dark));
+  background: var(--primary-dark);
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(190, 24, 93, 0.35);
+  box-shadow: 0 8px 20px rgba(94, 99, 80, 0.35);
   color: white;
 }
 
-/* Hamburguesa móvil (sin cambios) */
+/* Hamburguesa móvil */
 .mobile-toggle {
   display: none;
   flex-direction: column;
@@ -230,15 +222,15 @@
 .mobile-toggle span {
   width: 100%;
   height: 3px;
-  background: var(--white-pure);
+  background: var(--primary-green);
   border-radius: 10px;
   transition: var(--transition);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .mobile-toggle.open span:nth-child(1) {
   transform: rotate(45deg) translate(6px, 6px);
-  background: var(--gold-dark);
+  background: var(--primary-dark);
 }
 
 .mobile-toggle.open span:nth-child(2) {
@@ -247,7 +239,7 @@
 
 .mobile-toggle.open span:nth-child(3) {
   transform: rotate(-45deg) translate(6px, -6px);
-  background: var(--gold-dark);
+  background: var(--primary-dark);
 }
 
 /* ===== RESPONSIVE ===== */
@@ -263,7 +255,7 @@
 
   .top-bar-container {
     flex-wrap: wrap;
-    justify-content: space-between; /* Para móvil: logo izq, botón der, toggle */
+    justify-content: space-between;
     gap: 0;
   }
 
@@ -278,7 +270,7 @@
 
   .main-nav.active {
     max-height: 500px;
-    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    border-top: 1px solid rgba(94, 99, 80, 0.2);
     padding-top: 16px;
   }
 
@@ -287,7 +279,6 @@
     gap: 4px;
   }
 
-  /* En móvil los separadores verticales se ocultan o se cambian */
   .nav-menu li:not(:last-child)::after {
     display: none;
   }
@@ -295,16 +286,16 @@
   .nav-menu a {
     padding: 14px 20px;
     text-align: center;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(94, 99, 80, 0.05);
     backdrop-filter: blur(4px);
     border-radius: 30px;
+    color: var(--text-dark);
   }
 
   .nav-menu a:hover {
-    background: rgba(255, 255, 255, 0.4);
+    background: rgba(94, 99, 80, 0.15);
   }
 
-  /* Ajuste del indicador activo en móvil */
   .active-link a::before {
     top: -6px;
     height: 4px;
@@ -315,7 +306,7 @@
   }
 
   .header-cta {
-    margin-left: 0; /* en móvil se coloca automáticamente por flex */
+    margin-left: 0;
   }
 }
 
