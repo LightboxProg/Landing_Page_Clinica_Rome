@@ -16,7 +16,7 @@
   --border-radius: 8px;
 }
 
-/* Slider */
+/* ===== SLIDER REVOLUTION ==== */
 .mfn-main-slider {
   position: relative;
   z-index: 1;
@@ -28,32 +28,65 @@
   overflow: hidden;
 }
 
-.tp-caption.mfnrs_beauty {
-  font-size: 64px;
+/* Título principal - Estilo Serif Elegante */
+.slider-main-title {
+  /* Intenta usar una fuente Serif como Playfair Display o Lora si las tienes cargadas */
+  font-family: 'Playfair Display', 'Lora', 'Times New Roman', serif; 
+  font-size: 52px;
   line-height: 1.2;
-  font-weight: 700;
-  color: var(--text-dark);
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  font-weight: 500;
+  color: #ffffff;
+  text-align: center;
+  text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.4); /* Ayuda a la legibilidad */
 }
 
-.tp-caption .button_theme {
-  background: var(--gold-primary);
-  color: white;
-  padding: 14px 32px;
-  font-weight: 700;
+/* Párrafo descriptivo - Estilo Sans-serif limpio */
+.slider-desc {
+  font-family: 'Montserrat', 'Helvetica Neue', sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  font-weight: 400;
+  color: #ffffff;
+  text-align: center;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Botón transparente con contorno (Outline) y forma de píldora */
+.slider-btn-outline {
+  background: transparent;
+  color: #ffffff;
+  padding: 12px 35px;
+  font-size: 15px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
   text-decoration: none;
-  font-size: 1rem;
-  box-shadow: 0 4px 12px rgba(197, 160, 40, 0.3);
-  transition: var(--transition);
+  border: 1.5px solid #ffffff;
+  border-radius: 40px; /* Borde muy redondeado */
   display: inline-block;
-  border: none;
-  border-radius: 4px;
+  transition: all 0.3s ease;
 }
 
-.tp-caption .button_theme:hover {
-  background: var(--gold-dark);
+/* Efecto al pasar el cursor sobre el botón */
+.slider-btn-outline:hover {
+  background: #ffffff;
+  color: #5a403a; /* Un color café cálido para contrastar al hacer hover */
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(197, 160, 40, 0.4);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* ===== RESPONSIVE PARA EL SLIDER ===== */
+@media (max-width: 768px) {
+  .slider-main-title {
+    font-size: 32px;
+  }
+  
+  .slider-desc {
+    font-size: 13px;
+    /* En móviles forzamos a que el texto se adapte al ancho y no se corte por los <br> */
+    white-space: normal !important; 
+    max-width: 90vw;
+    line-height: 1.4;
+  }
 }
 
 /* Secciones */
