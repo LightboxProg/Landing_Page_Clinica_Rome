@@ -1,0 +1,81 @@
+<div class="modal-overlay" *ngIf="visible" (click)="onCerrar()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>{{ editandoId ? 'Editar Membresía' : 'Nueva Membresía' }}</h3>
+      <button class="btn-cerrar" (click)="onCerrar()"><i class="fas fa-times"></i></button>
+    </div>
+
+    <div class="modal-body">
+      <div class="mensaje error" *ngIf="mensajeError">
+        <i class="fas fa-exclamation-circle"></i> {{ mensajeError }}
+      </div>
+
+      <div class="form-group">
+        <label for="memNombre">Nombre del tratamiento *</label>
+        <input id="memNombre" type="text" [(ngModel)]="formData.nombreTratamiento" placeholder="Ej: Botox Glow" />
+      </div>
+
+      <div class="form-group">
+        <label for="memDesc">Descripción</label>
+        <textarea id="memDesc" [(ngModel)]="formData.descripcion" placeholder="Descripción de la membresía" rows="2"></textarea>
+      </div>
+
+      <!-- Foto -->
+      <div class="form-group">
+        <label>Foto de la membresía</label>
+        <div class="foto-existente" *ngIf="fotoExistenteUrl && !fotoPreview">
+          <img [src]="fotoExistenteUrl" alt="Foto actual" />
+          <span class="foto-label">Foto actual — selecciona otra para reemplazar</span>
+        </div>
+        <div class="foto-preview-container" *ngIf="fotoPreview">
+          <img [src]="fotoPreview" alt="Nueva foto" />
+          <button class="foto-remove-btn" (click)="removerFoto()">
+            <i class="fas fa-times"></i> Quitar
+          </button>
+        </div>
+        <div class="file-upload-area" (click)="fileInputPhoto.click()" *ngIf="!fotoPreview">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <span>{{ fotoExistenteUrl ? 'Seleccionar nueva foto' : 'Click para seleccionar imagen' }}</span>
+          <small>JPG, PNG, WebP</small>
+        </div>
+        <input #fileInputPhoto type="file" accept="image/*" (change)="onFotoSeleccionada($event)" style="display: none;" />
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="memCosto">Costo total (MXN) *</label>
+          <input id="memCosto" type="number" [(ngModel)]="formData.costoTotal" placeholder="0.00" min="0" />
+        </div>
+        <div class="form-group">
+          <label for="memEnganche">Enganche (MXN) *</label>
+          <input id="memEnganche" type="number" [(ngModel)]="formData.enganche" placeholder="0.00" min="0" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="memFreq">Frecuencia de pago *</label>
+          <select id="memFreq" [(ngModel)]="formData.paymentFrequency">
+            <option *ngFor="let f of frecuencias" [value]="f.value">{{ f.label }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="memCuotas">Número de parcialidades *</label>
+          <input id="memCuotas" type="number" [(ngModel)]="formData.installmentsCount" placeholder="8" min="1" />
+        </div>
+      </div>
+
+      <div class="preview-card" *ngIf="calcularParcialidad() > 0">
+        <i class="fas fa-calculator"></i>
+        <span>Cada parcialidad será de <strong>{{ formatCosto(calcularParcialidad()) }}</strong></span>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="onCerrar()">Cancelar</button>
+      <button class="btn-primary" (click)="onGuardar()" [disabled]="guardando">
+        <i class="fas fa-save"></i> {{ editandoId ? 'Actualizar' : 'Crear Membresía' }}
+      </button>
+    </div>
+  </div>
+</div>

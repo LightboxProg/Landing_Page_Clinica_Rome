@@ -1,0 +1,55 @@
+<div class="gestion-page">
+  <!-- Page Header -->
+  <section class="page-header">
+    <div class="container">
+      <h1 class="page-title">
+        <i class="fas fa-cogs"></i>
+        Panel de Gestión
+      </h1>
+      <p class="page-subtitle">Administra los servicios estéticos y membresías de Clínica Rome</p>
+    </div>
+  </section>
+
+  <!-- Tabs -->
+  <div class="container">
+    <div class="tabs-container">
+      <button
+        class="tab-btn"
+        [class.active]="tabActivo === 'servicios'"
+        (click)="cambiarTab('servicios')"
+        id="tab-servicios">
+        <i class="fas fa-spa"></i>
+        <span>Servicios Estéticos</span>
+      </button>
+      <button
+        class="tab-btn"
+        [class.active]="tabActivo === 'membresias'"
+        (click)="cambiarTab('membresias')"
+        id="tab-membresias">
+        <i class="fas fa-id-card"></i>
+        <span>Membresías</span>
+      </button>
+      <div class="tab-indicator" [class.tab-2]="tabActivo === 'membresias'"></div>
+    </div>
+  </div>
+
+  <!-- Tab Content -->
+  <div class="container tab-content">
+    <!-- Tab: Servicios -->
+    <div class="tab-panel" *ngIf="tabActivo === 'servicios'">
+      <div class="panel-layout">
+        <div class="panel-main">
+          <app-gestion-servicios></app-gestion-servicios>
+        </div>
+        <div class="panel-side">
+          <app-gestion-categorias></app-gestion-categorias>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Membresías -->
+    <div class="tab-panel" *ngIf="tabActivo === 'membresias'">
+      <app-gestion-membresias></app-gestion-membresias>
+    </div>
+  </div>
+</div>

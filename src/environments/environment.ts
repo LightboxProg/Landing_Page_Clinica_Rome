@@ -1,4 +1,4 @@
 export const environment = {
     production: true,
-    apiUrl: 'https://webhook.lightbox.mx/landingRome'
+    apiUrl: 'http://localhost:7001/landingRome'
 };

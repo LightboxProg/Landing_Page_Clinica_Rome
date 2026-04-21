@@ -1,0 +1,38 @@
+<div class="membresias-gestion">
+  <!-- Header -->
+  <div class="section-header">
+    <div class="header-left">
+      <h3><i class="fas fa-id-card"></i> Catálogo de Membresías</h3>
+      <span class="badge">{{ catalogos.length }} membresía{{ catalogos.length !== 1 ? 's' : '' }}</span>
+    </div>
+    <button class="btn-primary" (click)="abrirModalNuevo()">
+      <i class="fas fa-plus"></i> Nueva Membresía
+    </button>
+  </div>
+
+  <!-- Mensajes -->
+  <div class="mensaje exito" *ngIf="mensajeExito">
+    <i class="fas fa-check-circle"></i> {{ mensajeExito }}
+  </div>
+
+  <!-- Lista sub-component -->
+  <app-lista-membresias
+    [catalogos]="catalogos"
+    [loading]="loading"
+    (editar)="onEditar($event)"
+    (eliminar)="onEliminar($event)"
+    (nuevo)="abrirModalNuevo()">
+  </app-lista-membresias>
+
+  <!-- Modal sub-component -->
+  <app-modal-membresia
+    #modalMembresia
+    [visible]="mostrarModal"
+    [editandoId]="editandoId"
+    [guardando]="guardando"
+    [mensajeError]="mensajeError"
+    [fotoExistenteUrl]="fotoExistenteUrl"
+    (cerrar)="onCerrarModal()"
+    (guardar)="onGuardar($event)">
+  </app-modal-membresia>
+</div>

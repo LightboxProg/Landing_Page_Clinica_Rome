@@ -1,0 +1,55 @@
+.servicios-gestion {
+  background: #fff;
+  border-radius: 12px;
+  padding: 28px;
+  box-shadow: 0 2px 16px rgba(62, 39, 35, 0.08);
+  border: 1px solid rgba(93, 64, 55, 0.1);
+}
+
+.section-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
+}
+
+.header-left { display: flex; align-items: center; gap: 12px; }
+
+.header-left h3 {
+  font-size: 22px; color: #3E2723; margin: 0;
+  display: flex; align-items: center; gap: 10px;
+}
+
+.header-left h3 i { color: #C5A028; }
+
+.badge {
+  background: rgba(197, 160, 40, 0.15); color: #9A7D0A;
+  padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
+}
+
+.btn-primary {
+  display: flex; align-items: center; gap: 8px; padding: 10px 22px;
+  background: linear-gradient(135deg, #3E2723, #5D4037); color: #F4D03F;
+  border: none; border-radius: 10px; font-weight: 600; font-size: 14px;
+  cursor: pointer; transition: all 0.3s ease;
+}
+
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(62, 39, 35, 0.3); }
+
+.mensaje {
+  padding: 12px 18px; border-radius: 10px; font-size: 14px; margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px; animation: slideDown 0.3s ease;
+}
+
+.mensaje.exito { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .section-header { flex-direction: column; align-items: flex-start; }
+}
+
+@media (max-width: 480px) {
+  .servicios-gestion { padding: 16px; }
+}

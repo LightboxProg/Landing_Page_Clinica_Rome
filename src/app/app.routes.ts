@@ -4,6 +4,9 @@ import { ServiciosComponent } from './pages/servicios/servicios.component';
 import { CatalogoMembresiasComponent } from './components/membresias/catalogo-membresias/catalogo-membresias.component';
 import { AvisoPrivacidadComponent } from './pages/aviso-privacidad/aviso-privacidad.component';
 import { AvisoTerminosComponent } from './pages/aviso-terminos/aviso-terminos.component';
+import { GestionComponent } from './pages/gestion/gestion.component';
+import { LoginPageComponent } from './pages/login/login.component';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
 
@@ -12,6 +15,8 @@ export const routes: Routes = [
   { path: 'membresias', component: CatalogoMembresiasComponent },
   { path: 'aviso-privacidad', component: AvisoPrivacidadComponent },
   { path: 'aviso-terminos', component: AvisoTerminosComponent },
+  { path: 'login', component: LoginPageComponent },
+  { path: 'admin/gestion', component: GestionComponent, canActivate: [authGuard] },
   {
     path: '**',
     redirectTo: '',

@@ -1,0 +1,111 @@
+<div class="modal-overlay" *ngIf="visible" (click)="onCerrar()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>{{ editandoId ? 'Editar Servicio' : 'Nuevo Servicio' }}</h3>
+      <button class="btn-cerrar" (click)="onCerrar()"><i class="fas fa-times"></i></button>
+    </div>
+
+    <div class="modal-body">
+      <div class="mensaje error" *ngIf="mensajeError">
+        <i class="fas fa-exclamation-circle"></i> {{ mensajeError }}
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="servNombre">Nombre *</label>
+          <input id="servNombre" type="text" [(ngModel)]="formData.nombre" placeholder="Nombre del servicio" />
+        </div>
+        <div class="form-group">
+          <label for="servCategoria">Categoría *</label>
+          <select id="servCategoria" [(ngModel)]="formData.categoria">
+            <option value="">Seleccionar categoría</option>
+            <option *ngFor="let cat of categorias" [value]="cat._id">{{ cat.nombre }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="servDescripcion">Descripción *</label>
+        <textarea id="servDescripcion" [(ngModel)]="formData.descripcion" placeholder="Descripción del servicio" rows="3"></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="servCosto">Costo (MXN) *</label>
+          <input id="servCosto" type="number" [(ngModel)]="formData.costo" placeholder="0.00" min="0" />
+        </div>
+        <div class="form-group">
+          <label for="servDuracion">Duración</label>
+          <input id="servDuracion" type="text" [(ngModel)]="formData.duracion" placeholder="Ej: 45 min" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="servBeneficios">Beneficios <small>(separados por coma)</small></label>
+        <input id="servBeneficios" type="text" [(ngModel)]="formData.beneficios" placeholder="Beneficio 1, Beneficio 2, ..." />
+      </div>
+
+      <div class="form-group">
+        <label for="servPalabras">Palabras clave <small>(separadas por coma)</small></label>
+        <input id="servPalabras" type="text" [(ngModel)]="formData.palabrasClave" placeholder="botox, facial, ..." />
+      </div>
+
+      <!-- Foto existente -->
+      <div class="form-group" *ngIf="editandoId && fotoExistente?.url && !fotoPreview">
+        <label>Foto actual</label>
+        <div class="foto-existente">
+          <img [src]="fotoExistente.url" alt="Foto del servicio" style="max-height: 180px; border-radius: 10px; object-fit: cover;" />
+          <span style="display: block; font-size: 12px; color: #8D6E63; margin-top: 6px;">Foto actual — selecciona otra para reemplazar</span>
+        </div>
+      </div>
+
+      <!-- Subir foto nueva -->
+      <div class="form-group">
+        <label>Foto del servicio</label>
+        <div class="file-upload-area" (click)="fileInputFoto.click()" *ngIf="!fotoPreview">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <span>{{ fotoExistente?.url ? 'Seleccionar nueva foto' : 'Click para seleccionar imagen' }}</span>
+          <small>JPG, PNG, WebP</small>
+        </div>
+        <input #fileInputFoto type="file" accept="image/*" (change)="onFotoSeleccionada($event)" style="display: none;" />
+        
+        <div class="foto-preview-container" *ngIf="fotoPreview" style="position: relative; margin-top: 10px;">
+          <img [src]="fotoPreview" alt="Preview" style="max-height: 180px; border-radius: 10px; object-fit: cover;" />
+          <button class="foto-remove-btn" (click)="removerFotoNueva()" style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.6); color: white; border: none; border-radius: 4px; padding: 4px 8px; cursor: pointer;">
+            <i class="fas fa-times"></i> Quitar
+          </button>
+        </div>
+      </div>
+
+      <!-- Audio -->
+      <div class="form-group">
+        <label>Audio descriptivo</label>
+        <div class="file-upload-area audio-area" (click)="fileInputAudio.click()" *ngIf="!audioNombre">
+          <i class="fas fa-microphone"></i>
+          <span>Click para seleccionar audio</span>
+          <small>MP3, WAV, OGG</small>
+        </div>
+        <div class="audio-selected" *ngIf="audioNombre">
+          <i class="fas fa-file-audio"></i>
+          <span>{{ audioNombre }}</span>
+          <button class="btn-remove-audio" (click)="removerAudio()"><i class="fas fa-times"></i></button>
+        </div>
+        <input #fileInputAudio type="file" accept="audio/*" (change)="onAudioSeleccionado($event)" style="display: none;" />
+      </div>
+
+      <div class="form-group checkbox-group" *ngIf="editandoId">
+        <label>
+          <input type="checkbox" [(ngModel)]="formData.activo" />
+          <span>Servicio activo</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="onCerrar()">Cancelar</button>
+      <button class="btn-primary" (click)="onGuardar()" [disabled]="guardando">
+        <i class="fas fa-save"></i> {{ editandoId ? 'Actualizar' : 'Crear Servicio' }}
+      </button>
+    </div>
+  </div>
+</div>

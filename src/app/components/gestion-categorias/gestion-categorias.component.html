@@ -1,0 +1,32 @@
+<div class="categorias-panel">
+  <div class="panel-header">
+    <h3><i class="fas fa-layer-group"></i> Categorías Estéticas</h3>
+    <button class="btn-nuevo" (click)="abrirFormularioNuevo()" *ngIf="!mostrarFormulario">
+      <i class="fas fa-plus"></i> Nueva
+    </button>
+  </div>
+
+  <!-- Mensajes -->
+  <div class="mensaje exito" *ngIf="mensajeExito">
+    <i class="fas fa-check-circle"></i> {{ mensajeExito }}
+  </div>
+
+  <!-- Form sub-component -->
+  <app-form-categoria
+    *ngIf="mostrarFormulario"
+    [editandoId]="editandoId"
+    [formData]="formData"
+    [guardando]="guardando"
+    [mensajeError]="mensajeError"
+    (guardar)="onGuardar($event)"
+    (cancelar)="onCancelar()">
+  </app-form-categoria>
+
+  <!-- Lista sub-component -->
+  <app-lista-categorias
+    [categorias]="categorias"
+    [loading]="loading"
+    (editar)="onEditar($event)"
+    (eliminar)="onEliminar($event)">
+  </app-lista-categorias>
+</div>

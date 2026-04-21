@@ -1,0 +1,40 @@
+<div class="servicios-gestion">
+  <!-- Header -->
+  <div class="section-header">
+    <div class="header-left">
+      <h3><i class="fas fa-spa"></i> Servicios Estéticos</h3>
+      <span class="badge">{{ servicios.length }} servicio{{ servicios.length !== 1 ? 's' : '' }}</span>
+    </div>
+    <button class="btn-primary" (click)="abrirModalNuevo()">
+      <i class="fas fa-plus"></i> Nuevo Servicio
+    </button>
+  </div>
+
+  <!-- Mensajes globales -->
+  <div class="mensaje exito" *ngIf="mensajeExito">
+    <i class="fas fa-check-circle"></i> {{ mensajeExito }}
+  </div>
+
+  <!-- Lista sub-component -->
+  <app-lista-servicios
+    [servicios]="servicios"
+    [categorias]="categorias"
+    [loading]="loading"
+    (editar)="onEditar($event)"
+    (eliminar)="onEliminar($event)"
+    (nuevo)="abrirModalNuevo()">
+  </app-lista-servicios>
+
+  <!-- Modal sub-component -->
+  <app-modal-servicio
+    #modalServicio
+    [visible]="mostrarModal"
+    [editandoId]="editandoId"
+    [categorias]="categorias"
+    [guardando]="guardando"
+    [mensajeError]="mensajeError"
+    [fotoExistente]="fotoExistente"
+    (cerrar)="onCerrarModal()"
+    (guardar)="onGuardar($event)">
+  </app-modal-servicio>
+</div>

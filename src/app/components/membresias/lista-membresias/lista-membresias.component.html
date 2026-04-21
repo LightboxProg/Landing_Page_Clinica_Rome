@@ -1,0 +1,70 @@
+<!-- Loading -->
+<div class="loading-state" *ngIf="loading">
+  <div class="spinner"></div>
+  <p>Cargando membresías...</p>
+</div>
+
+<!-- Cards Grid -->
+<div class="membresias-grid" *ngIf="!loading && catalogos.length > 0">
+  <div class="membresia-card" *ngFor="let cat of catalogos">
+    <!-- Foto de la membresía -->
+    <div class="card-image" *ngIf="cat.photoUrl" [style.backgroundImage]="'url(' + cat.photoUrl + ')'">
+      <div class="card-acciones-overlay">
+        <button class="btn-icon-overlay editar" (click)="onEditar(cat)" title="Editar">
+          <i class="fas fa-pen"></i>
+        </button>
+        <button class="btn-icon-overlay eliminar" (click)="onEliminar(cat)" title="Desactivar">
+          <i class="fas fa-trash"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="card-top" *ngIf="!cat.photoUrl">
+      <div class="card-icon">
+        <i class="fas fa-crown"></i>
+      </div>
+      <div class="card-acciones">
+        <button class="btn-icon editar" (click)="onEditar(cat)" title="Editar">
+          <i class="fas fa-pen"></i>
+        </button>
+        <button class="btn-icon eliminar" (click)="onEliminar(cat)" title="Desactivar">
+          <i class="fas fa-trash"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <h4 class="card-nombre">{{ cat.nombreTratamiento }}</h4>
+      <p class="card-desc" *ngIf="cat.descripcion">{{ cat.descripcion }}</p>
+
+      <div class="card-precios">
+        <div class="precio-item principal">
+          <span class="precio-label">Costo Total</span>
+          <span class="precio-valor">{{ formatCosto(cat.costoTotal) }}</span>
+        </div>
+        <div class="precio-divider"></div>
+        <div class="precio-item">
+          <span class="precio-label">Enganche</span>
+          <span class="precio-valor">{{ formatCosto(cat.enganche) }}</span>
+        </div>
+      </div>
+
+      <div class="card-info">
+        <div class="info-chip">
+          <i class="fas fa-calendar-alt"></i>
+          {{ cat.installmentsCount }} pagos
+        </div>
+        <div class="info-chip">
+          <i class="fas fa-clock"></i>
+          {{ getFrecuenciaLabel(cat.paymentFrequency) }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="empty-state" *ngIf="!loading && catalogos.length === 0">
+  <i class="fas fa-box-open"></i>
+  <p>No hay membresías en el catálogo.</p>
+  <button class="btn-primary" (click)="nuevo.emit()">Crear primera membresía</button>
+</div>

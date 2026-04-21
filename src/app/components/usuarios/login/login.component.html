@@ -1,0 +1,79 @@
+<div class="login-wrapper">
+  <div class="login-card">
+    <!-- Logo / Branding -->
+    <div class="login-header">
+      <div class="logo-icon">
+        <i class="fas fa-spa"></i>
+      </div>
+      <h1>Clínica Rome</h1>
+      <p class="subtitle">Panel Administrativo</p>
+    </div>
+
+    <!-- Error -->
+    <div class="mensaje-error" *ngIf="error">
+      <i class="fas fa-exclamation-triangle"></i>
+      <span>{{ error }}</span>
+    </div>
+
+    <!-- Form -->
+    <form (ngSubmit)="onSubmit()" class="login-form">
+      <div class="form-group">
+        <label for="usuario">
+          <i class="fas fa-user"></i> Usuario
+        </label>
+        <input
+          id="usuario"
+          type="text"
+          [(ngModel)]="usuario"
+          name="usuario"
+          placeholder="Ingresa tu usuario"
+          autocomplete="username"
+          [disabled]="cargando"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password">
+          <i class="fas fa-lock"></i> Contraseña
+        </label>
+        <div class="password-wrapper">
+          <input
+            id="password"
+            [type]="mostrarPassword ? 'text' : 'password'"
+            [(ngModel)]="password"
+            name="password"
+            placeholder="Ingresa tu contraseña"
+            autocomplete="current-password"
+            [disabled]="cargando"
+          />
+          <button type="button" class="toggle-password" (click)="togglePassword()" tabindex="-1">
+            <i [class]="mostrarPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-login" [disabled]="cargando">
+        <span *ngIf="!cargando">
+          <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+        </span>
+        <span *ngIf="cargando" class="loading-state">
+          <div class="spinner-btn"></div> Ingresando...
+        </span>
+      </button>
+    </form>
+
+    <!-- Footer -->
+    <div class="login-footer">
+      <a routerLink="/" class="back-link">
+        <i class="fas fa-arrow-left"></i> Volver al sitio
+      </a>
+    </div>
+  </div>
+
+  <!-- Background decoration -->
+  <div class="bg-decoration">
+    <div class="circle c1"></div>
+    <div class="circle c2"></div>
+    <div class="circle c3"></div>
+  </div>
+</div>

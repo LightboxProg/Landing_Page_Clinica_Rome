@@ -1,0 +1,21 @@
+<div class="formulario-inline">
+  <div class="form-group">
+    <label for="catNombre">Nombre *</label>
+    <input id="catNombre" type="text" [(ngModel)]="formData.nombre" placeholder="Nombre de la categoría" />
+  </div>
+  <div class="form-group">
+    <label for="catDesc">Descripción</label>
+    <input id="catDesc" type="text" [(ngModel)]="formData.descripcion" placeholder="Descripción breve" />
+  </div>
+  <div class="mensaje error" *ngIf="mensajeError">
+    <i class="fas fa-exclamation-circle"></i> {{ mensajeError }}
+  </div>
+  <div class="form-acciones">
+    <button class="btn-guardar" (click)="onGuardar()" [disabled]="guardando">
+      <i class="fas fa-save"></i> {{ editandoId ? 'Actualizar' : 'Crear' }}
+    </button>
+    <button class="btn-cancelar" (click)="onCancelar()">
+      <i class="fas fa-times"></i> Cancelar
+    </button>
+  </div>
+</div>

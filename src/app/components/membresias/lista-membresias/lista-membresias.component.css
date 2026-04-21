@@ -1,0 +1,135 @@
+/* Cards Grid */
+.membresias-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.membresia-card {
+  background: linear-gradient(145deg, #fff, #faf6f0);
+  border-radius: 14px; overflow: hidden;
+  border: 1px solid rgba(93, 64, 55, 0.1);
+  box-shadow: 0 4px 20px rgba(62, 39, 35, 0.06);
+  transition: all 0.3s ease;
+}
+
+.membresia-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(62, 39, 35, 0.12);
+  border-color: rgba(197, 160, 40, 0.3);
+}
+
+/* Card Image Header */
+.card-image {
+  width: 100%; height: 180px; background-size: cover;
+  background-position: center; position: relative;
+}
+
+.card-image::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 60px;
+  background: linear-gradient(transparent, rgba(62, 39, 35, 0.4));
+}
+
+.card-acciones-overlay {
+  position: absolute; top: 10px; right: 10px; display: flex; gap: 6px;
+  z-index: 1; opacity: 0; transition: opacity 0.2s ease;
+}
+
+.membresia-card:hover .card-acciones-overlay { opacity: 1; }
+
+.btn-icon-overlay {
+  width: 32px; height: 32px; border: none; border-radius: 8px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; font-size: 12px;
+  transition: all 0.2s ease; backdrop-filter: blur(8px);
+}
+
+.btn-icon-overlay.editar { background: rgba(255, 255, 255, 0.85); color: #9A7D0A; }
+.btn-icon-overlay.editar:hover { background: rgba(255, 255, 255, 1); }
+.btn-icon-overlay.eliminar { background: rgba(255, 255, 255, 0.85); color: #B76E79; }
+.btn-icon-overlay.eliminar:hover { background: rgba(255, 255, 255, 1); }
+
+.card-body { padding: 20px 24px 24px; }
+
+.card-top {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  padding: 20px 24px 0; margin-bottom: 16px;
+}
+
+.card-icon {
+  width: 44px; height: 44px; background: linear-gradient(135deg, #C5A028, #F4D03F);
+  border-radius: 12px; display: flex; align-items: center; justify-content: center;
+  color: #3E2723; font-size: 18px;
+}
+
+.card-acciones { display: flex; gap: 6px; }
+
+.btn-icon {
+  width: 32px; height: 32px; border: none; border-radius: 8px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.btn-icon.editar { background: rgba(197, 160, 40, 0.15); color: #9A7D0A; }
+.btn-icon.editar:hover { background: rgba(197, 160, 40, 0.3); }
+.btn-icon.eliminar { background: rgba(183, 110, 121, 0.12); color: #B76E79; }
+.btn-icon.eliminar:hover { background: rgba(183, 110, 121, 0.25); }
+
+.card-nombre { font-size: 20px; font-weight: 700; color: #3E2723; margin: 0 0 8px; }
+.card-desc { font-size: 14px; color: #8D6E63; margin: 0 0 18px; line-height: 1.4; }
+
+.card-precios {
+  display: flex; align-items: center; gap: 16px; padding: 16px;
+  background: #f9f2eb; border-radius: 10px; margin-bottom: 16px;
+}
+
+.precio-item { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+
+.precio-label {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;
+  color: #8D6E63; font-weight: 600;
+}
+
+.precio-valor { font-size: 18px; font-weight: 700; color: #3E2723; }
+.precio-item.principal .precio-valor { color: #B76E79; font-size: 22px; }
+.precio-divider { width: 1px; height: 36px; background: #D7CCC8; }
+
+.card-info { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.info-chip {
+  display: flex; align-items: center; gap: 6px; padding: 6px 12px;
+  background: rgba(197, 160, 40, 0.1); border-radius: 20px;
+  font-size: 13px; color: #5D4037; font-weight: 500;
+}
+
+.info-chip i { color: #C5A028; font-size: 12px; }
+
+/* Empty & Loading */
+.empty-state { text-align: center; padding: 50px 20px; color: #8D6E63; }
+.empty-state i { font-size: 48px; margin-bottom: 16px; opacity: 0.4; }
+.empty-state p { margin-bottom: 20px; font-size: 16px; }
+
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 8px; padding: 10px 22px;
+  background: linear-gradient(135deg, #3E2723, #5D4037); color: #F4D03F;
+  border: none; border-radius: 10px; font-weight: 600; font-size: 14px;
+  cursor: pointer; transition: all 0.3s ease;
+}
+
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(62, 39, 35, 0.3); }
+
+.loading-state { text-align: center; padding: 40px; color: #8D6E63; }
+
+.spinner {
+  width: 36px; height: 36px; border: 3px solid #D7CCC8; border-top-color: #C5A028;
+  border-radius: 50%; margin: 0 auto 12px; animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 768px) { .membresias-grid { grid-template-columns: 1fr; } }
+
+@media (max-width: 480px) {
+  .card-precios { flex-direction: column; gap: 12px; }
+  .precio-divider { width: 100%; height: 1px; }
+  .card-image { height: 140px; }
+}
