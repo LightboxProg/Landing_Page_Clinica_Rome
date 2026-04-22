@@ -32,4 +32,8 @@ export class ServiciosService {
   eliminarServicio(id: string): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/${id}`);
   }
+
+  seedServicios(): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/seed`, {});
+  }
 }

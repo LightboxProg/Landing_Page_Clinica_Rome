@@ -100,13 +100,17 @@
 }
 
 .categorias-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 30px;
+  column-count: 2;
+  column-gap: 30px;
   margin-bottom: 40px;
 }
 
 .categoria-card {
+  break-inside: avoid;          /* Evita que una tarjeta se parta entre columnas */
+  page-break-inside: avoid;      /* Compatibilidad con navegadores más antiguos */
+  margin-bottom: 30px;
+  display: inline-block;         /* Necesario para que funcione column-count */
+  width: 80%;                  /* Ocupa todo el ancho de la columna */
   background: var(--white-pure);
   border-radius: var(--border-radius);
   padding: 25px;
@@ -189,6 +193,7 @@
 
 .pagos {
   font-weight: 500;
+  font-size: 12px;
   color: var(--coffee-dark);
 }
 
@@ -404,10 +409,44 @@
   box-shadow: 0 12px 24px rgba(0,0,0,0.2);
 }
 
+/* Agregar al final de servicios.component.css */
+
+.loading-message,
+.error-message,
+.no-services {
+  text-align: center;
+  padding: 40px 20px;
+  font-size: 18px;
+  color: var(--text-light);
+}
+
+.loading-message i,
+.error-message i {
+  margin-right: 8px;
+}
+
+.error-message {
+  color: #c0392b;
+}
+
+.duracion {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--coffee-light);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.tratamiento-item {
+  /* Ajuste para incluir duración */
+  padding-bottom: 12px;
+}
+
 /* Responsive */
 @media (max-width: 992px) {
   .categorias-grid {
-    grid-template-columns: 1fr;
+    column-count: 1;
   }
   .promo-card {
     grid-column: span 1;

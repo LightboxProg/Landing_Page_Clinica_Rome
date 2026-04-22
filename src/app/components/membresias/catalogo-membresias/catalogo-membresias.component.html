@@ -1,26 +1,73 @@
-<div class="memberships-container">
-    <h1 class="text-center">Catálogo de Membresías</h1>
-    
-    <div *ngIf="loading" class="loading-state">
-        <p>Cargando membresías disponibles...</p>
+<div class="servicios-page">
+  <!-- Cabecera -->
+  <section class="page-header">
+    <div class="container">
+      <h1 class="page-title">Membresías Exclusivas</h1>
+      <div class="elegant-detail"></div>
+      <p class="page-subtitle">Planes de tratamiento con pagos flexibles y beneficios especiales</p>
     </div>
+  </section>
 
-    <div *ngIf="!loading && membresias.length === 0" class="empty-state">
-        <p>No hay membresías disponibles en este momento.</p>
-    </div>
+  <!-- Contenido principal -->
+  <section class="section membresias-section">
+    <div class="container">
+      <!-- Indicador de carga / error -->
+      <div *ngIf="loading" class="loading-message">
+        <i class="fas fa-spinner fa-spin"></i> Cargando membresías...
+      </div>
+      <div *ngIf="error" class="error-message">
+        <i class="fas fa-exclamation-circle"></i> {{ error }}
+      </div>
 
-    <div class="cards-grid" *ngIf="!loading && membresias.length > 0">
-        <div class="membership-card" *ngFor="let m of membresias">
-            <div class="card-image" [ngStyle]="{'background-image': 'url(' + (m.photoUrl || 'assets/placeholder.jpg') + ')'}"></div>
-            <div class="card-content">
-                <h2>{{ m.nombreTratamiento }}</h2>
-                <p class="description">{{ m.descripcion }}</p>
-                <p class="price">Enganche: ${{ m.enganche }}</p>
-                <p class="price-details">Costo total: ${{ m.costoTotal }}</p>
-                <p class="payment-info">Pagos: {{ m.installmentsCount }} ({{ m.paymentFrequency }})</p>
-                
-                <button class="btn-contratar" (click)="contratar(m._id)">Contratar Membresía</button>
+      <!-- Grid de membresías -->
+      <div class="categorias-grid" *ngIf="!loading && !error && membresias.length > 0">
+        <div class="categoria-card membresia-card" *ngFor="let m of membresias; trackBy: trackByMembresia">
+          <!-- Imagen de la membresía -->
+          <div class="membresia-imagen" *ngIf="m.photoUrl">
+            <img [src]="m.photoUrl" [alt]="m.nombreTratamiento" loading="lazy">
+          </div>
+          <div class="membresia-imagen placeholder" *ngIf="!m.photoUrl">
+            <i class="fas fa-gem"></i>
+          </div>
+
+          <!-- Contenido -->
+          <div class="membresia-contenido">
+            <h3 class="categoria-titulo">
+              <i class="fa-regular fa-gem"></i> {{ m.nombreTratamiento }}
+            </h3>
+            <p class="descripcion-membresia">{{ m.descripcion }}</p>
+
+            <!-- Detalles de precios -->
+            <div class="precios-membresia">
+              <div class="precio-item">
+                <span class="precio-label">Costo total:</span>
+                <span class="precio-valor">{{ formatearPrecio(m.costoTotal) }}</span>
+              </div>
+              <div class="precio-item destacado">
+                <span class="precio-label">Enganche:</span>
+                <span class="precio-valor">{{ formatearPrecio(m.enganche) }}</span>
+              </div>
+              <div class="precio-item">
+                <span class="precio-label">Resto en {{ m.installmentsCount }} pagos:</span>
+                <span class="precio-valor">{{ formatearPrecio(calcularPagoPeriodico(m)) }} c/u</span>
+              </div>
+              <div class="frecuencia-badge">
+                <i class="far fa-calendar-alt"></i> {{ m.paymentFrequency | titlecase }}
+              </div>
             </div>
+
+            <!-- Botón de acción -->
+            <button class="cta-button membresia-btn" (click)="contratar(m._id)">
+              Contratar Membresía
+            </button>
+          </div>
         </div>
+      </div>
+
+      <!-- Mensaje sin resultados -->
+      <div *ngIf="!loading && !error && membresias.length === 0" class="no-services">
+        <p>No hay membresías disponibles en este momento.</p>
+      </div>
     </div>
+  </section>
 </div>

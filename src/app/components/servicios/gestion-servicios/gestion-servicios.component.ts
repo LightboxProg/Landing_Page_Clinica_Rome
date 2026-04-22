@@ -25,6 +25,7 @@ export class GestionServiciosComponent implements OnInit {
   mensajeError = '';
   mensajeExito = '';
   fotoExistente: any = null;
+  cargandoSeed = false;
 
   constructor(
     private serviciosService: ServiciosService,
@@ -118,6 +119,24 @@ export class GestionServiciosComponent implements OnInit {
     this.serviciosService.eliminarServicio(serv._id).subscribe({
       next: () => { this.mensajeExito = 'Servicio eliminado'; this.cargarDatos(); },
       error: (err) => console.error('Error al eliminar servicio:', err)
+    });
+  }
+
+  cargarServiciosPorDefecto(): void {
+    if (!confirm('¿Deseas cargar las categorías y servicios por defecto? Se agregarán solo los que no existan.')) {
+      return;
+    }
+    this.cargandoSeed = true;
+    this.serviciosService.seedServicios().subscribe({
+      next: (res) => {
+        this.mensajeExito = res.mensaje;
+        this.cargarDatos();
+        this.cargandoSeed = false;
+      },
+      error: (err) => {
+        this.mensajeError = err.error?.mensaje || 'Error al cargar datos por defecto';
+        this.cargandoSeed = false;
+      }
     });
   }
 }
