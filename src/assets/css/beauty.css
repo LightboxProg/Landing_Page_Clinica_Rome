@@ -256,13 +256,7 @@ input[type="button"] {
 a.mfn-link {
   color: #656b6f;
 }
-a.mfn-link-2 span,
-a:hover.mfn-link-2 span:before,
-a.hover.mfn-link-2 span:before,
-a.mfn-link-5 span,
-a.mfn-link-8:after,
-a.mfn-link-8:before {
-}
+
 a:hover.mfn-link {
   color: #e7276f;
 }
@@ -319,25 +313,10 @@ a.mfn-link-6:before {
 
 /* Highlight section */
 
-.highlight-left:after,
-.highlight-right:after {
-}
-@media only screen and (max-width: 767px) {
-  .highlight-left .column:first-child,
-  .highlight-right .column:last-child {
-  }
-}
 
 /************************ Header ************************/
 
-#Top_bar .menu > li a:after {
-}
-.menu-highlight #Top_bar #menu > ul > li.current-menu-item > a,
-.menu-highlight #Top_bar #menu > ul > li.current_page_item > a,
-.menu-highlight #Top_bar #menu > ul > li.current-menu-ancestor > a,
-.menu-highlight #Top_bar #menu > ul > li.current_page_ancestor > a,
-.menu-highlight #Top_bar #menu > ul > li.hover > a {
-}
+
 #Top_bar .menu > li ul {
   background-color: #f2f2f2;
 }
@@ -347,8 +326,6 @@ a.mfn-link-6:before {
 #Top_bar .menu > li ul li a:hover,
 #Top_bar .menu > li ul li.hover > a {
   color: #2e2e2e;
-}
-#Top_bar .search_wrapper {
 }
 #Subheader .title {
   color: #888888;
@@ -529,8 +506,7 @@ blockquote a:hover {
 
 /* Sliding box */
 
-.sliding_box .desc_wrapper {
-}
+
 .sliding_box .desc_wrapper:after {
   border-bottom-color: #e7276f;
 }
@@ -592,8 +568,6 @@ a.content_link:after {
 
 /* How it works */
 
-.how_it_works .image .number {
-}
 
 /* Trailer box */
 
@@ -614,8 +588,7 @@ a.content_link:after {
 
 /* Clients */
 
-ul.clients.clients_tiles li .client_wrapper:hover:before {
-}
+
 ul.clients.clients_tiles li .client_wrapper:after {
   border-bottom-color: #e7276f;
 }
@@ -634,9 +607,7 @@ ul.clients.clients_tiles li .client_wrapper:after {
 .feature_list ul li .icon i {
   color: #e7276f;
 }
-.feature_list ul li:hover,
-.feature_list ul li:hover a {
-}
+
 
 /* Tabs, Accordion, Toggle, Table, Faq */
 
@@ -648,10 +619,7 @@ ul.clients.clients_tiles li .client_wrapper:after {
 .accordion .question.active .title {
   color: #e7276f;
 }
-.ui-tabs .ui-tabs-nav li.ui-state-active a:after {
-}
-table tr:hover td {
-}
+
 
 /* Pricing */
 
@@ -659,10 +627,7 @@ table tr:hover td {
 .pricing-box .plan-header .price > span {
   color: #e7276f;
 }
-.pricing-box .plan-inside ul li .yes {
-}
-.pricing-box-box.pricing-box-featured {
-}
+
 
 /************************ Shop ************************/
 
