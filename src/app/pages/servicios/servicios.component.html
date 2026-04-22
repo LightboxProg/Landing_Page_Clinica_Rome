@@ -35,31 +35,39 @@
             <!-- Grid de categorías dinámico -->
             <div class="categorias-grid" *ngIf="!cargando && !error">
                 <div class="categoria-card" *ngFor="let cat of categoriasEsteticas; trackBy: trackByCategoria">
-                    <!-- Solo mostrar categorías activas con servicios -->
-                    <ng-container
-                        *ngIf="serviciosAgrupados.has(cat._id) && serviciosAgrupados.get(cat._id)!.length > 0">
-                        <h3 class="categoria-titulo">
-                            <i class="fa-regular fa-star"></i> {{ cat.nombre }}
-                        </h3>
-                        <div class="tratamiento-lista">
-                            <div class="tratamiento-item" *ngFor="let servicio of serviciosAgrupados.get(cat._id)">
-                                <div class="tratamiento-header">
-                                    <span class="nombre">{{ servicio.nombre }} </span>
-                                    <span class="precio-total">{{ formatearPrecio(servicio.costo) }}</span>
-                                </div>
-                                <div>
-                                    <span class="pagos">({{ getTextoPlanPagos(servicio.costo) }})</span>
-                                </div>
-                                <div class="tratamiento-detalle">
-                                    <span class="descripcion">{{ servicio.descripcion }}</span>
-                                </div>
-                                <!-- Duración opcional -->
-                                <div *ngIf="servicio.duracion" class="duracion">
-                                    <i class="far fa-clock"></i> {{ servicio.duracion }}
+                    <!-- Asignamos el array a una variable y verificamos que tenga elementos -->
+                    <ng-container *ngIf="serviciosAgrupados.get(cat._id) as serviciosCategoria">
+                        <ng-container *ngIf="serviciosCategoria.length > 0">
+                            <h3 class="categoria-titulo">
+                                <i class="fa-regular fa-star"></i> {{ cat.nombre }}
+                            </h3>
+                            <div class="tratamiento-item" *ngFor="let servicio of serviciosCategoria">
+                                <div class="tratamiento-content" [class.has-photo]="servicio.foto?.url">
+                                    <!-- Foto del servicio (solo si existe) -->
+                                    <div *ngIf="servicio.foto?.url" class="servicio-foto">
+                                        <img [src]="servicio.foto?.url" [alt]="servicio.nombre" loading="lazy">
+                                    </div>
+
+                                    <!-- Información textual del servicio -->
+                                    <div class="tratamiento-info">
+                                        <div class="tratamiento-header">
+                                            <span class="nombre">{{ servicio.nombre }}</span>
+                                            <span class="precio-total">{{ formatearPrecio(servicio.costo) }}</span>
+                                        </div>
+                                        <div>
+                                            <span class="pagos">({{ getTextoPlanPagos(servicio.costo) }})</span>
+                                        </div>
+                                        <div class="tratamiento-detalle">
+                                            <span class="descripcion">{{ servicio.descripcion }}</span>
+                                        </div>
+                                        <div *ngIf="servicio.duracion" class="duracion">
+                                            <i class="far fa-clock"></i> {{ servicio.duracion }}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <p *ngIf="cat.descripcion" class="nota">{{ cat.descripcion }}</p>
+                            <p *ngIf="cat.descripcion" class="nota">{{ cat.descripcion }}</p>
+                        </ng-container>
                     </ng-container>
                 </div>
             </div>

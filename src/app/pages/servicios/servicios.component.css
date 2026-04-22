@@ -443,6 +443,61 @@
   padding-bottom: 12px;
 }
 
+/* Contenedor flexible para foto + información */
+.tratamiento-content {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+/* La información ocupa el espacio restante cuando hay foto */
+.tratamiento-content.has-photo .tratamiento-info {
+  flex: 1;
+}
+
+/* Miniatura de la foto */
+.servicio-foto {
+  flex-shrink: 0;
+  width: 85px;
+  height: 85px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  border: 2px solid var(--white-pure);
+  transition: transform 0.2s ease;
+}
+
+.servicio-foto:hover {
+  transform: scale(1.02);
+}
+
+.servicio-foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Ajustes para dispositivos pequeños: la foto se coloca arriba */
+@media (max-width: 480px) {
+  .tratamiento-content {
+    flex-direction: column;
+  }
+
+  .servicio-foto {
+    width: 100%;
+    height: auto;
+    max-height: 160px;
+    border-radius: 10px;
+  }
+
+  .servicio-foto img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+  }
+}
+
 /* Responsive */
 @media (max-width: 992px) {
   .categorias-grid {

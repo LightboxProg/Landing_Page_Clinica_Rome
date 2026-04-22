@@ -27,7 +27,8 @@
             </div>
             <div>
               <span class="serv-nombre">{{ s.nombre }}</span>
-              <span class="serv-desc">{{ s.descripcion | slice:0:50 }}{{ s.descripcion?.length > 50 ? '...' : '' }}</span>
+              <span class="serv-desc">{{ s.descripcion | slice:0:50 }}{{ s.descripcion?.length > 50 ? '...' : ''
+                }}</span>
             </div>
           </div>
         </td>
@@ -49,7 +50,7 @@
             {{ s.activo ? 'Activo' : 'Inactivo' }}
           </span>
         </td>
-        <td class="acciones-col">
+        <td>
           <button class="btn-icon editar" (click)="onEditar(s)" title="Editar">
             <i class="fas fa-pen"></i>
           </button>

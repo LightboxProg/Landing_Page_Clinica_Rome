@@ -1,21 +1,21 @@
 :host {
-  --coffee-dark: #3E2723;
-  --coffee-medium: #5D4037;
-  --coffee-light: #8D6E63;
-  --coffee-soft: #D7CCC8;
-  --coffee-cream: #F5F0E6;
-  --gold-primary: #C5A028;
-  --gold-light: #F4D03F;
-  --gold-dark: #9A7D0A;
-  --white-pure: #FFFFFF;
-  --text-dark: #2C1E1A;
-  --text-light: #6D4C41;
+  --coffee-dark: #3e2723;
+  --coffee-medium: #5d4037;
+  --coffee-light: #8d6e63;
+  --coffee-soft: #d7ccc8;
+  --coffee-cream: #f5f0e6;
+  --gold-primary: #c5a028;
+  --gold-light: #f4d03f;
+  --gold-dark: #9a7d0a;
+  --white-pure: #ffffff;
+  --text-dark: #2c1e1a;
+  --text-light: #6d4c41;
 }
 
 .gestion-page {
   background: var(--coffee-cream);
   min-height: 100vh;
-  font-family: 'Lato', 'Roboto', sans-serif;
+  font-family: "Lato", "Roboto", sans-serif;
   padding-bottom: 60px;
 }
 
@@ -27,7 +27,7 @@
 
 /* Page Header */
 .page-header {
-  background: linear-gradient(135deg, #3E2723 0%, #5D4037 50%, #4E342E 100%);
+  background: linear-gradient(135deg, #3e2723 0%, #5d4037 50%, #4e342e 100%);
   padding: 48px 0 40px;
   text-align: center;
   position: relative;
@@ -35,24 +35,32 @@
 }
 
 .page-header::before {
-  content: '';
+  content: "";
   position: absolute;
   top: -50%;
   right: -10%;
   width: 300px;
   height: 300px;
-  background: radial-gradient(circle, rgba(197, 160, 40, 0.15) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(197, 160, 40, 0.15) 0%,
+    transparent 70%
+  );
   border-radius: 50%;
 }
 
 .page-header::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -30%;
   left: -5%;
   width: 200px;
   height: 200px;
-  background: radial-gradient(circle, rgba(244, 208, 63, 0.1) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(244, 208, 63, 0.1) 0%,
+    transparent 70%
+  );
   border-radius: 50%;
 }
 
@@ -154,8 +162,14 @@
 }
 
 @keyframes fadeInTab {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Panel Layout (servicios + categorías side by side) */
