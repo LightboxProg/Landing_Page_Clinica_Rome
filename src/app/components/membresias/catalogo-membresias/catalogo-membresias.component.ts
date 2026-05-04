@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { MembresiasService } from '../../../services/membresias/membresias.service';
 import { HttpClientModule } from '@angular/common/http';
 
@@ -32,7 +33,7 @@ export class CatalogoMembresiasComponent implements OnInit {
   loading = true;
   error: string | null = null;
 
-  constructor(private membresiasService: MembresiasService) {}
+  constructor(private membresiasService: MembresiasService, private router: Router) {}
 
   ngOnInit(): void {
     this.cargarCatalogos();
@@ -75,18 +76,8 @@ export class CatalogoMembresiasComponent implements OnInit {
     return mapa[frecuencia] || frecuencia;
   }
 
-  contratar(membresiaId: string): void {
-    this.membresiasService.iniciarCheckout(membresiaId).subscribe({
-      next: (response) => {
-        if (response.url) {
-          window.location.href = response.url;
-        }
-      },
-      error: (err) => {
-        console.error('Error al iniciar checkout:', err);
-        alert('Hubo un error al procesar la solicitud. Por favor, intenta más tarde.');
-      }
-    });
+  contratar(catalogoId: string): void {
+    this.router.navigate(['/pasarela-membresias', catalogoId]);
   }
 
   trackByMembresia(index: number, item: CatalogoMembresia): string {

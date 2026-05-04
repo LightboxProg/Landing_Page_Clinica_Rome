@@ -31,7 +31,12 @@ export class MembresiasService {
   }
 
   // Checkout
-  iniciarCheckout(membresiaId: string): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/checkout`, { membresiaId });
+  iniciarCheckout(catalogoId: string, pacienteId: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/checkout`, { catalogoId, pacienteId });
+  }
+
+  // Obtener Membresías (Admin)
+  obtenerMembresias(): Observable<any[]> {
+    return this.http.get<any[]>(this.apiUrl);
   }
 }

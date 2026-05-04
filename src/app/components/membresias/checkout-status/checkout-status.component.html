@@ -1,0 +1,30 @@
+<div class="status-container">
+  <div class="status-card" *ngIf="status === 'success'">
+    <div class="icon-container success-icon">
+      <i class="fas fa-check-circle"></i>
+    </div>
+    <h2 class="status-title">¡Pago Exitoso!</h2>
+    <p class="status-message">Tu membresía ha sido activada y tu pago se ha procesado de forma segura.</p>
+    
+    <div class="info-box">
+      <p>Nos pondremos en contacto contigo pronto o puedes acudir a la clínica para agendar tu primera cita.</p>
+      <small *ngIf="sessionId" class="ref-id">Ref: {{ sessionId.substring(0, 15) }}...</small>
+    </div>
+
+    <button class="btn btn-primary" (click)="volver()">Volver al Catálogo</button>
+  </div>
+
+  <div class="status-card" *ngIf="status === 'canceled'">
+    <div class="icon-container error-icon">
+      <i class="fas fa-times-circle"></i>
+    </div>
+    <h2 class="status-title">Pago Cancelado</h2>
+    <p class="status-message">El proceso de pago fue cancelado o no se pudo completar.</p>
+    
+    <div class="info-box">
+      <p>No se ha realizado ningún cargo a tu tarjeta. Puedes intentar nuevamente cuando lo desees.</p>
+    </div>
+
+    <button class="btn btn-primary" (click)="volver()">Volver al Catálogo</button>
+  </div>
+</div>

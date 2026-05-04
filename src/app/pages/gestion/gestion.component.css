@@ -100,7 +100,7 @@
   margin-top: -24px;
   box-shadow: 0 4px 24px rgba(62, 39, 35, 0.1);
   z-index: 2;
-  max-width: 480px;
+  max-width: 650px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -140,7 +140,7 @@
   position: absolute;
   top: 6px;
   left: 6px;
-  width: calc(50% - 6px);
+  width: calc(33.333% - 4px);
   height: calc(100% - 12px);
   background: linear-gradient(135deg, var(--coffee-dark), var(--coffee-medium));
   border-radius: 10px;
@@ -150,6 +150,10 @@
 
 .tab-indicator.tab-2 {
   transform: translateX(100%);
+}
+
+.tab-indicator.tab-3 {
+  transform: translateX(200%);
 }
 
 /* Tab Content */

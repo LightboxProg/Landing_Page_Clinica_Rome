@@ -1,0 +1,61 @@
+<div class="membresias-adquiridas-container">
+  <h3><i class="fas fa-users"></i> Membresías Contratadas</h3>
+  <p class="subtitle">Lista de pacientes con membresías activas o pendientes</p>
+
+  <div *ngIf="loading" class="loading-state">
+    <i class="fas fa-spinner fa-spin"></i> Cargando información...
+  </div>
+
+  <div *ngIf="error" class="error-state">
+    <i class="fas fa-exclamation-triangle"></i> {{ error }}
+  </div>
+
+  <div class="table-responsive" *ngIf="!loading && !error && membresiasContratadas.length > 0">
+    <table class="membresias-table">
+      <thead>
+        <tr>
+          <th>Paciente</th>
+          <th>Tratamiento</th>
+          <th>Estado</th>
+          <th>Costo Total</th>
+          <th>Enganche</th>
+          <th>Restante</th>
+          <th>Progreso de Pagos</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let m of membresiasContratadas">
+          <td>
+            <div class="paciente-info">
+              <span class="nombre">{{ m.pacienteId?.nombre }} {{ m.pacienteId?.apeP }}</span>
+              <span class="telefono"><i class="fas fa-phone"></i> {{ m.pacienteId?.telefonoPaciente || 'Sin teléfono' }}</span>
+            </div>
+          </td>
+          <td>
+            <span class="tratamiento">{{ m.nombreTratamiento }}</span>
+            <span class="frecuencia"><i class="far fa-clock"></i> Pagos {{ m.paymentFrequency }}s</span>
+          </td>
+          <td>
+            <span class="status-badge" [ngClass]="m.status">{{ m.status | titlecase }}</span>
+          </td>
+          <td class="dinero">{{ formatearPrecio(m.costoTotal) }}</td>
+          <td class="dinero">{{ formatearPrecio(m.enganche) }}</td>
+          <td class="dinero">{{ formatearPrecio(m.costoTotal - m.enganche) }}</td>
+          <td>
+            <div class="progreso-pagos">
+              <span>{{ m.pagosRealizados || 0 }} / {{ m.installmentsCount }}</span>
+              <div class="progress-bar-container">
+                <div class="progress-bar" [style.width.%]="((m.pagosRealizados || 0) / m.installmentsCount) * 100"></div>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="!loading && !error && membresiasContratadas.length === 0" class="empty-state">
+    <i class="fas fa-box-open"></i>
+    <p>Aún no hay membresías contratadas por los pacientes.</p>
+  </div>
+</div>

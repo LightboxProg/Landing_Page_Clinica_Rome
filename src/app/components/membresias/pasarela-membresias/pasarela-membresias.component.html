@@ -1,1 +1,93 @@
-<p>pasarela-membresias works!</p>
+<div class="pasarela-container">
+  <div class="pasarela-card">
+    <h2 class="pasarela-title">Contratación de Membresía</h2>
+    <p class="pasarela-subtitle">Completa tu información para proceder al pago</p>
+
+    <!-- Paso 1: Buscar Paciente -->
+    <div *ngIf="paso === 1" class="paso-container">
+      <h3>Verificación de paciente</h3>
+      <p>Por favor, ingresa tu número de teléfono para verificar si ya estás registrado.</p>
+      
+      <div class="form-group">
+        <label for="telefonoBusqueda">Número de Teléfono</label>
+        <input type="tel" id="telefonoBusqueda" [(ngModel)]="telefonoBusqueda" class="form-control" placeholder="Ej. 5512345678">
+      </div>
+      
+      <div *ngIf="errorBusqueda" class="error-msg">{{ errorBusqueda }}</div>
+
+      <button class="btn btn-primary w-100 mt-3" (click)="buscarPaciente()" [disabled]="buscando">
+        <span *ngIf="buscando">Buscando...</span>
+        <span *ngIf="!buscando">Verificar</span>
+      </button>
+    </div>
+
+    <!-- Paso 2: Pre-registro -->
+    <div *ngIf="paso === 2" class="paso-container">
+      <h3>Pre-registro</h3>
+      <p>Parece que eres nuevo. Por favor, completa tus datos básicos para continuar.</p>
+      
+      <div class="form-group">
+        <label>Nombre(s) *</label>
+        <input type="text" [(ngModel)]="nuevoPaciente.nombre" class="form-control">
+      </div>
+      
+      <div class="form-group">
+        <label>Apellido Paterno *</label>
+        <input type="text" [(ngModel)]="nuevoPaciente.apeP" class="form-control">
+      </div>
+
+      <div class="form-group">
+        <label>Apellido Materno *</label>
+        <input type="text" [(ngModel)]="nuevoPaciente.apeM" class="form-control">
+      </div>
+
+      <div class="form-group">
+        <label>Apodo o Nombre Preferido *</label>
+        <input type="text" [(ngModel)]="nuevoPaciente.apodo" class="form-control">
+      </div>
+      
+      <div class="form-group">
+        <label>Teléfono *</label>
+        <input type="tel" [(ngModel)]="nuevoPaciente.telefonoPaciente" class="form-control">
+      </div>
+
+      <div class="form-group">
+        <label>Correo Electrónico (Opcional)</label>
+        <input type="email" [(ngModel)]="nuevoPaciente.correoElectronico" class="form-control">
+      </div>
+
+      <div *ngIf="errorRegistro" class="error-msg">{{ errorRegistro }}</div>
+
+      <div class="botones-accion mt-4">
+        <button class="btn btn-secondary" (click)="volver()">Atrás</button>
+        <button class="btn btn-primary" (click)="registrarPaciente()" [disabled]="registrando">
+          <span *ngIf="registrando">Registrando...</span>
+          <span *ngIf="!registrando">Registrar y Continuar</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Paso 3: Confirmación y Pago -->
+    <div *ngIf="paso === 3 && pacienteEncontrado" class="paso-container">
+      <h3>Confirmación</h3>
+      
+      <div class="paciente-info-box">
+        <p><strong>Paciente:</strong> {{ pacienteEncontrado.nombre }} {{ pacienteEncontrado.apeP }}</p>
+        <p><strong>Teléfono:</strong> {{ pacienteEncontrado.telefonoPaciente || pacienteEncontrado.telefonoWhatsapp }}</p>
+        <div class="success-msg mt-2">
+          <i class="fas fa-check-circle"></i> ¡Información verificada correctamente!
+        </div>
+      </div>
+
+      <p class="mt-4 text-center">Serás redirigido a Stripe para completar tu pago de forma segura.</p>
+
+      <div class="botones-accion mt-4">
+        <button class="btn btn-secondary" (click)="volver()">Cambiar paciente</button>
+        <button class="btn btn-success" (click)="procederAlPago()" [disabled]="procesandoPago">
+          <span *ngIf="procesandoPago">Iniciando pago...</span>
+          <span *ngIf="!procesandoPago"><i class="fab fa-stripe"></i> Proceder al Pago Seguro</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -23,7 +23,12 @@
         <i class="fas fa-id-card"></i>
         <span>Membresías</span>
       </button>
-      <div class="tab-indicator" [class.tab-2]="tabActivo === 'membresias'"></div>
+      <button class="tab-btn" [class.active]="tabActivo === 'suscripciones'" (click)="cambiarTab('suscripciones')"
+        id="tab-suscripciones">
+        <i class="fas fa-users"></i>
+        <span>Suscripciones Activas</span>
+      </button>
+      <div class="tab-indicator" [class.tab-2]="tabActivo === 'membresias'" [class.tab-3]="tabActivo === 'suscripciones'"></div>
     </div>
   </div>
 
@@ -44,6 +49,11 @@
     <!-- Tab: Membresías -->
     <div class="tab-panel" *ngIf="tabActivo === 'membresias'">
       <app-gestion-membresias></app-gestion-membresias>
+    </div>
+
+    <!-- Tab: Suscripciones Activas -->
+    <div class="tab-panel" *ngIf="tabActivo === 'suscripciones'">
+      <app-membresias-adquiridas></app-membresias-adquiridas>
     </div>
   </div>
 </div>
