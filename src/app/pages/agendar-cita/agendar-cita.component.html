@@ -1,0 +1,40 @@
+<section class="agenda-page">
+  <div class="agenda-hero">
+    <p class="agenda-eyebrow">Rome Harmony Clinic</p>
+    <h1>Agenda tu cita</h1>
+    <p class="agenda-copy">
+      Elige el canal que te quede más cómodo y te ayudamos a coordinar tu valoración.
+    </p>
+  </div>
+
+  <div class="agenda-grid">
+    <article class="agenda-card accent">
+      <h2>WhatsApp</h2>
+      <p>Respuesta rápida para confirmar disponibilidad y resolver dudas.</p>
+      <a class="agenda-button primary" [href]="whatsappUrl" target="_blank" rel="noopener">Escribir por WhatsApp</a>
+    </article>
+
+    <article class="agenda-card">
+      <h2>Llamada</h2>
+      <p>Comunícate directamente para agendar tu valoración.</p>
+      <a class="agenda-button" [href]="telefonoHref">Llamar ahora</a>
+    </article>
+
+    <article class="agenda-card">
+      <h2>Correo</h2>
+      <p>Si prefieres escribir, envía tu nombre y horario preferido.</p>
+      <a class="agenda-button" [href]="correoHref">Enviar correo</a>
+    </article>
+
+    <article class="agenda-card">
+      <h2>Ubicación</h2>
+      <p>Visítanos para una valoración presencial.</p>
+      <a class="agenda-button" [href]="ubicacionUrl" target="_blank" rel="noopener">Ver en Google Maps</a>
+    </article>
+  </div>
+
+  <div class="agenda-footer">
+    <a routerLink="/servicios" class="agenda-link">Ver servicios</a>
+    <a routerLink="/membresias" class="agenda-link">Ver membresías</a>
+  </div>
+</section>

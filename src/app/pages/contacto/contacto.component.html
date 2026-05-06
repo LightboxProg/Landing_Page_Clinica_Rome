@@ -1,0 +1,40 @@
+<section class="info-page">
+  <div class="hero-card">
+    <p class="eyebrow">Rome Harmony Clinic</p>
+    <h1>Contacto</h1>
+    <p class="lead">
+      Escríbenos, llámanos o visita la clínica para recibir orientación y agendar tu valoración.
+    </p>
+  </div>
+
+  <div class="grid-cards">
+    <article class="info-card accent">
+      <h2>WhatsApp</h2>
+      <p>Respuesta rápida para dudas, horarios y disponibilidad.</p>
+      <a [href]="whatsappHref" target="_blank" rel="noopener" class="btn primary">Abrir WhatsApp</a>
+    </article>
+
+    <article class="info-card">
+      <h2>Teléfono</h2>
+      <p>Atención directa en horario de clínica.</p>
+      <a [href]="phoneHref" class="btn secondary dark">Llamar</a>
+    </article>
+
+    <article class="info-card">
+      <h2>Correo</h2>
+      <p>Envíanos tus datos y te ayudamos a coordinar una cita.</p>
+      <a [href]="emailHref" class="btn secondary dark">Enviar correo</a>
+    </article>
+
+    <article class="info-card">
+      <h2>Ubicación</h2>
+      <p>Mayo de 1812 #805 Frac. Morelos 1, Aguascalientes, Ags.</p>
+      <a [href]="mapsHref" target="_blank" rel="noopener" class="btn secondary dark">Ver en Maps</a>
+    </article>
+  </div>
+
+  <div class="footer-links">
+    <a routerLink="/agendar-cita">Agendar cita</a>
+    <a routerLink="/servicios">Ver servicios</a>
+  </div>
+</section>

@@ -8,6 +8,9 @@ import { PasarelaMembresiasComponent } from './components/membresias/pasarela-me
 import { CheckoutStatusComponent } from './components/membresias/checkout-status/checkout-status.component';
 import { GestionComponent } from './pages/gestion/gestion.component';
 import { LoginPageComponent } from './pages/login/login.component';
+import { AgendarCitaComponent } from './pages/agendar-cita/agendar-cita.component';
+import { NosotrosComponent } from './pages/nosotros/nosotros.component';
+import { ContactoComponent } from './pages/contacto/contacto.component';
 import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
@@ -17,6 +20,9 @@ export const routes: Routes = [
   { path: 'membresias', component: CatalogoMembresiasComponent },
   { path: 'pasarela-membresias/:id', component: PasarelaMembresiasComponent },
   { path: 'checkout-status', component: CheckoutStatusComponent },
+  { path: 'agendar-cita', component: AgendarCitaComponent },
+  { path: 'nosotros', component: NosotrosComponent },
+  { path: 'contacto', component: ContactoComponent },
   { path: 'aviso-privacidad', component: AvisoPrivacidadComponent },
   { path: 'aviso-terminos', component: AvisoTerminosComponent },
   { path: 'login', component: LoginPageComponent },

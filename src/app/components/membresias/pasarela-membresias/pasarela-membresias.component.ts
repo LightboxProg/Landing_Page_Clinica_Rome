@@ -17,6 +17,7 @@ import { PacientesService } from '../../../services/pacientes/pacientes.service'
 export class PasarelaMembresiasComponent implements OnInit {
   catalogoId: string | null = null;
   paso: 1 | 2 | 3 = 1;
+  catalogo: any = null; // detalle del catálogo seleccionado
 
   // Paso 1: Búsqueda
   telefonoBusqueda: string = '';
@@ -51,6 +52,21 @@ export class PasarelaMembresiasComponent implements OnInit {
     if (!this.catalogoId) {
       this.router.navigate(['/membresias']);
     }
+    // Cargar detalles del catálogo si tenemos el id
+    this.cargarCatalogoDetalle();
+  }
+
+  cargarCatalogoDetalle(): void {
+    if (!this.catalogoId) return;
+    this.membresiasService.obtenerCatalogos().subscribe({
+      next: (res) => {
+        const catalogos = res.catalogos || res || [];
+        this.catalogo = catalogos.find((c: any) => c._id === this.catalogoId) || null;
+      },
+      error: (err) => {
+        console.warn('No se pudo cargar detalle del catálogo, se usará información mínima', err);
+      }
+    });
   }
 
   buscarPaciente(): void {
@@ -121,6 +137,18 @@ export class PasarelaMembresiasComponent implements OnInit {
         this.procesandoPago = false;
       }
     });
+  }
+
+  // Utilidades para mostrar precios y cuotas en la plantilla
+  formatearPrecio(precio: number): string {
+    return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(precio || 0);
+  }
+
+  obtenerMontoPorCuota(): number {
+    if (!this.catalogo) return 0;
+    const saldo = (this.catalogo.costoTotal || 0) - (this.catalogo.enganche || 0);
+    const cuotas = this.catalogo.installmentsCount || 1;
+    return Math.ceil(saldo / cuotas);
   }
 
   volver(): void {

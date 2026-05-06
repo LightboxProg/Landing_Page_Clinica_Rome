@@ -1,0 +1,12 @@
+.status-container{display:flex;justify-content:center;padding:22px;background:linear-gradient(180deg,#f9fbff,#eef3fb)}
+.status-card{max-width:640px;width:100%;background:#fff;padding:22px;border-radius:12px;box-shadow:0 12px 28px rgba(36,68,102,0.12);text-align:center;border:1px solid #dbe6f5}
+.icon-container{font-size:48px;margin-bottom:8px}
+.success-icon{color:#27ae60}
+.error-icon{color:#c0392b}
+.status-title{margin:6px 0;color:#1f3f66}
+.status-message{color:#4a5f78;margin-bottom:14px}
+.info-box{background:#f4f8ff;padding:12px;border-radius:8px;margin-bottom:14px;border:1px solid #dce8fa}
+.ref-id{color:#888}
+.btn-primary{background:#1f6fe5;border-color:#1f6fe5}
+.btn-primary:hover{background:#1358bb;border-color:#1358bb}
+@media(max-width:600px){.status-card{padding:14px}}
