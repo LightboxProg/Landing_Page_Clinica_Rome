@@ -9,18 +9,35 @@ import { CheckoutStatusComponent } from './components/membresias/checkout-status
 import { GestionComponent } from './pages/gestion/gestion.component';
 import { LoginPageComponent } from './pages/login/login.component';
 import { authGuard } from './guards/auth.guard';
+import { LandingLayoutComponent } from './layouts/landing-layout/landing-layout.component';
+import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
 
 export const routes: Routes = [
+  // Rutas públicas (Landing Page) que usan el LandingLayout (con Navbar y Footer)
+  {
+    path: '',
+    component: LandingLayoutComponent,
+    children: [
+      { path: '', component: InicioComponent },
+      { path: 'servicios', component: ServiciosComponent },
+      { path: 'membresias', component: CatalogoMembresiasComponent },
+      { path: 'pasarela-membresias/:id', component: PasarelaMembresiasComponent },
+      { path: 'checkout-status', component: CheckoutStatusComponent },
+      { path: 'aviso-privacidad', component: AvisoPrivacidadComponent },
+      { path: 'aviso-terminos', component: AvisoTerminosComponent },
+    ]
+  },
 
-  { path: '', component: InicioComponent },
-  { path: 'servicios', component: ServiciosComponent },
-  { path: 'membresias', component: CatalogoMembresiasComponent },
-  { path: 'pasarela-membresias/:id', component: PasarelaMembresiasComponent },
-  { path: 'checkout-status', component: CheckoutStatusComponent },
-  { path: 'aviso-privacidad', component: AvisoPrivacidadComponent },
-  { path: 'aviso-terminos', component: AvisoTerminosComponent },
-  { path: 'login', component: LoginPageComponent },
-  { path: 'admin/gestion', component: GestionComponent, canActivate: [authGuard] },
+  // Rutas del Sistema/Admin que usan el AdminLayout (sin Navbar público)
+  {
+    path: '',
+    component: AdminLayoutComponent,
+    children: [
+      { path: 'login', component: LoginPageComponent },
+      { path: 'admin/gestion', component: GestionComponent, canActivate: [authGuard] },
+    ]
+  },
+
   {
     path: '**',
     redirectTo: '',
