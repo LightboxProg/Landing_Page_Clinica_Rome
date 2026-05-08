@@ -28,32 +28,32 @@
       
       <div class="form-group">
         <label>Nombre(s) *</label>
-        <input type="text" [(ngModel)]="nuevoPaciente.nombre" class="form-control">
+        <input type="text" [(ngModel)]="nuevoPaciente.nombre" class="form-control" placeholder="Ej. María Fernanda">
       </div>
       
       <div class="form-group">
         <label>Apellido Paterno *</label>
-        <input type="text" [(ngModel)]="nuevoPaciente.apeP" class="form-control">
+        <input type="text" [(ngModel)]="nuevoPaciente.apeP" class="form-control" placeholder="Ej. López">
       </div>
 
       <div class="form-group">
         <label>Apellido Materno *</label>
-        <input type="text" [(ngModel)]="nuevoPaciente.apeM" class="form-control">
+        <input type="text" [(ngModel)]="nuevoPaciente.apeM" class="form-control" placeholder="Ej. Hernández">
       </div>
 
       <div class="form-group">
         <label>Apodo o Nombre Preferido *</label>
-        <input type="text" [(ngModel)]="nuevoPaciente.apodo" class="form-control">
+        <input type="text" [(ngModel)]="nuevoPaciente.apodo" class="form-control" placeholder="Ej. Fer">
       </div>
       
       <div class="form-group">
         <label>Teléfono *</label>
-        <input type="tel" [(ngModel)]="nuevoPaciente.telefonoPaciente" class="form-control">
+        <input type="tel" [(ngModel)]="nuevoPaciente.telefonoPaciente" class="form-control" placeholder="Ej. 4491234567">
       </div>
 
       <div class="form-group">
         <label>Correo Electrónico (Opcional)</label>
-        <input type="email" [(ngModel)]="nuevoPaciente.correoElectronico" class="form-control">
+        <input type="email" [(ngModel)]="nuevoPaciente.correoElectronico" class="form-control" placeholder="Ej. correo@dominio.com">
       </div>
 
       <div *ngIf="errorRegistro" class="error-msg">{{ errorRegistro }}</div>
@@ -70,7 +70,31 @@
     <!-- Paso 3: Confirmación y Pago -->
     <div *ngIf="paso === 3 && pacienteEncontrado" class="paso-container">
       <h3>Confirmación</h3>
-      
+
+      <!-- Resumen del catálogo seleccionado (si está disponible) -->
+      <div *ngIf="catalogo" class="catalogo-resumen">
+        <h4 class="catalogo-title">{{ catalogo.nombreTratamiento }}</h4>
+        <p class="catalogo-desc">{{ catalogo.descripcion }}</p>
+        <div class="grid-datos">
+          <div class="dato">
+            <small>Costo total</small>
+            <div class="valor">{{ formatearPrecio(catalogo.costoTotal) }}</div>
+          </div>
+          <div class="dato">
+            <small>Enganche</small>
+            <div class="valor">{{ formatearPrecio(catalogo.enganche) }}</div>
+          </div>
+          <div class="dato">
+            <small>Cuotas</small>
+            <div class="valor">{{ catalogo.installmentsCount }} x {{ formatearPrecio(obtenerMontoPorCuota()) }}</div>
+          </div>
+          <div class="dato">
+            <small>Frecuencia</small>
+            <div class="valor">{{ catalogo.paymentFrequency }}</div>
+          </div>
+        </div>
+      </div>
+
       <div class="paciente-info-box">
         <p><strong>Paciente:</strong> {{ pacienteEncontrado.nombre }} {{ pacienteEncontrado.apeP }}</p>
         <p><strong>Teléfono:</strong> {{ pacienteEncontrado.telefonoPaciente || pacienteEncontrado.telefonoWhatsapp }}</p>

@@ -16,6 +16,91 @@
   --border-radius: 8px;
 }
 
+.hero-banner {
+  position: relative;
+  min-height: 78vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 72px 20px;
+  overflow: hidden;
+}
+
+.hero-banner__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.hero-banner__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(62, 39, 35, 0.48), rgba(62, 39, 35, 0.62));
+}
+
+.hero-banner__content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  text-align: center;
+  color: var(--white-pure);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 0;
+}
+
+.hero-banner__panel {
+  max-width: 760px;
+  padding: 32px 28px;
+  border-radius: 28px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.18);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.hero-banner__eyebrow {
+  margin: 0;
+  font-size: 0.9rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.92;
+}
+
+.hero-banner__title {
+  margin: 0;
+  font-family: 'Playfair Display', 'Lora', 'Times New Roman', serif;
+  font-size: clamp(2.2rem, 4vw, 4.25rem);
+  line-height: 1.08;
+  font-weight: 500;
+  max-width: 14ch;
+  overflow-wrap: anywhere;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.32);
+}
+
+.hero-banner__text {
+  margin: 0;
+  max-width: 58ch;
+  font-size: clamp(1rem, 1.6vw, 1.18rem);
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.94);
+  overflow-wrap: anywhere;
+}
+
+.hero-banner__button {
+  margin-top: 6px;
+}
+
 /* ===== SLIDER REVOLUTION ==== */
 .mfn-main-slider {
   position: relative;
@@ -76,6 +161,27 @@
 
 /* ===== RESPONSIVE PARA EL SLIDER ===== */
 @media (max-width: 768px) {
+  .hero-banner {
+    min-height: 72vh;
+    padding: 56px 16px;
+  }
+
+  .hero-banner__content {
+    gap: 14px;
+    padding: 0;
+  }
+
+  .hero-banner__panel {
+    width: 100%;
+    padding: 22px 16px;
+    border-radius: 22px;
+    gap: 14px;
+  }
+
+  .hero-banner__title {
+    max-width: 15ch;
+  }
+
   .slider-main-title {
     font-size: 32px;
   }
@@ -86,6 +192,24 @@
     white-space: normal !important; 
     max-width: 90vw;
     line-height: 1.4;
+  }
+
+  .slider-btn-outline {
+    padding: 11px 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-banner__eyebrow {
+    font-size: 0.78rem;
+  }
+
+  .hero-banner__title {
+    max-width: 100%;
+  }
+
+  .hero-banner__text {
+    line-height: 1.55;
   }
 }
 

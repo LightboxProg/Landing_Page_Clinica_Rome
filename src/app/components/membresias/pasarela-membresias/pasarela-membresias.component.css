@@ -1,0 +1,22 @@
+.pasarela-container{display:flex;justify-content:center;padding:20px;background:linear-gradient(180deg,#faf7f4,#f3ede8)}
+.pasarela-card{width:100%;max-width:760px;background:#fff;padding:20px;border-radius:12px;border:1px solid #eadfd6;box-shadow:0 10px 28px rgba(84,56,34,0.12)}
+.pasarela-title{margin:0 0 6px;font-size:1.45rem;color:#3c2a1f}
+.pasarela-subtitle{color:#6f5546;margin-bottom:14px}
+.form-group{margin-bottom:12px}
+.form-control{border:1px solid #d7c7bc;border-radius:8px;padding:10px 12px}
+.form-control:focus{outline:none;border-color:#a88366;box-shadow:0 0 0 3px rgba(168,131,102,0.15)}
+.botones-accion{display:flex;gap:10px;justify-content:space-between}
+.catalogo-resumen{background:linear-gradient(180deg,#fff8f2,#fff);padding:14px;border-radius:10px;margin-bottom:14px;border:1px solid #efdccf}
+.catalogo-title{margin:0;font-size:1.05rem;color:#3c2a1f}
+.catalogo-desc{color:#5d4f45;font-size:0.92rem;margin-bottom:10px}
+.grid-datos{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.dato{background:#fff;padding:10px;border-radius:8px;border:1px solid #eee4dc}
+.dato small{color:#8b6f5d}
+.valor{font-weight:700;margin-top:6px;color:#2f231b}
+.error-msg{background:#fff1f0;color:#b42318;padding:8px 10px;border-radius:8px;border:1px solid #ffd2cc}
+.success-msg{background:#ecfdf3;color:#067647;padding:8px 10px;border-radius:8px;border:1px solid #abefc6}
+@media (max-width:600px){
+  .pasarela-card{padding:12px}
+  .grid-datos{grid-template-columns:1fr}
+  .botones-accion{flex-direction:column}
+}
