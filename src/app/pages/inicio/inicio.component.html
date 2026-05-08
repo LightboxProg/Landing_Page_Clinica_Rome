@@ -293,3 +293,12 @@
       </div>
   </div>
 </div>
+
+<!-- Flecha flotante para regresar arriba -->
+<button 
+  class="scroll-to-top" 
+  [class.show]="showScrollButton" 
+  (click)="scrollToTop()" 
+  title="Volver arriba">
+  <i class="fas fa-chevron-up"></i>
+</button>

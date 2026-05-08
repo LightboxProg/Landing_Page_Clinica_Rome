@@ -15,7 +15,8 @@ import { PacientesService } from '../../../services/pacientes/pacientes.service'
   styleUrl: './pasarela-membresias.component.css'
 })
 export class PasarelaMembresiasComponent implements OnInit {
-  catalogoId: string | null = null;
+  catalogoId: string | null 
+  = null;
   paso: 1 | 2 | 3 = 1;
   catalogo: any = null; // detalle del catálogo seleccionado
 

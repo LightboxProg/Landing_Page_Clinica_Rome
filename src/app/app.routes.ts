@@ -22,8 +22,12 @@ export const routes: Routes = [
     component: LandingLayoutComponent,
     children: [
       { path: '', component: InicioComponent },
+      { path: 'inicio', component: InicioComponent },
       { path: 'servicios', component: ServiciosComponent },
       { path: 'membresias', component: CatalogoMembresiasComponent },
+      { path: 'agendar-cita', component: AgendarCitaComponent },
+      { path: 'nosotros', component: NosotrosComponent },
+      { path: 'contacto', component: ContactoComponent },
       { path: 'pasarela-membresias/:id', component: PasarelaMembresiasComponent },
       { path: 'checkout-status', component: CheckoutStatusComponent },
       { path: 'aviso-privacidad', component: AvisoPrivacidadComponent },

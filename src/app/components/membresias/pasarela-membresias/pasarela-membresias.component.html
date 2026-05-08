@@ -8,15 +8,19 @@
       <h3>Verificación de paciente</h3>
       <p>Por favor, ingresa tu número de teléfono para verificar si ya estás registrado.</p>
       
-      <div class="form-group">
+      <div class="form-group mb-4">
         <label for="telefonoBusqueda">Número de Teléfono</label>
-        <input type="tel" id="telefonoBusqueda" [(ngModel)]="telefonoBusqueda" class="form-control" placeholder="Ej. 5512345678">
+        <div class="input-phone-wrapper">
+          <input type="tel" id="telefonoBusqueda" [(ngModel)]="telefonoBusqueda" class="form-control input-lg" placeholder="Ej. 5512345678" style="letter-spacing: 1px;">
+        </div>
       </div>
       
-      <div *ngIf="errorBusqueda" class="error-msg">{{ errorBusqueda }}</div>
+      <div *ngIf="errorBusqueda" class="error-msg mb-3">
+        <i class="fas fa-exclamation-circle" style="margin-right: 6px;"></i> {{ errorBusqueda }}
+      </div>
 
-      <button class="btn btn-primary w-100 mt-3" (click)="buscarPaciente()" [disabled]="buscando">
-        <span *ngIf="buscando">Buscando...</span>
+      <button class="btn btn-primary w-100" (click)="buscarPaciente()" [disabled]="buscando || !telefonoBusqueda">
+        <span *ngIf="buscando"><i class="fas fa-spinner fa-spin"></i> Buscando...</span>
         <span *ngIf="!buscando">Verificar</span>
       </button>
     </div>
@@ -106,7 +110,6 @@
       <p class="mt-4 text-center">Serás redirigido a Stripe para completar tu pago de forma segura.</p>
 
       <div class="botones-accion mt-4">
-        <button class="btn btn-secondary" (click)="volver()">Cambiar paciente</button>
         <button class="btn btn-success" (click)="procederAlPago()" [disabled]="procesandoPago">
           <span *ngIf="procesandoPago">Iniciando pago...</span>
           <span *ngIf="!procesandoPago"><i class="fab fa-stripe"></i> Proceder al Pago Seguro</span>
