@@ -1,0 +1,24 @@
+<!-- Loading -->
+<div class="loading-state" *ngIf="loading">
+  <div class="spinner"></div>
+  <p>Cargando categorías...</p>
+</div>
+
+<!-- Lista de categorías -->
+<div class="categorias-lista" *ngIf="!loading">
+  <div class="categoria-item" *ngFor="let cat of categorias">
+    <div class="cat-info">
+      <span class="cat-nombre">{{ cat.nombre }}</span>
+      <span class="cat-desc" *ngIf="cat.descripcion">{{ cat.descripcion }}</span>
+    </div>
+    <div class="cat-acciones">
+      <button class="btn-icon editar" (click)="onEditar(cat)" title="Editar">
+        <i class="fas fa-pen"></i>
+      </button>
+      <button class="btn-icon eliminar" (click)="onEliminar(cat)" title="Desactivar">
+        <i class="fas fa-trash"></i>
+      </button>
+    </div>
+  </div>
+  <p class="empty-msg" *ngIf="categorias.length === 0">No hay categorías registradas.</p>
+</div>

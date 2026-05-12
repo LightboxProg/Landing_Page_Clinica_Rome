@@ -18,6 +18,11 @@
         <i class="fas fa-spa"></i>
         <span>Servicios Estéticos</span>
       </button>
+      <button class="tab-btn" [class.active]="tabActivo === 'serviciosDentales'" (click)="cambiarTab('serviciosDentales')"
+        id="tab-servicios-dentales">
+        <i class="fas fa-tooth"></i>
+        <span>Servicios Dentales</span>
+      </button>
       <button class="tab-btn" [class.active]="tabActivo === 'membresias'" (click)="cambiarTab('membresias')"
         id="tab-membresias">
         <i class="fas fa-id-card"></i>
@@ -42,6 +47,18 @@
         </div>
         <div class="panel-side">
           <app-gestion-categorias></app-gestion-categorias>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Servicios Dentales -->
+    <div class="tab-panel" *ngIf="tabActivo === 'serviciosDentales'">
+      <div class="panel-layout">
+        <div class="panel-main">
+          <app-gestion-servicios-dentales></app-gestion-servicios-dentales>
+        </div>
+        <div class="panel-side">
+          <app-gestion-categorias-dentales></app-gestion-categorias-dentales>
         </div>
       </div>
     </div>
