@@ -14,6 +14,8 @@ import { ContactoComponent } from './pages/contacto/contacto.component';
 import { authGuard } from './guards/auth.guard';
 import { LandingLayoutComponent } from './layouts/landing-layout/landing-layout.component';
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
+import { UserListComponent } from './components/usuarios/user-list/user-list.component';
+import { UserFormComponent } from './components/usuarios/user-form/user-form.component';
 
 export const routes: Routes = [
   // Rutas públicas (Landing Page) que usan el LandingLayout (con Navbar y Footer)
@@ -39,9 +41,13 @@ export const routes: Routes = [
   {
     path: '',
     component: AdminLayoutComponent,
+    canActivate: [authGuard], 
     children: [
-      { path: 'login', component: LoginPageComponent },
-      { path: 'admin/gestion', component: GestionComponent, canActivate: [authGuard] },
+      { path: 'login', component: LoginPageComponent, canActivate: [] }, // login sin guard
+      { path: 'admin/gestion', component: GestionComponent },
+      { path: 'usuarios', component: UserListComponent },
+      { path: 'usuarios/nuevo', component: UserFormComponent },
+      { path: 'usuarios/editar/:id', component: UserFormComponent }
     ]
   },
 

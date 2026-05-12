@@ -20,12 +20,12 @@
 .logo-icon {
   width: 40px;
   height: 40px;
-  background: linear-gradient(135deg, #C5A028, #F4D03F);
+  background: linear-gradient(135deg, #c5a028, #f4d03f);
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #3E2723;
+  color: #3e2723;
   font-size: 18px;
   box-shadow: 0 4px 10px rgba(197, 160, 40, 0.2);
 }
@@ -33,14 +33,14 @@
 .brand-text h2 {
   margin: 0;
   font-size: 18px;
-  color: #3E2723;
+  color: #3e2723;
   font-weight: 700;
   line-height: 1.2;
 }
 
 .brand-text span {
   font-size: 12px;
-  color: #8D6E63;
+  color: #8d6e63;
   font-weight: 500;
 }
 
@@ -60,13 +60,13 @@
 
 .avatar {
   font-size: 24px;
-  color: #C5A028;
+  color: #c5a028;
 }
 
 .user-name {
   font-size: 14px;
   font-weight: 600;
-  color: #5D4037;
+  color: #5d4037;
 }
 
 .btn-logout {
@@ -75,7 +75,7 @@
   gap: 8px;
   padding: 8px 16px;
   background: rgba(183, 110, 121, 0.1);
-  color: #B76E79;
+  color: #b76e79;
   border: 1px solid transparent;
   border-radius: 8px;
   font-size: 14px;
@@ -85,20 +85,39 @@
 }
 
 .btn-logout:hover {
-  background: #B76E79;
+  background: #b76e79;
   color: #ffffff;
   box-shadow: 0 4px 12px rgba(183, 110, 121, 0.2);
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #5d4037;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.nav-links a:hover {
+  background: rgba(197, 160, 40, 0.1);
+  color: #c5a028;
+}
+
+.nav-links a.active {
+  background: rgba(197, 160, 40, 0.15);
+  color: #c5a028;
+  font-weight: 600;
 }
 
 @media (max-width: 768px) {
   .user-info {
     display: none;
   }
-  
+
   .btn-logout span {
     display: none;
   }
-  
+
   .btn-logout {
     padding: 8px 12px;
   }

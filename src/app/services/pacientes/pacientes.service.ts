@@ -9,7 +9,7 @@ import { environment } from '../../../environments/environment';
 export class PacientesService {
   private apiUrl = `${environment.apiUrl}/pacientes`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   buscarPorTelefono(telefono: string): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/telefono/${telefono}`);
@@ -17,5 +17,9 @@ export class PacientesService {
 
   crearPaciente(paciente: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/crear`, paciente);
+  }
+
+  obtenerPacientes(): Observable<any[]> {
+    return this.http.get<any[]>(`${environment.apiUrl}/pacientes`);
   }
 }

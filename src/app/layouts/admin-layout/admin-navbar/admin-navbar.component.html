@@ -16,10 +16,20 @@
       </div>
       <span class="user-name">{{ usuarioNombre }}</span>
     </div>
-    
+
     <button class="btn-logout" (click)="logout()" title="Cerrar sesión">
       <i class="fas fa-sign-out-alt"></i>
       <span>Salir</span>
     </button>
   </div>
+
+  <div class="nav-links">
+    <a routerLink="/usuarios" routerLinkActive="active">
+      <i class="fas fa-users"></i> Usuarios
+    </a>
+    <a routerLink="/usuarios/nuevo" routerLinkActive="active">
+      <i class="fas fa-user-plus"></i> Nuevo
+    </a>
+  </div>
+
 </nav>

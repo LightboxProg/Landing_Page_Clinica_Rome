@@ -1,0 +1,37 @@
+<div class="user-list-container">
+  <div class="header-actions">
+    <h2>Gestión de Usuarios</h2>
+    <a routerLink="/usuarios/nuevo" class="btn-primary">
+      <i class="fas fa-user-plus"></i> Nuevo Usuario
+    </a>
+  </div>
+
+  <div class="users-grid">
+    <div *ngFor="let user of usuarios" class="user-card">
+      <div class="card-header">
+        <div class="avatar">
+          <i class="fas fa-user-circle"></i>
+          <span class="role-badge" [class]="getRoleClass(user.tipo)">
+            {{ user.tipo }}
+          </span>
+        </div>
+        <h3>{{ user.nombre }} {{ user.apeP }} {{ user.apeM }}</h3>
+        <p class="username">{{ '@' + user.usuario }}</p>
+      </div>
+      <div class="card-body">
+        <p><i class="fas fa-envelope"></i> {{ user.correo }}</p>
+        <p><i class="fas fa-phone"></i> {{ user.telefono }}</p>
+        <p *ngIf="user.especialidad"><i class="fas fa-stethoscope"></i> {{ user.especialidad }}</p>
+        <p *ngIf="user.atencion"><i class="fas fa-briefcase-medical"></i> Atención: {{ user.atencion }}</p>
+      </div>
+      <div class="card-actions">
+        <a [routerLink]="['/usuarios/editar', user._id]" class="btn-edit">
+          <i class="fas fa-edit"></i> Editar
+        </a>
+        <button (click)="eliminarUsuario(user)" class="btn-delete">
+          <i class="fas fa-trash-alt"></i> Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
