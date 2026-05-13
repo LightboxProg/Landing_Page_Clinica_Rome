@@ -16,9 +16,15 @@ import { LandingLayoutComponent } from './layouts/landing-layout/landing-layout.
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
 import { UserListComponent } from './components/usuarios/user-list/user-list.component';
 import { UserFormComponent } from './components/usuarios/user-form/user-form.component';
+import { PacientesComponent } from './components/pacientes/pacientes/pacientes.component';
+import { PacienteRegistroComponent } from './components/pacientes/paciente-registro/paciente-registro.component';
+import { PerfilPacienteComponent } from './components/pacientes/perfil-paciente/perfil-paciente.component';
+import { PacientesListadosComponent } from './components/pacientes/pacientes-listados/pacientes-listados.component';
 
 export const routes: Routes = [
-  // Rutas públicas (Landing Page) que usan el LandingLayout (con Navbar y Footer)
+  // ============================================
+  // RUTAS PÚBLICAS
+  // ============================================
   {
     path: '',
     component: LandingLayoutComponent,
@@ -37,20 +43,31 @@ export const routes: Routes = [
     ]
   },
 
-  // Rutas del Sistema/Admin que usan el AdminLayout (sin Navbar público)
+  // ============================================
+  // LOGIN (público, sin guard)
+  // ============================================
+  { path: 'login', component: LoginPageComponent },
+
+  // ============================================
+  // RUTAS PRIVADAS
+  // ============================================
   {
     path: '',
     component: AdminLayoutComponent,
-    canActivate: [authGuard], 
+    canActivate: [authGuard],   // Guard solo para rutas administrativas
     children: [
-      { path: 'login', component: LoginPageComponent, canActivate: [] }, // login sin guard
       { path: 'admin/gestion', component: GestionComponent },
       { path: 'usuarios', component: UserListComponent },
       { path: 'usuarios/nuevo', component: UserFormComponent },
-      { path: 'usuarios/editar/:id', component: UserFormComponent }
+      { path: 'usuarios/editar/:id', component: UserFormComponent },
+      { path: 'pacientes', component: PacientesComponent },
+      { path: 'pacientes/registro', component: PacienteRegistroComponent },
+      { path: 'pacientes/perfil/:id', component: PerfilPacienteComponent },
+      { path: 'pacientes/lista-negra', component: PacientesListadosComponent },
     ]
   },
 
+  // Redirección por defecto
   {
     path: '**',
     redirectTo: '',

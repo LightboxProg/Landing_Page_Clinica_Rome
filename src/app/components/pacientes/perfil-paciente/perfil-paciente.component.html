@@ -1,0 +1,237 @@
+<div class="perfil-paciente" *ngIf="paciente; else cargando">
+  <!-- Encabezado principal con avatar y datos generales -->
+  <div class="perfil-header">
+    <div class="avatar-container">
+      <div class="avatar">
+        <i class="fas fa-user-injured"></i>
+      </div>
+      <div class="badge-edad">{{ calcularEdad(paciente.fechaNac) }} años</div>
+    </div>
+    <div class="info-principal">
+      <h1>{{ paciente.nombre }} {{ paciente.apeP }} {{ paciente.apeM }}</h1>
+      <div class="badges">
+        <span class="badge-genero">
+          <i class="fas" [ngClass]="{'fa-mars': paciente.genero === 'H', 'fa-venus': paciente.genero === 'M'}"></i>
+          {{ paciente.genero === 'H' ? 'Masculino' : 'Femenino' }}
+        </span>
+        <span class="badge-finado" *ngIf="paciente.finado">
+          <i class="fas fa-cross"></i> Finado
+        </span>
+        <span class="badge-lista-negra" *ngIf="listaNegra">
+          <i class="fas fa-ban"></i> Lista Negra
+        </span>
+      </div>
+      <button class="btn-editar" *ngIf="!editando" (click)="editando = true">
+        <i class="fas fa-edit"></i> Editar
+      </button>
+    </div>
+  </div>
+
+  <!-- Contenedor de dos columnas: izquierda (info personal) / derecha (tabs dinámicas) -->
+  <div class="perfil-columnas">
+    <!-- COLUMNA IZQUIERDA: datos fijos -->
+    <aside class="columna-izquierda">
+      <div class="tarjeta-info">
+        <div class="titulo-seccion">
+          <i class="fas fa-id-card"></i>
+          <h3>Información Personal</h3>
+        </div>
+        <div class="contenido-info">
+          <div class="dato">
+            <i class="fas fa-phone"></i>
+            <span class="etiqueta">Teléfono:</span>
+            <span class="valor">{{ paciente.telefonoWhatsapp }}</span>
+          </div>
+          <div class="dato">
+            <i class="fas fa-envelope"></i>
+            <span class="etiqueta">Email:</span>
+            <span class="valor">{{ paciente.correoElectronico || 'No proporcionado' }}</span>
+          </div>
+          <div class="dato">
+            <i class="fas fa-ruler-vertical"></i>
+            <span class="etiqueta">Altura:</span>
+            <span class="valor">{{ paciente.altura || 'No especificada' }}</span>
+          </div>
+          <div class="dato">
+            <i class="fas fa-weight"></i>
+            <span class="etiqueta">Peso:</span>
+            <span class="valor">{{ paciente.peso || 'No especificado' }}</span>
+          </div>
+          <div class="dato">
+            <i class="fas fa-map-marker-alt"></i>
+            <span class="etiqueta">Dirección:</span>
+            <span class="valor">{{ paciente.direccion || 'No especificada' }}</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- COLUMNA DERECHA: pestañas y contenido dinámico -->
+    <main class="columna-derecha">
+      <!-- Pestañas -->
+      <div class="tabs">
+        <button (click)="tabActivo='alergias'" [class.active]="tabActivo === 'alergias'">
+          <i class="fas fa-allergies"></i> Alergias y Medicamentos
+        </button>
+        <button (click)="tabActivo='citas'" [class.active]="tabActivo === 'citas'">
+          <i class="fas fa-calendar-check"></i> Citas
+        </button>
+        <button (click)="tabActivo='galeria'" [class.active]="tabActivo === 'galeria'">
+          <i class="fas fa-images"></i> Galería
+        </button>
+      </div>
+
+      <!-- Modo edición (se muestra sobre todo, pero se puede integrar en la columna izquierda o en una tarjeta aparte) -->
+      <div *ngIf="editando" class="tarjeta-edicion">
+        <h3><i class="fas fa-user-edit"></i> Editar Datos</h3>
+        <div class="form-edicion">
+          <div class="campo">
+            <label>Nombre</label>
+            <input [(ngModel)]="paciente.nombre" placeholder="Nombre">
+          </div>
+          <div class="campo">
+            <label>Apellido Paterno</label>
+            <input [(ngModel)]="paciente.apeP" placeholder="Apellido paterno">
+          </div>
+          <div class="campo">
+            <label>Apellido Materno</label>
+            <input [(ngModel)]="paciente.apeM" placeholder="Apellido materno">
+          </div>
+          <div class="campo">
+            <label>Teléfono</label>
+            <input [(ngModel)]="paciente.telefonoWhatsapp" placeholder="Teléfono">
+          </div>
+          <div class="campo">
+            <label>Correo</label>
+            <input [(ngModel)]="paciente.correoElectronico" placeholder="Email">
+          </div>
+          <div class="campo">
+            <label>Altura (m)</label>
+            <input [(ngModel)]="paciente.altura" placeholder="Altura">
+          </div>
+          <div class="campo">
+            <label>Peso (kg)</label>
+            <input [(ngModel)]="paciente.peso" placeholder="Peso">
+          </div>
+          <div class="campo campo-full">
+            <label>Dirección</label>
+            <input [(ngModel)]="paciente.direccion" placeholder="Dirección">
+          </div>
+          <div class="botones-edicion">
+            <button class="btn-guardar" (click)="guardarCambiosGenerales()">Guardar cambios</button>
+            <button class="btn-cancelar" (click)="editando = false">Cancelar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contenido de pestañas -->
+      <!-- ALERGIAS Y MEDICAMENTOS -->
+      <div *ngIf="tabActivo === 'alergias'" class="tab-content">
+        <div class="tarjeta-seccion">
+          <div class="titulo-seccion">
+            <i class="fas fa-allergies"></i>
+            <h3>Alergias</h3>
+          </div>
+          <textarea [(ngModel)]="paciente.alergias" placeholder="Registre las alergias del paciente..."></textarea>
+          <button class="btn-secundario" (click)="guardarAlergias()">Guardar Alergias</button>
+        </div>
+        <div class="tarjeta-seccion">
+          <div class="titulo-seccion">
+            <i class="fas fa-pills"></i>
+            <h3>Medicamentos</h3>
+          </div>
+          <textarea [(ngModel)]="paciente.medicamentos" placeholder="Registre los medicamentos actuales..."></textarea>
+          <button class="btn-secundario" (click)="guardarMedicamentos()">Guardar Medicamentos</button>
+        </div>
+      </div>
+
+      <!-- CITAS -->
+      <div *ngIf="tabActivo === 'citas'" class="tab-content">
+        <div class="acciones-citas">
+          <button class="btn-primario" (click)="showModalEstetica = true">
+            <i class="fas fa-spa"></i> Nueva Cita Estética
+          </button>
+          <button class="btn-primario" (click)="showModalDental = true">
+            <i class="fas fa-tooth"></i> Nueva Cita Dental
+          </button>
+        </div>
+        <div class="citas-grid">
+          <div class="categoria-citas">
+            <h4><i class="fas fa-spa"></i> Estética</h4>
+            <div *ngFor="let cita of citasEstetica" class="cita-card">
+              <div class="cita-titulo">{{ cita.titulo }}</div>
+              <div class="cita-fecha">{{ cita.fechaHoraInicio | date:'dd/MM/yyyy HH:mm' }}</div>
+              <div class="cita-doctor">Dr. {{ doctoresMap[cita.doctorId] || 'No asignado' }}</div>
+              <div class="cita-estado" [ngClass]="cita.estado">{{ cita.estado }}</div>
+            </div>
+            <div *ngIf="citasEstetica.length === 0" class="sin-registros">No hay citas estéticas</div>
+          </div>
+          <div class="categoria-citas">
+            <h4><i class="fas fa-tooth"></i> Dental</h4>
+            <div *ngFor="let cita of citasDental" class="cita-card">
+              <div class="cita-titulo">{{ cita.titulo }}</div>
+              <div class="cita-fecha">{{ cita.fechaHoraInicio | date:'dd/MM/yyyy HH:mm' }}</div>
+              <div class="cita-doctor">Dr. {{ doctoresMap[cita.doctorId] || 'No asignado' }}</div>
+              <div class="cita-estado" [ngClass]="cita.estado">{{ cita.estado }}</div>
+            </div>
+            <div *ngIf="citasDental.length === 0" class="sin-registros">No hay citas dentales</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GALERÍA -->
+      <div *ngIf="tabActivo === 'galeria'" class="tab-content">
+        <div class="acciones-galeria">
+          <button class="btn-primario" (click)="triggerFileInput()">
+            <i class="fas fa-upload"></i> Subir foto
+          </button>
+          <input type="file" #fileInput style="display:none" (change)="onFileSelected($event)" accept="image/*" multiple>
+        </div>
+        <div class="galeria-grid">
+          <div *ngFor="let foto of fotos" class="galeria-item">
+            <img [src]="foto.url" alt="Foto del paciente" (click)="abrirModalImagen(foto.url)">
+            <div class="galeria-overlay" (click)="abrirModalImagen(foto.url)">
+              <i class="fas fa-search-plus"></i>
+            </div>
+          </div>
+          <div *ngIf="fotos.length === 0" class="sin-registros">
+            <i class="fas fa-image"></i> No hay fotos en la galería
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Modal de imagen ampliada (puedes reutilizar el mismo app-modal) -->
+<ng-template #imagenModal>
+  <div class="modal-imagen" (click)="cerrarModalImagen()">
+    <img [src]="imagenModal" alt="Ampliación" (click)="$event.stopPropagation()">
+    <button class="cerrar-modal" (click)="cerrarModalImagen()">✖</button>
+  </div>
+</ng-template>
+
+<ng-template #cargando>
+  <div class="cargando">Cargando datos del paciente...</div>
+</ng-template>
+
+<!-- Modales para nueva cita (estética / dental) - se mantienen igual pero puedes mejorar su estilo -->
+<app-modal [isVisible]="showModalEstetica" (close)="showModalEstetica=false">
+  <form (ngSubmit)="crearCitaEstetica()" class="form-modal-cita">
+    <h3>Nueva Cita Estética</h3>
+    <label>Título</label>
+    <input [(ngModel)]="nuevaCitaEstetica.titulo" name="titulo" required>
+    <label>Fecha/Hora Inicio</label>
+    <input type="datetime-local" [(ngModel)]="nuevaCitaEstetica.fechaHoraInicio" name="inicio">
+    <label>Fecha/Hora Fin</label>
+    <input type="datetime-local" [(ngModel)]="nuevaCitaEstetica.fechaHoraFin" name="fin">
+    <label>Doctor ID (opcional)</label>
+    <input [(ngModel)]="nuevaCitaEstetica.doctorId" name="doctor">
+    <label>Notas</label>
+    <textarea [(ngModel)]="nuevaCitaEstetica.notas" rows="3"></textarea>
+    <div class="botones-modal">
+      <button type="submit" class="btn-guardar">Guardar</button>
+      <button type="button" class="btn-cancelar" (click)="showModalEstetica=false">Cancelar</button>
+    </div>
+  </form>
+</app-modal>

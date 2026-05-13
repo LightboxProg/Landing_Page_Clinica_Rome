@@ -1,0 +1,145 @@
+/* ========================================
+   ROME HARMONY CLINIC - Registro/Edición de Usuario
+   ======================================== */
+:root {
+  --azul-oscuro: #1a2b3c;
+  --teal: #2a6b7c;
+  --dorado: #8b7d4f;
+  --crema: #f5e6d3;
+  --beige: #f8f5f0;
+  --marron-oscuro: #3d3a2f;
+  --blanco: #ffffff;
+  --fuente-principal: 'Work Sans', sans-serif;
+  --fuente-elegante: 'Playfair Display', serif;
+  --transicion: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --borde-redondeado: 12px;
+}
+
+.form-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  background: var(--blanco);
+  border-radius: 20px;
+  box-shadow: 0 8px 28px rgba(26, 43, 60, 0.1);
+  padding: 2rem;
+  font-family: var(--fuente-principal);
+  position: relative;
+  border-top: 4px solid var(--dorado);
+}
+
+.form-container h2 {
+  font-family: var(--fuente-elegante);
+  color: var(--azul-oscuro);
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+  position: relative;
+}
+
+.form-container h2::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 2px;
+  background: var(--dorado);
+  margin: 0.5rem auto 0;
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.field {
+  flex: 1;
+  min-width: 180px;
+}
+
+label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--azul-oscuro);
+  margin-bottom: 0.3rem;
+}
+
+input, select {
+  width: 100%;
+  padding: 0.7rem 0.8rem;
+  border: 2px solid rgba(42, 107, 124, 0.15);
+  border-radius: var(--borde-redondeado);
+  font-family: var(--fuente-principal);
+  font-size: 0.9rem;
+  transition: var(--transicion);
+  background: var(--beige);
+  box-sizing: border-box;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--teal);
+  background: var(--blanco);
+  box-shadow: 0 0 0 4px rgba(42, 107, 124, 0.1);
+  transform: translateY(-2px);
+}
+
+select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238b7d4f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 0.8rem center;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.btn-primary, .btn-secondary {
+  padding: 0.7rem 2rem;
+  border-radius: 40px;
+  font-weight: 600;
+  font-family: var(--fuente-principal);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: var(--transicion);
+  border: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--azul-oscuro), var(--teal));
+  color: var(--blanco);
+  box-shadow: 0 2px 8px rgba(42, 107, 124, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(42, 107, 124, 0.4);
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 2px solid var(--teal);
+  color: var(--teal);
+}
+
+.btn-secondary:hover {
+  background: rgba(42, 107, 124, 0.05);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 640px) {
+  .form-container {
+    margin: 1rem;
+    padding: 1.2rem;
+  }
+  .form-row {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+}

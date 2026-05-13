@@ -1,37 +1,108 @@
-<div class="user-list-container">
-  <div class="header-actions">
-    <h2>Gestión de Usuarios</h2>
+<div class="contenedor-usuarios">
+  <!-- Encabezado de la página -->
+  <div class="encabezado-pagina">
+    <div class="contenido-encabezado">
+      <h1 class="titulo-pagina">Gestión de Usuarios</h1>
+      <p class="subtitulo-pagina">ROME HARMONY CLINIC - Sistema de Administración</p>
+    </div>
+  </div>
+
+  <!-- Barra de filtros y acciones -->
+  <div class="barra-filtros">
+    <div class="filtros">
+      <input 
+        type="text" 
+        [(ngModel)]="filtroTexto" 
+        (input)="aplicarFiltros()"
+        placeholder="Buscar por nombre, usuario o correo..."
+        class="campo-busqueda"
+      />
+      <select [(ngModel)]="filtroTipo" (change)="aplicarFiltros()" class="select-filtro">
+        <option value="">Todos los tipos</option>
+        <option value="Administrador">Administrador</option>
+        <option value="Doctor">Doctor</option>
+        <option value="Especialista">Especialista</option>
+        <option value="Recepcionista">Recepcionista</option>
+      </select>
+      <select *ngIf="filtroTipo === 'Doctor' || filtroTipo === 'Especialista'" 
+              [(ngModel)]="filtroAtencion" 
+              (change)="aplicarFiltros()" 
+              class="select-filtro">
+        <option value="">Todas las atenciones</option>
+        <option value="Dental">Dental</option>
+        <option value="Estetica">Estética</option>
+      </select>
+    </div>
     <a routerLink="/usuarios/nuevo" class="btn-primary">
       <i class="fas fa-user-plus"></i> Nuevo Usuario
     </a>
   </div>
 
-  <div class="users-grid">
-    <div *ngFor="let user of usuarios" class="user-card">
-      <div class="card-header">
-        <div class="avatar">
-          <i class="fas fa-user-circle"></i>
-          <span class="role-badge" [class]="getRoleClass(user.tipo)">
-            {{ user.tipo }}
-          </span>
+  <!-- Lista de usuarios filtrados -->
+  <div class="contenedor-lista">
+    <div class="elementos-usuario">
+      <div *ngFor="let user of usuariosFiltrados" class="tarjeta-usuario">
+        <div class="contenido-tarjeta" (click)="verDetalles(user)">
+          <div class="contenedor-avatar">
+            <div class="avatar-circulo">
+              <i class="fas fa-user icono-usuario"></i>
+            </div>
+            <div class="indicador-tipo" [ngClass]="{
+              'tipo-admin': user.tipo === 'Administrador',
+              'tipo-doctor': user.tipo === 'Doctor',
+              'tipo-especialista': user.tipo === 'Especialista',
+              'tipo-recepcionista': user.tipo === 'Recepcionista'
+            }">
+              <i class="fas" [ngClass]="{
+                'fa-crown': user.tipo === 'Administrador',
+                'fa-user-md': user.tipo === 'Doctor',
+                'fa-stethoscope': user.tipo === 'Especialista',
+                'fa-user-tie': user.tipo === 'Recepcionista'
+              }"></i>
+            </div>
+          </div>
+
+          <div class="info-usuario">
+            <h3 class="nombre-usuario">{{ user.nombre }} {{ user.apeP }} {{ user.apeM }}</h3>
+            <div class="detalles-usuario">
+              <div class="detalle-item">
+                <i class="fas fa-at icono-detalle"></i>
+                <span class="etiqueta-detalle">Usuario:</span>
+                <span class="valor-detalle">{{ user.usuario }}</span>
+              </div>
+              <div class="detalle-item">
+                <i class="fas fa-user-tag icono-detalle"></i>
+                <span class="etiqueta-detalle">Tipo:</span>
+                <span class="valor-detalle">{{ user.tipo }}</span>
+              </div>
+              <div class="detalle-item" *ngIf="user.especialidad">
+                <i class="fas fa-stethoscope icono-detalle"></i>
+                <span class="etiqueta-detalle">Especialidad:</span>
+                <span class="valor-detalle">{{ user.especialidad }}</span>
+              </div>
+              <div class="detalle-item" *ngIf="user.atencion">
+                <i class="fas fa-briefcase-medical icono-detalle"></i>
+                <span class="etiqueta-detalle">Atención:</span>
+                <span class="valor-detalle">{{ user.atencion }}</span>
+              </div>
+            </div>
+          </div>
         </div>
-        <h3>{{ user.nombre }} {{ user.apeP }} {{ user.apeM }}</h3>
-        <p class="username">{{ '@' + user.usuario }}</p>
-      </div>
-      <div class="card-body">
-        <p><i class="fas fa-envelope"></i> {{ user.correo }}</p>
-        <p><i class="fas fa-phone"></i> {{ user.telefono }}</p>
-        <p *ngIf="user.especialidad"><i class="fas fa-stethoscope"></i> {{ user.especialidad }}</p>
-        <p *ngIf="user.atencion"><i class="fas fa-briefcase-medical"></i> Atención: {{ user.atencion }}</p>
-      </div>
-      <div class="card-actions">
-        <a [routerLink]="['/usuarios/editar', user._id]" class="btn-edit">
-          <i class="fas fa-edit"></i> Editar
-        </a>
-        <button (click)="eliminarUsuario(user)" class="btn-delete">
-          <i class="fas fa-trash-alt"></i> Eliminar
-        </button>
+
+        <div class="contenedor-acciones">
+          <button class="boton-editar" (click)="editarUsuario(user)" title="Editar usuario">
+            <i class="fas fa-edit"></i>
+            <span>Editar</span>
+          </button>
+          <button class="boton-eliminar" (click)="eliminarUsuario(user)" title="Eliminar usuario">
+            <i class="fas fa-trash-alt"></i>
+            <span>Eliminar</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
+
+  <!-- Modal de usuario -->
+  <app-user-modal #userModal></app-user-modal>
 </div>

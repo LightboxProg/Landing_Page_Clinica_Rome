@@ -1,0 +1,12 @@
+<div class="contenedor-filtros">
+  <div class="tarjeta-filtros">
+    <div class="encabezado-filtros"><i class="fas fa-filter"></i><h3>Filtros de Búsqueda</h3></div>
+    <form [formGroup]="filterForm" (ngSubmit)="obtenerFiltrosPacientes()" class="formulario-filtros">
+      <div class="grupo-filtro">
+        <label>Buscar por Número de Teléfono</label>
+        <input formControlName="search" type="text" placeholder="Ej: 521234567890">
+      </div>
+      <button type="submit" class="boton-aplicar">Aplicar Filtros</button>
+    </form>
+  </div>
+</div>

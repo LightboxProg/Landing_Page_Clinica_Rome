@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { MembresiasService } from '../../../services/membresias/membresias.service';
-import { PacientesService } from '../../../services/pacientes/pacientes.service';
+import { Paciente, PacientesService } from '../../../services/pacientes/pacientes.service';
 
 @Component({
   selector: 'app-pasarela-membresias',
@@ -15,24 +15,28 @@ import { PacientesService } from '../../../services/pacientes/pacientes.service'
   styleUrl: './pasarela-membresias.component.css'
 })
 export class PasarelaMembresiasComponent implements OnInit {
-  catalogoId: string | null 
-  = null;
+  catalogoId: string | null = null;
   paso: 1 | 2 | 3 = 1;
-  catalogo: any = null; // detalle del catálogo seleccionado
+  catalogo: any = null;
 
   // Paso 1: Búsqueda
   telefonoBusqueda: string = '';
   buscando: boolean = false;
   errorBusqueda: string = '';
 
-  // Paso 2: Registro (si no existe)
-  nuevoPaciente = {
+  // Paso 2: Registro (ahora con todas las propiedades requeridas)
+  nuevoPaciente: Paciente = {
     nombre: '',
     apeP: '',
     apeM: '',
     apodo: '',
+    telefonoWhatsapp: '',       // se llenará con telefonoPaciente
     telefonoPaciente: '',
-    correoElectronico: ''
+    correoElectronico: '',
+    genero: 'Otro',            // valor por defecto
+    fechaNac: new Date(),      // valor por defecto (cambiar si capturas fecha)
+    enListaNegra: false,
+    finado: false
   };
   registrando: boolean = false;
   errorRegistro: string = '';
@@ -53,7 +57,6 @@ export class PasarelaMembresiasComponent implements OnInit {
     if (!this.catalogoId) {
       this.router.navigate(['/membresias']);
     }
-    // Cargar detalles del catálogo si tenemos el id
     this.cargarCatalogoDetalle();
   }
 
@@ -89,8 +92,9 @@ export class PasarelaMembresiasComponent implements OnInit {
         console.warn('Paciente no encontrado:', err);
         this.buscando = false;
         if (err.status === 404) {
-          // Ir al paso de pre-registro
+          // Paso de pre-registro: asignar teléfono y sincronizar telefonoWhatsapp
           this.nuevoPaciente.telefonoPaciente = this.telefonoBusqueda;
+          this.nuevoPaciente.telefonoWhatsapp = this.telefonoBusqueda; // sincronizar
           this.paso = 2;
         } else {
           this.errorBusqueda = 'Error al buscar el paciente. Intenta de nuevo.';
@@ -100,14 +104,21 @@ export class PasarelaMembresiasComponent implements OnInit {
   }
 
   registrarPaciente(): void {
+    // Validar campos obligatorios
     if (!this.nuevoPaciente.nombre || !this.nuevoPaciente.apeP || !this.nuevoPaciente.apeM || !this.nuevoPaciente.telefonoPaciente || !this.nuevoPaciente.apodo) {
       this.errorRegistro = 'Por favor, completa los campos obligatorios.';
       return;
     }
 
+    // Asegurar que telefonoWhatsapp tenga el mismo valor si no se llenó explícitamente
+    if (!this.nuevoPaciente.telefonoWhatsapp) {
+      this.nuevoPaciente.telefonoWhatsapp = this.nuevoPaciente.telefonoPaciente;
+    }
+
     this.registrando = true;
     this.errorRegistro = '';
 
+    // Ahora this.nuevoPaciente cumple con la interfaz Paciente
     this.pacientesService.crearPaciente(this.nuevoPaciente).subscribe({
       next: (paciente) => {
         this.pacienteEncontrado = paciente;
@@ -140,7 +151,6 @@ export class PasarelaMembresiasComponent implements OnInit {
     });
   }
 
-  // Utilidades para mostrar precios y cuotas en la plantilla
   formatearPrecio(precio: number): string {
     return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(precio || 0);
   }

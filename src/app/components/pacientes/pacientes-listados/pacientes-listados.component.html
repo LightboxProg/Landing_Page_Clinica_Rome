@@ -1,0 +1,15 @@
+<div class="contenedor-lista-negra">
+    <div class="encabezado-pagina">
+        <h1>Lista Negra de Pacientes</h1>
+    </div>
+    <div class="lista">
+        <div *ngFor="let item of listaNegra" class="tarjeta-ln">
+            <div><strong>{{item.paciente.nombre}} {{item.paciente.apeP}} {{item.paciente.apeM}}</strong></div>
+            <div>Teléfono: {{item.paciente.telefonoWhatsapp}}</div>
+            <div>Razón: {{item.razon}}</div>
+            <div>Agregado por: {{item.agregadoPor?.usuario}}</div>
+            <button [routerLink]="['/pacientes/perfil', item.paciente._id]">Ver Perfil</button>
+        </div>
+        <div *ngIf="listaNegra.length===0">No hay pacientes en lista negra</div>
+    </div>
+</div>

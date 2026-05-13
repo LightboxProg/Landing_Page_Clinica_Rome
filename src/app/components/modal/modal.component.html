@@ -1,0 +1,6 @@
+<div class="modal-overlay" *ngIf="isVisible" (click)="close.emit()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        <ng-content></ng-content>
+        <button class="modal-close" (click)="close.emit()">✖</button>
+    </div>
+</div>

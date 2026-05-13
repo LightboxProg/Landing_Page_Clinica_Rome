@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
 import { UserService } from '../../../services/user/user.service';
-import { PacientesService } from '../../../services/pacientes/pacientes.service';
+import { Paciente, PacientesService } from '../../../services/pacientes/pacientes.service';
 import { SwalService } from '../../../services/swal/swal.service';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-user-modal',
@@ -15,7 +16,8 @@ import { SwalService } from '../../../services/swal/swal.service';
 export class UserModalComponent implements OnInit {
   @Input() usuario: any;
   showModal = false;
-  pacientes: any[] = [];
+  pacientes: Paciente[] = [];
+  private destroy$ = new Subject<void>();
 
   constructor(
     private userService: UserService,
@@ -28,10 +30,16 @@ export class UserModalComponent implements OnInit {
   }
 
   cargarPacientes(): void {
-    this.pacientesService.obtenerPacientes().subscribe({
-      next: (data) => this.pacientes = data,
-      error: () => console.error('Error cargando pacientes')
-    });
+    // Nos suscribimos al observable que emite la lista de pacientes
+    this.pacientesService.pacientes$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data: Paciente[]) => this.pacientes = data,
+        error: () => console.error('Error cargando pacientes')
+      });
+
+    // Ejecutamos la petición HTTP (el servicio ya se suscribe internamente y actualiza pacientes$)
+    this.pacientesService.obtenerPacientes();
   }
 
   asignarPaciente(pacienteId: string): void {

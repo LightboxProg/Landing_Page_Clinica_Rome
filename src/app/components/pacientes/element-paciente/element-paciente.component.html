@@ -1,0 +1,36 @@
+<div class="tarjeta-paciente" [ngClass]="{'paciente-finado': paciente.finado}">
+  <div class="indicador-finado" *ngIf="paciente.finado"><i class="fas fa-cross"></i><span>Finado</span></div>
+  <div class="contenido-tarjeta" (click)="verPerfil()">
+    <div class="contenedor-avatar"><div class="avatar-circulo"><i class="fas fa-user-injured"></i></div></div>
+    <div class="info-paciente">
+      <h3 class="nombre-paciente">{{paciente.nombre}} {{paciente.apeP}} {{paciente.apeM}}</h3>
+      <div class="detalles-paciente">
+        <div class="detalle-item"><i class="fas fa-birthday-cake"></i><span class="etiqueta">Fecha Nac.:</span><span>{{formatearFecha(paciente.fechaNac)}}</span></div>
+        <div class="detalle-item"><i class="fas fa-phone"></i><span class="etiqueta">Teléfono:</span><span>{{paciente.telefonoWhatsapp}}</span></div>
+        <div class="detalle-item"><i class="fas fa-envelope"></i><span class="etiqueta">Correo:</span><span>{{paciente.correoElectronico || 'N/A'}}</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="contenedor-acciones">
+    <button class="boton-accion boton-asignar" (click)="$event.stopPropagation()">Asignar</button>
+    <button class="boton-accion boton-lista-negra" (click)="$event.stopPropagation(); abrirListaNegra()">Lista Negra</button>
+  </div>
+</div>
+
+<app-modal [isVisible]="showListaNegraModal" (close)="onCloseListaNegraModal()">
+  <div class="formulario-lista-negra">
+    <div class="banner-advertencia">
+      <div class="icono-advertencia"><i class="fas fa-exclamation-triangle"></i></div>
+      <div><h2>Agregar a Lista Negra</h2><p>Motivo para registrar a este paciente</p></div>
+    </div>
+    <div class="cuerpo-formulario">
+      <div class="grupo-campo"><label>Razón *</label><input type="text" [(ngModel)]="razon" maxlength="200"></div>
+      <div class="grupo-campo"><label>Detalles</label><textarea rows="3" [(ngModel)]="detalles" maxlength="1000"></textarea></div>
+      <div class="grupo-campo"><label>Tipo de Bloqueo</label><select [(ngModel)]="tipo"><option value="permanente">Permanente</option><option value="temporal">Temporal</option></select></div>
+    </div>
+    <div class="pie-formulario">
+      <button class="boton-cancelar" (click)="onCloseListaNegraModal()">Cancelar</button>
+      <button class="boton-confirmar" (click)="agregarListaNegra()">Confirmar</button>
+    </div>
+  </div>
+</app-modal>

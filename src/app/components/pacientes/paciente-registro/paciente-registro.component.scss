@@ -1,0 +1,256 @@
+$colorAzulOscuro: #1a2b3c;
+$colorTeal: #2a6b7c;
+$colorDorado: #8b7d4f;
+$colorMarronOscuro: #3d3a2f;
+$colorBeige: #f8f5f0;
+$colorCrema: #f5e6d3;
+$colorBlanco: #ffffff;
+
+$fuenteElegante: 'Playfair Display', serif;
+$fuentePrincipal: 'Work Sans', sans-serif;
+
+$bordeRedondeado: 12px;
+$bordeRedondeadoGrande: 20px;
+$transicionSuave: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+$sombraTarjeta: 0 10px 40px rgba(26, 43, 60, 0.15);
+
+:host {
+  display: block;
+  min-height: 100vh;
+  background: radial-gradient(circle at top right, $colorBeige 0%, $colorCrema 100%);
+  padding: 1.5rem;
+}
+
+.contenedor-registro {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 3rem);
+}
+
+.tarjeta-registro {
+  width: 100%;
+  max-width: 900px;
+  background: $colorBlanco;
+  border-radius: $bordeRedondeadoGrande;
+  box-shadow: $sombraTarjeta;
+  overflow: hidden;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, $colorAzulOscuro 0%, $colorTeal 50%, $colorDorado 100%);
+  }
+}
+
+.encabezado-registro {
+  background: linear-gradient(135deg, $colorAzulOscuro 0%, $colorTeal 100%);
+  padding: 2rem;
+  color: $colorBlanco;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, $colorTeal 0%, $colorDorado 100%);
+  }
+}
+
+.icono-encabezado {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  i {
+    font-size: 2rem;
+  }
+}
+
+.texto-encabezado {
+  h1 {
+    font-family: $fuenteElegante;
+    font-size: 2rem;
+    margin: 0 0 0.5rem;
+  }
+  p {
+    font-family: $fuentePrincipal;
+    font-size: 1rem;
+    opacity: 0.9;
+  }
+}
+
+.formulario-registro {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.seccion-formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.encabezado-seccion {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, $colorBeige 0%, $colorCrema 100%);
+  border-radius: $bordeRedondeado;
+  border-left: 4px solid $colorTeal;
+
+  i {
+    font-size: 1.3rem;
+    color: $colorDorado;
+  }
+  h2 {
+    font-family: $fuenteElegante;
+    font-size: 1.3rem;
+    color: $colorAzulOscuro;
+    margin: 0;
+  }
+}
+
+.grid-campos {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.grupo-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  &.grupo-completo {
+    grid-column: 1 / -1;
+  }
+  &.grupo-telefono {
+    grid-column: 1 / -1;
+  }
+}
+
+.etiqueta-campo {
+  font-family: $fuentePrincipal;
+  font-weight: 600;
+  color: $colorAzulOscuro;
+  font-size: 0.9rem;
+}
+
+input, select, textarea {
+  font-family: $fuentePrincipal;
+  font-size: 1rem;
+  padding: 0.75rem;
+  border: 2px solid rgba(42, 107, 124, 0.15);
+  border-radius: $bordeRedondeado;
+  background: $colorBeige;
+  transition: $transicionSuave;
+  outline: none;
+
+  &:focus {
+    border-color: $colorTeal;
+    background: $colorBlanco;
+    box-shadow: 0 0 0 4px rgba(42, 107, 124, 0.1);
+  }
+  &::placeholder {
+    color: rgba(61, 58, 47, 0.4);
+  }
+}
+
+.contenedor-telefono {
+  display: flex;
+  gap: 1rem;
+  align-items: stretch;
+
+  select {
+    flex: 0 0 200px;
+  }
+  input {
+    flex: 1;
+  }
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    select { flex: 1; }
+  }
+}
+
+.pie-formulario {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid rgba(139, 125, 79, 0.1);
+  margin-top: 1rem;
+  flex-wrap: wrap;
+
+  button {
+    flex: 1;
+    padding: 0.75rem 1.5rem;
+    border-radius: $bordeRedondeado;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-family: $fuentePrincipal;
+    cursor: pointer;
+    transition: $transicionSuave;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+}
+
+.boton-cancelar {
+  background: rgba(139, 125, 79, 0.1);
+  color: $colorMarronOscuro;
+  border: 1px solid rgba(139, 125, 79, 0.2);
+  &:hover {
+    background: rgba(139, 125, 79, 0.2);
+  }
+}
+
+.boton-registrar {
+  background: linear-gradient(135deg, $colorAzulOscuro 0%, $colorTeal 100%);
+  color: $colorBlanco;
+  border: none;
+  box-shadow: 0 4px 12px rgba(42, 107, 124, 0.3);
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(42, 107, 124, 0.4);
+  }
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .encabezado-registro {
+    flex-direction: column;
+    text-align: center;
+  }
+  .formulario-registro { padding: 1.5rem; }
+}

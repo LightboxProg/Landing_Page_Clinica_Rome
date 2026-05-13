@@ -1,1 +1,94 @@
-<p>user-modal works!</p>
+<div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="header-info">
+        <i class="fas fa-user-circle"></i>
+        <div>
+          <h3>Detalles del Usuario</h3>
+          <p>Información completa y opciones de asignación</p>
+        </div>
+      </div>
+      <button class="close-btn" (click)="closeModal()">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <!-- Información personal -->
+      <div class="info-section">
+        <div class="profile-preview">
+          <div class="avatar-large">
+            <i class="fas fa-user"></i>
+            <span class="badge-tipo" [ngClass]="{
+              'tipo-admin': usuario.tipo === 'Administrador',
+              'tipo-doctor': usuario.tipo === 'Doctor',
+              'tipo-especialista': usuario.tipo === 'Especialista',
+              'tipo-recepcionista': usuario.tipo === 'Recepcionista'
+            }">
+              <i class="fas" [ngClass]="{
+                'fa-crown': usuario.tipo === 'Administrador',
+                'fa-user-md': usuario.tipo === 'Doctor',
+                'fa-stethoscope': usuario.tipo === 'Especialista',
+                'fa-user-tie': usuario.tipo === 'Recepcionista'
+              }"></i>
+            </span>
+          </div>
+          <h4>{{ usuario.nombre }} {{ usuario.apeP }} {{ usuario.apeM }}</h4>
+          <span class="tipo-usuario">{{ usuario.tipo }}</span>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <i class="fas fa-at"></i>
+            <div>
+              <label>Usuario</label>
+              <p>{{ usuario.usuario }}</p>
+            </div>
+          </div>
+          <div class="info-item">
+            <i class="fas fa-envelope"></i>
+            <div>
+              <label>Correo</label>
+              <p>{{ usuario.correo }}</p>
+            </div>
+          </div>
+          <div class="info-item">
+            <i class="fas fa-phone"></i>
+            <div>
+              <label>Teléfono</label>
+              <p>{{ usuario.telefono }}</p>
+            </div>
+          </div>
+          <div class="info-item" *ngIf="usuario.especialidad">
+            <i class="fas fa-stethoscope"></i>
+            <div>
+              <label>Especialidad</label>
+              <p>{{ usuario.especialidad }}</p>
+            </div>
+          </div>
+          <div class="info-item" *ngIf="usuario.atencion">
+            <i class="fas fa-briefcase-medical"></i>
+            <div>
+              <label>Atención</label>
+              <p>{{ usuario.atencion }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Asignación de pacientes (solo doctores) -->
+      <div class="assign-section" *ngIf="usuario.tipo === 'Doctor' || usuario.tipo === 'Especialista'">
+        <h4><i class="fas fa-user-plus"></i> Asignar Paciente</h4>
+        <div class="assign-control">
+          <select #selectPaciente>
+            <option value="">-- Seleccione un paciente --</option>
+            <option *ngFor="let p of pacientes" [value]="p._id">
+              {{ p.nombre }} {{ p.apeP }} {{ p.apeM }}
+            </option>
+          </select>
+          <button class="btn-assign" (click)="asignarPaciente(selectPaciente.value)">
+            <i class="fas fa-check"></i> Asignar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,81 @@
+<div class="contenedor-registro">
+    <div class="tarjeta-registro">
+        <div class="encabezado-registro">
+            <div class="icono-encabezado"><i class="fas fa-user-plus"></i></div>
+            <div class="texto-encabezado">
+                <h1>Registro de Pacientes</h1>
+                <p>ROME HARMONY CLINIC - Odontología y Estética</p>
+            </div>
+        </div>
+
+        <form class="formulario-registro" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+            <!-- Información Personal -->
+            <div class="seccion-formulario">
+                <div class="encabezado-seccion"><i class="fas fa-user"></i>
+                    <h2>Información Personal</h2>
+                </div>
+                <div class="grid-campos">
+                    <div class="grupo-campo"><label>Nombre</label><input formControlName="nombre" placeholder="Nombre">
+                    </div>
+                    <div class="grupo-campo"><label>Apellido Paterno</label><input formControlName="apeP"
+                            placeholder="Apellido paterno"></div>
+                    <div class="grupo-campo"><label>Apellido Materno</label><input formControlName="apeM"
+                            placeholder="Apellido materno"></div>
+                    <div class="grupo-campo"><label>Apodo</label><input formControlName="apodo" placeholder="Apodo">
+                    </div>
+                    <div class="grupo-campo">
+                        <label>Género</label>
+                        <select formControlName="genero">
+                            <option value="H">Hombre</option>
+                            <option value="M">Mujer</option>
+                        </select>
+                    </div>
+                    <div class="grupo-campo"><label>Fecha de Nacimiento</label><input type="date"
+                            formControlName="fechaNac"></div>
+                </div>
+            </div>
+
+            <!-- Contacto -->
+            <div class="seccion-formulario">
+                <div class="encabezado-seccion"><i class="fas fa-address-book"></i>
+                    <h2>Información de Contacto</h2>
+                </div>
+                <div class="grid-campos">
+                    <div class="grupo-campo"><label>Correo</label><input type="email"
+                            formControlName="correoElectronico" placeholder="correo@ejemplo.com"></div>
+                    <div class="grupo-campo grupo-telefono">
+                        <label>Teléfono</label>
+                        <div class="contenedor-telefono">
+                            <select formControlName="codigoPais" (change)="updatePhonePattern($event)">
+                                <option *ngFor="let c of countries" [value]="c.dialCode">({{c.dialCode}}) {{c.name}}
+                                </option>
+                            </select>
+                            <input type="tel" formControlName="telefono" placeholder="Número">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Física -->
+            <div class="seccion-formulario">
+                <div class="encabezado-seccion"><i class="fas fa-heartbeat"></i>
+                    <h2>Información Física</h2>
+                </div>
+                <div class="grid-campos">
+                    <div class="grupo-campo"><label>Altura (m)</label><input formControlName="altura"
+                            placeholder="1.75"></div>
+                    <div class="grupo-campo"><label>Peso (kg)</label><input formControlName="peso" placeholder="70">
+                    </div>
+                    <div class="grupo-campo grupo-completo"><label>Dirección</label><input formControlName="direccion"
+                            placeholder="Dirección completa"></div>
+                </div>
+            </div>
+
+            <div class="pie-formulario">
+                <button type="button" class="boton-cancelar" (click)="limpiarFormulario()">Limpiar</button>
+                <button type="submit" class="boton-registrar" [disabled]="registerForm.invalid">Registrar
+                    Paciente</button>
+            </div>
+        </form>
+    </div>
+</div>

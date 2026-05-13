@@ -1,0 +1,233 @@
+.admin-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #1a2b3c 0%, #2a6b7c 100%);
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-icon {
+  width: 40px;
+  height: 40px;
+  background: #8b7d4f;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.2rem;
+}
+
+.brand-text h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.brand-text span {
+  font-size: 0.7rem;
+  opacity: 0.8;
+}
+
+/* Contenedor de grupos desplegables */
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+  flex: 1;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Cada grupo tipo dropdown */
+.nav-group {
+  position: relative;
+}
+
+/* Título del grupo (botón del dropdown) */
+.group-title {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.5rem 1.2rem;
+  border-radius: 40px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  color: #f5e6d3;
+}
+
+.group-title i:first-child {
+  font-size: 1rem;
+}
+
+.group-title i.fa-chevron-down {
+  font-size: 0.7rem;
+  margin-left: 5px;
+  transition: transform 0.2s;
+}
+
+.nav-group:hover .group-title {
+  background: rgba(244, 208, 63, 0.2);
+  color: #f4d03f;
+}
+
+.nav-group:hover .group-title i.fa-chevron-down {
+  transform: rotate(180deg);
+}
+
+/* Menú desplegable */
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  background: rgba(30, 50, 60, 0.98);
+  backdrop-filter: blur(8px);
+  border-radius: 16px;
+  padding: 0.5rem 0;
+  min-width: 200px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.2s ease;
+  z-index: 200;
+  border: 1px solid rgba(244, 208, 63, 0.3);
+}
+
+.nav-group:hover .dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dropdown-menu a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0.7rem 1.2rem;
+  color: #f5e6d3;
+  text-decoration: none;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+}
+
+.dropdown-menu a i {
+  width: 20px;
+  text-align: center;
+}
+
+.dropdown-menu a:hover {
+  background: rgba(244, 208, 63, 0.15);
+  color: #f4d03f;
+  padding-left: 1.5rem;
+}
+
+.dropdown-menu a.active {
+  background: rgba(244, 208, 63, 0.25);
+  color: #f4d03f;
+  font-weight: 500;
+}
+
+/* Ajuste responsive para móviles: dropdown a clic */
+@media (max-width: 768px) {
+  .nav-links {
+    width: 100%;
+    justify-content: space-evenly;
+  }
+  
+  .nav-group .dropdown-menu {
+    position: static;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    display: none;
+    background: rgba(30, 50, 60, 0.95);
+    margin-top: 5px;
+    box-shadow: none;
+    border: none;
+    width: 100%;
+  }
+  
+  .nav-group.open .dropdown-menu {
+    display: block;
+  }
+  
+  .group-title {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Zona derecha: usuario y logout */
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.3rem 1rem;
+  border-radius: 30px;
+  cursor: default;
+}
+
+.avatar i {
+  font-size: 1.2rem;
+}
+
+.user-name {
+  font-size: 0.9rem;
+}
+
+.btn-logout {
+  background: #dc3545;
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.btn-logout:hover {
+  background: #c82333;
+  transform: scale(1.02);
+}
+
+.btn-logout i {
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .btn-logout span, .user-name {
+    display: none;
+  }
+  .navbar-actions {
+    gap: 8px;
+  }
+}

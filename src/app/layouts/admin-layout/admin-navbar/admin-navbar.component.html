@@ -9,6 +9,57 @@
     </div>
   </div>
 
+  <div class="nav-links">
+    <!-- Dropdown Usuarios -->
+    <div class="nav-group" [class.open]="openGroup === 'usuarios'" (click)="toggleGroup($event, 'usuarios')">
+      <div class="group-title">
+        <i class="fas fa-user-shield"></i> Usuarios
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <div class="dropdown-menu">
+        <a routerLink="/usuarios" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <i class="fas fa-users"></i> Lista de usuarios
+        </a>
+        <a routerLink="/usuarios/nuevo" routerLinkActive="active">
+          <i class="fas fa-user-plus"></i> Nuevo usuario
+        </a>
+      </div>
+    </div>
+
+    <!-- Dropdown Pacientes -->
+    <div class="nav-group" [class.open]="openGroup === 'pacientes'" (click)="toggleGroup($event, 'pacientes')">
+      <div class="group-title">
+        <i class="fas fa-notes-medical"></i> Pacientes
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <div class="dropdown-menu">
+        <a routerLink="/pacientes" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <i class="fas fa-list"></i> Lista de pacientes
+        </a>
+        <a routerLink="/pacientes/registro" routerLinkActive="active">
+          <i class="fas fa-user-plus"></i> Registrar paciente
+        </a>
+        <a routerLink="/pacientes/lista-negra" routerLinkActive="active">
+          <i class="fas fa-ban"></i> Lista negra
+        </a>
+      </div>
+    </div>
+
+    <!-- Dropdown Gestión -->
+    <div class="nav-group" [class.open]="openGroup === 'gestion'" (click)="toggleGroup($event, 'gestion')">
+      <div class="group-title">
+        <i class="fas fa-calendar-alt"></i> Gestión
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <div class="dropdown-menu">
+        <a routerLink="/admin/gestion" routerLinkActive="active">
+          <i class="fas fa-calendar-check"></i> Calendario
+        </a>
+        <!-- Aquí puedes añadir más opciones de gestión -->
+      </div>
+    </div>
+  </div>
+
   <div class="navbar-actions">
     <div class="user-info" *ngIf="usuarioNombre">
       <div class="avatar">
@@ -16,20 +67,9 @@
       </div>
       <span class="user-name">{{ usuarioNombre }}</span>
     </div>
-
     <button class="btn-logout" (click)="logout()" title="Cerrar sesión">
       <i class="fas fa-sign-out-alt"></i>
       <span>Salir</span>
     </button>
   </div>
-
-  <div class="nav-links">
-    <a routerLink="/usuarios" routerLinkActive="active">
-      <i class="fas fa-users"></i> Usuarios
-    </a>
-    <a routerLink="/usuarios/nuevo" routerLinkActive="active">
-      <i class="fas fa-user-plus"></i> Nuevo
-    </a>
-  </div>
-
 </nav>
