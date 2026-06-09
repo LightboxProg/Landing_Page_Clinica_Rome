@@ -1,0 +1,28 @@
+<div class="leads-list-container">
+  <div 
+    *ngFor="let lead of leads" 
+    class="lead-item" 
+    [class.selected]="lead._id === selectedId"
+    (click)="onSelect(lead)">
+    
+    <div class="lead-header">
+      <span class="lead-name">{{ lead.nombre }}</span>
+      <span class="lead-badge" [ngClass]="getBadgeClass(lead.estado)">{{ lead.estado }}</span>
+    </div>
+
+    <div class="lead-footer">
+      <span class="lead-id">
+        <i [ngClass]="getIcon(lead.origen)"></i> {{ lead.identificador }}
+      </span>
+      <span class="lead-date">{{ lead.ultimoContacto | date:'dd/MM HH:mm' }}</span>
+    </div>
+
+    <div class="lead-interactions" *ngIf="lead.interacciones > 1">
+      <i class="fas fa-comments"></i> {{ lead.interacciones }} interacciones
+    </div>
+  </div>
+
+  <div *ngIf="leads.length === 0" class="no-results">
+    No se encontraron leads
+  </div>
+</div>

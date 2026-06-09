@@ -17,10 +17,10 @@
         <i class="fas fa-chevron-down"></i>
       </div>
       <div class="dropdown-menu">
-        <a routerLink="/usuarios" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        <a routerLink="/admin/usuarios" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
           <i class="fas fa-users"></i> Lista de usuarios
         </a>
-        <a routerLink="/usuarios/nuevo" routerLinkActive="active">
+        <a routerLink="/admin/usuarios/nuevo" routerLinkActive="active">
           <i class="fas fa-user-plus"></i> Nuevo usuario
         </a>
       </div>
@@ -33,13 +33,13 @@
         <i class="fas fa-chevron-down"></i>
       </div>
       <div class="dropdown-menu">
-        <a routerLink="/pacientes" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        <a routerLink="/admin/pacientes" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
           <i class="fas fa-list"></i> Lista de pacientes
         </a>
-        <a routerLink="/pacientes/registro" routerLinkActive="active">
+        <a routerLink="/admin/pacientes/registro" routerLinkActive="active">
           <i class="fas fa-user-plus"></i> Registrar paciente
         </a>
-        <a routerLink="/pacientes/lista-negra" routerLinkActive="active">
+        <a routerLink="/admin/pacientes/lista-negra" routerLinkActive="active">
           <i class="fas fa-ban"></i> Lista negra
         </a>
       </div>
@@ -55,7 +55,12 @@
         <a routerLink="/admin/gestion" routerLinkActive="active">
           <i class="fas fa-calendar-check"></i> Calendario
         </a>
-        <!-- Aquí puedes añadir más opciones de gestión -->
+        <a routerLink="/admin/leads" routerLinkActive="active">
+          <i class="fas fa-address-book"></i> Prospectos (Leads)
+        </a>
+        <a routerLink="/admin/configuracion" routerLinkActive="active">
+          <i class="fas fa-tools"></i> Configuración de Servicios
+        </a>
       </div>
     </div>
   </div>

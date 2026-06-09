@@ -1,0 +1,546 @@
+/* =========================================================
+   Wrapper externo — centra todo el dispositivo
+   ========================================================= */
+.iphone-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 0 20px;
+}
+
+/* =========================================================
+   Botones laterales del iPhone
+   ========================================================= */
+.side-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: absolute;
+  z-index: 10;
+}
+
+.side-buttons.left  { left: -5px; top: 108px; gap: 0; }
+.side-buttons.right { right: -5px; top: 152px; }
+
+.side-btn {
+  background: linear-gradient(180deg, #3a3a3c 0%, #2c2c2e 50%, #3a3a3c 100%);
+  border-radius: 3px 0 0 3px;
+  box-shadow: inset -1px 0 1px rgba(255,255,255,0.08), inset 1px 0 1px rgba(0,0,0,0.4);
+}
+
+.side-buttons.right .side-btn {
+  border-radius: 0 3px 3px 0;
+  box-shadow: inset 1px 0 1px rgba(255,255,255,0.08), inset -1px 0 1px rgba(0,0,0,0.4);
+}
+
+.side-btn.silent   { width: 4px; height: 34px; margin-bottom: 14px; }
+.side-btn.vol-up   { width: 4px; height: 56px; margin-bottom: 10px; }
+.side-btn.vol-down { width: 4px; height: 56px; }
+.side-btn.power    { width: 4px; height: 78px; }
+
+/* =========================================================
+   Marco principal del iPhone
+   ========================================================= */
+.iphone-frame {
+  width: 300px;
+  height: 620px;
+  background: linear-gradient(
+    160deg,
+    #4a4a4e 0%,
+    #1c1c1e 30%,
+    #111113 60%,
+    #2a2a2e 85%,
+    #1c1c1e 100%
+  );
+  border-radius: 54px;
+  padding: 10px;
+  position: relative;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.06),
+    inset 0 0 0 1px rgba(255,255,255,0.04),
+    0 30px 80px rgba(0,0,0,0.6),
+    0 10px 30px rgba(0,0,0,0.4),
+    0 2px 8px rgba(0,0,0,0.3);
+}
+
+/* Reflejo en el marco */
+.frame-gloss {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  right: 12px;
+  height: 200px;
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.06) 0%,
+    rgba(255,255,255,0.01) 60%,
+    transparent 100%
+  );
+  border-radius: 46px 46px 0 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* =========================================================
+   Pantalla del iPhone
+   ========================================================= */
+.iphone-screen {
+  width: 100%;
+  height: 100%;
+  background: #000;
+  border-radius: 46px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* =========================================================
+   Dynamic Island
+   ========================================================= */
+.dynamic-island {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 112px;
+  height: 32px;
+  background: #000;
+  border-radius: 20px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 10px;
+  gap: 7px;
+  box-shadow:
+    0 0 0 1.5px rgba(255,255,255,0.04),
+    0 4px 16px rgba(0,0,0,0.8);
+  transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.dynamic-island:hover {
+  width: 135px;
+}
+
+.island-camera {
+  width: 14px;
+  height: 14px;
+  background: radial-gradient(circle at 40% 35%, #2a4a7a, #0d0d0d);
+  border-radius: 50%;
+  border: 1.5px solid #1a1a1a;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.04),
+    inset 0 1px 2px rgba(255,255,255,0.1);
+}
+
+.island-speaker {
+  width: 48px;
+  height: 7px;
+  background: #111;
+  border-radius: 4px;
+  box-shadow: inset 0 1px 1px rgba(0,0,0,0.8);
+  margin-right: auto;
+}
+
+/* =========================================================
+   Status Bar
+   ========================================================= */
+.status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 22px 0;
+  height: 56px;
+  flex-shrink: 0;
+  background: #efeae2;
+  z-index: 50;
+}
+
+.status-time {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1c1c1e;
+  letter-spacing: -0.3px;
+  font-family: -apple-system, 'SF Pro Display', sans-serif;
+}
+
+.status-icons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.signal-icon,
+.wifi-icon {
+  width: 17px;
+  height: 13px;
+  color: #1c1c1e;
+}
+
+.battery-icon {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+}
+
+.battery-body {
+  width: 27px;
+  height: 13px;
+  border: 1.5px solid #1c1c1e;
+  border-radius: 3px;
+  padding: 2px;
+  position: relative;
+}
+
+.battery-fill {
+  width: 75%;
+  height: 100%;
+  background: #34c759;
+  border-radius: 1.5px;
+}
+
+.battery-tip {
+  width: 3px;
+  height: 6px;
+  background: #1c1c1e;
+  border-radius: 0 1px 1px 0;
+}
+
+/* =========================================================
+   App WhatsApp dentro de la pantalla
+   ========================================================= */
+.whatsapp-app {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #efeae2;
+  overflow: hidden;
+}
+
+/* =========================================================
+   Header WhatsApp — estilo iOS
+   ========================================================= */
+.wa-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 14px 10px;
+  background: rgba(249, 249, 249, 0.96);
+  border-bottom: 0.5px solid rgba(0,0,0,0.12);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  flex-shrink: 0;
+}
+
+.wa-header-left {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.wa-back-icon {
+  font-size: 0.9rem;
+  color: #007aff;
+  margin-right: 2px;
+}
+
+.wa-back-count {
+  font-size: 0.75rem;
+  color: #007aff;
+  font-weight: 500;
+  margin-right: 6px;
+}
+
+.wa-avatar-wrap {
+  position: relative;
+  margin-right: 6px;
+}
+
+.wa-avatar {
+  width: 34px;
+  height: 34px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+  font-family: -apple-system, sans-serif;
+}
+
+.wa-avatar-dot {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 9px;
+  height: 9px;
+  background: #34c759;
+  border-radius: 50%;
+  border: 1.5px solid #f9f9f9;
+}
+
+.wa-contact-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.wa-contact-name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #000;
+  font-family: -apple-system, sans-serif;
+}
+
+.wa-contact-status {
+  font-size: 0.62rem;
+  color: #34c759;
+  font-weight: 500;
+}
+
+.wa-header-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.wa-action-btn {
+  width: 30px;
+  height: 30px;
+  background: rgba(0,122,255,0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #007aff;
+  font-size: 0.75rem;
+}
+
+/* =========================================================
+   Cuerpo del chat
+   ========================================================= */
+.wa-body {
+  flex: 1;
+  padding: 10px 10px 6px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  display: flex;
+  flex-direction: column;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c8bfb0' fill-opacity='0.15'%3E%3Cpath d='M30 30c0-5.523 4.477-10 10-10s10 4.477 10 10-4.477 10-10 10S30 35.523 30 30zm-20 0c0-5.523 4.477-10 10-10s10 4.477 10 10-4.477 10-10 10S10 35.523 10 30z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+.wa-body::-webkit-scrollbar { display: none; }
+
+.wa-date-label {
+  text-align: center;
+  font-size: 0.55rem;
+  font-weight: 600;
+  color: #8a8a8a;
+  background: rgba(255,255,255,0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 3px 10px;
+  border-radius: 10px;
+  margin: 4px auto 10px;
+  letter-spacing: 0.06em;
+  width: fit-content;
+}
+
+/* =========================================================
+   Burbuja de mensaje
+   ========================================================= */
+.wa-bubble-wrap {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 6px;
+}
+
+.wa-bubble {
+  background: #ffffff;
+  border-radius: 14px 14px 14px 3px;
+  max-width: 88%;
+  position: relative;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+/* Cola de la burbuja */
+.wa-bubble-tail {
+  position: absolute;
+  bottom: 0;
+  left: -6px;
+  width: 0;
+  height: 0;
+  border-right: 8px solid #ffffff;
+  border-top: 8px solid transparent;
+  border-bottom: 0 solid transparent;
+}
+
+.wa-media {
+  width: 100%;
+  overflow: hidden;
+  border-radius: 12px 12px 0 0;
+}
+
+.wa-media img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  display: block;
+}
+
+.wa-bubble-content {
+  padding: 8px 10px 5px;
+}
+
+.wa-text-header {
+  display: block;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 4px;
+  font-family: -apple-system, sans-serif;
+}
+
+.wa-text-body {
+  font-size: 0.71rem;
+  line-height: 1.45;
+  color: #1c1c1e;
+  margin: 0 0 4px;
+  font-family: -apple-system, sans-serif;
+}
+
+.wa-text-footer {
+  font-size: 0.62rem;
+  color: #8a8a8a;
+  margin: 0 0 3px;
+}
+
+.wa-bubble-meta {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 3px;
+  margin-top: 2px;
+}
+
+.wa-msg-time {
+  font-size: 0.58rem;
+  color: #8a8a8a;
+}
+
+.wa-check-read {
+  font-size: 0.62rem;
+  color: #53bdeb;
+}
+
+/* =========================================================
+   Estado vacío
+   ========================================================= */
+.wa-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 10px;
+  padding: 20px;
+  margin-top: 40px;
+}
+
+.wa-empty-icon {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #25d366, #128c7e);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(37,211,102,0.35);
+}
+
+.wa-empty-text {
+  font-size: 0.67rem;
+  color: #8a8a8a;
+  text-align: center;
+  line-height: 1.4;
+  max-width: 160px;
+  margin: 0;
+}
+
+/* =========================================================
+   Footer de WhatsApp
+   ========================================================= */
+.wa-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px 12px;
+  background: rgba(249,249,249,0.97);
+  border-top: 0.5px solid rgba(0,0,0,0.1);
+  flex-shrink: 0;
+}
+
+.wa-input-bar {
+  flex: 1;
+  background: #fff;
+  border-radius: 22px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  gap: 8px;
+  border: 0.5px solid rgba(0,0,0,0.08);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.wa-emoji-icon  { font-size: 0.85rem; color: #8a8a8a; }
+.wa-attach-icon { font-size: 0.75rem; color: #8a8a8a; margin-left: auto; }
+.wa-cam-icon    { font-size: 0.75rem; color: #8a8a8a; }
+
+.wa-input-placeholder {
+  flex: 1;
+  font-size: 0.68rem;
+  color: #c7c7cc;
+  font-family: -apple-system, sans-serif;
+}
+
+.wa-mic-btn {
+  width: 34px;
+  height: 34px;
+  background: linear-gradient(135deg, #25d366, #128c7e);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 0.78rem;
+  flex-shrink: 0;
+  box-shadow: 0 3px 10px rgba(37,211,102,0.4);
+}
+
+/* =========================================================
+   Home Indicator
+   ========================================================= */
+.home-indicator {
+  height: 22px;
+  background: #efeae2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.home-indicator::after {
+  content: '';
+  width: 100px;
+  height: 4px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 4px;
+}

@@ -1,0 +1,63 @@
+<div class="gallery-shell">
+
+  <!-- Header -->
+  <header class="gallery-header">
+    <div class="gallery-header-left">
+      <div class="gallery-icon-wrap">
+        <i class="fas fa-images"></i>
+      </div>
+      <div>
+        <div class="gallery-title">Galeria Multimedia</div>
+        <div class="gallery-subtitle">Imagenes para cabeceras de WhatsApp</div>
+      </div>
+    </div>
+    <button class="btn-upload-main" (click)="fileInput.click()">
+      <i class="fas fa-cloud-upload-alt"></i>
+      <span>Subir imagen</span>
+    </button>
+    <input type="file" #fileInput (change)="onFileSelected($event)" hidden accept="image/*">
+  </header>
+
+  <!-- Grid de imagenes -->
+  <div class="gallery-body">
+    <div class="gallery-grid">
+
+      <!-- Drop zone de subida -->
+      <div class="upload-tile" (click)="fileInput.click()" title="Subir nueva imagen">
+        <i class="fas fa-plus upload-tile-icon"></i>
+        <span class="upload-tile-label">Nueva</span>
+      </div>
+
+      <!-- Imagenes cargadas -->
+      <div *ngFor="let foto of galeria"
+           class="gallery-tile"
+           [class.active]="imagenSeleccionada === foto.url"
+           (click)="seleccionarDeGaleria(foto.url)">
+        <img [src]="foto.url" alt="imagen galeria">
+        <div class="tile-overlay">
+          <i class="fas fa-check-circle tile-check"></i>
+        </div>
+        <div class="tile-selected-ring" *ngIf="imagenSeleccionada === foto.url"></div>
+      </div>
+
+    </div>
+
+    <!-- Estado vacío -->
+    <div class="gallery-empty" *ngIf="galeria.length === 0">
+      <i class="fas fa-photo-video gallery-empty-icon"></i>
+      <span>Aun no hay imagenes en la galeria</span>
+    </div>
+  </div>
+
+  <!-- Footer — deseleccionar -->
+  <footer class="gallery-footer" *ngIf="imagenSeleccionada">
+    <div class="gallery-footer-selected">
+      <i class="fas fa-check-circle text-success me-2"></i>
+      <span>Imagen seleccionada como cabecera</span>
+    </div>
+    <button class="btn-deselect" (click)="onImageSelected.emit('')">
+      <i class="fas fa-times me-1"></i> Deseleccionar
+    </button>
+  </footer>
+
+</div>

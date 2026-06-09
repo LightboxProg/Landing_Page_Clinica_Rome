@@ -1,0 +1,30 @@
+<div class="calendar-admin-container">
+  <div class="calendar-sidebar">
+    <div class="sidebar-header">
+      <i class="fas fa-filter"></i>
+      <h3>Filtros</h3>
+    </div>
+    
+    <div class="filter-group">
+      <label>Filtrar por Médico</label>
+      <select [(ngModel)]="doctorIdSeleccionado" (change)="onDoctorChange()" class="doctor-select">
+        <option value="">Todos los médicos</option>
+        <option *ngFor="let doc of doctores" [value]="doc._id">
+          {{ doc.nombre }} {{ doc.apeP }}
+        </option>
+      </select>
+    </div>
+
+    <div class="legend">
+      <h4>Colores por Médico</h4>
+      <div *ngFor="let doc of doctores" class="legend-item">
+        <span class="color-dot" [style.background-color]="doc.colorCalendario"></span>
+        <span class="doc-name">{{ doc.nombre }} {{ doc.apeP }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="calendar-main">
+    <full-calendar #calendar [options]="calendarOptions"></full-calendar>
+  </div>
+</div>

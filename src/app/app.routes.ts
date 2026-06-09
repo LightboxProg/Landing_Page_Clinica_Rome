@@ -20,6 +20,9 @@ import { PacientesComponent } from './components/pacientes/pacientes/pacientes.c
 import { PacienteRegistroComponent } from './components/pacientes/paciente-registro/paciente-registro.component';
 import { PerfilPacienteComponent } from './components/pacientes/perfil-paciente/perfil-paciente.component';
 import { PacientesListadosComponent } from './components/pacientes/pacientes-listados/pacientes-listados.component';
+import { LeadsComponent } from './pages/leads/leads.component';
+import { CalendarioAdminComponent } from './pages/Calendario/calendario.component';
+import { MensajeriaMasivaPageComponent } from './pages/mensajeria-masiva-page/mensajeria-masiva-page.component';
 
 export const routes: Routes = [
   // ============================================
@@ -56,14 +59,22 @@ export const routes: Routes = [
     component: AdminLayoutComponent,
     canActivate: [authGuard],   // Guard solo para rutas administrativas
     children: [
-      { path: 'admin/gestion', component: GestionComponent },
-      { path: 'usuarios', component: UserListComponent },
-      { path: 'usuarios/nuevo', component: UserFormComponent },
-      { path: 'usuarios/editar/:id', component: UserFormComponent },
-      { path: 'pacientes', component: PacientesComponent },
-      { path: 'pacientes/registro', component: PacienteRegistroComponent },
-      { path: 'pacientes/perfil/:id', component: PerfilPacienteComponent },
-      { path: 'pacientes/lista-negra', component: PacientesListadosComponent },
+      // Gestión y Leads
+      { path: 'admin/gestion', component: CalendarioAdminComponent },
+      { path: 'admin/configuracion', component: GestionComponent },
+      { path: 'admin/leads', component: LeadsComponent },
+      { path: 'admin/mensajeria', component: MensajeriaMasivaPageComponent },
+
+      // Usuarios (restaurados a sus paths originales para evitar conflictos)
+      { path: 'admin/usuarios', component: UserListComponent },
+      { path: 'admin/usuarios/nuevo', component: UserFormComponent },
+      { path: 'admin/usuarios/editar/:id', component: UserFormComponent },
+
+      // Pacientes (restaurados a sus paths originales)
+      { path: 'admin/pacientes', component: PacientesComponent },
+      { path: 'admin/pacientes/registro', component: PacienteRegistroComponent },
+      { path: 'admin/pacientes/perfil/:id', component: PerfilPacienteComponent },
+      { path: 'admin/pacientes/lista-negra', component: PacientesListadosComponent },
     ]
   },
 

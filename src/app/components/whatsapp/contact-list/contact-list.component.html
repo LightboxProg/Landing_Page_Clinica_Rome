@@ -1,0 +1,231 @@
+<div class="audience-shell">
+
+  <!-- Toolbar Superior -->
+  <div class="audience-toolbar">
+    <div class="search-wrapper">
+      <i class="fas fa-search search-icon"></i>
+      <input type="text"
+             class="search-input"
+             placeholder="Buscar por nombre o telefono..."
+             [(ngModel)]="filtro">
+    </div>
+
+    <div class="toolbar-right">
+      <button class="btn-filter-toggle"
+              [class.active]="mostrarFiltrosAvanzados"
+              (click)="mostrarFiltrosAvanzados = !mostrarFiltrosAvanzados">
+        <i class="fas fa-sliders-h"></i>
+        <span>Filtros</span>
+        <span class="filter-dot" *ngIf="filtroGenero || filtroMesesCita || filtroOrigen || filtroInteres"></span>
+      </button>
+
+      <div class="selection-chip" [class.active]="contactosSeleccionados.length > 0">
+        <i class="fas fa-users"></i>
+        <span>{{ contactosSeleccionados.length }} seleccionados</span>
+      </div>
+
+      <button class="btn-clear"
+              (click)="onClear.emit()"
+              [disabled]="contactosSeleccionados.length === 0"
+              title="Limpiar seleccion">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Filtros Avanzados -->
+  <div class="filters-panel" *ngIf="mostrarFiltrosAvanzados">
+    <div class="filters-grid">
+      <div class="filter-item">
+        <label class="filter-label">Genero (Pacientes)</label>
+        <select class="filter-select" [(ngModel)]="filtroGenero">
+          <option value="">Todos</option>
+          <option value="M">Mujer</option>
+          <option value="H">Hombre</option>
+          <option value="Otro">Otro</option>
+        </select>
+      </div>
+      <div class="filter-item">
+        <label class="filter-label">Ultima Cita</label>
+        <select class="filter-select" [(ngModel)]="filtroMesesCita">
+          <option value="">Cualquier fecha</option>
+          <option value="1">Menos de 1 mes</option>
+          <option value="3">Mas de 3 meses</option>
+          <option value="6">Mas de 6 meses</option>
+        </select>
+      </div>
+      <div class="filter-item">
+        <label class="filter-label">Origen (Leads)</label>
+        <select class="filter-select" [(ngModel)]="filtroOrigen">
+          <option value="">Todos</option>
+          <option value="WhatsApp">WhatsApp</option>
+          <option value="Instagram">Instagram</option>
+          <option value="Facebook">Facebook</option>
+        </select>
+      </div>
+      <div class="filter-item">
+        <label class="filter-label">Interes (Leads)</label>
+        <select class="filter-select" [(ngModel)]="filtroInteres">
+          <option value="">Todos</option>
+          <option value="Dental">Dental</option>
+          <option value="Estetica">Estetica</option>
+          <option value="Ambos">Ambos</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cuerpo: tabs lateral + lista -->
+  <div class="audience-body">
+
+    <!-- Nav lateral -->
+    <nav class="audience-nav">
+      <button class="nav-tab"
+              [class.active]="tabActivo === 'pacientes'"
+              (click)="tabActivo = 'pacientes'">
+        <div class="nav-tab-inner">
+          <div class="nav-tab-icon nav-icon-pac">
+            <i class="fas fa-user-injured"></i>
+          </div>
+          <span class="nav-tab-label">Pacientes</span>
+        </div>
+        <span class="nav-tab-count">{{ filtradosPacientes.length }}</span>
+      </button>
+
+      <button class="nav-tab"
+              [class.active]="tabActivo === 'leads'"
+              (click)="tabActivo = 'leads'">
+        <div class="nav-tab-inner">
+          <div class="nav-tab-icon nav-icon-lead">
+            <i class="fas fa-bullhorn"></i>
+          </div>
+          <span class="nav-tab-label">Leads</span>
+        </div>
+        <span class="nav-tab-count">{{ filtradosLeads.length }}</span>
+      </button>
+
+      <div class="nav-divider"></div>
+
+      <button class="nav-tab nav-tab-selection"
+              [class.active]="tabActivo === 'seleccion'"
+              (click)="tabActivo = 'seleccion'">
+        <div class="nav-tab-inner">
+          <div class="nav-tab-icon nav-icon-sel">
+            <i class="fas fa-check-double"></i>
+          </div>
+          <span class="nav-tab-label">Seleccion</span>
+        </div>
+        <span class="nav-tab-count nav-count-sel" [class.has-items]="contactosSeleccionados.length > 0">
+          {{ contactosSeleccionados.length }}
+        </span>
+      </button>
+    </nav>
+
+    <!-- Area de lista -->
+    <div class="audience-list-area">
+
+      <!-- Tab Pacientes -->
+      <div class="list-panel" *ngIf="tabActivo === 'pacientes'">
+        <div class="list-header">
+          <span class="list-header-count">{{ filtradosPacientes.length }} resultados</span>
+          <button class="btn-select-all" (click)="addAll('paciente')">
+            <i class="fas fa-check-double me-1"></i> Todos
+          </button>
+        </div>
+        <div class="contact-list">
+          <div *ngFor="let p of filtradosPacientes"
+               class="contact-row"
+               [class.selected]="isSeleccionado(p._id)"
+               (click)="toggle(p, 'paciente')">
+            <div class="contact-checkbox" [class.checked]="isSeleccionado(p._id)">
+              <i class="fas fa-check" *ngIf="isSeleccionado(p._id)"></i>
+            </div>
+            <div class="contact-avatar avatar-pac">{{ p.nombre[0] }}</div>
+            <div class="contact-info">
+              <div class="contact-name">{{ p.nombre }} {{ p.apellidoPaterno }}</div>
+              <div class="contact-meta">
+                <i class="fab fa-whatsapp meta-wa-icon"></i>
+                {{ p.telefonoWhatsapp || 'Sin numero' }}
+                <span class="meta-sep"></span>
+                <span class="meta-tag tag-pac">Paciente</span>
+              </div>
+            </div>
+          </div>
+          <div class="list-empty" *ngIf="filtradosPacientes.length === 0">
+            <i class="fas fa-search list-empty-icon"></i>
+            <span>Sin resultados para esta busqueda</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Leads -->
+      <div class="list-panel" *ngIf="tabActivo === 'leads'">
+        <div class="list-header">
+          <span class="list-header-count">{{ filtradosLeads.length }} resultados</span>
+          <button class="btn-select-all" (click)="addAll('lead')">
+            <i class="fas fa-check-double me-1"></i> Todos
+          </button>
+        </div>
+        <div class="contact-list">
+          <div *ngFor="let l of filtradosLeads"
+               class="contact-row"
+               [class.selected]="isSeleccionado(l._id)"
+               (click)="toggle(l, 'lead')">
+            <div class="contact-checkbox" [class.checked]="isSeleccionado(l._id)">
+              <i class="fas fa-check" *ngIf="isSeleccionado(l._id)"></i>
+            </div>
+            <div class="contact-avatar avatar-lead">{{ l.nombre[0] }}</div>
+            <div class="contact-info">
+              <div class="contact-name">{{ l.nombre }}</div>
+              <div class="contact-meta">
+                <i class="fas fa-id-card meta-icon"></i>
+                {{ l.identificador }}
+                <span class="meta-sep"></span>
+                <span class="meta-tag tag-lead">{{ l.origen }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="list-empty" *ngIf="filtradosLeads.length === 0">
+            <i class="fas fa-search list-empty-icon"></i>
+            <span>Sin resultados para esta busqueda</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Seleccion -->
+      <div class="list-panel" *ngIf="tabActivo === 'seleccion'">
+        <div class="list-header">
+          <span class="list-header-count">{{ contactosSeleccionados.length }} destinatarios</span>
+        </div>
+        <div class="contact-list">
+          <div class="selection-empty" *ngIf="contactosSeleccionados.length === 0">
+            <div class="selection-empty-icon">
+              <i class="fas fa-user-check"></i>
+            </div>
+            <div class="selection-empty-title">Sin destinatarios</div>
+            <div class="selection-empty-sub">Selecciona contactos desde Pacientes o Leads</div>
+          </div>
+
+          <div *ngFor="let c of contactosSeleccionados" class="contact-row selected">
+            <div class="contact-avatar avatar-sel">
+              <i class="fas fa-check"></i>
+            </div>
+            <div class="contact-info">
+              <div class="contact-name">{{ c.nombre }}</div>
+              <div class="contact-meta">
+                <span class="meta-tag" [class.tag-pac]="c.tipo === 'paciente'" [class.tag-lead]="c.tipo === 'lead'">
+                  {{ c.tipo }}
+                </span>
+              </div>
+            </div>
+            <button class="btn-remove" (click)="onRemove.emit(c.id); $event.stopPropagation()">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>

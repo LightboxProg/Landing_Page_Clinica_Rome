@@ -1,0 +1,149 @@
+<div class="iphone-wrapper">
+
+  <!-- Botones laterales izquierdos -->
+  <div class="side-buttons left">
+    <div class="side-btn silent"></div>
+    <div class="side-btn vol-up"></div>
+    <div class="side-btn vol-down"></div>
+  </div>
+
+  <!-- Marco del iPhone -->
+  <div class="iphone-frame">
+
+    <!-- Reflejo superior -->
+    <div class="frame-gloss"></div>
+
+    <!-- Pantalla -->
+    <div class="iphone-screen">
+
+      <!-- Dynamic Island -->
+      <div class="dynamic-island">
+        <div class="island-camera"></div>
+        <div class="island-speaker"></div>
+      </div>
+
+      <!-- Status Bar -->
+      <div class="status-bar">
+        <span class="status-time">9:41</span>
+        <div class="status-icons">
+          <svg class="signal-icon" viewBox="0 0 17 12" fill="currentColor">
+            <rect x="0" y="8" width="3" height="4" rx="0.5"/>
+            <rect x="4.5" y="5.5" width="3" height="6.5" rx="0.5"/>
+            <rect x="9" y="3" width="3" height="9" rx="0.5"/>
+            <rect x="13.5" y="0" width="3" height="12" rx="0.5"/>
+          </svg>
+          <svg class="wifi-icon" viewBox="0 0 16 12" fill="currentColor">
+            <path d="M8 9.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3z"/>
+            <path d="M3.5 6.5C4.9 5.1 6.4 4.3 8 4.3s3.1.8 4.5 2.2l1.2-1.2C12 3.7 10.1 2.8 8 2.8S4 3.7 2.3 5.3l1.2 1.2z"/>
+            <path d="M.7 3.8C2.6 2 5.2 1 8 1s5.4 1 7.3 2.8l1.2-1.2C14.4.9 11.3 0 8 0S1.6.9-.5 2.6L.7 3.8z" opacity=".4"/>
+          </svg>
+          <div class="battery-icon">
+            <div class="battery-body">
+              <div class="battery-fill"></div>
+            </div>
+            <div class="battery-tip"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- App WhatsApp -->
+      <div class="whatsapp-app">
+
+        <!-- Header de WhatsApp -->
+        <div class="wa-header">
+          <div class="wa-header-left">
+            <i class="fas fa-chevron-left wa-back-icon"></i>
+            <span class="wa-back-count">1</span>
+            <div class="wa-avatar-wrap">
+              <div class="wa-avatar">R</div>
+              <span class="wa-avatar-dot"></span>
+            </div>
+            <div class="wa-contact-info">
+              <span class="wa-contact-name">Clinica Rome</span>
+              <span class="wa-contact-status">en linea</span>
+            </div>
+          </div>
+          <div class="wa-header-right">
+            <div class="wa-action-btn">
+              <i class="fas fa-video"></i>
+            </div>
+            <div class="wa-action-btn">
+              <i class="fas fa-phone-alt"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cuerpo del Chat -->
+        <div class="wa-body">
+
+          <!-- Fecha del mensaje -->
+          <div class="wa-date-label">HOY</div>
+
+          <!-- Burbuja de mensaje -->
+          <div class="wa-bubble-wrap" *ngIf="plantillaSeleccionada">
+            <div class="wa-bubble">
+              <div class="wa-bubble-tail"></div>
+
+              <!-- Imagen de cabecera -->
+              <div class="wa-media" *ngIf="imagenSeleccionada">
+                <img [src]="imagenSeleccionada" alt="preview">
+              </div>
+
+              <!-- Contenido -->
+              <div class="wa-bubble-content">
+                <span class="wa-text-header" *ngIf="obtenerTextoPrevisualizacion('HEADER')">
+                  {{ obtenerTextoPrevisualizacion('HEADER') }}
+                </span>
+                <p class="wa-text-body">
+                  {{ obtenerTextoPrevisualizacion('BODY') }}
+                </p>
+                <p class="wa-text-footer" *ngIf="obtenerTextoPrevisualizacion('FOOTER')">
+                  {{ obtenerTextoPrevisualizacion('FOOTER') }}
+                </p>
+                <div class="wa-bubble-meta">
+                  <span class="wa-msg-time">12:00</span>
+                  <span class="wa-check-wrap">
+                    <i class="fas fa-check-double wa-check-read"></i>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Estado vacío -->
+          <div class="wa-empty" *ngIf="!plantillaSeleccionada">
+            <div class="wa-empty-icon">
+              <i class="fab fa-whatsapp"></i>
+            </div>
+            <p class="wa-empty-text">Selecciona una plantilla para previsualizar</p>
+          </div>
+
+        </div>
+
+        <!-- Footer de WhatsApp -->
+        <div class="wa-footer">
+          <div class="wa-input-bar">
+            <i class="far fa-smile wa-emoji-icon"></i>
+            <span class="wa-input-placeholder">Mensaje</span>
+            <i class="fas fa-paperclip wa-attach-icon"></i>
+            <i class="fas fa-camera wa-cam-icon"></i>
+          </div>
+          <div class="wa-mic-btn">
+            <i class="fas fa-microphone"></i>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Home Indicator -->
+      <div class="home-indicator"></div>
+
+    </div>
+  </div>
+
+  <!-- Boton lateral derecho -->
+  <div class="side-buttons right">
+    <div class="side-btn power"></div>
+  </div>
+
+</div>

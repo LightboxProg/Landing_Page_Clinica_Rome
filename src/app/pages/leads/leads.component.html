@@ -1,0 +1,31 @@
+<div class="leads-page">
+  <div class="leads-header">
+    <h1>Gestión de Leads y Prospectos</h1>
+    <p>Administra los contactos que llegan de redes sociales y WhatsApp</p>
+  </div>
+
+  <div class="leads-content">
+    <div class="leads-sidebar">
+      <app-leads-filter (filterChange)="onFilter($event)"></app-leads-filter>
+      <app-leads-list 
+        [leads]="filteredLeads" 
+        (selectLead)="onSelectLead($event)">
+      </app-leads-list>
+    </div>
+
+    <div class="leads-main">
+      <app-lead-perfil 
+        *ngIf="selectedLead" 
+        [lead]="selectedLead"
+        (updated)="onUpdateLead()"
+        (closed)="selectedLead = null">
+      </app-lead-perfil>
+
+      <div *ngIf="!selectedLead" class="no-selection">
+        <i class="fas fa-id-badge"></i>
+        <h3>Selecciona un prospecto para ver su detalle</h3>
+        <p>Aquí podrás ver el historial de interacciones y convertirlos en pacientes.</p>
+      </div>
+    </div>
+  </div>
+</div>

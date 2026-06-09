@@ -1,0 +1,41 @@
+.leads-filter-card {
+  background: white;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  i { position: absolute; left: 12px; color: #adb5bd; }
+  input {
+    width: 100%;
+    padding: 10px 10px 10px 35px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    &:focus { border-color: #1a2b3c; outline: none; }
+  }
+}
+
+.filters-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+
+  select {
+    padding: 8px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: #495057;
+    cursor: pointer;
+    &:focus { border-color: #1a2b3c; outline: none; }
+  }
+}

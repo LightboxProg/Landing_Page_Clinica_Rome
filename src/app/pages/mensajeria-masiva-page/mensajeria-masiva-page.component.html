@@ -1,0 +1,309 @@
+<div class="app-shell">
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar shadow-sm">
+    <div class="brand">
+      <div class="logo-placeholder mb-2">R</div>
+      <h6 class="fw-bold mb-0" style="color: #fff; font-size: 0.9rem;">Rome Clinica</h6>
+      <span style="font-size: 0.65rem; color: rgba(255,255,255,0.5); letter-spacing: 0.08em; text-transform: uppercase;">WhatsApp Studio</span>
+    </div>
+    
+    <nav class="nav-steps p-3">
+      <div class="nav-step" [class.active]="pasoActual === 1" (click)="pasoActual = 1">
+        <div class="step-num">01</div>
+        <div class="step-info">
+          <span class="step-title">Identidad</span>
+          <span class="step-desc">Configuración base</span>
+        </div>
+      </div>
+      <div class="nav-step" [class.active]="pasoActual === 2" (click)="pasoActual = 2" [class.disabled]="!plantillaSeleccionada">
+        <div class="step-num">02</div>
+        <div class="step-info">
+          <span class="step-title">Contenido</span>
+          <span class="step-desc">Mensaje y Multimedia</span>
+        </div>
+      </div>
+      <div class="nav-step" [class.active]="pasoActual === 3" (click)="pasoActual = 3" [class.disabled]="!plantillaSeleccionada">
+        <div class="step-num">03</div>
+        <div class="step-info">
+          <span class="step-title">Audiencia</span>
+          <span class="step-desc">Destinatarios</span>
+        </div>
+      </div>
+      <div class="nav-step" [class.active]="pasoActual === 4" (click)="pasoActual = 4" [class.disabled]="contactosSeleccionados.length === 0">
+        <div class="step-num">04</div>
+        <div class="step-info">
+          <span class="step-title">Lanzamiento</span>
+          <span class="step-desc">Resumen y Envío</span>
+        </div>
+      </div>
+    </nav>
+    
+    <div class="sidebar-footer p-4 border-top mt-auto">
+      <button class="btn btn-outline-danger w-100 btn-sm" (click)="clearContactos()">
+        <i class="fas fa-trash-alt me-2"></i> Resetear Todo
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <header class="top-bar d-flex justify-content-between align-items-center px-5 py-3 bg-white border-bottom">
+      <div class="path-info">
+        <span class="text-muted">Marketing</span> / <span class="fw-bold text-navy">WhatsApp Masivo</span>
+      </div>
+    </header>
+
+    <div class="step-workspace p-5">
+      <div class="workspace-container">
+        <!-- STEP 1 -->
+        <div class="step-content" *ngIf="pasoActual === 1">
+          <header class="step-header mb-5">
+            <h2 class="display-6 fw-bold text-navy">Define tu campaña</h2>
+            <p class="text-muted lead">Empieza por darle un nombre y elegir una de tus plantillas oficiales.</p>
+          </header>
+
+          <div class="card-bento mb-4">
+            <label class="form-label text-navy fw-bold">Nombre de la Campaña</label>
+            <input type="text" class="form-control-minimal" placeholder="Ej: Campaña Botox Verano" [(ngModel)]="nombreCampania">
+          </div>
+
+          <app-template-config 
+            [plantillas]="plantillas"
+            [plantillaSeleccionada]="plantillaSeleccionada"
+            [mapeo]="mapeo"
+            (onTemplateChange)="handleTemplateChange($event)">
+          </app-template-config>
+        </div>
+
+        <!-- STEP 2 -->
+        <div class="step-content" *ngIf="pasoActual === 2">
+          <header class="step-header mb-5">
+            <h2 class="display-6 fw-bold text-navy">Personaliza el mensaje</h2>
+            <p class="text-muted lead">Ajusta las variables dinámicas y sube archivos multimedia.</p>
+          </header>
+
+          <div class="content-frames-wrapper d-flex flex-column gap-4">
+            
+            <!-- Marco Multimedia -->
+            <div class="content-frame border rounded-4 p-4 bg-white shadow-sm" *ngIf="soportaMultimedia">
+              <h5 class="fw-bold text-navy mb-3 border-bottom pb-2"><i class="fas fa-image text-primary me-2"></i> Encabezado Multimedia</h5>
+              <app-multimedia-gallery
+                [galeria]="galeria"
+                [imagenSeleccionada]="imagenSeleccionada"
+                (onImageSelected)="imagenSeleccionada = $event"
+                (onGalleryUpdate)="cargarDatos()">
+              </app-multimedia-gallery>
+            </div>
+            
+            <!-- Si no soporta multimedia, mostramos un aviso informativo -->
+            <div class="content-frame border rounded-4 p-4 bg-light shadow-sm" *ngIf="!soportaMultimedia">
+              <div class="d-flex align-items-center mb-0">
+                <i class="fas fa-info-circle text-primary fa-2x me-3"></i>
+                <div>
+                  <h6 class="fw-bold mb-1 text-navy">Plantilla de solo texto</h6>
+                  <p class="text-muted small mb-0">La plantilla seleccionada ({{ plantillaSeleccionada?.name }}) no admite encabezados multimedia.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Marco Variables -->
+            <div class="content-frame border rounded-4 p-4 bg-white shadow-sm">
+              <h5 class="fw-bold text-navy mb-3 border-bottom pb-2"><i class="fas fa-code text-primary me-2"></i> Variables Dinámicas</h5>
+              <p class="text-muted small mb-4">Define el origen de los datos dinámicos o escribe valores fijos para rellenar la plantilla.</p>
+              
+              <div class="variables-list-modern">
+                <div *ngFor="let m of mapeo.body" class="variable-row p-3 rounded-3 mb-3 shadow-sm border">
+                  <div class="d-flex align-items-center gap-3">
+                    <span class="var-tag">{{ '{{' + m.index + '}}' }}</span>
+                    <div class="flex-grow-1">
+                      <select class="form-select-minimal" [(ngModel)]="m.param">
+                        <option value="manual">Texto Estático (Manual)</option>
+                        <option value="nombre">Nombre</option>
+                        <option value="nombreCompleto">Nombre Completo</option>
+                        <option value="telefono">Teléfono</option>
+                        <option value="interes">Interés Detectado</option>
+                      </select>
+                    </div>
+                    <div class="manual-box" *ngIf="m.param === 'manual'" style="width: 35%;">
+                      <input type="text" class="form-control-minimal sm" placeholder="Escribe el valor aquí..." [(ngModel)]="m.valorManual">
+                    </div>
+                  </div>
+                </div>
+                
+                <div *ngIf="mapeo.body.length === 0" class="text-center py-4 text-muted small">
+                  <i class="fas fa-check-circle fa-2x text-success opacity-50 mb-2"></i>
+                  <p class="mb-0">Esta plantilla no requiere configuración de variables.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 3 -->
+        <div class="step-content" *ngIf="pasoActual === 3">
+          <header class="step-header mb-5">
+            <h2 class="display-6 fw-bold text-navy">Selecciona tu audiencia</h2>
+            <p class="text-muted lead">Elige a los destinatarios de esta campaña.</p>
+          </header>
+          <app-whatsapp-contact-list
+            [pacientes]="pacientes"
+            [leads]="leads"
+            [contactosSeleccionados]="contactosSeleccionados"
+            (onAdd)="addContacto($event)"
+            (onRemove)="removeContacto($event)"
+            (onClear)="clearContactos()">
+          </app-whatsapp-contact-list>
+        </div>
+
+
+        <!-- STEP 4 -->
+        <div class="step-content" *ngIf="pasoActual === 4">
+          <header class="step-header mb-5">
+            <h2 class="display-6 fw-bold text-navy">Revision Final</h2>
+            <p class="text-muted">Revisa cada detalle antes de lanzar la campana.</p>
+          </header>
+
+          <!-- Metricas superiores -->
+          <div class="review-metrics">
+            <div class="metric-card metric-recipients">
+              <div class="metric-icon-wrap">
+                <i class="fas fa-users"></i>
+              </div>
+              <div class="metric-value">{{ contactosSeleccionados.length }}</div>
+              <div class="metric-label">Destinatarios</div>
+            </div>
+
+            <div class="metric-card metric-template">
+              <div class="metric-icon-wrap">
+                <i class="fas fa-file-alt"></i>
+              </div>
+              <div class="metric-value metric-value-sm">{{ plantillaSeleccionada?.name || '—' }}</div>
+              <div class="metric-label">Plantilla activa</div>
+            </div>
+
+            <div class="metric-card metric-media">
+              <div class="metric-icon-wrap">
+                <i class="fas fa-photo-video"></i>
+              </div>
+              <div class="metric-value">{{ imagenSeleccionada ? 'Si' : 'No' }}</div>
+              <div class="metric-label">Con multimedia</div>
+            </div>
+          </div>
+
+          <!-- Tabla de detalles -->
+          <div class="review-details card-bento mt-4 p-0">
+
+            <!-- Fila campaña -->
+            <div class="review-row">
+              <div class="review-row-icon review-icon-camp">
+                <i class="fas fa-rocket"></i>
+              </div>
+              <div class="review-row-body">
+                <div class="review-row-label">Nombre de la Campana</div>
+                <div class="review-row-value">{{ nombreCampania || 'Sin nombre definido' }}</div>
+              </div>
+              <div class="review-row-status"
+                   [class.status-ok]="nombreCampania"
+                   [class.status-warn]="!nombreCampania">
+                <i class="fas" [class.fa-check]="nombreCampania" [class.fa-exclamation]="!nombreCampania"></i>
+              </div>
+            </div>
+
+            <!-- Fila plantilla -->
+            <div class="review-row">
+              <div class="review-row-icon review-icon-tpl">
+                <i class="fas fa-file-invoice"></i>
+              </div>
+              <div class="review-row-body">
+                <div class="review-row-label">Plantilla Meta</div>
+                <div class="review-row-value">
+                  {{ plantillaSeleccionada?.name }}
+                  <span class="review-lang-badge">{{ plantillaSeleccionada?.language }}</span>
+                </div>
+              </div>
+              <div class="review-row-status status-ok">
+                <i class="fas fa-check"></i>
+              </div>
+            </div>
+
+            <!-- Fila audiencia -->
+            <div class="review-row">
+              <div class="review-row-icon review-icon-aud">
+                <i class="fas fa-users"></i>
+              </div>
+              <div class="review-row-body">
+                <div class="review-row-label">Audiencia seleccionada</div>
+                <div class="review-row-value">
+                  {{ contactosSeleccionados.length }} contacto{{ contactosSeleccionados.length !== 1 ? 's' : '' }}
+                  <span class="review-meta-chips">
+                    <span class="review-chip chip-pac">
+                      {{ contactosSeleccionados.length }} en lista
+                    </span>
+                  </span>
+                </div>
+              </div>
+              <div class="review-row-status" [class.status-ok]="contactosSeleccionados.length > 0"
+                                             [class.status-warn]="contactosSeleccionados.length === 0">
+                <i class="fas" [class.fa-check]="contactosSeleccionados.length > 0"
+                               [class.fa-exclamation]="contactosSeleccionados.length === 0"></i>
+              </div>
+            </div>
+
+            <!-- Fila contenido -->
+            <div class="review-row review-row-last">
+              <div class="review-row-icon review-icon-med">
+                <i class="fas fa-image"></i>
+              </div>
+              <div class="review-row-body">
+                <div class="review-row-label">Tipo de contenido</div>
+                <div class="review-row-value">
+                  <span class="review-content-badge" [class.badge-media]="imagenSeleccionada">
+                    <i class="fas" [class.fa-photo-video]="imagenSeleccionada" [class.fa-align-left]="!imagenSeleccionada"></i>
+                    {{ imagenSeleccionada ? 'Imagen + Texto' : 'Solo Texto' }}
+                  </span>
+                </div>
+              </div>
+              <div class="review-row-status status-ok">
+                <i class="fas fa-check"></i>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Aviso de confirmacion -->
+          <div class="review-launch-notice mt-4">
+            <i class="fas fa-shield-alt review-notice-icon"></i>
+            <div>
+              <div class="review-notice-title">Todo listo para el envio</div>
+              <div class="review-notice-sub">
+                Al confirmar, los mensajes se enviaran a traves de la API de Meta Business
+                y no podran revertirse.
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Pie de navegación del flujo -->
+      <div class="step-navigation-footer">
+        <button class="custom-nav-btn btn-secondary-outline" (click)="anteriorPaso()" [disabled]="pasoActual === 1">Atrás</button>
+        <button class="custom-nav-btn btn-primary-solid" (click)="siguientePaso()" *ngIf="pasoActual < 4">Continuar</button>
+        <button class="custom-nav-btn btn-success-solid" (click)="enviarCampania()" *ngIf="pasoActual === 4">Lanzar Campaña</button>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Floating Device Preview -->
+  <section class="device-preview-area">
+    <div class="preview-wrapper">
+      <app-whatsapp-preview
+        [plantillaSeleccionada]="plantillaSeleccionada"
+        [imagenSeleccionada]="imagenSeleccionada"
+        [mapeo]="mapeo">
+      </app-whatsapp-preview>
+    </div>
+  </section>
+</div>

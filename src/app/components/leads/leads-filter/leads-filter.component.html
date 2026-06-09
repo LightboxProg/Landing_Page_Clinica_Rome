@@ -1,0 +1,28 @@
+<div class="leads-filter-card">
+  <div class="search-box">
+    <i class="fas fa-search"></i>
+    <input 
+      type="text" 
+      [(ngModel)]="criteria.search" 
+      (ngModelChange)="emitFilter()" 
+      placeholder="Buscar por ID o Nombre...">
+  </div>
+
+  <div class="filters-row">
+    <select [(ngModel)]="criteria.estado" (change)="emitFilter()">
+      <option value="">Todos los Estados</option>
+      <option value="Nuevo">Nuevo</option>
+      <option value="Atendido">Atendido</option>
+      <option value="Preguntón">Preguntón</option>
+      <option value="Convertido">Convertido</option>
+      <option value="Lista Negra">Lista Negra</option>
+    </select>
+
+    <select [(ngModel)]="criteria.origen" (change)="emitFilter()">
+      <option value="">Todos los Orígenes</option>
+      <option value="WhatsApp">WhatsApp</option>
+      <option value="Instagram">Instagram</option>
+      <option value="Facebook">Facebook</option>
+    </select>
+  </div>
+</div>
