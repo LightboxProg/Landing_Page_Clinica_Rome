@@ -25,6 +25,23 @@
     </div>
     <div class="cuerpo-formulario">
       <div class="grupo-campo"><label>Razón *</label><input type="text" [(ngModel)]="razon" maxlength="200"></div>
+      <div class="grupo-campo">
+        <label>Categoría</label>
+        <select [(ngModel)]="categoria">
+          <option value="Preguntón">Preguntón</option>
+          <option value="Moroso">Moroso</option>
+          <option value="Agresivo">Agresivo</option>
+          <option value="Falta Injustificada">Falta Injustificada</option>
+          <option value="Otro">Otro</option>
+        </select>
+      </div>
+      <div class="grupo-campo">
+        <label>Nivel de Gravedad (1-5)</label>
+        <div class="gravedad-selector">
+          <input type="range" min="1" max="5" [(ngModel)]="nivelGravedad">
+          <span class="nivel-badge nivel-{{nivelGravedad}}">{{nivelGravedad}}</span>
+        </div>
+      </div>
       <div class="grupo-campo"><label>Detalles</label><textarea rows="3" [(ngModel)]="detalles" maxlength="1000"></textarea></div>
       <div class="grupo-campo"><label>Tipo de Bloqueo</label><select [(ngModel)]="tipo"><option value="permanente">Permanente</option><option value="temporal">Temporal</option></select></div>
     </div>

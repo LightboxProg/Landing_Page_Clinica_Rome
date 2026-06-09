@@ -157,7 +157,35 @@ $sombraTarjeta: 0 10px 40px rgba(26, 43, 60, 0.15);
       i { font-size: 1.8rem; color: $colorCrema; }
     }
   }
-  .cuerpo-formulario {
+  .gravedad-selector {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+  input[type="range"] {
+    flex: 1;
+  }
+}
+
+.nivel-badge {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+  border-radius: 50%;
+  font-weight: bold;
+  color: #fff;
+  font-size: 0.9rem;
+
+  &.nivel-1 { background-color: #4caf50; }
+  &.nivel-2 { background-color: #8bc34a; }
+  &.nivel-3 { background-color: #ffc107; }
+  &.nivel-4 { background-color: #ff9800; }
+  &.nivel-5 { background-color: #f44336; }
+}
+
+.cuerpo-formulario {
     display: flex;
     flex-direction: column;
     gap: 1rem;

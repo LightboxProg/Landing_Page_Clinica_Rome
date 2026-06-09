@@ -1,0 +1,40 @@
+<div class="auth-google-container" *ngIf="!loading; else spinner">
+  <!-- Estado Vinculado -->
+  <div *ngIf="isLinked" class="status-box linked" title="Calendario vinculado. Haz clic para re-vincular si es necesario.">
+    <div class="status-indicator">
+      <i class="fab fa-google"></i>
+      <span class="dot"></span>
+    </div>
+    <div class="status-info">
+      <span class="status-text">Google Calendar Activo</span>
+      <small *ngIf="lastUpdate" class="last-sync">Sincronizado: {{ lastUpdate | date:'short' }}</small>
+    </div>
+    <button class="btn-relink" (click)="linkGoogle()" title="Renovar conexión">
+      <i class="fas fa-sync-alt"></i>
+    </button>
+  </div>
+
+  <!-- Estado No Vinculado -->
+  <div *ngIf="!isLinked" class="status-box unlinked">
+    <div class="status-indicator">
+      <i class="fab fa-google"></i>
+      <span class="dot red"></span>
+    </div>
+    <div class="status-info">
+      <span class="status-text">Calendar Desconectado</span>
+      <small class="error-text">Acción requerida</small>
+    </div>
+    <button class="btn-link" (click)="linkGoogle()">
+      <i class="fas fa-plug"></i> Conectar
+    </button>
+  </div>
+</div>
+
+<ng-template #spinner>
+  <div class="auth-google-container">
+    <div class="loading-status">
+      <i class="fas fa-circle-notch fa-spin"></i>
+      <span>Verificando...</span>
+    </div>
+  </div>
+</ng-template>

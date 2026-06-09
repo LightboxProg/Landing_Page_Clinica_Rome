@@ -41,19 +41,96 @@ $sombraTarjeta: 0 10px 40px rgba(26, 43, 60, 0.15);
   background: $colorBlanco;
   border-radius: 16px;
   border: 2px solid rgba(139, 125, 79, 0.15);
-  padding: 1rem;
+  padding: 1.5rem;
   transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  position: relative;
+  overflow: hidden;
+
+  &.gravedad-1 { border-left: 8px solid #4caf50; }
+  &.gravedad-2 { border-left: 8px solid #8bc34a; }
+  &.gravedad-3 { border-left: 8px solid #ffc107; }
+  &.gravedad-4 { border-left: 8px solid #ff9800; }
+  &.gravedad-5 { border-left: 8px solid #f44336; }
+
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   }
-  button {
+
+  .header-tarjeta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    strong {
+      font-size: 1.2rem;
+      color: $colorAzulOscuro;
+    }
+  }
+
+  .badge-categoria {
+    background: $colorCrema;
+    color: $colorDorado;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .datos-tarjeta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    color: $colorMarronOscuro;
+    font-size: 0.95rem;
+
+    .dato-ln {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      i { color: $colorTeal; width: 20px; text-align: center; }
+    }
+
+    .gravedad-info {
+      .nivel-stars {
+        display: flex;
+        gap: 3px;
+        margin-left: 5px;
+        i {
+          font-size: 0.8rem;
+          color: #ddd;
+          width: auto;
+          &.active {
+            color: #ffc107;
+          }
+        }
+      }
+    }
+
+    .user-info {
+      font-style: italic;
+      color: #777;
+    }
+  }
+
+  .acciones-tarjeta {
     margin-top: 0.5rem;
-    background: linear-gradient(135deg, $colorAzulOscuro, $colorTeal);
-    border: none;
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 30px;
-    cursor: pointer;
+    .btn-ver {
+      background: linear-gradient(135deg, $colorAzulOscuro, $colorTeal);
+      border: none;
+      color: white;
+      padding: 0.6rem 1.5rem;
+      border-radius: 30px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: $transicionSuave;
+      &:hover {
+        opacity: 0.9;
+        transform: scale(1.05);
+      }
+    }
   }
 }

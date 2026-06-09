@@ -11,6 +11,8 @@ export interface ListaNegra {
   razon: string;
   detalles: string;
   tipo: 'temporal' | 'permanente';
+  categoria: 'Preguntón' | 'Moroso' | 'Agresivo' | 'Falta Injustificada' | 'Otro';
+  nivelGravedad: number;
   fechaAgregado: Date;
   
 }
@@ -24,7 +26,15 @@ export class ListaNegraService {
 
   constructor(private http: HttpClient) {}
 
-  agregarPaciente(data: { pacienteId: string; razon: string; detalles: string; tipo: string; agregadoPor: string }): Observable<ListaNegra> {
+  agregarPaciente(data: { 
+    pacienteId: string; 
+    razon: string; 
+    detalles: string; 
+    tipo: string; 
+    agregadoPor: string;
+    categoria?: string;
+    nivelGravedad?: number;
+  }): Observable<ListaNegra> {
     return this.http.post<ListaNegra>(this.apiUrl, data);
   }
 

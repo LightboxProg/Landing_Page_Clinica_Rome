@@ -21,6 +21,8 @@ export class ElementPacienteComponent implements OnInit {
   razon = '';
   detalles = '';
   tipo = 'permanente';
+  categoria = 'Otro';
+  nivelGravedad = 1;
   pacientesEnListaNegra: string[] = [];
   usuarioActual: any;
 
@@ -70,6 +72,8 @@ export class ElementPacienteComponent implements OnInit {
     this.razon = '';
     this.detalles = '';
     this.tipo = 'permanente';
+    this.categoria = 'Otro';
+    this.nivelGravedad = 1;
   }
 
   onCloseListaNegraModal() {
@@ -86,7 +90,9 @@ export class ElementPacienteComponent implements OnInit {
       razon: this.razon,
       detalles: this.detalles,
       tipo: this.tipo,
-      agregadoPor: this.usuarioActual?.id 
+      agregadoPor: this.usuarioActual?.id,
+      categoria: this.categoria,
+      nivelGravedad: this.nivelGravedad
     };
     this.listaNegraService.agregarPaciente(data).subscribe({
       next: () => {

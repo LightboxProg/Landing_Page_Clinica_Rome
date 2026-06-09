@@ -2,11 +2,12 @@ import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../services/auth/auth.service';
+import { AuthGoogleComponent } from '../../../components/auth-google/auth-google.component';
 
 @Component({
   selector: 'app-admin-navbar',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterLink, RouterLinkActive, AuthGoogleComponent],
   templateUrl: './admin-navbar.component.html',
   styleUrl: './admin-navbar.component.scss'
 })

@@ -3,12 +3,25 @@
         <h1>Lista Negra de Pacientes</h1>
     </div>
     <div class="lista">
-        <div *ngFor="let item of listaNegra" class="tarjeta-ln">
-            <div><strong>{{item.paciente.nombre}} {{item.paciente.apeP}} {{item.paciente.apeM}}</strong></div>
-            <div>Teléfono: {{item.paciente.telefonoWhatsapp}}</div>
-            <div>Razón: {{item.razon}}</div>
-            <div>Agregado por: {{item.agregadoPor?.usuario}}</div>
-            <button [routerLink]="['/pacientes/perfil', item.paciente._id]">Ver Perfil</button>
+        <div *ngFor="let item of listaNegra" class="tarjeta-ln" [ngClass]="'gravedad-' + item.nivelGravedad">
+            <div class="header-tarjeta">
+                <strong>{{item.paciente.nombre}} {{item.paciente.apeP}} {{item.paciente.apeM}}</strong>
+                <span class="badge-categoria">{{item.categoria}}</span>
+            </div>
+            <div class="datos-tarjeta">
+                <div class="dato-ln"><i class="fas fa-phone"></i> {{item.paciente.telefonoWhatsapp}}</div>
+                <div class="dato-ln"><i class="fas fa-exclamation-circle"></i> Razón: {{item.razon}}</div>
+                <div class="dato-ln gravedad-info">
+                    <i class="fas fa-signal"></i> Gravedad: 
+                    <span class="nivel-stars">
+                        <i class="fas fa-star" *ngFor="let n of [1,2,3,4,5]" [ngClass]="{'active': n <= item.nivelGravedad}"></i>
+                    </span>
+                </div>
+                <div class="dato-ln user-info"><i class="fas fa-user-shield"></i> Por: {{item.agregadoPor?.usuario}}</div>
+            </div>
+            <div class="acciones-tarjeta">
+                <button [routerLink]="['/pacientes/perfil', item.paciente._id]" class="btn-ver">Ver Perfil</button>
+            </div>
         </div>
         <div *ngIf="listaNegra.length===0">No hay pacientes en lista negra</div>
     </div>
