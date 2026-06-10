@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../services/auth/auth.service';
+import { PushNotificationService } from '../../../services/notifications/push-notification.service';
 
 @Component({
   selector: 'app-login',
@@ -20,7 +21,8 @@ export class LoginComponent {
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private pushService: PushNotificationService
   ) {
     // Si ya está logueado, redirigir al panel
     if (this.authService.isLoggedIn()) {
@@ -42,8 +44,14 @@ export class LoginComponent {
     this.error = '';
 
     this.authService.login(this.usuario.trim(), this.password).subscribe({
-      next: () => {
+      next: (response: any) => {
         this.cargando = false;
+        
+        // Solicitar permisos de notificación push
+        if (response && response.usuario && response.usuario.id) {
+          this.pushService.requestPermission('usuario', response.usuario.id);
+        }
+
         this.router.navigate(['/admin/gestion']);
       },
       error: (err) => {

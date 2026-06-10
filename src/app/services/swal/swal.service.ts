@@ -25,4 +25,24 @@ export class SwalService {
   errorCampos(message = 'Por favor complete todos los campos requeridos') {
     this.warning(message);
   }
+
+  toast(message: string, title = '', icon: 'success' | 'error' | 'warning' | 'info' = 'info') {
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer);
+        toast.addEventListener('mouseleave', Swal.resumeTimer);
+      }
+    });
+
+    Toast.fire({
+      icon: icon,
+      title: title || message,
+      text: title ? message : ''
+    });
+  }
 }

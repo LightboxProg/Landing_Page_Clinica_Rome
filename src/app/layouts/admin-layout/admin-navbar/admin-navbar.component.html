@@ -66,6 +66,46 @@
   </div>
 
   <div class="navbar-actions">
+    <!-- Centro de Notificaciones -->
+    <div class="notification-center" [class.active]="showNotifications">
+      <button class="notification-btn" (click)="toggleNotifications($event)" title="Notificaciones">
+        <i class="fas fa-bell"></i>
+        <span class="notification-badge" *ngIf="notifications.length > 0">{{ notifications.length }}</span>
+      </button>
+
+      <div class="notification-dropdown" *ngIf="showNotifications">
+        <div class="dropdown-header">
+          <h3>Notificaciones</h3>
+          <button (click)="clearNotifications()" *ngIf="notifications.length > 0">Limpiar</button>
+        </div>
+        <div class="dropdown-body">
+          <div *ngIf="notifications.length === 0" class="no-notifications">
+            <i class="fas fa-bell-slash"></i>
+            <p>No hay notificaciones nuevas</p>
+          </div>
+          <div class="notification-item" 
+               *ngFor="let note of notifications" 
+               [class.unread]="!note.leida"
+               (click)="marcarLeida(note)">
+            <div class="note-icon" [ngClass]="note.tipo || 'sistema'">
+              <i [className]="getIcon(note.tipo)"></i>
+            </div>
+            <div class="note-content">
+              <div class="note-header">
+                <h4 [class.bold]="!note.leida">{{ note.notification?.title }}</h4>
+                <span class="note-time">{{ note.receivedAt | relativeTime }}</span>
+              </div>
+              <p>{{ note.notification?.body }}</p>
+              <div class="note-event" *ngIf="note.data?.fechaHoraInicio">
+                <i class="fas fa-calendar-check"></i> 
+                Evento {{ note.data.fechaHoraInicio | relativeTime }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <app-auth-google></app-auth-google>
     <div class="user-info" *ngIf="usuarioNombre">
       <div class="avatar">
