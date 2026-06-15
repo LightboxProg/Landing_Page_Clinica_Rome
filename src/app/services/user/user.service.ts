@@ -60,4 +60,17 @@ export class UserService {
   assignPatients(doctorId: string, pacienteIds: string[]): Observable<any> {
     return this.http.post(`${environment.apiUrl}/doctores/asignar-pacientes`, { doctorId, pacienteIds });
   }
+
+  // Horarios de Atención
+  getHorariosDoctor(doctorId: string): Observable<any[]> {
+    return this.http.get<any[]>(`${environment.apiUrl}/horarios/doctor/${doctorId}`);
+  }
+
+  guardarHorario(data: any): Observable<any> {
+    return this.http.post<any>(`${environment.apiUrl}/horarios`, data);
+  }
+
+  eliminarHorario(id: string): Observable<any> {
+    return this.http.delete<any>(`${environment.apiUrl}/horarios/${id}`);
+  }
 }

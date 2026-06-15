@@ -1,0 +1,111 @@
+.horarios-container {
+  background: white;
+  padding: 24px;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  margin-top: 20px;
+}
+
+h4 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: #1a1c1e;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #64748b;
+  margin-bottom: 24px;
+}
+
+.dias-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dia-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: #f8fafc;
+  transition: all 0.3s ease;
+}
+
+.dia-row.dia-activo {
+  background: rgba(197, 160, 40, 0.05);
+  border: 1px solid rgba(197, 160, 40, 0.1);
+}
+
+.dia-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.dia-nombre {
+  font-weight: 700;
+  color: #1a1c1e;
+  width: 100px;
+}
+
+.horas-inputs {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.horas-inputs.disabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.horas-inputs input {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  font-family: inherit;
+  font-weight: 600;
+  color: #1a1c1e;
+  outline: none;
+}
+
+.horas-inputs input:focus {
+  border-color: #C5A028;
+}
+
+/* Switch Styles */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+
+.switch input { opacity: 0; width: 0; height: 0; }
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #cbd5e1;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px; width: 18px;
+  left: 3px; bottom: 3px;
+  background-color: white;
+  transition: .4s;
+}
+
+input:checked + .slider { background-color: #C5A028; }
+input:checked + .slider:before { transform: translateX(20px); }
+
+.slider.round { border-radius: 34px; }
+.slider.round:before { border-radius: 50%; }

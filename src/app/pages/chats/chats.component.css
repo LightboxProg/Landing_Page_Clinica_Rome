@@ -1,0 +1,33 @@
+.chat-container {
+  display: flex;
+  height: calc(100vh - 100px);
+  background-color: #f4f7f9;
+  margin: -20px;
+  overflow: hidden;
+  font-family: 'Inter', -apple-system, sans-serif;
+  transition: all 0.4s ease;
+}
+
+.dark-mode {
+  --bg-main: #0f172a;
+  --bg-sidebar: #1e293b;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-light: #64748b;
+  --border-ultra-light: rgba(255, 255, 255, 0.05);
+  --glass-bg: rgba(15, 23, 42, 0.85);
+  background-color: var(--bg-main) !important;
+}
+
+@media (max-width: 768px) {
+  .chat-container {
+    margin: 0;
+    height: calc(100vh - 60px);
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+  }
+}

@@ -71,4 +71,7 @@
       <button type="button" class="btn-secondary" (click)="router.navigate(['/usuarios'])">Cancelar</button>
     </div>
   </form>
+
+  <!-- Nueva sección de Horarios de Atención -->
+  <app-horario-atencion *ngIf="editMode && isDoctorOrSpecialist && userId" [doctorId]="userId"></app-horario-atencion>
 </div>

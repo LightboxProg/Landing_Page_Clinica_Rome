@@ -34,9 +34,20 @@ export class CalendarioAdminComponent implements OnInit {
       center: 'title',
       right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
     },
+    buttonText: {
+      today: 'Hoy',
+      month: 'Mes',
+      week: 'Semana',
+      day: 'Día',
+      list: 'Agenda'
+    },
     slotMinTime: '08:00:00',
     slotMaxTime: '21:00:00',
     allDaySlot: false,
+    nowIndicator: true,
+    handleWindowResize: true,
+    expandRows: true,
+    slotEventOverlap: false,
     editable: false,
     selectable: true,
     eventClick: this.handleEventClick.bind(this),
@@ -69,10 +80,10 @@ export class CalendarioAdminComponent implements OnInit {
 
   cargarEventos(timeMin: string, timeMax: string) {
     this.calendarService.getEventos(timeMin, timeMax, this.doctorIdSeleccionado).subscribe({
-      next: (eventos) => {
+      next: (eventos: any[]) => {
         const calendarEvents: EventInput[] = eventos.map(e => ({
           id: e.id,
-          title: `${e.medicoNombre}: ${e.summary}`,
+          title: `${e.pacienteNombre} (${e.servicioNombre})`,
           start: e.start.dateTime,
           end: e.end.dateTime,
           backgroundColor: e.color,
@@ -83,44 +94,39 @@ export class CalendarioAdminComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al cargar eventos:', err);
-        if (err.status === 401 && err.error?.message?.includes('vinculado')) {
-          // El navbar ya muestra que no está conectado, así que solo dejamos el calendario vacío silenciosamente.
-          console.log('Calendario renderizado en modo sin conexión.');
-        } else {
-          // Solo mostramos error si es un fallo real de red o servidor, no de vinculación.
-          Swal.fire({
-            title: 'Aviso', 
-            text: 'No se pudieron cargar los eventos en este momento.', 
-            icon: 'warning',
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 3000
-          });
-        }
-        this.calendarOptions.events = []; // Dejar vacío para que la interfaz siga siendo accesible
+        this.calendarOptions.events = [];
       }
     });
   }
 
   handleEventClick(arg: any) {
     const event = arg.event.extendedProps;
+    const whatsappUrl = `https://wa.me/${event.pacienteTelefono}`;
+
     Swal.fire({
-      title: event.summary,
+      title: event.pacienteNombre,
       html: `
-        <div style="text-align: left;">
-          <p><strong>Médico:</strong> ${event.medicoNombre}</p>
-          <p><strong>Inicio:</strong> ${new Date(event.start.dateTime).toLocaleString()}</p>
-          <p><strong>Fin:</strong> ${new Date(event.end.dateTime).toLocaleString()}</p>
-          ${event.description ? `<p><strong>Detalles:</strong> ${event.description}</p>` : ''}
+        <div class="swal-calendar-info">
+          <div class="info-row"><strong>Médico:</strong> ${event.medicoNombre}</div>
+          <div class="info-row"><strong>Servicio:</strong> ${event.servicioNombre}</div>
+          <div class="info-row"><strong>Tipo:</strong> ${event.tipoCita}</div>
+          <div class="info-row"><strong>Paciente:</strong> ${event.esPaciente ? '✅ Registrado' : '👤 Prospecto (Preguntón)'}</div>
+          <div class="info-row"><strong>Tel:</strong> ${event.pacienteTelefono || 'N/A'}</div>
+          ${event.description ? `<div class="info-details"><strong>Notas:</strong><br>${event.description}</div>` : ''}
         </div>
       `,
-      confirmButtonText: 'Cerrar',
       showCancelButton: true,
-      cancelButtonText: 'Ver en Google',
+      showDenyButton: !!event.pacienteTelefono,
+      confirmButtonText: 'Cerrar',
+      denyButtonText: 'Mandar WhatsApp',
+      cancelButtonText: 'Google Calendar',
+      confirmButtonColor: '#1a2b3c',
+      denyButtonColor: '#25D366',
       cancelButtonColor: '#4285f4'
     }).then((result) => {
-      if (result.dismiss === Swal.DismissReason.cancel) {
+      if (result.isDenied) {
+        window.open(whatsappUrl, '_blank');
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
         window.open(event.htmlLink, '_blank');
       }
     });

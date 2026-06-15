@@ -4,16 +4,15 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { UserService } from '../../../services/user/user.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SwalService } from '../../../services/swal/swal.service';
+import { HorarioAtencionComponent } from '../horario-atencion/horario-atencion.component';
 
 @Component({
   selector: 'app-user-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, HorarioAtencionComponent],
   templateUrl: './user-form.component.html',
   styleUrl: './user-form.component.css'
 })
-
-
 export class UserFormComponent implements OnInit {
   form: FormGroup;
   editMode = false;
@@ -90,9 +89,9 @@ export class UserFormComponent implements OnInit {
     request.subscribe({
       next: () => {
         this.swal.success(`Usuario ${this.editMode ? 'actualizado' : 'creado'} correctamente`);
-        this.router.navigate(['/usuarios']);
+        this.router.navigate(['/admin/usuarios']);
       },
-      error: (err) => this.swal.error(err.error?.message || 'Error al guardar')
+      error: (err: any) => this.swal.error(err.error?.message || 'Error al guardar')
     });
   }
 }

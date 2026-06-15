@@ -1,0 +1,159 @@
+<main class="chat-main">
+  <ng-container *ngIf="conversacionActiva; else noChatSelected">
+    <header class="chat-header">
+      <button class="back-btn" (click)="cerrarChat.emit()">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <div class="header-avatar">
+        {{ getNombreContacto(conversacionActiva).charAt(0).toUpperCase() }}
+      </div>
+      <div class="header-info">
+        <h3>{{ getNombreContacto(conversacionActiva) }}</h3>
+        <span class="status">Activo ahora</span>
+      </div>
+    </header>
+
+    <!-- Quick CRM Actions -->
+    <div class="quick-actions">
+      <div class="action-chip" title="Agendar Cita" (click)="startScheduling()">
+        <i class="fas fa-calendar-plus"></i> Agendar
+      </div>
+      <div class="action-chip" title="Ver Expediente" (click)="verExpediente.emit(conversacionActiva)">
+        <i class="fas fa-user-medical"></i> Expediente
+      </div>
+      <div class="action-chip" title="Añadir Nota" (click)="agregarNota.emit(conversacionActiva)">
+        <i class="fas fa-sticky-note"></i> Nota
+      </div>
+    </div>
+
+    <div class="chat-body" #scrollMe [scrollTop]="scrollMe.scrollHeight">
+      
+      <!-- Scheduling Flow Overlay -->
+      <div *ngIf="isScheduling" class="scheduling-overlay">
+        <div class="scheduling-card">
+          <header class="scheduling-header">
+            <h3>Agendar Cita</h3>
+            <button class="close-flow" (click)="cancelScheduling()"><i class="fas fa-times"></i></button>
+          </header>
+
+          <div class="scheduling-content">
+            <!-- Step 1: Type Selection -->
+            <div *ngIf="schedulingStep === 1" class="step-container">
+              <p class="step-label">1. Selecciona el Departamento</p>
+              <div class="options-grid">
+                <button (click)="selectType('Estetica')" class="option-btn">
+                  <i class="fas fa-spa"></i> Estética
+                </button>
+                <button (click)="selectType('Dental')" class="option-btn">
+                  <i class="fas fa-tooth"></i> Dental
+                </button>
+              </div>
+            </div>
+
+            <!-- Step 2: Service Selection -->
+            <div *ngIf="schedulingStep === 2" class="step-container">
+              <p class="step-label">2. Selecciona el Servicio ({{selectedType}})</p>
+              <div class="list-options">
+                <button *ngFor="let s of services" (click)="selectService(s)" class="list-item-btn">
+                  {{ s.nombre }}
+                </button>
+              </div>
+              <button class="back-step" (click)="schedulingStep = 1">Volver</button>
+            </div>
+
+            <!-- Step 3: Doctor Selection -->
+            <div *ngIf="schedulingStep === 3" class="step-container">
+              <p class="step-label">3. Selecciona el Especialista</p>
+              <div class="list-options">
+                <button *ngFor="let d of doctors" (click)="selectDoctor(d)" class="list-item-btn">
+                  {{ d.nombre }} {{ d.apeP }}
+                </button>
+              </div>
+              <button class="back-step" (click)="schedulingStep = 2">Volver</button>
+            </div>
+
+            <!-- Step 4: Date & Time -->
+            <div *ngIf="schedulingStep === 4" class="step-container">
+              <p class="step-label">4. Fecha y Hora ({{selectedDoctor?.nombre}})</p>
+              <div class="date-time-form">
+                <div class="form-group">
+                  <label>Fecha:</label>
+                  <input type="date" [(ngModel)]="selectedDate" (change)="onDateChange()" class="modern-input">
+                </div>
+                
+                <div *ngIf="isLoadingAvailability" class="loading-slots">
+                  <i class="fas fa-circle-notch fa-spin"></i> Consultando disponibilidad...
+                </div>
+
+                <div class="form-group" *ngIf="!isLoadingAvailability && selectedDate">
+                  <label>Agenda del Día:</label>
+                  <div class="calendar-day-view">
+                    <div *ngFor="let hour of getTimeline()" 
+                         class="timeline-slot"
+                         [class.is-busy]="isOccupied(hour)"
+                         [class.selected]="selectedTime === hour"
+                         (click)="!isOccupied(hour) && selectedTime = hour">
+                      <span class="slot-time">{{ hour }}</span>
+                      <div class="slot-content">
+                        <span *ngIf="isOccupied(hour)" class="busy-label">
+                          <i class="fas fa-lock"></i> Ocupado
+                        </span>
+                        <span *ngIf="!isOccupied(hour)" class="free-label">
+                          Disponible
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <button class="confirm-btn" [disabled]="!selectedDate || !selectedTime" (click)="confirmBooking()">
+                  Confirmar Cita
+                </button>
+              </div>
+              <button class="back-step" (click)="schedulingStep = (authService.getUsuario()?.tipo === 'Doctor' || authService.getUsuario()?.tipo === 'Especialista') ? 2 : 3">Volver</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <app-chat-message 
+        *ngFor="let msg of mensajes" 
+        [message]="msg" 
+        [isSent]="msg.from === 'SYSTEM'">
+      </app-chat-message>
+
+      <!-- Typing Indicator -->
+      <div *ngIf="isTyping" class="typing-indicator">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+    </div>
+
+    <footer class="chat-footer">
+      <form (submit)="enviar(); $event.preventDefault()">
+        <button type="button" class="attach-btn" title="Adjuntar Multimedia">
+          <i class="fas fa-plus"></i>
+        </button>
+        <input type="text" 
+               name="nuevoMensaje" 
+               [ngModel]="nuevoMensaje" 
+               (ngModelChange)="onMensajeChange($event)"
+               placeholder="Escribe un mensaje aquí..."
+               autocomplete="off">
+        <button type="submit" [disabled]="!nuevoMensaje.trim()">
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </form>
+    </footer>
+  </ng-container>
+
+  <ng-template #noChatSelected>
+    <div class="no-chat">
+      <div class="icon-circle">
+        <i class="fas fa-comments"></i>
+      </div>
+      <h3>Bandeja de Entrada</h3>
+      <p>Selecciona una conversación de la lista para ver el historial y responder mensajes.</p>
+    </div>
+  </ng-template>
+</main>

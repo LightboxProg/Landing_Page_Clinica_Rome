@@ -1,0 +1,24 @@
+<div class="chat-container" [class.chat-open]="conversacionActiva" [class.dark-mode]="isDarkMode">
+  
+  <app-chat-sidebar
+    [conversaciones]="filtradas"
+    [tipoSeleccionado]="tipoSeleccionado"
+    [conversacionActiva]="conversacionActiva"
+    [filtro]="filtro"
+    (tipoCambiado)="cambiarTipo($event)"
+    (conversacionSeleccionada)="seleccionarConversacion($event)"
+    (filtroCambiado)="filtro = $event"
+    (themeToggled)="toggleTheme()">
+  </app-chat-sidebar>
+
+  <app-chat-window
+    [conversacionActiva]="conversacionActiva"
+    [mensajes]="mensajes"
+    [(nuevoMensaje)]="nuevoMensaje"
+    (mensajeEnviado)="enviarMensaje($event)"
+    (verExpediente)="handleExpediente($event)"
+    (agregarNota)="handleNota($event)"
+    (cerrarChat)="cerrarChat()">
+  </app-chat-window>
+
+</div>

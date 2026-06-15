@@ -34,4 +34,11 @@ export class CalendarService {
 
     return this.http.get<CalendarEvent[]>(`${this.apiUrl}/eventos`, { params });
   }
+
+  getEventosPorCalendarId(calendarId: string, timeMin: string, timeMax: string): Observable<any[]> {
+    const params = new HttpParams()
+      .set('timeMin', timeMin)
+      .set('timeMax', timeMax);
+    return this.http.get<any[]>(`${this.apiUrl}/eventos-por-id/${calendarId}`, { params });
+  }
 }

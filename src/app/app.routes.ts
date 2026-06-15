@@ -23,6 +23,7 @@ import { PacientesListadosComponent } from './components/pacientes/pacientes-lis
 import { LeadsComponent } from './pages/leads/leads.component';
 import { CalendarioAdminComponent } from './pages/Calendario/calendario.component';
 import { MensajeriaMasivaPageComponent } from './pages/mensajeria-masiva-page/mensajeria-masiva-page.component';
+import { ChatsComponent } from './pages/chats/chats.component';
 
 export const routes: Routes = [
   // ============================================
@@ -64,6 +65,7 @@ export const routes: Routes = [
       { path: 'admin/configuracion', component: GestionComponent },
       { path: 'admin/leads', component: LeadsComponent },
       { path: 'admin/mensajeria', component: MensajeriaMasivaPageComponent },
+      { path: 'admin/chats', component: ChatsComponent },
 
       // Usuarios (restaurados a sus paths originales para evitar conflictos)
       { path: 'admin/usuarios', component: UserListComponent },

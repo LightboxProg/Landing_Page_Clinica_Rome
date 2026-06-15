@@ -13,6 +13,7 @@ export interface UsuarioAuth {
   apeM: string;
   telefono: string;
   especialidad?: string;
+  atencion?: 'Dental' | 'Estetica';
   calendarId?: string;
   colorCalendario?: string;
 }

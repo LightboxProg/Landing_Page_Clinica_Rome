@@ -1,0 +1,52 @@
+<aside class="chat-sidebar">
+  <header class="sidebar-header">
+    <div class="header-top" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <h2 style="margin: 0;">Mensajes</h2>
+      <button class="theme-toggle" (click)="toggleTheme()" style="background: none; border: none; font-size: 18px; color: #94a3b8; cursor: pointer;">
+        <i class="fas fa-moon"></i>
+      </button>
+    </div>
+    <div class="search-bar">
+      <i class="fas fa-search"></i>
+      <input type="text" [ngModel]="filtro" (ngModelChange)="onFiltroChange($event)" placeholder="Buscar por nombre...">
+    </div>
+  </header>
+
+  <nav class="chat-tabs">
+    <button [class.active]="tipoSeleccionado === 'Lead'" (click)="tipoCambiado.emit('Lead')">
+      Leads
+    </button>
+    <button [class.active]="tipoSeleccionado === 'Paciente'" (click)="tipoCambiado.emit('Paciente')">
+      Pacientes
+    </button>
+  </nav>
+
+  <div class="conversations-list">
+    <div *ngFor="let conv of conversaciones" 
+         class="conversation-item" 
+         [class.active]="conversacionActiva?._id === conv._id"
+         (click)="conversacionSeleccionada.emit(conv)">
+      
+      <div class="conv-avatar">
+        {{ getNombreContacto(conv).charAt(0).toUpperCase() }}
+      </div>
+
+      <div class="conv-details">
+        <div class="conv-top">
+          <span class="contact-name">{{ getNombreContacto(conv) }}</span>
+          <span class="last-time">{{ getUltimaVez(conv.ultimoMensaje.timestamp) }}</span>
+        </div>
+        <div class="conv-bottom">
+          <p class="last-msg">{{ conv.ultimoMensaje.body }}</p>
+          <span *ngIf="conv.mensajesSinLeer > 0" class="unread-badge">
+            {{ conv.mensajesSinLeer }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="conversaciones.length === 0" class="empty-list">
+      <p>No se encontraron conversaciones</p>
+    </div>
+  </div>
+</aside>

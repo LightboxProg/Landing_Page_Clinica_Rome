@@ -1,0 +1,24 @@
+<div class="horarios-container">
+  <h4>Configuración de Horarios de Atención</h4>
+  <p class="subtitle">Define los días y horas en los que el especialista está disponible para citas.</p>
+
+  <div class="dias-grid">
+    <div *ngFor="let dia of dias" class="dia-row" [class.dia-activo]="getHorarioDia(dia.id).activo">
+      <div class="dia-info">
+        <label class="switch">
+          <input type="checkbox" 
+                 [checked]="getHorarioDia(dia.id).activo"
+                 (change)="guardar(dia.id, start.value, end.value, !getHorarioDia(dia.id).activo)">
+          <span class="slider round"></span>
+        </label>
+        <span class="dia-nombre">{{ dia.nombre }}</span>
+      </div>
+
+      <div class="horas-inputs" [class.disabled]="!getHorarioDia(dia.id).activo">
+        <input type="time" #start [value]="getHorarioDia(dia.id).horaInicio" (change)="guardar(dia.id, start.value, end.value, true)">
+        <span>a</span>
+        <input type="time" #end [value]="getHorarioDia(dia.id).horaFin" (change)="guardar(dia.id, start.value, end.value, true)">
+      </div>
+    </div>
+  </div>
+</div>
