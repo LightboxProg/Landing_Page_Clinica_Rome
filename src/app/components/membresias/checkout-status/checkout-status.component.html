@@ -1,30 +1,83 @@
-<div class="status-container">
-  <div class="status-card" *ngIf="status === 'success'">
-    <div class="icon-container success-icon">
-      <i class="fas fa-check-circle"></i>
-    </div>
-    <h2 class="status-title">¡Pago Exitoso!</h2>
-    <p class="status-message">Tu membresía ha sido activada y tu pago se ha procesado de forma segura.</p>
-    
-    <div class="info-box">
-      <p>Nos pondremos en contacto contigo pronto o puedes acudir a la clínica para agendar tu primera cita.</p>
-      <small *ngIf="sessionId" class="ref-id">Ref: {{ sessionId.substring(0, 15) }}...</small>
+<div class="status-page-wrapper animate-fade">
+  <div class="status-card-luxury">
+    <!-- Header Marca -->
+    <div class="clinic-brand-header">
+      <div class="brand-logo">
+        <i class="fas fa-spa"></i>
+      </div>
+      <p class="brand-subtitle">ROME HARMONY CLINIC</p>
     </div>
 
-    <button class="btn btn-primary" (click)="volver()">Volver al Catálogo</button>
-  </div>
+    <!-- ESTADO ÉXITO -->
+    <div class="status-body" *ngIf="status === 'success'">
+      <div class="icon-badge success-badge">
+        <i class="fas fa-check"></i>
+      </div>
+      
+      <ng-container *ngIf="type === 'cita'; else membershipSuccess">
+        <h2 class="status-headline">¡Cita Agendada con Éxito!</h2>
+        <p class="status-lead">Tu pago de anticipo se ha procesado de forma segura y tu cita ha sido reservada.</p>
+        
+        <div class="info-box-luxury">
+          <p class="info-text">En breve recibirás una confirmación con los detalles de tu cita. ¡Te esperamos en la clínica!</p>
+          <div *ngIf="sessionId" class="ref-tag">
+            <i class="fas fa-receipt"></i> Referencia: {{ sessionId.substring(0, 18) }}...
+          </div>
+        </div>
 
-  <div class="status-card" *ngIf="status === 'canceled'">
-    <div class="icon-container error-icon">
-      <i class="fas fa-times-circle"></i>
-    </div>
-    <h2 class="status-title">Pago Cancelado</h2>
-    <p class="status-message">El proceso de pago fue cancelado o no se pudo completar.</p>
-    
-    <div class="info-box">
-      <p>No se ha realizado ningún cargo a tu tarjeta. Puedes intentar nuevamente cuando lo desees.</p>
+        <button class="btn-clinic-primary" (click)="volver()">
+          <i class="fas fa-calendar-alt"></i> Volver a Citas
+        </button>
+      </ng-container>
+
+      <ng-template #membershipSuccess>
+        <h2 class="status-headline">¡Pago Exitoso!</h2>
+        <p class="status-lead">Tu membresía ha sido activada y tu pago se ha procesado de forma segura.</p>
+        
+        <div class="info-box-luxury">
+          <p class="info-text">Nos pondremos en contacto contigo pronto o puedes acudir a la clínica para agendar tu primera cita.</p>
+          <div *ngIf="sessionId" class="ref-tag">
+            <i class="fas fa-receipt"></i> Referencia: {{ sessionId.substring(0, 18) }}...
+          </div>
+        </div>
+
+        <button class="btn-clinic-primary" (click)="volver()">
+          <i class="fas fa-gem"></i> Volver al Catálogo
+        </button>
+      </ng-template>
     </div>
 
-    <button class="btn btn-primary" (click)="volver()">Volver al Catálogo</button>
+    <!-- ESTADO CANCELADO -->
+    <div class="status-body" *ngIf="status === 'canceled'">
+      <div class="icon-badge cancel-badge">
+        <i class="fas fa-times"></i>
+      </div>
+
+      <ng-container *ngIf="type === 'cita'; else membershipCancel">
+        <h2 class="status-headline">Agendamiento Cancelado</h2>
+        <p class="status-lead">El proceso de pago del anticipo fue cancelado o no se pudo completar.</p>
+        
+        <div class="info-box-luxury error-box">
+          <p class="info-text">El horario seleccionado ha sido liberado. No se ha realizado ningún cargo a tu tarjeta. Puedes intentar nuevamente cuando lo desees.</p>
+        </div>
+
+        <button class="btn-clinic-primary" (click)="volver()">
+          <i class="fas fa-redo"></i> Volver a Intentar
+        </button>
+      </ng-container>
+
+      <ng-template #membershipCancel>
+        <h2 class="status-headline">Pago Cancelado</h2>
+        <p class="status-lead">El proceso de pago fue cancelado o no se pudo completar.</p>
+        
+        <div class="info-box-luxury error-box">
+          <p class="info-text">No se ha realizado ningún cargo a tu tarjeta. Puedes intentar nuevamente cuando lo desees.</p>
+        </div>
+
+        <button class="btn-clinic-primary" (click)="volver()">
+          <i class="fas fa-arrow-left"></i> Volver al Catálogo
+        </button>
+      </ng-template>
+    </div>
   </div>
 </div>

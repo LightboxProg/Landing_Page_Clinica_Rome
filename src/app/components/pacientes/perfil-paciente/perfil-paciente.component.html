@@ -1,66 +1,129 @@
 <div class="perfil-paciente" *ngIf="paciente; else cargando">
-  <!-- Encabezado principal con avatar y datos generales -->
-  <div class="perfil-header">
-    <div class="avatar-container">
-      <div class="avatar">
-        <i class="fas fa-user-injured"></i>
+  
+  <!-- Encabezado principal Premium -->
+  <header class="perfil-header-premium">
+    <div class="header-content">
+      <div class="avatar-container">
+        <div class="avatar">
+          <span class="avatar-iniciales">{{ obtenerIniciales() }}</span>
+        </div>
+        <div class="badge-edad">{{ calcularEdad(paciente.fechaNac) }} años</div>
       </div>
-      <div class="badge-edad">{{ calcularEdad(paciente.fechaNac) }} años</div>
-    </div>
-    <div class="info-principal">
-      <h1>{{ paciente.nombre }} {{ paciente.apeP }} {{ paciente.apeM }}</h1>
-      <div class="badges">
-        <span class="badge-genero">
-          <i class="fas" [ngClass]="{'fa-mars': paciente.genero === 'H', 'fa-venus': paciente.genero === 'M'}"></i>
-          {{ paciente.genero === 'H' ? 'Masculino' : 'Femenino' }}
-        </span>
-        <span class="badge-finado" *ngIf="paciente.finado">
-          <i class="fas fa-cross"></i> Finado
-        </span>
-        <span class="badge-lista-negra" *ngIf="listaNegra">
-          <i class="fas fa-ban"></i> Lista Negra
-        </span>
+      
+      <div class="info-principal">
+        <div class="title-row">
+          <h1>{{ paciente.nombre }} {{ paciente.apeP }} {{ paciente.apeM }}</h1>
+          <div class="badges">
+            <span class="badge-genero" *ngIf="paciente.genero">
+              <i class="fas" [ngClass]="{'fa-mars': paciente.genero === 'H', 'fa-venus': paciente.genero === 'M'}"></i>
+              {{ paciente.genero === 'H' ? 'Masculino' : 'Femenino' }}
+            </span>
+            <span class="badge-finado" *ngIf="paciente.finado">
+              <i class="fas fa-cross"></i> Finado
+            </span>
+            <span class="badge-lista-negra" *ngIf="listaNegra">
+              <i class="fas fa-ban"></i> Lista Negra
+            </span>
+          </div>
+        </div>
+        
+        <div class="quick-stats">
+          <div class="stat">
+            <span class="stat-label">ID Paciente</span>
+            <span class="stat-value">{{ paciente._id | slice:-6 | uppercase }}</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Última Cita</span>
+            <span class="stat-value">Ver agenda</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Contacto</span>
+            <span class="stat-value">{{ paciente.telefonoWhatsapp || paciente.telefonoPaciente }}</span>
+          </div>
+        </div>
       </div>
-      <button class="btn-editar" *ngIf="!editando" (click)="editando = true">
-        <i class="fas fa-edit"></i> Editar
-      </button>
+      
+      <div class="header-actions">
+        <button class="btn-editar" *ngIf="!editando" (click)="editando = true">
+          <i class="fas fa-pen"></i> Editar Perfil
+        </button>
+      </div>
     </div>
-  </div>
+  </header>
 
-  <!-- Contenedor de dos columnas: izquierda (info personal) / derecha (tabs dinámicas) -->
+  <!-- Contenedor de dos columnas -->
   <div class="perfil-columnas">
-    <!-- COLUMNA IZQUIERDA: datos fijos -->
+    
+    <!-- COLUMNA IZQUIERDA: Resumen Clínico -->
     <aside class="columna-izquierda">
       <div class="tarjeta-info">
         <div class="titulo-seccion">
-          <i class="fas fa-id-card"></i>
-          <h3>Información Personal</h3>
+          <h3>Resumen del Paciente</h3>
         </div>
+        
         <div class="contenido-info">
-          <div class="dato">
-            <i class="fas fa-phone"></i>
-            <span class="etiqueta">Teléfono:</span>
-            <span class="valor">{{ paciente.telefonoWhatsapp }}</span>
+          <div class="info-group">
+            <h4>Contacto</h4>
+            <div class="dato">
+              <span class="etiqueta"><i class="fas fa-phone-alt"></i> Móvil</span>
+              <span class="valor" *ngIf="paciente.telefonoWhatsapp || paciente.telefonoPaciente; else noMovil">
+                {{ paciente.telefonoWhatsapp || paciente.telefonoPaciente }}
+              </span>
+              <ng-template #noMovil>
+                <span class="valor sin-dato">Sin registrar</span>
+              </ng-template>
+            </div>
+            <div class="dato">
+              <span class="etiqueta"><i class="fas fa-envelope"></i> Email</span>
+              <span class="valor" *ngIf="paciente.correoElectronico; else noEmail">
+                {{ paciente.correoElectronico }}
+              </span>
+              <ng-template #noEmail>
+                <span class="valor sin-dato">Sin registrar</span>
+              </ng-template>
+            </div>
+            <div class="dato">
+              <span class="etiqueta"><i class="fas fa-map-marker-alt"></i> Dirección</span>
+              <span class="valor" *ngIf="paciente.direccion; else noDireccion">
+                {{ paciente.direccion }}
+              </span>
+              <ng-template #noDireccion>
+                <span class="valor sin-dato">Sin registrar</span>
+              </ng-template>
+            </div>
           </div>
-          <div class="dato">
-            <i class="fas fa-envelope"></i>
-            <span class="etiqueta">Email:</span>
-            <span class="valor">{{ paciente.correoElectronico || 'No proporcionado' }}</span>
-          </div>
-          <div class="dato">
-            <i class="fas fa-ruler-vertical"></i>
-            <span class="etiqueta">Altura:</span>
-            <span class="valor">{{ paciente.altura || 'No especificada' }}</span>
-          </div>
-          <div class="dato">
-            <i class="fas fa-weight"></i>
-            <span class="etiqueta">Peso:</span>
-            <span class="valor">{{ paciente.peso || 'No especificado' }}</span>
-          </div>
-          <div class="dato">
-            <i class="fas fa-map-marker-alt"></i>
-            <span class="etiqueta">Dirección:</span>
-            <span class="valor">{{ paciente.direccion || 'No especificada' }}</span>
+
+          <div class="divider"></div>
+
+          <div class="info-group">
+            <h4>Biometría</h4>
+            <div class="dato">
+              <span class="etiqueta"><i class="fas fa-ruler-vertical"></i> Altura</span>
+              <span class="valor" *ngIf="paciente.altura; else noAltura">
+                {{ paciente.altura }} m
+              </span>
+              <ng-template #noAltura>
+                <span class="valor sin-dato">Sin registrar</span>
+              </ng-template>
+            </div>
+            <div class="dato">
+              <span class="etiqueta"><i class="fas fa-weight"></i> Peso</span>
+              <span class="valor" *ngIf="paciente.peso; else noPeso">
+                {{ paciente.peso }} kg
+              </span>
+              <ng-template #noPeso>
+                <span class="valor sin-dato">Sin registrar</span>
+              </ng-template>
+            </div>
+            <div class="dato">
+              <span class="etiqueta"><i class="fas fa-calendar-alt"></i> Nacimiento</span>
+              <span class="valor" *ngIf="paciente.fechaNac; else noNac">
+                {{ paciente.fechaNac | date:'dd/MM/yyyy' }}
+              </span>
+              <ng-template #noNac>
+                <span class="valor sin-dato">Sin registrar</span>
+              </ng-template>
+            </div>
           </div>
         </div>
       </div>
@@ -71,19 +134,22 @@
       <!-- Pestañas -->
       <div class="tabs">
         <button (click)="tabActivo='alergias'" [class.active]="tabActivo === 'alergias'">
-          <i class="fas fa-allergies"></i> Alergias y Medicamentos
+          Historia Clínica
         </button>
         <button (click)="tabActivo='citas'" [class.active]="tabActivo === 'citas'">
-          <i class="fas fa-calendar-check"></i> Citas
+          Citas
+        </button>
+        <button (click)="tabActivo='membresias'" [class.active]="tabActivo === 'membresias'">
+          Membresías
         </button>
         <button (click)="tabActivo='galeria'" [class.active]="tabActivo === 'galeria'">
-          <i class="fas fa-images"></i> Galería
+          Galería
         </button>
       </div>
 
-      <!-- Modo edición (se muestra sobre todo, pero se puede integrar en la columna izquierda o en una tarjeta aparte) -->
+      <!-- Modo edición -->
       <div *ngIf="editando" class="tarjeta-edicion">
-        <h3><i class="fas fa-user-edit"></i> Editar Datos</h3>
+        <h3>Editar Perfil</h3>
         <div class="form-edicion">
           <div class="campo">
             <label>Nombre</label>
@@ -118,7 +184,7 @@
             <input [(ngModel)]="paciente.direccion" placeholder="Dirección">
           </div>
           <div class="botones-edicion">
-            <button class="btn-guardar" (click)="guardarCambiosGenerales()">Guardar cambios</button>
+            <button class="btn-guardar" (click)="guardarCambiosGenerales()">Guardar</button>
             <button class="btn-cancelar" (click)="editando = false">Cancelar</button>
           </div>
         </div>
@@ -129,19 +195,17 @@
       <div *ngIf="tabActivo === 'alergias'" class="tab-content">
         <div class="tarjeta-seccion">
           <div class="titulo-seccion">
-            <i class="fas fa-allergies"></i>
-            <h3>Alergias</h3>
+            <h3>Alergias Conocidas</h3>
           </div>
           <textarea [(ngModel)]="paciente.alergias" placeholder="Registre las alergias del paciente..."></textarea>
-          <button class="btn-secundario" (click)="guardarAlergias()">Guardar Alergias</button>
+          <button class="btn-secundario" (click)="guardarAlergias()">Actualizar Alergias</button>
         </div>
-        <div class="tarjeta-seccion">
+        <div class="tarjeta-seccion mt-4">
           <div class="titulo-seccion">
-            <i class="fas fa-pills"></i>
-            <h3>Medicamentos</h3>
+            <h3>Medicamentos Actuales</h3>
           </div>
           <textarea [(ngModel)]="paciente.medicamentos" placeholder="Registre los medicamentos actuales..."></textarea>
-          <button class="btn-secundario" (click)="guardarMedicamentos()">Guardar Medicamentos</button>
+          <button class="btn-secundario" (click)="guardarMedicamentos()">Actualizar Medicamentos</button>
         </div>
       </div>
 
@@ -149,32 +213,32 @@
       <div *ngIf="tabActivo === 'citas'" class="tab-content">
         <div class="acciones-citas">
           <button class="btn-primario" (click)="showModalEstetica = true">
-            <i class="fas fa-spa"></i> Nueva Cita Estética
+            Agendar Estética
           </button>
           <button class="btn-primario" (click)="showModalDental = true">
-            <i class="fas fa-tooth"></i> Nueva Cita Dental
+            Agendar Dental
           </button>
         </div>
         <div class="citas-grid">
           <div class="categoria-citas">
-            <h4><i class="fas fa-spa"></i> Estética</h4>
+            <h4>Estética</h4>
             <div *ngFor="let cita of citasEstetica" class="cita-card">
               <div class="cita-titulo">{{ cita.titulo }}</div>
               <div class="cita-fecha">{{ cita.fechaHoraInicio | date:'dd/MM/yyyy HH:mm' }}</div>
               <div class="cita-doctor">Dr. {{ doctoresMap[cita.doctorId] || 'No asignado' }}</div>
               <div class="cita-estado" [ngClass]="cita.estado">{{ cita.estado }}</div>
             </div>
-            <div *ngIf="citasEstetica.length === 0" class="sin-registros">No hay citas estéticas</div>
+            <div *ngIf="citasEstetica.length === 0" class="sin-registros">Sin historial estético</div>
           </div>
           <div class="categoria-citas">
-            <h4><i class="fas fa-tooth"></i> Dental</h4>
+            <h4>Dental</h4>
             <div *ngFor="let cita of citasDental" class="cita-card">
               <div class="cita-titulo">{{ cita.titulo }}</div>
               <div class="cita-fecha">{{ cita.fechaHoraInicio | date:'dd/MM/yyyy HH:mm' }}</div>
               <div class="cita-doctor">Dr. {{ doctoresMap[cita.doctorId] || 'No asignado' }}</div>
               <div class="cita-estado" [ngClass]="cita.estado">{{ cita.estado }}</div>
             </div>
-            <div *ngIf="citasDental.length === 0" class="sin-registros">No hay citas dentales</div>
+            <div *ngIf="citasDental.length === 0" class="sin-registros">Sin historial dental</div>
           </div>
         </div>
       </div>
@@ -182,8 +246,9 @@
       <!-- GALERÍA -->
       <div *ngIf="tabActivo === 'galeria'" class="tab-content">
         <div class="acciones-galeria">
-          <button class="btn-primario" (click)="triggerFileInput()">
-            <i class="fas fa-upload"></i> Subir foto
+          <button class="btn-subir-evidencia" (click)="triggerFileInput()">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <span>Subir Evidencia</span>
           </button>
           <input type="file" #fileInput style="display:none" (change)="onFileSelected($event)" accept="image/*" multiple>
         </div>
@@ -191,11 +256,41 @@
           <div *ngFor="let foto of fotos" class="galeria-item">
             <img [src]="foto.url" alt="Foto del paciente" (click)="abrirModalImagen(foto.url)">
             <div class="galeria-overlay" (click)="abrirModalImagen(foto.url)">
-              <i class="fas fa-search-plus"></i>
+              <i class="fas fa-search"></i>
             </div>
           </div>
           <div *ngIf="fotos.length === 0" class="sin-registros">
-            <i class="fas fa-image"></i> No hay fotos en la galería
+            No hay imágenes en el expediente
+          </div>
+        </div>
+      </div>
+
+      <!-- MEMBRESÍAS -->
+      <div *ngIf="tabActivo === 'membresias'" class="tab-content">
+        <div class="tarjeta-seccion">
+          <div class="titulo-seccion">
+            <h3>Planes Activos</h3>
+          </div>
+          <div class="membresias-grid">
+            <div *ngFor="let m of membresias" class="membresia-card" [ngClass]="m.status">
+              <div class="membresia-header">
+                <h4>{{ m.nombreTratamiento }}</h4>
+                <span class="membresia-status" [ngClass]="m.status">{{ m.status }}</span>
+              </div>
+              <div class="membresia-body">
+                <div class="m-dato"><span class="m-label">Total</span> <span class="m-valor">${{ m.costoTotal | number:'1.2-2' }}</span></div>
+                <div class="m-dato"><span class="m-label">Anticipo</span> <span class="m-valor">${{ m.enganche | number:'1.2-2' }}</span></div>
+                <div class="m-dato"><span class="m-label">Cuota</span> <span class="m-valor">${{ m.installmentAmount | number:'1.2-2' }}</span></div>
+                <div class="m-dato"><span class="m-label">Ciclo</span> <span class="m-valor capitalize">{{ m.paymentFrequency }}</span></div>
+                <div class="m-dato">
+                  <span class="m-label">Progreso</span>
+                  <span class="m-valor">{{ m.pagosRealizados }} / {{ m.installmentsCount }}</span>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="membresias.length === 0" class="sin-registros">
+              No hay planes de membresía activos
+            </div>
           </div>
         </div>
       </div>
@@ -203,35 +298,61 @@
   </div>
 </div>
 
-<!-- Modal de imagen ampliada (puedes reutilizar el mismo app-modal) -->
-<ng-template #imagenModal>
-  <div class="modal-imagen" (click)="cerrarModalImagen()">
-    <img [src]="imagenModal" alt="Ampliación" (click)="$event.stopPropagation()">
-    <button class="cerrar-modal" (click)="cerrarModalImagen()">✖</button>
+<!-- Modal de imagen ampliada -->
+<div class="modal-imagen" *ngIf="imagenModal" (click)="cerrarModalImagen()">
+  <div class="modal-contenedor" (click)="$event.stopPropagation()">
+    <!-- Controles de Zoom Premium -->
+    <div class="zoom-controls">
+      <button (click)="aplicarZoom(0.2)" title="Acercar">
+        <i class="fas fa-search-plus"></i>
+      </button>
+      <button (click)="aplicarZoom(-0.2)" title="Alejar">
+        <i class="fas fa-search-minus"></i>
+      </button>
+      <button (click)="reiniciarZoom()" title="Restaurar">
+        <i class="fas fa-sync-alt"></i>
+      </button>
+      <button class="cerrar-modal" (click)="cerrarModalImagen()" title="Cerrar">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div class="visor-imagen" 
+         (mousedown)="iniciarArrastre($event)" 
+         (mousemove)="arrastrar($event)" 
+         (mouseup)="finalizarArrastre()" 
+         (mouseleave)="finalizarArrastre()"
+         (wheel)="onWheelZoom($event)">
+      <img [src]="imagenModal" 
+           alt="Ampliación" 
+           [style.transform]="'translate(' + zoomTranslateX + 'px, ' + zoomTranslateY + 'px) scale(' + zoomScale + ')'"
+           [style.cursor]="zoomScale > 1 ? (isDraggingZoom ? 'grabbing' : 'grab') : 'default'"
+           draggable="false">
+    </div>
   </div>
-</ng-template>
+</div>
 
 <ng-template #cargando>
-  <div class="cargando">Cargando datos del paciente...</div>
+  <div class="cargando">Cargando expediente...</div>
 </ng-template>
 
-<!-- Modales para nueva cita (estética / dental) - se mantienen igual pero puedes mejorar su estilo -->
+<!-- Modales para nueva cita -->
 <app-modal [isVisible]="showModalEstetica" (close)="showModalEstetica=false">
   <form (ngSubmit)="crearCitaEstetica()" class="form-modal-cita">
-    <h3>Nueva Cita Estética</h3>
+    <h3>Agendar Estética</h3>
     <label>Título</label>
     <input [(ngModel)]="nuevaCitaEstetica.titulo" name="titulo" required>
-    <label>Fecha/Hora Inicio</label>
+    <label>Inicio</label>
     <input type="datetime-local" [(ngModel)]="nuevaCitaEstetica.fechaHoraInicio" name="inicio">
-    <label>Fecha/Hora Fin</label>
+    <label>Fin</label>
     <input type="datetime-local" [(ngModel)]="nuevaCitaEstetica.fechaHoraFin" name="fin">
-    <label>Doctor ID (opcional)</label>
+    <label>ID Especialista</label>
     <input [(ngModel)]="nuevaCitaEstetica.doctorId" name="doctor">
-    <label>Notas</label>
+    <label>Observaciones</label>
     <textarea [(ngModel)]="nuevaCitaEstetica.notas" rows="3"></textarea>
     <div class="botones-modal">
-      <button type="submit" class="btn-guardar">Guardar</button>
-      <button type="button" class="btn-cancelar" (click)="showModalEstetica=false">Cancelar</button>
+      <button type="submit" class="btn-guardar">Confirmar</button>
+      <button type="button" class="btn-cancelar" (click)="showModalEstetica=false">Descartar</button>
     </div>
   </form>
 </app-modal>

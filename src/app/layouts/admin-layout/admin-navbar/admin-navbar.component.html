@@ -69,6 +69,22 @@
         </a>
       </div>
     </div>
+
+    <!-- Dropdown Disponibilidad (Solo para Especialistas) -->
+    <div class="nav-group" *ngIf="usuarioTipo === 'Especialista'" [class.open]="openGroup === 'disponibilidad'" (click)="toggleGroup($event, 'disponibilidad')">
+      <div class="group-title">
+        <i class="fas fa-clock"></i> Disponibilidad
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <div class="dropdown-menu">
+        <a routerLink="/admin/disponibilidad" routerLinkActive="active">
+          <i class="fas fa-calendar-alt"></i> Configurar Horarios
+        </a>
+        <a href="javascript:void(0)" (click)="copiarEnlaceCitas()">
+          <i class="fas fa-share-alt"></i> Copiar Enlace Citas
+        </a>
+      </div>
+    </div>
   </div>
 
   <div class="navbar-actions">

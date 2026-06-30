@@ -1,0 +1,26 @@
+<aside class="calendar-sidebar">
+  <header class="sidebar-header">
+    <i class="fas fa-sliders-h"></i>
+    <h3>Panel de Control</h3>
+  </header>
+  
+  <section class="filter-group">
+    <label>Especialista</label>
+    <div class="select-wrapper">
+      <select [ngModel]="doctorIdSeleccionado" (ngModelChange)="onDoctorChange($event)" class="doctor-select">
+        <option value="">Todos los especialistas</option>
+        <option *ngFor="let doc of doctores" [value]="doc._id">
+          Dr. {{ doc.nombre }} {{ doc.apeP }}
+        </option>
+      </select>
+    </div>
+  </section>
+
+  <section class="legend">
+    <h4>Codificación Visual</h4>
+    <div *ngFor="let doc of doctores" class="legend-item">
+      <span class="color-dot" [style.background-color]="doc.colorCalendario"></span>
+      <span class="doc-name">{{ doc.nombre }} {{ doc.apeP }}</span>
+    </div>
+  </section>
+</aside>

@@ -1,40 +1,327 @@
 <section class="agenda-page">
   <div class="agenda-hero">
     <p class="agenda-eyebrow">Rome Harmony Clinic</p>
-    <h1>Agenda tu cita</h1>
+    <h1>Reserva tu Valoración</h1>
     <p class="agenda-copy">
-      Elige el canal que te quede más cómodo y te ayudamos a coordinar tu valoración.
+      Sigue los pasos a continuación para agendar tu cita y realizar tu apartado de forma segura.
     </p>
   </div>
 
-  <div class="agenda-grid">
-    <article class="agenda-card accent">
-      <h2>WhatsApp</h2>
-      <p>Respuesta rápida para confirmar disponibilidad y resolver dudas.</p>
-      <a class="agenda-button primary" [href]="whatsappUrl" target="_blank" rel="noopener">Escribir por WhatsApp</a>
-    </article>
+  <!-- Barra de progreso del Wizard -->
+  <div class="stepper">
+    <div class="step-indicator" [class.active]="step === 1" [class.completed]="step > 1">
+      <span class="step-num">1</span>
+      <span class="step-label">Cita</span>
+    </div>
+    <div class="step-line" [class.active]="step > 1"></div>
+    
+    <div class="step-indicator" [class.active]="step === 2" [class.completed]="step > 2">
+      <span class="step-num">2</span>
+      <span class="step-label">Teléfono</span>
+    </div>
+    <div class="step-line" [class.active]="step > 2"></div>
 
-    <article class="agenda-card">
-      <h2>Llamada</h2>
-      <p>Comunícate directamente para agendar tu valoración.</p>
-      <a class="agenda-button" [href]="telefonoHref">Llamar ahora</a>
-    </article>
+    <div class="step-indicator" [class.active]="step === 3" [class.completed]="step > 3" *ngIf="step === 3 || paciente === null">
+      <span class="step-num">3</span>
+      <span class="step-label">Registro</span>
+    </div>
+    <div class="step-line" [class.active]="step > 3" *ngIf="step === 3 || paciente === null"></div>
 
-    <article class="agenda-card">
-      <h2>Correo</h2>
-      <p>Si prefieres escribir, envía tu nombre y horario preferido.</p>
-      <a class="agenda-button" [href]="correoHref">Enviar correo</a>
-    </article>
+    <div class="step-indicator" [class.active]="step === 4">
+      <span class="step-num">{{ paciente === null ? '4' : '3' }}</span>
+      <span class="step-label">Pago</span>
+    </div>
+  </div>
 
-    <article class="agenda-card">
-      <h2>Ubicación</h2>
-      <p>Visítanos para una valoración presencial.</p>
-      <a class="agenda-button" [href]="ubicacionUrl" target="_blank" rel="noopener">Ver en Google Maps</a>
-    </article>
+  <!-- Caja de Errores Global -->
+  <div class="error-box" *ngIf="errorMessage">
+    <i class="fas fa-exclamation-triangle"></i>
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <!-- PASO 1: Selección de Especialista, Fecha y Horarios (Tipo Calendly) -->
+  <div class="wizard-card calendly-card animate-fade" *ngIf="step === 1">
+    <div class="calendly-layout">
+      <!-- Columna Izquierda: Información de Especialista y Pago -->
+      <div class="calendly-info-pane">
+        <div class="clinic-logo">
+          <i class="fas fa-spa"></i>
+        </div>
+        <p class="clinic-name">Rome Harmony Clinic</p>
+        
+        <!-- Selección de Doctor -->
+        <div class="form-group select-doctor-group" *ngIf="!hasUrlDoctor">
+          <label for="doctor">Especialista (Doctor)</label>
+          <select id="doctor" [(ngModel)]="selectedDoctorId" (change)="onDoctorOrFechaChange()" [disabled]="loading">
+            <option value="" disabled selected>Selecciona un especialista</option>
+            <option *ngFor="let doc of doctores" [value]="doc._id">
+              Dr(a). {{ doc.nombre }} {{ doc.apeP }} ({{ doc.especialidad }})
+            </option>
+          </select>
+        </div>
+
+        <!-- Selector de Servicio (Tratamiento) -->
+        <div class="form-group select-service-group" *ngIf="selectedDoctorId">
+          <label for="servicio"><i class="fas fa-concierge-bell"></i> Tratamiento / Servicio *</label>
+          <select id="servicio" [(ngModel)]="selectedServiceId" (change)="onServiceChange()" [disabled]="loading">
+            <option value="" disabled selected>Selecciona un tratamiento</option>
+            <option *ngFor="let serv of servicios" [value]="serv._id">
+              {{ serv.nombre }}
+            </option>
+          </select>
+        </div>
+
+        <div *ngIf="selectedDoctorId && selectedService" class="doctor-details-pane animate-fade">
+          <h3 class="doctor-name">Dr(a). {{ getSelectedDoctor()?.nombre }} {{ getSelectedDoctor()?.apeP }}</h3>
+          <p class="doctor-specialty">{{ getSelectedDoctor()?.especialidad }}</p>
+          
+          <div class="appointment-meta">
+            <div class="meta-item">
+              <i class="fas fa-concierge-bell"></i>
+              <span>Tratamiento: <strong>{{ selectedService.nombre }}</strong></span>
+            </div>
+            <div class="meta-item">
+              <i class="far fa-clock"></i>
+              <span>Duración: {{ selectedService.duracionMinutos || 60 }} min</span>
+            </div>
+            <div class="meta-item">
+              <i class="fas fa-wallet"></i>
+              <span>Costo: <strong class="price-highlight">${{ selectedService.costo }}.00 MXN</strong></span>
+            </div>
+            <div class="meta-item">
+              <i class="fas fa-shield-alt"></i>
+              <span>Pago 100% seguro con Stripe</span>
+            </div>
+          </div>
+          
+          <p class="appointment-notice">
+            El pago es requerido para asegurar tu espacio y es completamente acreditable al total de tu tratamiento.
+          </p>
+        </div>
+      </div>
+
+      <!-- Columna Derecha: Calendario y Horarios -->
+      <div class="calendly-picker-pane">
+        <h2 class="pane-title">Selecciona Fecha y Hora</h2>
+        
+        <div class="picker-row" *ngIf="selectedDoctorId && selectedServiceId">
+          <div class="form-group date-picker-group full-width-group">
+            <div class="fechas-header-flex">
+              <label class="section-label"><i class="fas fa-calendar-alt"></i> Fechas Disponibles</label>
+              <button type="button" class="btn-toggle-manual" (click)="showManualDate = !showManualDate">
+                <i class="fas" [class.fa-calendar-day]="!showManualDate" [class.fa-times]="showManualDate"></i>
+                {{ showManualDate ? 'Ocultar calendario' : 'Buscar otra fecha' }}
+              </button>
+            </div>
+            
+            <!-- Tarjetas de Fechas Estilo Calendly Premium -->
+            <div class="fechas-cards-grid" *ngIf="fechasDisponibles.length > 0">
+              <button 
+                type="button" 
+                class="fecha-card-btn" 
+                *ngFor="let f of fechasDisponibles" 
+                [class.active-card]="selectedFecha === f" 
+                (click)="seleccionarFechaRapida(f)">
+                <span class="card-day-name">{{ parseFechaParts(f).diaSemana }}</span>
+                <span class="card-day-num">{{ parseFechaParts(f).diaNumero }}</span>
+                <span class="card-month">{{ parseFechaParts(f).mes }}</span>
+                <div class="active-indicator" *ngIf="selectedFecha === f">
+                  <i class="fas fa-check"></i>
+                </div>
+              </button>
+            </div>
+
+            <p class="no-fechas-text" *ngIf="fechasDisponibles.length === 0">
+              No se encontraron días con disponibilidad próxima. Selecciona una fecha en el calendario:
+            </p>
+
+            <!-- Selector de Fecha Manual (Colapsable) -->
+            <div class="manual-date-collapsible animate-fade" *ngIf="showManualDate || fechasDisponibles.length === 0">
+              <label for="fecha" class="sub-label">Selecciona una fecha específica:</label>
+              <input 
+                type="date" 
+                id="fecha" 
+                [(ngModel)]="selectedFecha" 
+                [min]="getMinDate()" 
+                (change)="onDoctorOrFechaChange()" 
+                [disabled]="loading" 
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Horarios Disponibles -->
+        <div class="calendly-slots-container" *ngIf="selectedDoctorId && selectedServiceId && selectedFecha">
+          <h3 class="slots-header">Horas disponibles para el {{ selectedFecha | date:'dd/MM/yyyy':'UTC' }}</h3>
+          
+          <div class="slots-loading" *ngIf="loading">
+            <span class="spinner"></span>
+            <p>Buscando espacios disponibles...</p>
+          </div>
+
+          <div class="no-slots" *ngIf="!loading && slots.length === 0">
+            <i class="far fa-calendar-times"></i>
+            <p>No hay horarios disponibles para esta fecha. Intenta con otro día.</p>
+          </div>
+
+          <div class="calendly-slots-grid" *ngIf="!loading && slots.length > 0">
+            <button 
+              class="calendly-slot-btn animate-fade" 
+              *ngFor="let slot of slots" 
+              (click)="seleccionarSlot(slot)"
+            >
+              {{ slot.horaInicio }}
+            </button>
+          </div>
+        </div>
+        
+        <div class="calendly-placeholder" *ngIf="!selectedDoctorId || !selectedServiceId || !selectedFecha">
+          <i class="far fa-calendar-alt"></i>
+          <p>Selecciona un especialista, un tratamiento y una fecha para ver la disponibilidad de horarios.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PASO 2: Ingreso de Teléfono -->
+  <div class="wizard-card animate-fade" *ngIf="step === 2">
+    <h2 class="card-title">Identificación</h2>
+    <p class="card-desc">
+      Has seleccionado el día <strong>{{ selectedSlotTemp?.fecha | date:'dd/MM/yyyy':'UTC' }}</strong> a las <strong>{{ selectedSlotTemp?.horaInicio }}</strong>. 
+      Ingresa tu número de teléfono móvil para continuar.
+    </p>
+    
+    <div class="form-group">
+      <label for="telefono">Número de Teléfono (10 dígitos)</label>
+      <div class="input-wrapper">
+        <i class="fas fa-phone input-icon"></i>
+        <input 
+          type="tel" 
+          id="telefono" 
+          [(ngModel)]="telefonoInput" 
+          placeholder="Ej. 4491234567" 
+          maxlength="10"
+          [disabled]="loading"
+          (keyup.enter)="buscarTelefono()"
+        />
+      </div>
+    </div>
+
+    <div class="card-actions-dual">
+      <button class="btn-back" (click)="volverPaso(1)" [disabled]="loading">Atrás</button>
+      <button class="btn-next" [disabled]="loading || telefonoInput.length < 10" (click)="buscarTelefono()">
+        <span *ngIf="!loading">Buscar y Continuar</span>
+        <span *ngIf="loading" class="spinner"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- PASO 3: Registro Rápido -->
+  <div class="wizard-card animate-fade" *ngIf="step === 3">
+    <h2 class="card-title">Registro Rápido</h2>
+    <p class="card-desc">Parece que no tienes un expediente activo con nosotros. Completa tu información básica:</p>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="nombre">Nombre(s) *</label>
+        <input type="text" id="nombre" [(ngModel)]="nuevoPaciente.nombre" placeholder="Nombre" [disabled]="loading" />
+      </div>
+      
+      <div class="form-group">
+        <label for="apeP">Primer Apellido *</label>
+        <input type="text" id="apeP" [(ngModel)]="nuevoPaciente.apeP" placeholder="Primer Apellido" [disabled]="loading" />
+      </div>
+
+      <div class="form-group">
+        <label for="apeM">Segundo Apellido *</label>
+        <input type="text" id="apeM" [(ngModel)]="nuevoPaciente.apeM" placeholder="Segundo Apellido" [disabled]="loading" />
+      </div>
+
+      <div class="form-group">
+        <label for="correo">Correo Electrónico</label>
+        <input type="email" id="correo" [(ngModel)]="nuevoPaciente.correoElectronico" placeholder="ejemplo@correo.com" [disabled]="loading" />
+      </div>
+
+      <div class="form-group">
+        <label for="fechaNac">Fecha de Nacimiento</label>
+        <input type="date" id="fechaNac" [(ngModel)]="nuevoPaciente.fechaNac" [disabled]="loading" />
+      </div>
+
+      <div class="form-group">
+        <label for="genero">Género</label>
+        <select id="genero" [(ngModel)]="nuevoPaciente.genero" [disabled]="loading">
+          <option value="Femenino">Femenino</option>
+          <option value="Masculino">Masculino</option>
+          <option value="Otro">Otro</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="card-actions-dual">
+      <button class="btn-back" (click)="volverPaso(2)" [disabled]="loading">Atrás</button>
+      <button class="btn-next" (click)="registrarPaciente()" [disabled]="loading || !nuevoPaciente.nombre || !nuevoPaciente.apeP || !nuevoPaciente.apeM">
+        <span *ngIf="!loading">Registrar y Continuar</span>
+        <span *ngIf="loading" class="spinner"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- PASO 4: Pago y Confirmación con Cuenta Regresiva -->
+  <div class="wizard-card checkout-card animate-fade" *ngIf="step === 4">
+    <h2 class="card-title">Reserva Temporal y Pago</h2>
+    <p class="card-desc" *ngIf="selectedService">Hemos bloqueado este horario para ti temporalmente. Completa el pago del anticipo de ${{ selectedService.costo }}.00 MXN para confirmarlo.</p>
+    <p class="card-desc" *ngIf="!selectedService">Hemos bloqueado este horario para ti temporalmente. Completa el pago del anticipo para confirmarlo.</p>
+
+    <!-- Visual Timer Liquid Glass -->
+    <div class="timer-container">
+      <div class="timer-glass">
+        <div class="timer-spinner"></div>
+        <div class="timer-content">
+          <span class="timer-label">Tiempo Restante</span>
+          <span class="timer-value">{{ formattedTime }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Resumen de Cita -->
+    <div class="summary-box">
+      <h3 class="summary-title">Resumen de tu Reserva</h3>
+      <div class="summary-row">
+        <span>Especialista:</span>
+        <strong>Dr(a). {{ selectedSlot?.doctorId?.nombre }} {{ selectedSlot?.doctorId?.apeP }}</strong>
+      </div>
+      <div class="summary-row">
+        <span>Fecha:</span>
+        <strong>{{ selectedSlot?.fecha | date:'dd/MM/yyyy':'UTC' }}</strong>
+      </div>
+      <div class="summary-row">
+        <span>Horario:</span>
+        <strong>{{ selectedSlot?.horaInicio }} - {{ selectedSlot?.horaFin }}</strong>
+      </div>
+      <div class="summary-row">
+        <span>Tratamiento:</span>
+        <strong>{{ selectedService?.nombre || selectedTipoCita }}</strong>
+      </div>
+      <div class="summary-divider"></div>
+      <div class="summary-row total-row">
+        <span>Costo a pagar:</span>
+        <span class="amount">${{ selectedService?.costo || 500 }}.00 MXN</span>
+      </div>
+      <p class="summary-notice">Este pago es 100% acreditable al costo de tu consulta el día de tu visita.</p>
+    </div>
+
+    <div class="card-actions-dual">
+      <button class="btn-back" (click)="volverPaso(1)" [disabled]="loading">Cambiar Horario</button>
+      <button class="btn-pay" (click)="pagarAnticipo()" [disabled]="loading">
+        <span *ngIf="!loading">
+          <i class="fab fa-stripe"></i> Pagar con Stripe
+        </span>
+        <span *ngIf="loading" class="spinner"></span>
+      </button>
+    </div>
   </div>
 
   <div class="agenda-footer">
-    <a routerLink="/servicios" class="agenda-link">Ver servicios</a>
-    <a routerLink="/membresias" class="agenda-link">Ver membresías</a>
+    <a href="/inicio" class="agenda-link">Volver al Inicio</a>
   </div>
 </section>

@@ -20,7 +20,7 @@
                 <div class="dato-ln user-info"><i class="fas fa-user-shield"></i> Por: {{item.agregadoPor?.usuario}}</div>
             </div>
             <div class="acciones-tarjeta">
-                <button [routerLink]="['/pacientes/perfil', item.paciente._id]" class="btn-ver">Ver Perfil</button>
+                <button [routerLink]="['/admin/pacientes/perfil', item.paciente._id]" class="btn-ver">Ver Perfil</button>
             </div>
         </div>
         <div *ngIf="listaNegra.length===0">No hay pacientes en lista negra</div>

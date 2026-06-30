@@ -83,7 +83,12 @@ export class UserListComponent implements OnInit {
   }
 
   editarUsuario(usuario: Usuario): void {
-    this.router.navigate(['/usuarios/editar', usuario._id]);
+    this.router.navigate(['/admin/usuarios/editar', usuario._id]);
+  }
+
+  // Redirecciona a la pagina de disponibilidad del doctor
+  irADisponibilidad(usuario: Usuario): void {
+    this.router.navigate(['/admin/disponibilidad'], { queryParams: { doctorId: usuario._id } });
   }
 
   eliminarUsuario(usuario: Usuario): void {

@@ -1,0 +1,204 @@
+.event-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.event-modal-card {
+  width: 90%;
+  max-width: 420px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #eaeaea;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  animation: slideUpModal 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes slideUpModal {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-header {
+  padding: 24px 32px 20px;
+  background: white;
+  border-bottom: 1px solid #eaeaea;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #111;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+
+.modal-header .close-btn {
+  background: transparent;
+  border: none;
+  color: #737373;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px;
+  margin-top: -4px;
+  transition: color 0.2s ease;
+}
+
+.modal-header .close-btn:hover {
+  color: #111;
+}
+
+.modal-content {
+  padding: 24px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: white;
+}
+
+.modal-content .info-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.modal-content .info-row .icon-primary {
+  font-size: 16px;
+  color: #737373; /* Iconos sutiles, no dorados */
+  width: 20px;
+  text-align: center;
+  margin-top: 2px;
+}
+
+.modal-content .info-row .info-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.modal-content .info-row .info-text .label {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #737373;
+}
+
+.modal-content .info-row .info-text .value {
+  font-size: 14px;
+  font-weight: 500;
+  color: #111;
+}
+
+.modal-content .info-row .info-text .status-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  background: #fafafa;
+  border: 1px solid #eaeaea;
+  color: #737373;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  width: fit-content;
+  margin-top: 4px;
+}
+
+.modal-content .info-row .info-text .status-badge.registered {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+  color: #166534;
+}
+
+.modal-content .notes-section {
+  padding: 16px;
+  background: #fafafa;
+  border-radius: 6px;
+  border: 1px solid #eaeaea;
+  margin-top: 8px;
+}
+
+.modal-content .notes-section .label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #737373;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.modal-content .notes-section .notes-text {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #111;
+  margin: 0;
+  font-weight: 400;
+}
+
+.modal-footer {
+  padding: 24px 32px;
+  background: #fafafa;
+  border-top: 1px solid #eaeaea;
+  display: flex;
+  gap: 12px;
+}
+
+.modal-footer .action-btn {
+  flex: 1;
+  padding: 12px;
+  background: white;
+  border: 1px solid #eaeaea;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #111;
+  transition: all 0.2s ease;
+}
+
+.modal-footer .action-btn i { font-size: 14px; }
+
+.modal-footer .action-btn.wapp-btn:hover {
+  background: #f0fdf4;
+  border-color: #25D366;
+  color: #166534;
+}
+
+.modal-footer .action-btn.wapp-btn:hover i {
+  color: #25D366;
+}
+
+.modal-footer .action-btn.calendar-btn:hover {
+  background: #eff6ff;
+  border-color: #4285F4;
+  color: #1e40af;
+}
+
+.modal-footer .action-btn.calendar-btn:hover i {
+  color: #4285F4;
+}

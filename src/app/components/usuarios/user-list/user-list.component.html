@@ -33,7 +33,7 @@
         <option value="Estetica">Estética</option>
       </select>
     </div>
-    <a routerLink="/usuarios/nuevo" class="btn-primary">
+    <a routerLink="/admin/usuarios/nuevo" class="btn-primary">
       <i class="fas fa-user-plus"></i> Nuevo Usuario
     </a>
   </div>
@@ -90,6 +90,10 @@
         </div>
 
         <div class="contenedor-acciones">
+          <button *ngIf="user.tipo === 'Especialista'" class="boton-disponibilidad" (click)="irADisponibilidad(user)" title="Configurar disponibilidad">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Horarios</span>
+          </button>
           <button class="boton-editar" (click)="editarUsuario(user)" title="Editar usuario">
             <i class="fas fa-edit"></i>
             <span>Editar</span>

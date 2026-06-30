@@ -111,12 +111,25 @@ export class ElementPacienteComponent implements OnInit {
   }
 
   verPerfil() {
-    this.router.navigate(['/pacientes/perfil', this.paciente._id]);
+    this.router.navigate(['/admin/pacientes/perfil', this.paciente._id]);
   }
 
-  formatearFecha(fecha: string | Date): string {
-    if (!fecha) return 'No especificada';
+  /**
+   * Formatea la fecha en formato dd/mm/yyyy. Retorna vacío si no es válida.
+   */
+  formatearFecha(fecha?: string | Date | null): string {
+    if (!fecha) return '';
     const d = new Date(fecha);
     return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
+  }
+
+  /**
+   * Obtiene las iniciales del nombre y apellido paterno del paciente.
+   */
+  obtenerIniciales(): string {
+    if (!this.paciente) return '';
+    const nombre = this.paciente.nombre ? this.paciente.nombre.charAt(0) : '';
+    const apeP = this.paciente.apeP ? this.paciente.apeP.charAt(0) : '';
+    return (nombre + apeP).toUpperCase();
   }
 }

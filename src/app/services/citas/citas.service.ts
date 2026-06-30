@@ -4,36 +4,21 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 
-export interface CitaEstetica {
+export interface CitaPayload {
   _id?: string;
   pacienteId?: string;
   pacienteNombre: string;
   pacienteTelefono: string;
-  pacienteEmail: string;
+  pacienteEmail?: string;
   doctorId: string;
-  servicioEsteticoId?: string;
+  servicioId?: string;
+  tipoCita: 'Dental' | 'Estetica';
   titulo: string;
   fechaHoraInicio: Date;
   fechaHoraFin: Date;
-  estado: 'Pendiente' | 'Confirmada' | 'Cancelada' | 'Completada';
+  estado?: 'Pendiente' | 'Confirmada' | 'Cancelada' | 'Completada';
   notas?: string;
-  googleEventId?: string;
-  googleEventLink?: string;
-}
-
-export interface CitaDental {
-  _id?: string;
-  pacienteId?: string;
-  pacienteNombre: string;
-  pacienteTelefono: string;
-  pacienteEmail: string;
-  doctorId: string;
-  servicioDentalId?: string;
-  titulo: string;
-  fechaHoraInicio: Date;
-  fechaHoraFin: Date;
-  estado: 'Pendiente' | 'Confirmada' | 'Cancelada' | 'Completada';
-  notas?: string;
+  origen?: string;
   googleEventId?: string;
   googleEventLink?: string;
 }
@@ -47,19 +32,23 @@ export class CitasService {
 
   constructor(private http: HttpClient) {}
 
-  // Estética
-  crearCitaEstetica(cita: CitaEstetica): Observable<CitaEstetica> {
-    return this.http.post<CitaEstetica>(`${this.apiUrl}/calendar/crear-cita-estetica`, cita);
-  }
-  obtenerCitasEsteticaPorPaciente(pacienteId: string): Observable<CitaEstetica[]> {
-    return this.http.get<CitaEstetica[]>(`${this.apiUrl}/citas-esteticas/paciente/${pacienteId}`);
+  agendarCita(cita: CitaPayload): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/citas/agendar`, cita);
   }
 
-  // Dental
-  crearCitaDental(cita: CitaDental): Observable<CitaDental> {
-    return this.http.post<CitaDental>(`${this.apiUrl}/calendar/crear-cita-dental`, cita);
+  crearCitaEstetica(cita: CitaPayload): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/citas/agendar`, { ...cita, tipoCita: 'Estetica' });
   }
-  obtenerCitasDentalPorPaciente(pacienteId: string): Observable<CitaDental[]> {
-    return this.http.get<CitaDental[]>(`${this.apiUrl}/citas-dentales/paciente/${pacienteId}`);
+
+  crearCitaDental(cita: CitaPayload): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/citas/agendar`, { ...cita, tipoCita: 'Dental' });
+  }
+
+  obtenerCitasEsteticaPorPaciente(pacienteId: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/citas-esteticas/paciente/${pacienteId}`);
+  }
+
+  obtenerCitasDentalPorPaciente(pacienteId: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/citas-dentales/paciente/${pacienteId}`);
   }
 }

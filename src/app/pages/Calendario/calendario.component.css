@@ -1,0 +1,195 @@
+:root {
+  --primary-gold: #C5A028;
+  --bg-main: #ffffff;
+  --bg-surface: #fafafa;
+  --text-main: #111111;
+  --text-muted: #737373;
+  --border-color: #eaeaea;
+}
+
+.calendar-admin-container {
+  display: flex;
+  background: var(--bg-main);
+  min-height: calc(100vh - 70px);
+  font-family: 'Inter', -apple-system, sans-serif;
+  color: var(--text-main);
+}
+
+.calendar-main {
+  flex: 1;
+  background: var(--bg-main);
+  padding: 40px 48px;
+  overflow-y: auto;
+}
+
+/* FullCalendar Customization: Premium & Elegant */
+::ng-deep .fc {
+  border: none !important;
+  font-family: inherit !important;
+  color: var(--text-main) !important;
+}
+
+::ng-deep .fc .fc-toolbar {
+  margin-bottom: 40px !important;
+  display: flex;
+  align-items: center;
+}
+
+::ng-deep .fc .fc-toolbar-title { 
+  font-size: 24px !important; 
+  font-weight: 800 !important;
+  color: #0f172a !important;
+  letter-spacing: -0.02em;
+  font-family: 'Outfit', 'Work Sans', sans-serif !important;
+}
+
+/* Minimalist Buttons */
+::ng-deep .fc .fc-button-group {
+  display: flex;
+  gap: 8px;
+}
+
+::ng-deep .fc .fc-button {
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  color: #475569 !important; /* Slate 600 */
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  padding: 8px 18px !important;
+  text-transform: capitalize !important;
+  border-radius: 8px !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+  transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+}
+
+::ng-deep .fc .fc-button:hover:not(:disabled) {
+  background: #f8fafc !important;
+  color: #000000 !important;
+  border-color: rgba(0, 0, 0, 0.15) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+}
+
+::ng-deep .fc .fc-button.fc-button-active {
+  background: #0f172a !important;
+  border-color: #0f172a !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15) !important;
+}
+
+::ng-deep .fc .fc-today-button {
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  color: #0f172a !important;
+  margin-right: 24px !important;
+  border-radius: 8px !important;
+  font-weight: 700 !important;
+  padding: 8px 20px !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+::ng-deep .fc .fc-today-button:hover:not(:disabled) {
+  background: #f8fafc !important;
+  border-color: rgba(0, 0, 0, 0.15) !important;
+  transform: translateY(-1px);
+}
+
+/* Grid & Header Styling */
+::ng-deep .fc td, ::ng-deep .fc th {
+  border-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+::ng-deep .fc-timegrid-slot {
+  height: 4.5rem !important;
+}
+
+::ng-deep .fc .fc-timegrid-axis-cushion, 
+::ng-deep .fc .fc-timegrid-slot-label-cushion {
+  font-size: 11px !important;
+  font-weight: 600;
+  color: #64748b; /* Slate 500 */
+  font-family: 'JetBrains Mono', monospace;
+}
+
+::ng-deep .fc .fc-col-header-cell {
+  background: #f8fafc !important;
+  padding: 16px 0 !important;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.06) !important;
+}
+
+::ng-deep .fc .fc-col-header-cell-cushion {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: #334155 !important; /* Slate 700 */
+  text-decoration: none !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Highlight today column */
+::ng-deep .fc .fc-day-today {
+  background: rgba(197, 160, 40, 0.04) !important;
+}
+
+/* Event Styling: Clean & Modern Blocks */
+::ng-deep .fc .fc-event {
+  border: none !important;
+  border-radius: 6px !important;
+  padding: 6px 10px !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04) !important;
+  cursor: pointer;
+  background-image: none !important;
+  border-left: 4px solid rgba(0, 0, 0, 0.2) !important;
+  transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+}
+
+::ng-deep .fc .fc-event:hover {
+  opacity: 0.95;
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08) !important;
+  z-index: 100;
+}
+
+::ng-deep .fc .fc-event-main {
+  padding: 2px 0 !important;
+}
+
+::ng-deep .fc .fc-event-title {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: white !important;
+  text-shadow: none !important;
+  line-height: 1.3;
+}
+
+::ng-deep .fc .fc-event-time {
+  font-size: 10px !important;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9) !important;
+  margin-bottom: 3px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Scrollbar Customization */
+.calendar-main::-webkit-scrollbar {
+  width: 8px;
+}
+.calendar-main::-webkit-scrollbar-track {
+  background: #f8fafc;
+}
+.calendar-main::-webkit-scrollbar-thumb {
+  background: rgba(197, 160, 40, 0.3);
+  border-radius: 4px;
+}
+.calendar-main::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-gold);
+}
+
+@media (max-width: 850px) {
+  .calendar-admin-container {
+    flex-direction: column;
+  }
+  .calendar-main {
+    padding: 24px;
+  }
+}

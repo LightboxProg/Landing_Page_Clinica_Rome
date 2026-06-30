@@ -2,21 +2,22 @@ import { CommonModule } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Paciente, PacientesService } from '../../../services/pacientes/pacientes.service';
-import { CitaDental, CitaEstetica, CitasService } from '../../../services/citas/citas.service';
+import { CitaPayload, CitasService } from '../../../services/citas/citas.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ListaNegraService } from '../../../services/lista-negra/lista-negra.service';
 import { SwalService } from '../../../services/swal/swal.service';
 import { AuthService } from '../../../services/auth/auth.service';
 import { ModalComponent } from '../../modal/modal.component';
-import { FotosService } from '../../../services/fotos/fotos.service';
 import { UserService, Usuario } from '../../../services/user/user.service';
+import { MembresiasService } from '../../../services/membresias/membresias.service';
+import { FotosService } from '../../../services/fotos/fotos.service';
 
 @Component({
   selector: 'app-perfil-paciente',
   standalone: true,
   imports: [CommonModule, FormsModule, ModalComponent],
   templateUrl: './perfil-paciente.component.html',
-  styleUrl: './perfil-paciente.component.scss'
+  styleUrl: './perfil-paciente.component.css'
 })
 export class PerfilPacienteComponent implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
@@ -26,17 +27,24 @@ export class PerfilPacienteComponent implements OnInit {
   listaNegra: any = null;
   esAdmin = false;
 
-  citasEstetica: CitaEstetica[] = [];
-  citasDental: CitaDental[] = [];
+  citasEstetica: any[] = [];
+  citasDental: any[] = [];
   doctoresMap: { [key: string]: string } = {};
   showModalEstetica = false;
   showModalDental = false;
-  nuevaCitaEstetica: Partial<CitaEstetica> = { titulo: '', notas: '', estado: 'Pendiente' };
-  nuevaCitaDental: Partial<CitaDental> = { titulo: '', notas: '', estado: 'Pendiente' };
+  nuevaCitaEstetica: Partial<CitaPayload> = { titulo: '', notas: '' };
+  nuevaCitaDental: Partial<CitaPayload> = { titulo: '', notas: '' };
 
   fotos: any[] = [];
   imagenModal: string | null = null;
-  tabActivo: 'info' | 'alergias' | 'citas' | 'galeria' = 'info';
+  zoomScale = 1;
+  zoomTranslateX = 0;
+  zoomTranslateY = 0;
+  isDraggingZoom = false;
+  startX = 0;
+  startY = 0;
+  tabActivo: 'info' | 'alergias' | 'citas' | 'galeria' | 'membresias' = 'citas';
+  membresias: any[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -47,7 +55,8 @@ export class PerfilPacienteComponent implements OnInit {
     private fotosService: FotosService,
     private authService: AuthService,
     private swal: SwalService,
-    private usuariosService: UserService
+    private usuariosService: UserService,
+    private membresiasService: MembresiasService
   ) { }
 
   ngOnInit() {
@@ -58,6 +67,7 @@ export class PerfilPacienteComponent implements OnInit {
       this.cargarCitas(id);
       this.cargarFotos(id);
       this.cargarDoctores();
+      this.cargarMembresias(id);
     }
     const usuario = this.authService.getUsuario();
     this.esAdmin = usuario?.tipo === 'Administrador';
@@ -76,7 +86,13 @@ export class PerfilPacienteComponent implements OnInit {
     this.citasService.obtenerCitasDentalPorPaciente(id).subscribe(res => this.citasDental = res);
   }
   cargarFotos(id: string) {
-    this.fotosService.obtenerFotos(id).subscribe(res => this.fotos = res.fotos);
+    this.fotosService.obtenerFotos(id).subscribe((res: any) => this.fotos = res.fotos);
+  }
+  cargarMembresias(id: string) {
+    this.membresiasService.obtenerMembresiasPorPaciente(id).subscribe({
+      next: (res: any[]) => this.membresias = res,
+      error: (err) => console.error('Error al cargar membresias:', err)
+    });
   }
 
   cargarDoctores() {
@@ -116,13 +132,14 @@ export class PerfilPacienteComponent implements OnInit {
       this.swal.error('ID del paciente no disponible');
       return;
     }
-    const cita: CitaEstetica = {
-      ...this.nuevaCitaEstetica as CitaEstetica,
+    const cita: CitaPayload = {
+      ...this.nuevaCitaEstetica as CitaPayload,
       pacienteId: this.paciente._id,
       pacienteNombre: `${this.paciente.nombre} ${this.paciente.apeP} ${this.paciente.apeM}`,
       pacienteTelefono: this.paciente.telefonoWhatsapp,
       pacienteEmail: this.paciente.correoElectronico,
       doctorId: this.nuevaCitaEstetica.doctorId || '',
+      tipoCita: 'Estetica',
       fechaHoraInicio: new Date(this.nuevaCitaEstetica.fechaHoraInicio || new Date()),
       fechaHoraFin: new Date(this.nuevaCitaEstetica.fechaHoraFin || new Date())
     };
@@ -173,12 +190,83 @@ export class PerfilPacienteComponent implements OnInit {
     return edad;
   }
 
-  // Métodos para el modal de imagen ampliada
+  /**
+   * Abre el modal de imagen ampliada y restablece el zoom.
+   */
   abrirModalImagen(url: string) {
     this.imagenModal = url;
+    this.reiniciarZoom();
   }
 
+  /**
+   * Cierra el modal de imagen ampliada.
+   */
   cerrarModalImagen() {
     this.imagenModal = null;
+  }
+
+  /**
+   * Incrementa o decrementa el nivel de zoom de la imagen.
+   */
+  aplicarZoom(delta: number) {
+    this.zoomScale = Math.max(1, Math.min(5, this.zoomScale + delta));
+    if (this.zoomScale === 1) {
+      this.zoomTranslateX = 0;
+      this.zoomTranslateY = 0;
+    }
+  }
+
+  /**
+   * Restablece el zoom y desplazamiento a sus valores iniciales.
+   */
+  reiniciarZoom() {
+    this.zoomScale = 1;
+    this.zoomTranslateX = 0;
+    this.zoomTranslateY = 0;
+  }
+
+  /**
+   * Controla el zoom de la imagen mediante la rueda del ratón.
+   */
+  onWheelZoom(event: WheelEvent) {
+    event.preventDefault();
+    const delta = event.deltaY < 0 ? 0.2 : -0.2;
+    this.aplicarZoom(delta);
+  }
+
+  /**
+   * Inicia el proceso de arrastre para desplazar la imagen con zoom.
+   */
+  iniciarArrastre(event: MouseEvent) {
+    if (this.zoomScale <= 1) return;
+    this.isDraggingZoom = true;
+    this.startX = event.clientX - this.zoomTranslateX;
+    this.startY = event.clientY - this.zoomTranslateY;
+  }
+
+  /**
+   * Actualiza la posición de la imagen desplazada durante el arrastre.
+   */
+  arrastrar(event: MouseEvent) {
+    if (!this.isDraggingZoom) return;
+    this.zoomTranslateX = event.clientX - this.startX;
+    this.zoomTranslateY = event.clientY - this.startY;
+  }
+
+  /**
+   * Finaliza el estado de arrastre de la imagen.
+   */
+  finalizarArrastre() {
+    this.isDraggingZoom = false;
+  }
+
+  /**
+   * Obtiene las iniciales del nombre y apellido paterno del paciente.
+   */
+  obtenerIniciales(): string {
+    if (!this.paciente) return '';
+    const nombre = this.paciente.nombre ? this.paciente.nombre.charAt(0) : '';
+    const apeP = this.paciente.apeP ? this.paciente.apeP.charAt(0) : '';
+    return (nombre + apeP).toUpperCase();
   }
 }

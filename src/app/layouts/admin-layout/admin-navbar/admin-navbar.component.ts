@@ -5,6 +5,7 @@ import { AuthService } from '../../../services/auth/auth.service';
 import { AuthGoogleComponent } from '../../../components/auth-google/auth-google.component';
 import { PushNotificationService } from '../../../services/notifications/push-notification.service';
 import { RelativeTimePipe } from '../../../pipes/relative-time.pipe';
+import { SwalService } from '../../../services/swal/swal.service';
 
 @Component({
   selector: 'app-admin-navbar',
@@ -16,6 +17,8 @@ import { RelativeTimePipe } from '../../../pipes/relative-time.pipe';
 
 export class AdminNavbarComponent implements OnInit {
   usuarioNombre: string = '';
+  usuarioId: string = '';
+  usuarioTipo: string = '';
   openGroup: string | null = null;
   notifications: any[] = [];
   showNotifications = false;
@@ -23,29 +26,41 @@ export class AdminNavbarComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private pushService: PushNotificationService
+    private pushService: PushNotificationService,
+    private swalService: SwalService
   ) { }
 
   toggleGroup(event: Event, groupName: string) {
-    // Solo en pantallas pequeñas (ancho <= 768px) activamos el clic
     if (window.innerWidth <= 768) {
       event.stopPropagation();
       this.openGroup = this.openGroup === groupName ? null : groupName;
     }
   }
 
-
   ngOnInit(): void {
     const usuario = this.authService.getUsuario();
     if (usuario) {
       this.usuarioNombre = `${usuario.nombre} ${usuario.apeP}`;
+      this.usuarioId = usuario.id;
+      this.usuarioTipo = usuario.tipo;
       
-      // Cargar notificaciones persistentes desde la BD
       this.pushService.loadNotifications(usuario.id).subscribe();
     }
 
     this.pushService.notifications$.subscribe(list => {
       this.notifications = list;
+    });
+  }
+
+  copiarEnlaceCitas(): void {
+    const host = window.location.origin;
+    const shareUrl = `${host}/agendar-cita?doctor=${this.usuarioId}`;
+    
+    navigator.clipboard.writeText(shareUrl).then(() => {
+      this.swalService.success('El enlace para agendar citas ha sido copiado al portapapeles.', '¡Enlace Copiado!');
+    }).catch(err => {
+      console.error('Error al copiar el enlace: ', err);
+      this.swalService.error('No se pudo copiar el enlace automáticamente.', 'Error');
     });
   }
 

@@ -25,11 +25,12 @@ $sombraTarjeta: 0 10px 40px rgba(26, 43, 60, 0.15);
   padding: 1.5rem;
 }
 .encabezado-pagina {
-  background: linear-gradient(135deg, $colorAzulOscuro, $colorTeal);
-  border-radius: 20px;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  background: radial-gradient(circle at top right, rgba(197, 160, 40, 0.08) 0%, transparent 60%), linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  border-radius: 16px;
+  padding: 2.5rem 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   .contenido-encabezado {
     display: flex;
     flex-direction: column;
@@ -39,27 +40,33 @@ $sombraTarjeta: 0 10px 40px rgba(26, 43, 60, 0.15);
     .icono-header {
       width: 60px;
       height: 60px;
-      background: rgba(255, 255, 255, 0.2);
+      background: linear-gradient(135deg, rgba(197, 160, 40, 0.2) 0%, rgba(197, 160, 40, 0.05) 100%);
+      border: 1.5px solid rgba(197, 160, 40, 0.4);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
+      box-shadow: 0 8px 20px rgba(197, 160, 40, 0.15);
       i {
-        font-size: 1.8rem;
-        color: white;
+        font-size: 1.6rem;
+        color: #f3d06c;
       }
     }
     h1 {
-      font-family: "Playfair Display", serif;
+      font-family: "Work Sans", sans-serif;
+      font-weight: 800;
       color: white;
       margin: 0;
-      font-size: 2rem;
+      font-size: 2.2rem;
+      letter-spacing: -0.02em;
     }
     p {
-      color: $colorCrema;
+      color: #f3d06c;
       margin: 0;
+      font-weight: 700;
+      font-size: 0.8rem;
       text-transform: uppercase;
-      letter-spacing: 1.5px;
+      letter-spacing: 2px;
     }
   }
 }

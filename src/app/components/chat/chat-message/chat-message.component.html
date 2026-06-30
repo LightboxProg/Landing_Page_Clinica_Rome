@@ -1,0 +1,13 @@
+<div class="message-bubble" [class.sent]="isSent" [class.received]="!isSent">
+  <div class="bubble-content">
+    <img *ngIf="message.mediaUrl" [src]="message.mediaUrl" class="message-media" />
+    <p>{{ message.body }}</p>
+    <div class="msg-footer">
+      <span class="msg-time">{{ formatTime(message.timestamp) }}</span>
+      <i *ngIf="isSent" class="fas" 
+         [class.fa-check]="message.status === 'sent'"
+         [class.fa-check-double]="message.status === 'delivered' || message.status === 'read'"
+         [class.read]="message.status === 'read'"></i>
+    </div>
+  </div>
+</div>

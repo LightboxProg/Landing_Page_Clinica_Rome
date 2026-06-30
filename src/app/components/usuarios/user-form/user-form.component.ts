@@ -4,12 +4,11 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { UserService } from '../../../services/user/user.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SwalService } from '../../../services/swal/swal.service';
-import { HorarioAtencionComponent } from '../horario-atencion/horario-atencion.component';
 
 @Component({
   selector: 'app-user-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, HorarioAtencionComponent],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './user-form.component.html',
   styleUrl: './user-form.component.css'
 })
@@ -42,6 +41,8 @@ export class UserFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.userId = this.route.snapshot.paramMap.get('id');
+
+
     if (this.userId) {
       this.editMode = true;
       this.cargarUsuario(this.userId);

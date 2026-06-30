@@ -1,19 +1,44 @@
 <div class="tarjeta-paciente" [ngClass]="{'paciente-finado': paciente.finado}">
   <div class="indicador-finado" *ngIf="paciente.finado"><i class="fas fa-cross"></i><span>Finado</span></div>
   <div class="contenido-tarjeta" (click)="verPerfil()">
-    <div class="contenedor-avatar"><div class="avatar-circulo"><i class="fas fa-user-injured"></i></div></div>
+    <div class="contenedor-avatar">
+      <div class="avatar-circulo">
+        <span class="avatar-iniciales">{{ obtenerIniciales() }}</span>
+      </div>
+    </div>
     <div class="info-paciente">
       <h3 class="nombre-paciente">{{paciente.nombre}} {{paciente.apeP}} {{paciente.apeM}}</h3>
       <div class="detalles-paciente">
-        <div class="detalle-item"><i class="fas fa-birthday-cake"></i><span class="etiqueta">Fecha Nac.:</span><span>{{formatearFecha(paciente.fechaNac)}}</span></div>
-        <div class="detalle-item"><i class="fas fa-phone"></i><span class="etiqueta">Teléfono:</span><span>{{paciente.telefonoWhatsapp}}</span></div>
-        <div class="detalle-item"><i class="fas fa-envelope"></i><span class="etiqueta">Correo:</span><span>{{paciente.correoElectronico || 'N/A'}}</span></div>
+        <div class="detalle-item">
+          <i class="fas fa-birthday-cake"></i>
+          <span class="etiqueta">Nacimiento:</span>
+          <span class="valor-detalle" *ngIf="formatearFecha(paciente.fechaNac) as f; else noFecha">{{f}}</span>
+          <ng-template #noFecha><span class="valor-detalle sin-dato">Sin registrar</span></ng-template>
+        </div>
+        <div class="detalle-item">
+          <i class="fas fa-phone-alt"></i>
+          <span class="etiqueta">Teléfono:</span>
+          <span class="valor-detalle" *ngIf="paciente.telefonoWhatsapp || paciente.telefonoPaciente; else noTel">{{paciente.telefonoWhatsapp || paciente.telefonoPaciente}}</span>
+          <ng-template #noTel><span class="valor-detalle sin-dato">Sin registrar</span></ng-template>
+        </div>
+        <div class="detalle-item">
+          <i class="fas fa-envelope"></i>
+          <span class="etiqueta">Correo:</span>
+          <span class="valor-detalle" *ngIf="paciente.correoElectronico; else noCorreo">{{paciente.correoElectronico}}</span>
+          <ng-template #noCorreo><span class="valor-detalle sin-dato">Sin registrar</span></ng-template>
+        </div>
       </div>
     </div>
   </div>
   <div class="contenedor-acciones">
-    <button class="boton-accion boton-asignar" (click)="$event.stopPropagation()">Asignar</button>
-    <button class="boton-accion boton-lista-negra" (click)="$event.stopPropagation(); abrirListaNegra()">Lista Negra</button>
+    <button class="boton-accion boton-asignar" (click)="$event.stopPropagation()">
+      <i class="fas fa-calendar-check"></i>
+      <span>Asignar</span>
+    </button>
+    <button class="boton-accion boton-lista-negra" (click)="$event.stopPropagation(); abrirListaNegra()">
+      <i class="fas fa-user-slash"></i>
+      <span>Lista Negra</span>
+    </button>
   </div>
 </div>
 

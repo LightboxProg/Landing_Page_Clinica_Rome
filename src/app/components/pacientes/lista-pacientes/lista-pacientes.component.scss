@@ -22,18 +22,18 @@ $sombraTarjeta: 0 10px 40px rgba(26, 43, 60, 0.15);
 .tarjeta-lista {
   background: $colorBlanco;
   border-radius: 20px;
-  box-shadow: 0 4px 12px rgba(26, 43, 60, 0.08);
+  box-shadow: 0 10px 30px rgba(26, 43, 60, 0.05);
   overflow: hidden;
-  border: 2px solid rgba(139, 125, 79, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .encabezado-lista {
-  background: linear-gradient(135deg, $colorBeige 0%, $colorCrema 100%);
+  background: linear-gradient(135deg, $colorBeige 0%, rgba(245, 230, 211, 0.3) 100%);
   padding: 1.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 2px solid rgba(139, 125, 79, 0.15);
+  border-bottom: 1px solid rgba(139, 125, 79, 0.15);
 
   > div:first-child {
     display: flex;
@@ -52,20 +52,27 @@ $sombraTarjeta: 0 10px 40px rgba(26, 43, 60, 0.15);
 }
 
 .contador-pacientes {
-  background: $colorBlanco;
-  padding: 0.5rem 1rem;
-  border-radius: 12px;
-  text-align: center;
+  background: rgba(42, 107, 124, 0.05);
+  padding: 6px 16px;
+  border-radius: 30px;
+  border: 1px solid rgba(42, 107, 124, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
   .numero {
-    font-size: 1.8rem;
+    font-size: 1.2rem;
     font-weight: 700;
     color: $colorTeal;
-    font-family: $fuenteElegante;
+    font-family: $fuentePrincipal;
   }
+
   .texto {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
+    font-weight: 700;
     text-transform: uppercase;
-    color: $colorMarronOscuro;
+    color: $colorTeal;
+    letter-spacing: 0.05em;
   }
 }
 

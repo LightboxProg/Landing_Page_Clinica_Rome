@@ -20,6 +20,36 @@ export interface Usuario {
   idPacientes?: string[];
 }
 
+export interface Intervalo {
+  horaInicio: string;
+  horaFin: string;
+}
+
+export interface DiaConfig {
+  diaSemana: number;
+  activo: boolean;
+  horaInicio?: string;
+  horaFin?: string;
+  intervalos?: Intervalo[];
+}
+
+export interface ConfigDisponibilidad {
+  _id?: string;
+  nombre?: string;
+  doctorId: string;
+  modoFechas: 'rango' | 'individual';
+  fechaInicio?: string;
+  fechaFin?: string;
+  fechasSeleccionadas?: string[];
+  diasConfig: DiaConfig[];
+  servicioId?: any;
+  tipoServicio?: 'ServicioDental' | 'ServicioEstetico';
+  duracionConsultaMinutos: number;
+  descansoEntreConsultasMinutos: number;
+  montoAnticipo?: number;
+  activo: boolean;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -61,7 +91,7 @@ export class UserService {
     return this.http.post(`${environment.apiUrl}/doctores/asignar-pacientes`, { doctorId, pacienteIds });
   }
 
-  // Horarios de Atención
+  // Horarios de Atencion (legacy, compatibilidad)
   getHorariosDoctor(doctorId: string): Observable<any[]> {
     return this.http.get<any[]>(`${environment.apiUrl}/horarios/doctor/${doctorId}`);
   }
@@ -72,5 +102,31 @@ export class UserService {
 
   eliminarHorario(id: string): Observable<any> {
     return this.http.delete<any>(`${environment.apiUrl}/horarios/${id}`);
+  }
+
+  // Configuracion de Disponibilidad (nuevo modelo)
+  guardarConfigDisponibilidad(data: Partial<ConfigDisponibilidad>): Observable<ConfigDisponibilidad> {
+    return this.http.post<ConfigDisponibilidad>(`${environment.apiUrl}/disponibilidad/config`, data);
+  }
+
+  obtenerConfigDisponibilidad(doctorId: string): Observable<ConfigDisponibilidad | null> {
+    return this.http.get<ConfigDisponibilidad | null>(`${environment.apiUrl}/disponibilidad/config/${doctorId}`);
+  }
+
+  obtenerConfigDisponibilidadPorId(configId: string): Observable<ConfigDisponibilidad | null> {
+    return this.http.get<ConfigDisponibilidad | null>(`${environment.apiUrl}/disponibilidad/config/id/${configId}`);
+  }
+
+  listarConfiguraciones(doctorId: string): Observable<ConfigDisponibilidad[]> {
+    return this.http.get<ConfigDisponibilidad[]>(`${environment.apiUrl}/disponibilidad/config/lista/${doctorId}`);
+  }
+
+  eliminarConfiguracion(configId: string): Observable<any> {
+    return this.http.delete<any>(`${environment.apiUrl}/disponibilidad/config/${configId}`);
+  }
+
+  // Generar slots a partir de la config
+  configurarDisponibilidad(doctorId: string, configId?: string): Observable<any> {
+    return this.http.post<any>(`${environment.apiUrl}/disponibilidad/configurar`, { doctorId, configId });
   }
 }

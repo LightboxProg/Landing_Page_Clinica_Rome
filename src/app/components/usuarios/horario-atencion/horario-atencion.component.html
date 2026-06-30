@@ -1,24 +1,265 @@
 <div class="horarios-container">
-  <h4>Configuración de Horarios de Atención</h4>
-  <p class="subtitle">Define los días y horas en los que el especialista está disponible para citas.</p>
+  <!-- Header Principal -->
+  <div class="horarios-header">
+    <div class="header-icon">
+      <i class="fas fa-calendar-check"></i>
+    </div>
+    <div class="header-text">
+      <h4>Configuracion de Disponibilidad</h4>
+      <p class="subtitle">Define tus dias, horarios y fechas en las que estaras disponible para citas.</p>
+    </div>
+  </div>
 
-  <div class="dias-grid">
-    <div *ngFor="let dia of dias" class="dia-row" [class.dia-activo]="getHorarioDia(dia.id).activo">
-      <div class="dia-info">
-        <label class="switch">
-          <input type="checkbox" 
-                 [checked]="getHorarioDia(dia.id).activo"
-                 (change)="guardar(dia.id, start.value, end.value, !getHorarioDia(dia.id).activo)">
-          <span class="slider round"></span>
-        </label>
-        <span class="dia-nombre">{{ dia.nombre }}</span>
+  <!-- Selector de Enlace / Configuracion -->
+  <div class="config-selection-banner">
+    <div class="config-selector-group">
+      <label for="configSelect"><i class="fas fa-link"></i> Enlace activo:</label>
+      <select id="configSelect" [(ngModel)]="configuracionSeleccionadaId" (change)="cambiarConfiguracion($any($event.target).value)">
+        <option *ngFor="let cfg of configuraciones" [value]="cfg._id">
+          {{ cfg.nombre }}
+        </option>
+        <option value="">+ Crear Nuevo Enlace/Configuracion...</option>
+      </select>
+    </div>
+    
+    <div class="config-info-pill" *ngIf="!configuracionSeleccionadaId">
+      <span>Configurando nuevo enlace: <strong>{{ nombreConfiguracion }}</strong></span>
+    </div>
+
+    <div class="config-actions" *ngIf="configuracionSeleccionadaId">
+      <button type="button" class="btn-config-share" (click)="copiarEnlaceConfig()" title="Copiar Enlace">
+        <i class="fas fa-copy"></i> Compartir Enlace
+      </button>
+      <button type="button" class="btn-config-delete" (click)="eliminarConfig()" title="Eliminar este enlace">
+        <i class="fas fa-trash-alt"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="horarios-content-grid">
+    <!-- SECCION DE TRATAMIENTO Y ANTICIPO -->
+    <div class="section-card full-width-card">
+      <div class="section-title">
+        <i class="fas fa-file-invoice-dollar"></i>
+        <h5>Tratamiento y Monto de Apartado</h5>
       </div>
-
-      <div class="horas-inputs" [class.disabled]="!getHorarioDia(dia.id).activo">
-        <input type="time" #start [value]="getHorarioDia(dia.id).horaInicio" (change)="guardar(dia.id, start.value, end.value, true)">
-        <span>a</span>
-        <input type="time" #end [value]="getHorarioDia(dia.id).horaFin" (change)="guardar(dia.id, start.value, end.value, true)">
+      <p class="section-desc">Define el tratamiento asignado a este enlace y el monto requerido para apartar la cita.</p>
+      <div class="range-inputs-grid">
+        <div class="date-field">
+          <label><i class="fas fa-concierge-bell"></i> Tratamiento / Servicio Asignado</label>
+          <select [(ngModel)]="selectedServiceId" class="custom-form-input">
+            <option value="">Cualquier tratamiento (El paciente elegirá libremente)</option>
+            <option *ngFor="let serv of servicios" [value]="serv._id">
+              {{ serv.nombre }} ({{ serv.costo ? '$' + serv.costo + ' MXN' : 'Sin costo' }})
+            </option>
+          </select>
+        </div>
+        <div class="date-field">
+          <label><i class="fas fa-wallet"></i> Monto para Apartar Fecha ($ MXN)</label>
+          <input type="number" [(ngModel)]="montoAnticipo" placeholder="500" min="0" step="50" class="custom-form-input" />
+        </div>
       </div>
     </div>
+
+    <!-- SECCION 1: Calendario de Fechas a Compartir -->
+    <div class="section-card">
+      <div class="section-title">
+        <i class="fas fa-calendar-alt"></i>
+        <h5>Fechas a Compartir</h5>
+      </div>
+      <p class="section-desc">Selecciona el rango de fechas continuo o los días específicos que deseas compartir.</p>
+
+      <!-- Toggle Modo -->
+    <div class="mode-toggle">
+      <button class="mode-btn" [class.active]="modoFechas === 'rango'" (click)="modoFechas = 'rango'; fechaInicio=''; fechaFin=''; fechasSeleccionadas=[]; generarCalendario()">
+        <i class="fas fa-arrows-alt-h"></i> Rango continuo
+      </button>
+      <button class="mode-btn" [class.active]="modoFechas === 'individual'" (click)="modoFechas = 'individual'; fechaInicio=''; fechaFin=''; fechasSeleccionadas=[]; generarCalendario()">
+        <i class="fas fa-hand-pointer"></i> Fechas especificas
+      </button>
+    </div>
+
+    <!-- Calendario de Selección de Fechas (Domingos Deshabilitados) -->
+    <div class="visual-calendar">
+      <div class="calendar-nav-bar">
+        <button type="button" class="btn-nav-cal" (click)="cambiarMes(-1)">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <span class="calendar-month-title">{{ nombresMeses[calendarMonth] }} {{ calendarYear }}</span>
+        <button type="button" class="btn-nav-cal" (click)="cambiarMes(1)">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+
+      <div class="calendar-weekdays">
+        <span>Lun</span>
+        <span>Mar</span>
+        <span>Mié</span>
+        <span>Jue</span>
+        <span>Vie</span>
+        <span>Sáb</span>
+        <span class="domingo-lbl">Dom</span>
+      </div>
+
+      <div class="calendar-grid">
+        <button type="button"
+                *ngFor="let cell of calendarDays"
+                class="calendar-day-btn"
+                [class.other-month]="!cell.esMesActual"
+                [class.domingo]="cell.esDomingo"
+                [class.past]="cell.esPasado"
+                [class.selected]="esDiaSeleccionado(cell)"
+                [class.in-range]="esDiaEnRango(cell)"
+                [disabled]="cell.esDomingo || cell.esPasado"
+                (click)="seleccionarDia(cell)">
+          {{ cell.diaNum }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Leyenda de selección actual -->
+    <div class="calendar-selection-status" *ngIf="fechaInicio || fechasSeleccionadas.length > 0">
+      <i class="fas fa-info-circle"></i>
+      <span *ngIf="modoFechas === 'rango' && fechaInicio">
+        Seleccionado: <strong>{{ formatearFecha(fechaInicio) }}</strong>
+        <span *ngIf="fechaFin"> al <strong>{{ formatearFecha(fechaFin) }}</strong></span>
+      </span>
+      <span *ngIf="modoFechas === 'individual' && fechasSeleccionadas.length > 0">
+        Seleccionadas: <strong>{{ fechasSeleccionadas.length }} fechas</strong>
+      </span>
+    </div>
+
+    <!-- Badge de estado -->
+    <div *ngIf="configActiva && modoFechas === 'rango' && configFechaInicio && configFechaFin" class="status-badge active-range">
+      <i class="fas fa-check-circle"></i>
+      <span>Enlace activo del <strong>{{ configFechaInicio | date:'dd/MM/yyyy':'UTC' }}</strong> al <strong>{{ configFechaFin | date:'dd/MM/yyyy':'UTC' }}</strong> (domingos excluidos)</span>
+    </div>
+    <div *ngIf="configActiva && modoFechas === 'individual' && configFechasIndividuales.length > 0" class="status-badge active-range">
+      <i class="fas fa-check-circle"></i>
+      <span>Enlace activo con <strong>{{ configFechasIndividuales.length }}</strong> fechas seleccionadas</span>
+    </div>
+    <div *ngIf="!configActiva" class="status-badge inactive-range">
+      <i class="fas fa-info-circle"></i>
+      <span>Aun no has configurado ni compartido tu disponibilidad.</span>
+    </div>
+  </div>
+
+
+  <!-- SECCION 3: Dias de la Semana -->
+  <div class="section-card">
+    <div class="section-title">
+      <i class="fas fa-th"></i>
+      <h5>Dias y Horarios</h5>
+    </div>
+    <p class="section-desc">Activa los dias que atendes y define los horarios de cada uno.</p>
+
+    <!-- Seleccionador de Dias de Semana -->
+    <div class="dias-selector-container">
+      <span class="selector-label">Selecciona los dias de atencion:</span>
+      <div class="dias-pills">
+        <button type="button"
+                *ngFor="let dia of dias"
+                class="dia-pill-btn"
+                [class.pill-activo]="getDiaConfig(dia.id).activo"
+                (click)="toggleDia(dia.id)">
+          {{ dia.nombre }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Toggle Mismo Horario -->
+    <div class="same-schedule-toggle">
+      <label class="switch">
+        <input type="checkbox" [(ngModel)]="aplicarMismoHorario" (change)="aplicarMismoHorario && aplicarHorarioGlobal()">
+        <span class="slider-toggle round"></span>
+      </label>
+      <span class="toggle-label">Aplicar mismo horario a todos los dias activos</span>
+    </div>
+
+    <!-- Horario Global -->
+    <div *ngIf="aplicarMismoHorario" class="global-schedule-intervals">
+      <div *ngFor="let interval of intervalosGlobales; let idx = index" class="global-schedule-row">
+        <div class="time-input-group">
+          <label>Entrada</label>
+          <input type="time" [value]="interval.horaInicio" (change)="actualizarIntervaloGlobal(idx, 'horaInicio', $any($event.target).value)">
+        </div>
+        <span class="time-separator">a</span>
+        <div class="time-input-group">
+          <label>Salida</label>
+          <input type="time" [value]="interval.horaFin" (change)="actualizarIntervaloGlobal(idx, 'horaFin', $any($event.target).value)">
+        </div>
+        <button type="button" class="btn-remove-interval" (click)="removerIntervaloGlobal(idx)" [disabled]="intervalosGlobales.length <= 1">
+          <i class="fas fa-trash-alt"></i>
+        </button>
+      </div>
+      <button type="button" class="btn-add-interval" (click)="agregarIntervaloGlobal()">
+        <i class="fas fa-plus-circle"></i> Agregar Turno
+      </button>
+    </div>
+
+    <!-- Grid de Dias -->
+    <div class="dias-grid">
+      <ng-container *ngFor="let dia of dias">
+        <div *ngIf="getDiaConfig(dia.id).activo"
+             class="dia-card dia-activo">
+
+          <div class="dia-card-header">
+            <div class="dia-label">
+              <span class="dia-nombre">{{ dia.nombre }}</span>
+              <span class="dia-abrev">{{ dia.abrev }}</span>
+            </div>
+            <button type="button" class="btn-desactivar-dia" (click)="toggleDia(dia.id)" title="Desactivar dia">
+              <i class="fas fa-times-circle"></i>
+            </button>
+          </div>
+
+          <div class="dia-card-body-intervals" *ngIf="!aplicarMismoHorario">
+            <div *ngFor="let interval of getDiaConfig(dia.id).intervalos; let idx = index" class="dia-interval-row">
+              <div class="time-input-group compact">
+                <input type="time" [value]="interval.horaInicio"
+                       (change)="actualizarIntervaloDia(dia.id, idx, 'horaInicio', $any($event.target).value)">
+              </div>
+              <span class="time-separator">a</span>
+              <div class="time-input-group compact">
+                <input type="time" [value]="interval.horaFin"
+                       (change)="actualizarIntervaloDia(dia.id, idx, 'horaFin', $any($event.target).value)">
+              </div>
+              <button type="button" class="btn-remove-interval-compact" (click)="removerIntervaloDia(dia.id, idx)" [disabled]="getDiaConfig(dia.id).intervalos?.length <= 1">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+            <button type="button" class="btn-add-interval-compact" (click)="agregarIntervaloDia(dia.id)">
+              <i class="fas fa-plus"></i> Agregar Turno
+            </button>
+          </div>
+
+          <div class="dia-card-body-intervals" *ngIf="aplicarMismoHorario">
+            <div class="schedule-preview-list">
+              <div *ngFor="let interval of intervalosGlobales" class="schedule-preview-item">
+                <i class="far fa-clock"></i> {{ interval.horaInicio }} - {{ interval.horaFin }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+    <div class="dias-summary">
+      <i class="fas fa-info-circle"></i>
+      <span>{{ diasActivosCount }} de 7 dias activos</span>
+    </div>
+  </div>
+  </div>
+
+  <!-- ACCIONES -->
+  <div class="actions-bar">
+    <button class="btn-save" (click)="guardarConfig()" [disabled]="guardando || generando">
+      <span *ngIf="!guardando"><i class="fas fa-save"></i> Guardar Configuracion</span>
+      <span *ngIf="guardando" class="spinner-small"></span>
+    </button>
+    <button class="btn-generate" (click)="generarDisponibilidad()" [disabled]="guardando || generando">
+      <span *ngIf="!generando"><i class="fas fa-rocket"></i> Generar y Compartir</span>
+      <span *ngIf="generando" class="spinner-small"></span>
+    </button>
   </div>
 </div>

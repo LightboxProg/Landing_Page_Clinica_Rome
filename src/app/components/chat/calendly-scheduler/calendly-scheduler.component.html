@@ -1,0 +1,58 @@
+<div class="calendly-container">
+  
+  <!-- Step 1: Date Selection -->
+  <div class="calendar-dates" *ngIf="!slotApartado">
+    <h3>Selecciona una Fecha</h3>
+    <div class="dates-row">
+      <button *ngFor="let date of fechasDisponibles" 
+              (click)="seleccionarFecha(date)"
+              [class.active]="fechaSeleccionada === date.toISOString().split('T')[0]"
+              class="date-pill">
+        <span class="day">{{ date | date:'EEE' }}</span>
+        <span class="num">{{ date | date:'dd' }}</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Step 2: Time Selection -->
+  <div class="time-slots" *ngIf="fechaSeleccionada && !slotApartado">
+    <h3>Horarios Disponibles</h3>
+    <div class="slots-grid">
+      <button *ngFor="let slot of slots" 
+              (click)="apartarHorario(slot)"
+              class="time-btn">
+        {{ slot.horaInicio }}
+      </button>
+    </div>
+    <div *ngIf="slots.length === 0" class="no-slots">
+      No hay horarios disponibles para esta fecha.
+    </div>
+  </div>
+
+  <!-- Step 3: Checkout / Timer -->
+  <div class="checkout-area" *ngIf="slotApartado">
+    <div class="timer-banner">
+      <i class="fas fa-clock"></i> 
+      Tiempo restante: <strong>{{ formatTimer() }}</strong>
+    </div>
+
+    <div class="summary-card">
+      <h4>Resumen de tu Cita</h4>
+      <p><i class="fas fa-calendar"></i> {{ fechaSeleccionada | date:'fullDate' }}</p>
+      <p><i class="fas fa-clock"></i> {{ slotApartado.horaInicio }} - {{ slotApartado.horaFin }}</p>
+      
+      <div class="payment-box">
+        <span>Anticipo requerido:</span>
+        <span class="price">$200.00 MXN</span>
+      </div>
+
+      <button (click)="procederAlPago()" class="pay-btn">
+        Pagar y Confirmar
+      </button>
+      <button (click)="finalizarTiempo()" class="cancel-btn">
+        Seleccionar otro horario
+      </button>
+    </div>
+  </div>
+
+</div>

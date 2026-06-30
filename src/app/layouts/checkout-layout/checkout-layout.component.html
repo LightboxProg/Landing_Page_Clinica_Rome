@@ -1,0 +1,46 @@
+<div class="checkout-layout-wrapper">
+  <!-- Header de Reserva Cero Distracciones -->
+  <header class="checkout-header">
+    <div class="checkout-header-container">
+      <!-- Logo Marca -->
+      <a routerLink="/" class="checkout-brand" title="Volver al Inicio">
+        <div class="brand-icon">
+          <i class="fas fa-spa"></i>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">ROME HARMONY CLINIC</span>
+          <span class="brand-tagline">Centro Estético & Odontológico</span>
+        </div>
+      </a>
+
+      <!-- Badges de Confianza -->
+      <div class="checkout-trust-badges">
+        <div class="trust-badge">
+          <i class="fas fa-lock"></i>
+          <span>Reserva Cifrada 256-bit SSL</span>
+        </div>
+        <a routerLink="/" class="btn-exit-checkout">
+          <span>Volver al Inicio</span>
+          <i class="fas fa-times"></i>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Contenido Principal Dinámico -->
+  <main class="checkout-main-content">
+    <router-outlet></router-outlet>
+  </main>
+
+  <!-- Footer Minimalista de Reserva -->
+  <footer class="checkout-footer">
+    <div class="checkout-footer-container">
+      <p class="copyright-text">&copy; 2026 Rome Harmony Clinic. Todos los derechos reservados.</p>
+      <div class="footer-links">
+        <a routerLink="/aviso-privacidad" target="_blank">Aviso de Privacidad</a>
+        <span class="separator">&bull;</span>
+        <a routerLink="/aviso-terminos" target="_blank">Términos del Servicio</a>
+      </div>
+    </div>
+  </footer>
+</div>

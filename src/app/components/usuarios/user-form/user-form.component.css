@@ -143,3 +143,41 @@ select {
     gap: 0.8rem;
   }
 }
+
+/* Modificaciones para vista de solo horarios */
+.form-container.solo-horarios-container {
+  background: transparent;
+  box-shadow: none;
+  border-top: none;
+  padding: 0;
+  margin: 1rem auto;
+}
+
+.solo-horarios-header {
+  max-width: 750px;
+  margin: 0 auto 1rem auto;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.btn-back {
+  background: transparent;
+  border: none;
+  color: var(--teal);
+  font-family: var(--fuente-principal);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  transition: var(--transicion);
+}
+
+.btn-back:hover {
+  background: rgba(42, 107, 124, 0.08);
+  color: var(--azul-oscuro);
+  transform: translateX(-4px);
+}

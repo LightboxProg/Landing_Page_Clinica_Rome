@@ -9,22 +9,28 @@ import listPlugin from '@fullcalendar/list';
 import esLocale from '@fullcalendar/core/locales/es';
 import { CalendarService } from '../../services/calendar/calendar.service';
 import { UserService, Usuario } from '../../services/user/user.service';
-import { FormsModule } from '@angular/forms';
-import Swal from 'sweetalert2';
+import { AuthService } from '../../services/auth/auth.service';
+import { CalendarSidebarComponent } from '../../components/calendario/calendar-sidebar/calendar-sidebar.component';
+import { CalendarEventModalComponent } from '../../components/calendario/calendar-event-modal/calendar-event-modal.component';
 
 @Component({
   selector: 'app-calendario-admin',
   standalone: true,
-  imports: [CommonModule, FullCalendarModule, FormsModule],
+  imports: [CommonModule, FullCalendarModule, CalendarSidebarComponent, CalendarEventModalComponent],
   templateUrl: './calendario.component.html',
-  styleUrl: './calendario.component.scss'
+  styleUrl: './calendario.component.css'
 })
 export class CalendarioAdminComponent implements OnInit {
   @ViewChild('calendar') calendarComponent!: FullCalendarComponent;
 
   doctores: Usuario[] = [];
   doctorIdSeleccionado: string = '';
+  isDoctorOrSpecialist: boolean = false;
   
+  // Custom Modal State
+  isModalOpen: boolean = false;
+  selectedEvent: any = null;
+
   calendarOptions: CalendarOptions = {
     plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin],
     initialView: 'timeGridWeek',
@@ -56,11 +62,24 @@ export class CalendarioAdminComponent implements OnInit {
 
   constructor(
     private calendarService: CalendarService,
-    private userService: UserService
+    private userService: UserService,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
-    this.cargarDoctores();
+    this.checkRole();
+  }
+
+  checkRole() {
+    const user = this.authService.getUsuario();
+    if (user?.tipo === 'Doctor' || user?.tipo === 'Especialista') {
+      this.isDoctorOrSpecialist = true;
+      this.doctorIdSeleccionado = user.id;
+      // Los doctores solo se cargan a si mismos en el array para el sidebar
+      this.doctores = [user as any]; 
+    } else {
+      this.cargarDoctores();
+    }
   }
 
   cargarDoctores() {
@@ -100,35 +119,12 @@ export class CalendarioAdminComponent implements OnInit {
   }
 
   handleEventClick(arg: any) {
-    const event = arg.event.extendedProps;
-    const whatsappUrl = `https://wa.me/${event.pacienteTelefono}`;
+    this.selectedEvent = arg.event.extendedProps;
+    this.isModalOpen = true;
+  }
 
-    Swal.fire({
-      title: event.pacienteNombre,
-      html: `
-        <div class="swal-calendar-info">
-          <div class="info-row"><strong>Médico:</strong> ${event.medicoNombre}</div>
-          <div class="info-row"><strong>Servicio:</strong> ${event.servicioNombre}</div>
-          <div class="info-row"><strong>Tipo:</strong> ${event.tipoCita}</div>
-          <div class="info-row"><strong>Paciente:</strong> ${event.esPaciente ? '✅ Registrado' : '👤 Prospecto (Preguntón)'}</div>
-          <div class="info-row"><strong>Tel:</strong> ${event.pacienteTelefono || 'N/A'}</div>
-          ${event.description ? `<div class="info-details"><strong>Notas:</strong><br>${event.description}</div>` : ''}
-        </div>
-      `,
-      showCancelButton: true,
-      showDenyButton: !!event.pacienteTelefono,
-      confirmButtonText: 'Cerrar',
-      denyButtonText: 'Mandar WhatsApp',
-      cancelButtonText: 'Google Calendar',
-      confirmButtonColor: '#1a2b3c',
-      denyButtonColor: '#25D366',
-      cancelButtonColor: '#4285f4'
-    }).then((result) => {
-      if (result.isDenied) {
-        window.open(whatsappUrl, '_blank');
-      } else if (result.dismiss === Swal.DismissReason.cancel) {
-        window.open(event.htmlLink, '_blank');
-      }
-    });
+  closeModal() {
+    this.isModalOpen = false;
+    setTimeout(() => this.selectedEvent = null, 300); // Wait for transition
   }
 }

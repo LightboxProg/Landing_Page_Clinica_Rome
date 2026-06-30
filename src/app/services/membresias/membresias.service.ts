@@ -39,4 +39,9 @@ export class MembresiasService {
   obtenerMembresias(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl);
   }
+
+  // Obtener membresías de un paciente específico
+  obtenerMembresiasPorPaciente(pacienteId: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/paciente/${pacienteId}`);
+  }
 }

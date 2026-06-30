@@ -72,45 +72,50 @@
               <button class="back-step" (click)="schedulingStep = 2">Volver</button>
             </div>
 
-            <!-- Step 4: Date & Time -->
+            <!-- Step 4: Date & Time Selection -->
             <div *ngIf="schedulingStep === 4" class="step-container">
-              <p class="step-label">4. Fecha y Hora ({{selectedDoctor?.nombre}})</p>
-              <div class="date-time-form">
-                <div class="form-group">
-                  <label>Fecha:</label>
-                  <input type="date" [(ngModel)]="selectedDate" (change)="onDateChange()" class="modern-input">
-                </div>
+              <div class="form-group">
+                <label for="fechaCita">Selecciona la Fecha:</label>
+                <input 
+                  type="date" 
+                  id="fechaCita" 
+                  class="modern-input"
+                  [(ngModel)]="selectedDate" 
+                  [min]="getMinDate()" 
+                  (change)="onDateChange()"
+                />
+              </div>
+
+              <div *ngIf="selectedDate" class="form-group" style="margin-top: 15px;">
+                <label>Horarios Disponibles (08:00 AM - 08:00 PM):</label>
                 
                 <div *ngIf="isLoadingAvailability" class="loading-slots">
-                  <i class="fas fa-circle-notch fa-spin"></i> Consultando disponibilidad...
+                  Buscando eventos...
                 </div>
 
-                <div class="form-group" *ngIf="!isLoadingAvailability && selectedDate">
-                  <label>Agenda del Día:</label>
-                  <div class="calendar-day-view">
-                    <div *ngFor="let hour of getTimeline()" 
-                         class="timeline-slot"
-                         [class.is-busy]="isOccupied(hour)"
-                         [class.selected]="selectedTime === hour"
-                         (click)="!isOccupied(hour) && selectedTime = hour">
-                      <span class="slot-time">{{ hour }}</span>
-                      <div class="slot-content">
-                        <span *ngIf="isOccupied(hour)" class="busy-label">
-                          <i class="fas fa-lock"></i> Ocupado
-                        </span>
-                        <span *ngIf="!isOccupied(hour)" class="free-label">
-                          Disponible
-                        </span>
-                      </div>
-                    </div>
-                  </div>
+                <div *ngIf="!isLoadingAvailability && availableTimes.length === 0" class="no-slots-msg">
+                  No hay horarios libres para esta fecha.
                 </div>
-                
-                <button class="confirm-btn" [disabled]="!selectedDate || !selectedTime" (click)="confirmBooking()">
-                  Confirmar Cita
+
+                <div *ngIf="!isLoadingAvailability && availableTimes.length > 0" class="times-grid">
+                  <button 
+                    *ngFor="let time of availableTimes" 
+                    type="button"
+                    class="time-chip" 
+                    [class.active]="selectedTime === time"
+                    (click)="selectedTime = time"
+                  >
+                    {{ time }}
+                  </button>
+                </div>
+              </div>
+
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+                <button class="back-step" (click)="schedulingStep = (authService.getUsuario()?.tipo === 'Doctor' || authService.getUsuario()?.tipo === 'Especialista') ? 2 : 3">Volver</button>
+                <button class="confirm-btn" style="margin-top: 0;" [disabled]="!selectedDate || !selectedTime" (click)="confirmBooking()">
+                  Agendar Cita
                 </button>
               </div>
-              <button class="back-step" (click)="schedulingStep = (authService.getUsuario()?.tipo === 'Doctor' || authService.getUsuario()?.tipo === 'Especialista') ? 2 : 3">Volver</button>
             </div>
           </div>
         </div>

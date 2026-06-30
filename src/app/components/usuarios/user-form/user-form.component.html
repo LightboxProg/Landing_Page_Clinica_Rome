@@ -1,77 +1,74 @@
 <div class="form-container">
   <h2>{{ editMode ? 'Editar Usuario' : 'Registro de Usuario' }}</h2>
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
-    <div class="form-row">
-      <div class="field">
-        <label>Nombre *</label>
-        <input formControlName="nombre" type="text">
+      <div class="form-row">
+        <div class="field">
+          <label>Nombre *</label>
+          <input formControlName="nombre" type="text">
+        </div>
+        <div class="field">
+          <label>Apellido Paterno *</label>
+          <input formControlName="apeP" type="text">
+        </div>
+        <div class="field">
+          <label>Apellido Materno</label>
+          <input formControlName="apeM" type="text">
+        </div>
       </div>
-      <div class="field">
-        <label>Apellido Paterno *</label>
-        <input formControlName="apeP" type="text">
-      </div>
-      <div class="field">
-        <label>Apellido Materno</label>
-        <input formControlName="apeM" type="text">
-      </div>
-    </div>
 
-    <div class="form-row">
-      <div class="field">
-        <label>Correo *</label>
-        <input formControlName="correo" type="email">
+      <div class="form-row">
+        <div class="field">
+          <label>Correo *</label>
+          <input formControlName="correo" type="email">
+        </div>
+        <div class="field">
+          <label>Teléfono *</label>
+          <input formControlName="telefono" type="tel">
+        </div>
       </div>
-      <div class="field">
-        <label>Teléfono *</label>
-        <input formControlName="telefono" type="tel">
-      </div>
-    </div>
 
-    <div class="form-row">
-      <div class="field">
-        <label>Usuario *</label>
-        <input formControlName="usuario" type="text">
+      <div class="form-row">
+        <div class="field">
+          <label>Usuario *</label>
+          <input formControlName="usuario" type="text">
+        </div>
+        <div class="field">
+          <label>Contraseña {{ editMode ? '(dejar vacío para no cambiarla)' : '*' }}</label>
+          <input formControlName="password" type="password">
+        </div>
       </div>
-      <div class="field">
-        <label>Contraseña {{ editMode ? '(dejar vacío para no cambiarla)' : '*' }}</label>
-        <input formControlName="password" type="password">
-      </div>
-    </div>
 
-    <div class="form-row">
-      <div class="field">
-        <label>Tipo *</label>
-        <select formControlName="tipo">
-          <option value="">Seleccionar</option>
-          <option value="Administrador">Administrador</option>
-          <option value="Recepcionista">Recepcionista</option>
-          <option value="Doctor">Doctor</option>
-          <option value="Especialista">Especialista</option>
-        </select>
+      <div class="form-row">
+        <div class="field">
+          <label>Tipo *</label>
+          <select formControlName="tipo">
+            <option value="">Seleccionar</option>
+            <option value="Administrador">Administrador</option>
+            <option value="Recepcionista">Recepcionista</option>
+            <option value="Doctor">Doctor</option>
+            <option value="Especialista">Especialista</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Especialidad</label>
+          <input formControlName="especialidad" type="text">
+        </div>
       </div>
-      <div class="field">
-        <label>Especialidad</label>
-        <input formControlName="especialidad" type="text">
+
+      <div *ngIf="isDoctorOrSpecialist">
+        <div class="field">
+          <label>Atención *</label>
+          <select formControlName="atencion">
+            <option value="">Seleccionar</option>
+            <option value="Dental">Dental</option>
+            <option value="Estetica">Estética</option>
+          </select>
+        </div>
       </div>
-    </div>
 
-    <div *ngIf="isDoctorOrSpecialist">
-      <div class="field">
-        <label>Atención *</label>
-        <select formControlName="atencion">
-          <option value="">Seleccionar</option>
-          <option value="Dental">Dental</option>
-          <option value="Estetica">Estética</option>
-        </select>
+      <div class="form-actions">
+        <button type="submit" class="btn-primary">{{ editMode ? 'Actualizar' : 'Registrar' }}</button>
+        <button type="button" class="btn-secondary" (click)="router.navigate(['/admin/usuarios'])">Cancelar</button>
       </div>
-    </div>
-
-    <div class="form-actions">
-      <button type="submit" class="btn-primary">{{ editMode ? 'Actualizar' : 'Registrar' }}</button>
-      <button type="button" class="btn-secondary" (click)="router.navigate(['/usuarios'])">Cancelar</button>
-    </div>
-  </form>
-
-  <!-- Nueva sección de Horarios de Atención -->
-  <app-horario-atencion *ngIf="editMode && isDoctorOrSpecialist && userId" [doctorId]="userId"></app-horario-atencion>
+    </form>
 </div>

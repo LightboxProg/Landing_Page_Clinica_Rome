@@ -127,56 +127,63 @@ export class ChatWindowComponent implements OnInit {
     this.loadDoctorAvailability();
   }
 
+  // Salta directamente al paso de seleccion de fecha y hora
   loadDoctorAvailability() {
-    if (!this.selectedDoctor?._id) return;
-    this.isLoadingAvailability = true;
-    this.userService.getHorariosDoctor(this.selectedDoctor._id).subscribe(horarios => {
-      this.doctorAvailability = horarios;
-      this.schedulingStep = 4;
-      this.isLoadingAvailability = false;
-    });
+    this.schedulingStep = 4;
+    this.selectedDate = '';
+    this.selectedTime = '';
+    this.availableTimes = [];
+    this.occupiedEvents = [];
   }
 
+  // Carga y filtra los horarios disponibles para cualquier dia seleccionado
   onDateChange() {
     if (!this.selectedDate || !this.selectedDoctor) return;
 
     const [year, month, day] = this.selectedDate.split('-').map(Number);
-    const dateObj = new Date(year, month - 1, day);
-    const dayOfWeek = dateObj.getDay(); 
-    
-    const dayConfig = this.doctorAvailability.find(h => h.diaSemana === dayOfWeek);
-    if (!dayConfig || !dayConfig.activo) {
-      this.availableTimes = [];
-      this.occupiedEvents = [];
-      return;
-    }
-
-    const slots = this.generateSlots(dayConfig.horaInicio, dayConfig.horaFin);
+    const slots = this.generateSlots('08:00', '21:00');
     
     if (this.selectedDoctor.calendarId) {
       this.isLoadingAvailability = true;
       const timeMin = new Date(year, month - 1, day, 0, 0, 0).toISOString();
       const timeMax = new Date(year, month - 1, day, 23, 59, 59).toISOString();
       
-      this.calendarService.getEventosPorCalendarId(this.selectedDoctor.calendarId, timeMin, timeMax).subscribe(events => {
-        this.occupiedEvents = events; // Guardamos para mostrar visualmente
-        this.availableTimes = slots.filter(slot => {
-          const [hour, min] = slot.split(':').map(Number);
-          const slotStart = new Date(year, month - 1, day, hour, min);
-          const slotEnd = new Date(slotStart.getTime() + 60 * 60 * 1000);
-          
-          return !events.some(e => {
-            const eventStart = new Date(e.start.dateTime || e.start.date);
-            const eventEnd = new Date(e.end.dateTime || e.end.date);
-            return (slotStart < eventEnd && slotEnd > eventStart);
+      this.calendarService.getEventosPorCalendarId(this.selectedDoctor.calendarId, timeMin, timeMax).subscribe({
+        next: (events) => {
+          this.occupiedEvents = events;
+          this.availableTimes = slots.filter(slot => {
+            const [hour, min] = slot.split(':').map(Number);
+            const slotStart = new Date(year, month - 1, day, hour, min);
+            const slotEnd = new Date(slotStart.getTime() + 60 * 60 * 1000);
+            
+            return !events.some(e => {
+              const eventStart = new Date(e.start.dateTime || e.start.date);
+              const eventEnd = new Date(e.end.dateTime || e.end.date);
+              return (slotStart < eventEnd && slotEnd > eventStart);
+            });
           });
-        });
-        this.isLoadingAvailability = false;
+          this.isLoadingAvailability = false;
+        },
+        error: (err) => {
+          console.error("Error cargando eventos de Google Calendar:", err);
+          this.availableTimes = slots;
+          this.occupiedEvents = [];
+          this.isLoadingAvailability = false;
+        }
       });
     } else {
       this.availableTimes = slots;
       this.occupiedEvents = [];
     }
+  }
+
+  // Retorna la fecha minima para agendar
+  getMinDate(): string {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
   }
 
   generateSlots(start: string, end: string): string[] {
@@ -197,24 +204,28 @@ export class ChatWindowComponent implements OnInit {
     const fechaInicio = new Date(`${this.selectedDate}T${this.selectedTime}:00`);
     const fechaFin = new Date(fechaInicio.getTime() + 3600000); 
 
+    const contacto = this.conversacionActiva.contacto || {};
+    const telefonoReal = contacto.telefonoPaciente?.toString() || 
+                         contacto.telefonoWhatsapp?.toString() || 
+                         contacto.identificador?.toString() || '';
+
     const citaData: any = {
       pacienteNombre: this.getNombreContacto(this.conversacionActiva),
-      pacienteTelefono: this.conversacionActiva.contacto?.telefonoPaciente?.toString() || '',
-      pacienteEmail: this.conversacionActiva.contacto?.correoElectronico || '',
+      pacienteTelefono: telefonoReal,
+      pacienteEmail: contacto.correoElectronico || contacto.correo || '',
       doctorId: this.selectedDoctor?._id,
+      servicioId: this.selectedService._id,
+      tipoCita: this.selectedType,
       titulo: `${this.selectedService.nombre} - ${this.getNombreContacto(this.conversacionActiva)}`,
       fechaHoraInicio: fechaInicio,
       fechaHoraFin: fechaFin,
-      estado: 'Pendiente'
+      origen: 'Panel'
     };
 
-    const request: any = this.selectedType === 'Dental' 
-      ? this.citasService.crearCitaDental({ ...citaData, servicioDentalId: this.selectedService._id })
-      : this.citasService.crearCitaEstetica({ ...citaData, servicioEsteticoId: this.selectedService._id });
+    this.citasService.agendarCita(citaData).subscribe({
 
-    request.subscribe({
       next: () => {
-        Swal.fire('¡Éxito!', 'Cita agendada correctamente', 'success');
+        Swal.fire('Exito', 'Cita agendada correctamente', 'success');
         this.cancelScheduling();
       },
       error: (err: any) => {

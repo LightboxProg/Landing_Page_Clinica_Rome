@@ -1,0 +1,13 @@
+.disponibilidad-page-container {
+  padding: 2rem;
+  max-width: 1440px;
+  margin: 0 auto;
+  min-height: calc(100vh - 70px);
+  background-color: #f8fafc;
+}
+
+@media (max-width: 768px) {
+  .disponibilidad-page-container {
+    padding: 1rem;
+  }
+}

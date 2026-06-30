@@ -369,6 +369,36 @@
   border: none;
 }
 
+.boton-disponibilidad {
+  font-family: var(--fuente-principal);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  padding: 0.8rem;
+  border-radius: var(--borde-redondeado);
+  cursor: pointer;
+  transition: var(--transicion);
+  font-size: 0.75rem;
+  font-weight: 600;
+  min-width: 90px;
+  background: rgba(139, 125, 79, 0.1);
+  color: var(--dorado);
+  border: 1px solid rgba(139, 125, 79, 0.2);
+  box-shadow: 0 2px 8px rgba(139, 125, 79, 0.15);
+}
+
+.boton-disponibilidad:hover {
+  background: rgba(139, 125, 79, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(139, 125, 79, 0.2);
+}
+
+.boton-disponibilidad span {
+  font-size: 0.8rem;
+}
+
 .boton-editar {
   background: rgba(42, 107, 124, 0.1);
   color: var(--teal);
@@ -478,17 +508,20 @@
     min-width: 70px;
   }
   .boton-editar,
-  .boton-eliminar {
+  .boton-eliminar,
+  .boton-disponibilidad {
     min-width: 70px;
     padding: 0.5rem;
   }
   /* Oculta el texto en móvil muy pequeño, deja solo ícono */
   .boton-editar span,
-  .boton-eliminar span {
+  .boton-eliminar span,
+  .boton-disponibilidad span {
     display: none;
   }
   .boton-editar i,
-  .boton-eliminar i {
+  .boton-eliminar i,
+  .boton-disponibilidad i {
     font-size: 1.2rem;
     margin: 0;
   }

@@ -24,10 +24,13 @@ import { LeadsComponent } from './pages/leads/leads.component';
 import { CalendarioAdminComponent } from './pages/Calendario/calendario.component';
 import { MensajeriaMasivaPageComponent } from './pages/mensajeria-masiva-page/mensajeria-masiva-page.component';
 import { ChatsComponent } from './pages/chats/chats.component';
+import { DisponibilidadComponent } from './pages/disponibilidad/disponibilidad.component';
+
+import { CheckoutLayoutComponent } from './layouts/checkout-layout/checkout-layout.component';
 
 export const routes: Routes = [
   // ============================================
-  // RUTAS PÚBLICAS
+  // RUTAS PÚBLICAS LANDING
   // ============================================
   {
     path: '',
@@ -37,13 +40,25 @@ export const routes: Routes = [
       { path: 'inicio', component: InicioComponent },
       { path: 'servicios', component: ServiciosComponent },
       { path: 'membresias', component: CatalogoMembresiasComponent },
-      { path: 'agendar-cita', component: AgendarCitaComponent },
       { path: 'nosotros', component: NosotrosComponent },
       { path: 'contacto', component: ContactoComponent },
-      { path: 'pasarela-membresias/:id', component: PasarelaMembresiasComponent },
-      { path: 'checkout-status', component: CheckoutStatusComponent },
       { path: 'aviso-privacidad', component: AvisoPrivacidadComponent },
       { path: 'aviso-terminos', component: AvisoTerminosComponent },
+    ]
+  },
+
+  // ============================================
+  // RUTAS DE AGENDAMIENTO Y CHECKOUT (LAYOUT DEDICADO)
+  // ============================================
+  {
+    path: '',
+    component: CheckoutLayoutComponent,
+    children: [
+      { path: 'agendar-cita', component: AgendarCitaComponent },
+      { path: 'pasarela-membresias/:id', component: PasarelaMembresiasComponent },
+      { path: 'checkout-status', component: CheckoutStatusComponent },
+      { path: 'return', component: CheckoutStatusComponent },
+      { path: 'cancel', component: CheckoutStatusComponent },
     ]
   },
 
@@ -66,6 +81,7 @@ export const routes: Routes = [
       { path: 'admin/leads', component: LeadsComponent },
       { path: 'admin/mensajeria', component: MensajeriaMasivaPageComponent },
       { path: 'admin/chats', component: ChatsComponent },
+      { path: 'admin/disponibilidad', component: DisponibilidadComponent },
 
       // Usuarios (restaurados a sus paths originales para evitar conflictos)
       { path: 'admin/usuarios', component: UserListComponent },
