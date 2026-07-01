@@ -1,6 +1,6 @@
 export const environment = {
     production: true,
-    apiUrl: 'http://localhost:7001/landingRome',
+    apiUrl: 'http://localhost:7002/landingRome',
     firebase: {
         apiKey: "AIzaSyDmB8QenfIzGCVqvKt02rWi3y3omirHSTU",
         authDomain: "crm-rome.firebaseapp.com",

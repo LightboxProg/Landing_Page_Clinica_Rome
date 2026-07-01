@@ -1,12 +1,12 @@
 /* Heredamos las variables y estilos base de servicios */
 :host {
-  --coffee-dark: #3E2723;
-  --coffee-medium: #5D4037;
+  --coffee-dark: #1a2b3c;
+  --coffee-medium: #2a6b7c;
   --coffee-light: #8D6E63;
   --coffee-soft: #D7CCC8;
-  --coffee-cream: #F5F0E6;
-  --gold-primary: #C5A028;
-  --gold-light: #F4D03F;
+  --coffee-cream: #f4f7f6;
+  --gold-primary: #8b7d4f;
+  --gold-light: #8b7d4f;
   --gold-dark: #9A7D0A;
   --white-pure: #FFFFFF;
   --text-dark: #2C1E1A;

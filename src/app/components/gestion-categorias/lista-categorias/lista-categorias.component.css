@@ -16,7 +16,7 @@
 }
 
 .categoria-item:hover {
-  background: #f5f0e6;
+  background: #f4f7f6;
   border-color: rgba(197, 160, 40, 0.3);
 }
 
@@ -26,7 +26,7 @@
   gap: 2px;
 }
 
-.cat-nombre { font-weight: 600; color: #3E2723; font-size: 15px; }
+.cat-nombre { font-weight: 600; color: #1a2b3c; font-size: 15px; }
 .cat-desc { font-size: 13px; color: #8D6E63; }
 
 .cat-acciones { display: flex; gap: 6px; }
@@ -47,7 +47,7 @@
 .loading-state { text-align: center; padding: 30px; color: #8D6E63; }
 
 .spinner {
-  width: 32px; height: 32px; border: 3px solid #D7CCC8; border-top-color: #C5A028;
+  width: 32px; height: 32px; border: 3px solid #D7CCC8; border-top-color: #8b7d4f;
   border-radius: 50%; margin: 0 auto 10px; animation: spin 0.8s linear infinite;
 }
 

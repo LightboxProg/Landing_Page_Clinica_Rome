@@ -65,7 +65,13 @@ export class ChatWindowComponent implements OnInit {
     const user = this.authService.getUsuario();
     if (user?.tipo === 'Doctor' || user?.tipo === 'Especialista') {
       this.selectedDoctor = user as any;
-      this.selectedType = user.atencion === 'Dental' ? 'Dental' : 'Estetica';
+      if (user.tipo === 'Especialista') {
+        this.selectedType = 'Estetica';
+      } else if (user.tipo === 'Doctor') {
+        this.selectedType = 'Dental';
+      } else {
+        this.selectedType = user.atencion === 'Dental' ? 'Dental' : 'Estetica';
+      }
     }
   }
 

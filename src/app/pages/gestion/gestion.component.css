@@ -1,15 +1,15 @@
 :host {
-  --coffee-dark: #3e2723;
-  --coffee-medium: #5d4037;
-  --coffee-light: #8d6e63;
-  --coffee-soft: #d7ccc8;
-  --coffee-cream: #f5f0e6;
-  --gold-primary: #c5a028;
-  --gold-light: #f4d03f;
+  --coffee-dark: #1a2b3c;
+  --coffee-medium: #2a6b7c;
+  --coffee-light: #64748b;
+  --coffee-soft: #e8e4dc;
+  --coffee-cream: #f8f5f0;
+  --gold-primary: #8b7d4f;
+  --gold-light: #c5a028;
   --gold-dark: #9a7d0a;
   --white-pure: #ffffff;
-  --text-dark: #2c1e1a;
-  --text-light: #6d4c41;
+  --text-dark: #1a2b3c;
+  --text-light: #64748b;
 }
 
 .gestion-page {
@@ -20,14 +20,15 @@
 }
 
 .container {
-  max-width: 1280px;
+  max-width: 100%;
+  width: 95%;
   margin: 0 auto;
   padding: 0 24px;
 }
 
 /* Page Header */
 .page-header {
-  background: linear-gradient(135deg, #3e2723 0%, #5d4037 50%, #4e342e 100%);
+  background: linear-gradient(135deg, var(--coffee-dark) 0%, var(--coffee-medium) 100%);
   padding: 48px 0 40px;
   text-align: center;
   position: relative;
@@ -100,7 +101,7 @@
   margin-top: -24px;
   box-shadow: 0 4px 24px rgba(62, 39, 35, 0.1);
   z-index: 2;
-  max-width: 650px;
+  max-width: 100%;
   margin-left: auto;
   margin-right: auto;
 }
@@ -110,18 +111,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 14px 20px;
+  gap: 6px;
+  padding: 14px 8px;
   background: transparent;
   border: none;
   border-radius: 10px;
-  font-size: 15px;
+  font-size: 13.5px;
   font-weight: 600;
   color: var(--coffee-light);
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
   z-index: 1;
+  white-space: nowrap;
 }
 
 .tab-btn:hover {
@@ -129,18 +131,22 @@
 }
 
 .tab-btn.active {
+  color: var(--white-pure);
+}
+
+.tab-btn.active i {
   color: var(--gold-light);
 }
 
 .tab-btn i {
-  font-size: 16px;
+  font-size: 15px;
 }
 
 .tab-indicator {
   position: absolute;
   top: 6px;
   left: 6px;
-  width: calc(33.333% - 4px);
+  width: calc(16.66% - 10px);
   height: calc(100% - 12px);
   background: linear-gradient(135deg, var(--coffee-dark), var(--coffee-medium));
   border-radius: 10px;
@@ -148,12 +154,24 @@
   z-index: 0;
 }
 
+.tab-indicator.tab-1 {
+  transform: translateX(calc(100% + 10px));
+}
+
 .tab-indicator.tab-2 {
-  transform: translateX(100%);
+  transform: translateX(calc(200% + 20px));
 }
 
 .tab-indicator.tab-3 {
-  transform: translateX(200%);
+  transform: translateX(calc(300% + 30px));
+}
+
+.tab-indicator.tab-4 {
+  transform: translateX(calc(400% + 40px));
+}
+
+.tab-indicator.tab-5 {
+  transform: translateX(calc(500% + 50px));
 }
 
 /* Tab Content */

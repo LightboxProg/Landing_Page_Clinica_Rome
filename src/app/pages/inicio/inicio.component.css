@@ -651,3 +651,282 @@
   box-shadow: none !important;
   background: transparent !important;
 }
+
+/* ===== SECCIÓN DE PROMOCIONES DEL BUEN FIN (LANDING) ===== */
+.section-promos {
+  background: #faf7f2;
+  padding: 80px 0;
+  border-bottom: 1px solid #f0eae1;
+}
+
+.elegant-detail-gold {
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #c5a880, #e6d3b3);
+  margin: 15px auto 25px;
+  border-radius: 2px;
+}
+
+.font-display {
+  font-family: 'Playfair Display', serif;
+  letter-spacing: 0.5px;
+}
+
+/* Grid de Promociones */
+.promos-landing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 30px;
+  margin-top: 40px;
+  padding: 0 15px;
+}
+
+/* Tarjeta de Promoción */
+.promo-landing-card {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(26, 43, 60, 0.05);
+  border: 1px solid #f2ede4;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.promo-landing-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(197, 168, 128, 0.12);
+  border-color: #c5a880;
+}
+
+/* Imagen y Overlay del Contador */
+.promo-landing-img-wrap {
+  position: relative;
+  height: 200px;
+  background: #f8f5f0;
+  overflow: hidden;
+}
+
+.promo-landing-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.promo-landing-card:hover .promo-landing-img {
+  transform: scale(1.05);
+}
+
+.promo-landing-no-img {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #fbf7f2, #f5ecd8);
+  color: #c5a880;
+  font-size: 3rem;
+}
+
+/* Carrusel de Promociones Landing */
+.carousel-control {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1a2b3c;
+  cursor: pointer;
+  z-index: 5;
+  transition: all 0.3s ease;
+  font-size: 11px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.carousel-control:hover {
+  background: #c5a880;
+  color: white;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.carousel-control.prev {
+  left: 12px;
+}
+
+.carousel-control.next {
+  right: 12px;
+}
+
+.carousel-indicators {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  z-index: 4;
+}
+
+.indicator-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  transition: all 0.3s ease;
+}
+
+.indicator-dot.active {
+  background: #c5a880;
+  transform: scale(1.25);
+  box-shadow: 0 0 6px rgba(197, 168, 128, 0.8);
+}
+
+/* Cuenta Regresiva Superpuesta */
+.landing-countdown {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background: rgba(26, 43, 60, 0.85);
+  backdrop-filter: blur(8px);
+  color: white;
+  font-family: monospace;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  z-index: 2;
+  letter-spacing: 0.5px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  text-transform: uppercase;
+}
+
+.landing-countdown.proximamente {
+  background: rgba(99, 91, 255, 0.9);
+}
+
+.landing-countdown.activo {
+  background: rgba(26, 122, 74, 0.9);
+}
+
+.landing-countdown.expirado {
+  background: rgba(220, 53, 69, 0.9);
+}
+
+/* Cuerpo de la Tarjeta */
+.promo-landing-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.promo-landing-scope {
+  margin-bottom: 10px;
+}
+
+.scope-tag {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.scope-tag.svc {
+  background: rgba(42, 107, 124, 0.08);
+  color: #2a6b7c;
+}
+
+.scope-tag.cat {
+  background: rgba(197, 168, 128, 0.12);
+  color: #8b7d4f;
+}
+
+.promo-landing-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a2b3c;
+  margin: 0 0 8px 0;
+  line-height: 1.3;
+}
+
+.promo-landing-desc {
+  font-size: 13px;
+  color: #64748b;
+  line-height: 1.5;
+  margin: 0 0 20px 0;
+  flex-grow: 1;
+}
+
+/* Caja de Precios y Botón */
+.promo-landing-price-box {
+  margin-bottom: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #f2ede4;
+}
+
+.price-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #94a3b8;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.price-val {
+  font-size: 24px;
+  font-weight: 800;
+  color: #1a7a4a;
+  margin: 0;
+}
+
+.price-val.porcentaje {
+  color: #8b7d4f;
+}
+
+.btn-aprovechar-promo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #1a2b3c;
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 12px 24px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border: 1px solid #1a2b3c;
+}
+
+.btn-aprovechar-promo:hover {
+  background: #c5a880;
+  border-color: #c5a880;
+  color: white;
+  box-shadow: 0 8px 20px rgba(197, 168, 128, 0.25);
+}
+
+@media (max-width: 768px) {
+  .promos-landing-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+

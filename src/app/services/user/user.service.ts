@@ -129,4 +129,18 @@ export class UserService {
   configurarDisponibilidad(doctorId: string, configId?: string): Observable<any> {
     return this.http.post<any>(`${environment.apiUrl}/disponibilidad/configurar`, { doctorId, configId });
   }
+
+  // Horario Doctor (dentista) - dias y turnos de trabajo
+  obtenerHorarioDoctor(doctorId: string): Observable<any> {
+    return this.http.get<any>(`${environment.apiUrl}/horario-doctor/${doctorId}`);
+  }
+
+  guardarHorarioDoctor(data: any): Observable<any> {
+    return this.http.post<any>(`${environment.apiUrl}/horario-doctor`, data);
+  }
+
+  // Feriados oficiales de Mexico
+  obtenerFeriados(anio: number): Observable<any[]> {
+    return this.http.get<any[]>(`${environment.apiUrl}/feriados?anio=${anio}`);
+  }
 }

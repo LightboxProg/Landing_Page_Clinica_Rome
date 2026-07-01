@@ -1,183 +1,326 @@
-/* ========================================
-   ROME HARMONY CLINIC - Registro/Edición de Usuario
-   ======================================== */
-:root {
-  --azul-oscuro: #1a2b3c;
+/* =============================================
+   ROME HARMONY CLINIC - User Form Premium
+   ============================================= */
+
+:host {
+  --primary: #1a2b3c;
   --teal: #2a6b7c;
-  --dorado: #8b7d4f;
-  --crema: #f5e6d3;
+  --gold: #8b7d4f;
+  --cream: #f5e6d3;
   --beige: #f8f5f0;
-  --marron-oscuro: #3d3a2f;
-  --blanco: #ffffff;
-  --fuente-principal: 'Work Sans', sans-serif;
-  --fuente-elegante: 'Playfair Display', serif;
-  --transicion: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --borde-redondeado: 12px;
+  --white: #ffffff;
+  --danger: #dc3545;
+  --border: #e8e4dc;
+  --muted: #64748b;
+  --font: 'Work Sans', sans-serif;
+  --font-display: 'Playfair Display', serif;
+  --shadow-card: 0 2px 12px rgba(26,43,60,0.06), 0 12px 40px rgba(26,43,60,0.06);
+  --radius: 20px;
+  --radius-sm: 10px;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.form-container {
-  max-width: 800px;
-  margin: 2rem auto;
-  background: var(--blanco);
-  border-radius: 20px;
-  box-shadow: 0 8px 28px rgba(26, 43, 60, 0.1);
-  padding: 2rem;
-  font-family: var(--fuente-principal);
-  position: relative;
-  border-top: 4px solid var(--dorado);
-}
-
-.form-container h2 {
-  font-family: var(--fuente-elegante);
-  color: var(--azul-oscuro);
-  text-align: center;
-  margin-bottom: 1.5rem;
-  font-size: 1.8rem;
-  position: relative;
-}
-
-.form-container h2::after {
-  content: '';
-  display: block;
-  width: 60px;
-  height: 2px;
-  background: var(--dorado);
-  margin: 0.5rem auto 0;
-}
-
-.form-row {
+.uf-wrapper {
+  min-height: calc(100vh - 80px);
   display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-  margin-bottom: 1rem;
-}
-
-.field {
-  flex: 1;
-  min-width: 180px;
-}
-
-label {
-  display: block;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--azul-oscuro);
-  margin-bottom: 0.3rem;
-}
-
-input, select {
-  width: 100%;
-  padding: 0.7rem 0.8rem;
-  border: 2px solid rgba(42, 107, 124, 0.15);
-  border-radius: var(--borde-redondeado);
-  font-family: var(--fuente-principal);
-  font-size: 0.9rem;
-  transition: var(--transicion);
-  background: var(--beige);
-  box-sizing: border-box;
-}
-
-input:focus, select:focus {
-  outline: none;
-  border-color: var(--teal);
-  background: var(--blanco);
-  box-shadow: 0 0 0 4px rgba(42, 107, 124, 0.1);
-  transform: translateY(-2px);
-}
-
-select {
-  cursor: pointer;
-  appearance: none;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238b7d4f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
-  background-repeat: no-repeat;
-  background-position: right 0.8rem center;
-}
-
-.form-actions {
-  display: flex;
+  align-items: flex-start;
   justify-content: center;
-  gap: 1rem;
-  margin-top: 2rem;
+  padding: 2rem 1rem;
+  background: var(--beige);
 }
 
-.btn-primary, .btn-secondary {
-  padding: 0.7rem 2rem;
-  border-radius: 40px;
-  font-weight: 600;
-  font-family: var(--fuente-principal);
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: var(--transicion);
-  border: none;
+.uf-container {
+  width: 100%;
+  max-width: 860px;
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  font-family: var(--font);
 }
 
-.btn-primary {
-  background: linear-gradient(135deg, var(--azul-oscuro), var(--teal));
-  color: var(--blanco);
-  box-shadow: 0 2px 8px rgba(42, 107, 124, 0.3);
+/* ---- HEADER ---- */
+.uf-header {
+  position: relative;
+  overflow: hidden;
 }
 
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(42, 107, 124, 0.4);
+.uf-header-bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--teal) 100%);
 }
 
-.btn-secondary {
-  background: transparent;
-  border: 2px solid var(--teal);
-  color: var(--teal);
+.uf-header-bg::after {
+  content: '';
+  position: absolute;
+  bottom: -40px;
+  right: -40px;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(139,125,79,0.2) 0%, transparent 70%);
+  border-radius: 50%;
 }
 
-.btn-secondary:hover {
-  background: rgba(42, 107, 124, 0.05);
-  transform: translateY(-2px);
-}
-
-@media (max-width: 640px) {
-  .form-container {
-    margin: 1rem;
-    padding: 1.2rem;
-  }
-  .form-row {
-    flex-direction: column;
-    gap: 0.8rem;
-  }
-}
-
-/* Modificaciones para vista de solo horarios */
-.form-container.solo-horarios-container {
-  background: transparent;
-  box-shadow: none;
-  border-top: none;
-  padding: 0;
-  margin: 1rem auto;
-}
-
-.solo-horarios-header {
-  max-width: 750px;
-  margin: 0 auto 1rem auto;
-  display: flex;
-  justify-content: flex-start;
-}
-
-.btn-back {
-  background: transparent;
-  border: none;
-  color: var(--teal);
-  font-family: var(--fuente-principal);
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
+.uf-header-content {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  transition: var(--transicion);
+  gap: 1.25rem;
+  padding: 2rem 2.5rem;
 }
 
-.btn-back:hover {
-  background: rgba(42, 107, 124, 0.08);
-  color: var(--azul-oscuro);
-  transform: translateX(-4px);
+.uf-header-icon {
+  width: 56px;
+  height: 56px;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: var(--cream);
+  backdrop-filter: blur(4px);
+  flex-shrink: 0;
+}
+
+.uf-title {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--white);
+  margin: 0 0 4px;
+  letter-spacing: -0.3px;
+}
+
+.uf-subtitle {
+  font-size: 0.82rem;
+  color: rgba(245,230,211,0.8);
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+/* ---- FORM ---- */
+.uf-form {
+  padding: 0 2.5rem 2rem;
+}
+
+/* Secciones */
+.uf-section {
+  padding: 1.5rem 0 0.5rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0.5rem;
+}
+
+.uf-section:last-of-type { border-bottom: none; }
+
+.uf-section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--gold);
+  margin-bottom: 1.1rem;
+}
+
+.uf-section-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--gold);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Grid layouts */
+.uf-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.uf-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem;
+}
+
+/* Fields */
+.uf-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.uf-label {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.uf-req {
+  color: var(--danger);
+  font-weight: 700;
+}
+
+.uf-hint {
+  font-weight: 400;
+  text-transform: none;
+  font-size: 0.72rem;
+  color: var(--muted);
+  letter-spacing: 0;
+}
+
+.uf-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.uf-icon {
+  position: absolute;
+  left: 14px;
+  color: var(--gold);
+  font-size: 0.85rem;
+  pointer-events: none;
+  transition: color 0.2s var(--ease);
+}
+
+.uf-input {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font);
+  font-size: 0.9rem;
+  color: var(--primary);
+  background: var(--beige);
+  transition: all 0.22s var(--ease);
+  box-sizing: border-box;
+  min-height: 46px;
+}
+
+.uf-input::placeholder { color: #b0aaa0; }
+
+.uf-input:focus {
+  outline: none;
+  border-color: var(--teal);
+  background: var(--white);
+  box-shadow: 0 0 0 3px rgba(42, 107, 124, 0.1);
+}
+
+.uf-input:focus ~ .uf-icon,
+.uf-input-wrap:focus-within .uf-icon {
+  color: var(--teal);
+}
+
+.uf-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238b7d4f' stroke-width='2'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-color: var(--beige);
+  padding-right: 2.5rem;
+  cursor: pointer;
+}
+
+/* Role preview */
+.uf-role-preview {
+  margin-top: 0.75rem;
+  display: flex;
+  align-items: center;
+}
+
+.uf-role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 1.1rem;
+  border-radius: 99px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: all 0.25s var(--ease);
+}
+
+.uf-role-badge.role-admin        { background: rgba(139,125,79,0.1); color: var(--gold); }
+.uf-role-badge.role-doctor       { background: rgba(42,107,124,0.1); color: var(--teal); }
+.uf-role-badge.role-especialista { background: rgba(74,124,107,0.1); color: #2d6b56; }
+.uf-role-badge.role-recepcionista{ background: rgba(90,110,138,0.1); color: #3a5270; }
+
+.uf-atencion {
+  opacity: 0.7;
+  font-weight: 400;
+}
+
+/* ---- ACTIONS ---- */
+.uf-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.uf-btn-cancel,
+.uf-btn-submit {
+  padding: 0.8rem 1.75rem;
+  border-radius: 40px;
+  font-family: var(--font);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.22s var(--ease);
+  border: none;
+  min-height: 46px;
+}
+
+.uf-btn-cancel {
+  background: transparent;
+  border: 1.5px solid var(--border);
+  color: var(--muted);
+}
+
+.uf-btn-cancel:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: rgba(26, 43, 60, 0.03);
+}
+
+.uf-btn-submit {
+  background: linear-gradient(135deg, var(--primary), var(--teal));
+  color: var(--white);
+  box-shadow: 0 4px 14px rgba(42, 107, 124, 0.2);
+}
+
+.uf-btn-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(42, 107, 124, 0.3);
+}
+
+.uf-btn-submit:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 768px) {
+  .uf-wrapper { padding: 1rem 0.75rem; }
+  .uf-header-content { padding: 1.5rem 1.25rem; }
+  .uf-form { padding: 0 1.25rem 1.5rem; }
+  .uf-grid-2, .uf-grid-3 { grid-template-columns: 1fr; }
+  .uf-actions { flex-direction: column-reverse; }
+  .uf-btn-cancel, .uf-btn-submit { width: 100%; justify-content: center; }
 }

@@ -1,0 +1,447 @@
+/* ====================================================
+   ROME HARMONY CLINIC - Corte Diario (Premium UI/UX)
+   ==================================================== */
+
+:host {
+  --primary: #1a2b3c;
+  --teal: #2a6b7c;
+  --gold: #8b7d4f;
+  --cream: #f5e6d3;
+  --beige: #f8f5f0;
+  --white: #ffffff;
+  --border: #e8e4dc;
+  --muted: #64748b;
+  --success: #1a7a4a;
+  --danger: #dc3545;
+  --font: 'Work Sans', sans-serif;
+  --font-display: 'Playfair Display', serif;
+  --radius: 16px;
+  --radius-sm: 8px;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --shadow: 0 4px 16px rgba(26, 43, 60, 0.05);
+}
+
+.corte-container {
+  padding: 1.5rem 0;
+  font-family: var(--font);
+}
+
+/* ---- TOOLBAR ---- */
+.corte-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+  background: var(--white);
+  padding: 1rem 1.5rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+
+.toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.corte-toggle-tabs {
+  display: flex;
+  background: var(--beige);
+  padding: 4px;
+  border-radius: 40px;
+  border: 1px solid var(--border);
+}
+
+.toggle-tab {
+  padding: 0.5rem 1.25rem;
+  border-radius: 40px;
+  border: none;
+  background: transparent;
+  font-family: var(--font);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.25s var(--ease);
+}
+
+.toggle-tab i {
+  font-size: 0.9rem;
+}
+
+.toggle-tab:hover {
+  color: var(--primary);
+}
+
+.toggle-tab.active {
+  background: var(--white);
+  color: var(--teal);
+  box-shadow: 0 2px 8px rgba(42, 107, 124, 0.12);
+}
+
+.input-fecha-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-fecha-wrap i {
+  position: absolute;
+  left: 12px;
+  color: var(--gold);
+  font-size: 0.9rem;
+  pointer-events: none;
+}
+
+.input-fecha {
+  padding: 0.6rem 1rem 0.6rem 2.2rem;
+  border: 1.5px solid var(--border);
+  border-radius: 40px;
+  font-family: var(--font);
+  font-size: 0.88rem;
+  color: var(--primary);
+  background: var(--beige);
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+}
+
+.input-fecha:focus {
+  border-color: var(--teal);
+  background: var(--white);
+}
+
+.btn-refresh,
+.btn-print {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.25rem;
+  border-radius: 40px;
+  font-family: var(--font);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+  border: none;
+}
+
+.btn-refresh {
+  background: rgba(42, 107, 124, 0.08);
+  color: var(--teal);
+  border: 1px solid rgba(42, 107, 124, 0.15);
+}
+
+.btn-refresh:hover:not(:disabled) {
+  background: var(--teal);
+  color: var(--white);
+}
+
+.btn-print {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--teal) 100%);
+  color: var(--white);
+  box-shadow: 0 4px 12px rgba(42, 107, 124, 0.2);
+}
+
+.btn-print:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(42, 107, 124, 0.3);
+}
+
+/* ---- LOADING / EMPTY ---- */
+.corte-loading {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(42, 107, 124, 0.1);
+  border-top-color: var(--teal);
+  border-radius: 50%;
+  animation: spin 1s infinite linear;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---- KPIS ---- */
+.kpis-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.kpi-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  transition: transform 0.2s var(--ease);
+}
+
+.kpi-card:hover {
+  transform: translateY(-2px);
+}
+
+.kpi-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.kpi-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.kpi-label {
+  font-size: 0.72rem;
+  color: var(--muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.kpi-val {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin: 2px 0 0;
+}
+
+.card-efectivo .kpi-icon { background: rgba(26, 122, 74, 0.08); color: var(--success); }
+.card-tarjeta .kpi-icon  { background: rgba(42, 107, 124, 0.08); color: var(--teal); }
+.card-stripe .kpi-icon   { background: rgba(99, 91, 255, 0.08); color: #635bff; }
+.card-descuentos .kpi-icon { background: rgba(220, 53, 69, 0.08); color: var(--danger); }
+.card-transferencia .kpi-icon { background: rgba(139, 125, 79, 0.08); color: var(--gold); }
+.card-neto {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--teal) 100%);
+  border: none;
+}
+.card-neto .kpi-icon { background: rgba(255,255,255,0.12); color: var(--cream); }
+.card-neto .kpi-label { color: rgba(255,255,255,0.7); }
+.card-neto .kpi-val { color: var(--white); }
+
+/* ---- TABLE SECTION ---- */
+.corte-table-section {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin: 0 0 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.section-title i {
+  color: var(--gold);
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.corte-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  text-align: left;
+}
+
+.corte-table th {
+  background: var(--beige);
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 0.75rem 1rem;
+  border-bottom: 2px solid var(--border);
+}
+
+.corte-table td {
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.corte-table tr:last-child td {
+  border-bottom: none;
+}
+
+.td-bold { font-weight: 600; color: var(--primary); }
+.td-price { font-family: monospace; font-size: 0.9rem; font-weight: 600; }
+
+.text-stripe.has-stripe { color: #635bff; font-weight: 600; }
+.text-discount.has-discount { color: var(--danger); font-weight: 600; }
+.text-success { color: var(--success); }
+
+/* Badges */
+.badge-tipo {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 3px;
+}
+.badge-tipo.dental   { background: rgba(42,107,124,0.1); color: var(--teal); }
+.badge-tipo.estetica { background: rgba(139,125,79,0.1); color: var(--gold); }
+
+.badge-payment {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 99px;
+  white-space: nowrap;
+}
+
+.badge-payment.pay-efectivo { background: rgba(26,122,74,0.1); color: var(--success); }
+.badge-payment.pay-tarjeta  { background: rgba(42,107,124,0.1); color: var(--teal); }
+.badge-payment.pay-transferencia { background: rgba(139,125,79,0.12); color: var(--gold); }
+.badge-payment.pay-stripe   { background: rgba(99,91,255,0.1); color: #635bff; }
+.badge-payment.pay-mixto    { background: rgba(139,125,79,0.1); color: var(--gold); }
+.badge-payment.pay-ninguno  { background: rgba(220,53,69,0.08); color: var(--danger); }
+
+.badge-origen {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+.badge-origen.online  { background: rgba(99,91,255,0.08); color: #635bff; }
+.badge-origen.clinica { background: rgba(26,122,74,0.08); color: var(--success); }
+
+.td-empty {
+  text-align: center;
+  padding: 3rem;
+  color: var(--muted);
+}
+.td-empty i { font-size: 2.2rem; color: rgba(139,125,79,0.25); margin-bottom: 0.75rem; display: block; }
+.td-empty p { margin: 0; }
+
+/* ---- PRINT SECTIONS ---- */
+.print-header {
+  display: none;
+  text-align: center;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid var(--primary);
+  padding-bottom: 1rem;
+}
+.print-header h2 { font-family: var(--font-display); font-size: 2rem; color: var(--primary); margin: 0; }
+.print-header h3 { font-size: 1.1rem; color: var(--gold); margin: 5px 0 0; text-transform: uppercase; letter-spacing: 1px; }
+.print-date { font-size: 0.85rem; color: var(--muted); margin: 5px 0 0; }
+
+.print-signatures-block {
+  display: none;
+  justify-content: space-around;
+  margin-top: 4rem;
+  padding-top: 2rem;
+}
+
+.signature-line {
+  text-align: center;
+  width: 250px;
+}
+.signature-line .line {
+  border-bottom: 1px solid var(--muted);
+  height: 1px;
+  margin-bottom: 0.5rem;
+}
+.signature-line p {
+  font-size: 0.8rem;
+  color: var(--primary);
+  margin: 0;
+  font-weight: 600;
+}
+
+/* ====================================================
+   PRINT STYLES
+   ==================================================== */
+@media print {
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .corte-container {
+    padding: 0;
+  }
+  .corte-report-wrapper {
+    box-shadow: none !important;
+    border: none !important;
+    background: transparent !important;
+  }
+  .print-header {
+    display: block !important;
+  }
+  .kpis-grid {
+    grid-template-columns: repeat(5, 1fr) !important;
+    gap: 0.5rem !important;
+    margin-bottom: 1.5rem !important;
+  }
+  .kpi-card {
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+    padding: 0.75rem !important;
+  }
+  .kpi-card.card-neto {
+    background: #f0f0f0 !important;
+    color: #000 !important;
+  }
+  .kpi-card.card-neto .kpi-label,
+  .kpi-card.card-neto .kpi-val {
+    color: #000 !important;
+  }
+  .corte-table-section {
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+    padding: 0 !important;
+  }
+  .corte-table th {
+    background: #f0f0f0 !important;
+    color: #000 !important;
+    border-bottom: 1px solid #ccc !important;
+  }
+  .corte-table td {
+    border-bottom: 1px solid #eee !important;
+  }
+  .print-signatures-block {
+    display: flex !important;
+  }
+}

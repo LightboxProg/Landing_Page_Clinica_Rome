@@ -26,7 +26,6 @@ export interface CitaPayload {
 @Injectable({
   providedIn: 'root'
 })
-
 export class CitasService {
   private apiUrl = environment.apiUrl;
 
@@ -50,5 +49,15 @@ export class CitasService {
 
   obtenerCitasDentalPorPaciente(pacienteId: string): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/citas-dentales/paciente/${pacienteId}`);
+  }
+
+  registrarCobro(citaId: string, datos: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/citas/${citaId}/cobrar`, datos);
+  }
+
+  obtenerCorteDiario(fecha?: string): Observable<any> {
+    const params: any = {};
+    if (fecha) params.fecha = fecha;
+    return this.http.get<any>(`${this.apiUrl}/citas/corte-diario`, { params });
   }
 }

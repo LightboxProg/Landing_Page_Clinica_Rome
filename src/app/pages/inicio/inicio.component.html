@@ -14,6 +14,83 @@
   </div>
 </section>
 
+<!-- SECCIÓN: PROMOCIONES DEL BUEN FIN / EXCLUSIVAS -->
+<div class="section section-promos" *ngIf="promocionesActivas.length > 0">
+  <div class="container">
+    <div class="row">
+      <div class="col full">
+        <div class="fancy_heading">
+          <h2 class="title font-display">Ofertas de Temporada</h2>
+          <div class="elegant-detail-gold"></div>
+          <p class="inside">
+            Aprovecha nuestros precios exclusivos de Buen Fin y promociones estéticas por tiempo limitado.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="promos-landing-grid">
+      <div *ngFor="let p of promocionesActivas" class="promo-landing-card">
+        <div class="promo-landing-img-wrap">
+          <!-- Carrusel de imágenes de la promo -->
+          <ng-container *ngIf="p.fotos && p.fotos.length > 0; else singleFotoTemplate">
+            <img [src]="p.fotos[p.fotoActivaIndex].url" alt="Promoción" class="promo-landing-img" />
+            
+            <!-- Controles del carrusel si hay múltiples fotos -->
+            <button class="carousel-control prev" *ngIf="p.fotos.length > 1" (click)="fotoAnterior(p, $event)" type="button">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="carousel-control next" *ngIf="p.fotos.length > 1" (click)="fotoSiguiente(p, $event)" type="button">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+            
+            <!-- Indicadores de puntos -->
+            <div class="carousel-indicators" *ngIf="p.fotos.length > 1">
+              <span 
+                *ngFor="let f of p.fotos; let idx = index" 
+                [class.active]="idx === p.fotoActivaIndex"
+                class="indicator-dot">
+              </span>
+            </div>
+          </ng-container>
+          
+          <ng-template #singleFotoTemplate>
+            <img *ngIf="p.foto?.url" [src]="p.foto.url" alt="Promoción" class="promo-landing-img" />
+            <div *ngIf="!p.foto?.url" class="promo-landing-no-img">
+              <i class="fas fa-percentage"></i>
+            </div>
+          </ng-template>
+
+          <!-- Contador en vivo superpuesto -->
+          <div class="landing-countdown" [ngClass]="p.estadoTimer">
+            <i class="fas fa-clock"></i> {{ p.tiempoRestanteStr }}
+          </div>
+        </div>
+
+        <div class="promo-landing-body">
+          <div class="promo-landing-scope">
+            <span *ngIf="p.servicioId" class="scope-tag svc">Servicio</span>
+            <span *ngIf="p.categoriaId" class="scope-tag cat">Categoría</span>
+          </div>
+          <h3 class="promo-landing-title">{{ p.nombre }}</h3>
+          <p class="promo-landing-desc">{{ p.descripcion || 'Tratamiento estético avanzado con precio de campaña.' }}</p>
+          
+          <div class="promo-landing-price-box">
+            <span class="price-label">Exclusivo en Clínica:</span>
+            <h4 class="price-val" [class.porcentaje]="p.tipoDescuento === 'Porcentaje'">
+              {{ p.tipoDescuento === 'Monto' ? (p.valorDescuento | currency:'MXN':'symbol':'1.2-2') : (p.valorDescuento + '% DE DESCUENTO') }}
+            </h4>
+          </div>
+
+          <a routerLink="/agendar-cita" class="btn-aprovechar-promo">
+            Agendar Ahora <i class="fas fa-chevron-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- SECCIÓN: ¿QUÉ PODEMOS HACER POR TI? -->
 <div class="section section-offer">
   <div class="container">

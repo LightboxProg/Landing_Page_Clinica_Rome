@@ -1,0 +1,166 @@
+<div class="horario-doctor-container">
+  <!-- Header -->
+  <div class="hd-header">
+    <div class="hd-header-icon">
+      <i class="fas fa-user-md"></i>
+    </div>
+    <div class="hd-header-text">
+      <h4>Horario del Doctor</h4>
+      <p class="hd-subtitle">Define los dias y turnos de trabajo del dentista.</p>
+    </div>
+  </div>
+
+  <!-- Seccion Dias y Turnos -->
+  <div class="hd-section-card">
+    <div class="hd-section-title">
+      <i class="fas fa-th"></i>
+      <h5>Dias Laborales</h5>
+    </div>
+    <p class="hd-section-desc">Activa los dias que trabaja el doctor y configura sus turnos.</p>
+
+    <!-- Selector de dias -->
+    <div class="hd-dias-selector">
+      <span class="hd-selector-label">Selecciona los dias de trabajo:</span>
+      <div class="hd-dias-pills">
+        <button type="button"
+                *ngFor="let dia of dias"
+                class="hd-dia-pill"
+                [class.hd-pill-activo]="getDiaConfig(dia.id).activo"
+                (click)="toggleDia(dia.id)">
+          {{ dia.nombre }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Toggle mismo horario -->
+    <div class="hd-same-toggle">
+      <label class="hd-switch">
+        <input type="checkbox" [(ngModel)]="aplicarMismoHorario" (change)="aplicarMismoHorario && aplicarHorarioGlobal()">
+        <span class="hd-slider"></span>
+      </label>
+      <span class="hd-toggle-label">Aplicar mismo horario a todos los dias activos</span>
+    </div>
+
+    <!-- Turnos globales -->
+    <div *ngIf="aplicarMismoHorario" class="hd-global-turnos">
+      <div *ngFor="let turno of turnosGlobales; let idx = index" class="hd-turno-row">
+        <div class="hd-time-group">
+          <label>Entrada</label>
+          <input type="time" [value]="turno.horaInicio" (change)="actualizarTurnoGlobal(idx, 'horaInicio', $any($event.target).value)">
+        </div>
+        <span class="hd-time-sep">a</span>
+        <div class="hd-time-group">
+          <label>Salida</label>
+          <input type="time" [value]="turno.horaFin" (change)="actualizarTurnoGlobal(idx, 'horaFin', $any($event.target).value)">
+        </div>
+        <button type="button" class="hd-btn-remove-turno" (click)="removerTurnoGlobal(idx)" [disabled]="turnosGlobales.length <= 1">
+          <i class="fas fa-trash-alt"></i>
+        </button>
+      </div>
+      <button type="button" class="hd-btn-add-turno" (click)="agregarTurnoGlobal()">
+        <i class="fas fa-plus-circle"></i> Agregar Turno
+      </button>
+    </div>
+
+    <!-- Grid de tarjetas por dia -->
+    <div class="hd-dias-grid">
+      <ng-container *ngFor="let dia of dias">
+        <div *ngIf="getDiaConfig(dia.id).activo" class="hd-dia-card">
+          <div class="hd-dia-card-header">
+            <div class="hd-dia-label">
+              <span class="hd-dia-nombre">{{ dia.nombre }}</span>
+              <span class="hd-dia-abrev">{{ dia.abrev }}</span>
+            </div>
+            <button type="button" class="hd-btn-deactivate" (click)="toggleDia(dia.id)" title="Desactivar dia">
+              <i class="fas fa-times-circle"></i>
+            </button>
+          </div>
+
+          <!-- Turnos individuales por dia -->
+          <div class="hd-dia-turnos" *ngIf="!aplicarMismoHorario">
+            <div *ngFor="let turno of getDiaConfig(dia.id).turnos; let idx = index" class="hd-dia-turno-row">
+              <div class="hd-time-group compact">
+                <input type="time" [(ngModel)]="turno.horaInicio">
+              </div>
+              <span class="hd-time-sep">a</span>
+              <div class="hd-time-group compact">
+                <input type="time" [(ngModel)]="turno.horaFin">
+              </div>
+              <button type="button" class="hd-btn-remove-compact" (click)="removerTurnoDia(dia.id, idx)" [disabled]="getDiaConfig(dia.id).turnos.length <= 1">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+            <button type="button" class="hd-btn-add-compact" (click)="agregarTurnoDia(dia.id)">
+              <i class="fas fa-plus"></i> Agregar Turno
+            </button>
+          </div>
+
+          <!-- Preview cuando es horario global -->
+          <div class="hd-dia-turnos" *ngIf="aplicarMismoHorario">
+            <div class="hd-preview-list">
+              <div *ngFor="let turno of turnosGlobales" class="hd-preview-item">
+                <i class="far fa-clock"></i> {{ turno.horaInicio }} - {{ turno.horaFin }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+    <div class="hd-dias-summary">
+      <i class="fas fa-info-circle"></i>
+      <span>{{ diasActivosCount }} de 7 dias activos</span>
+    </div>
+  </div>
+
+  <!-- Seccion Feriados -->
+  <div class="hd-section-card">
+    <div class="hd-section-title">
+      <i class="fas fa-flag"></i>
+      <h5>Dias Feriados Oficiales de Mexico</h5>
+    </div>
+    <p class="hd-section-desc">Los siguientes son dias no laborales oficiales. Si el doctor trabaja en estos dias, activa la opcion.</p>
+
+    <div class="hd-feriados-toggle">
+      <label class="hd-switch">
+        <input type="checkbox" [(ngModel)]="trabajaFeriados">
+        <span class="hd-slider"></span>
+      </label>
+      <span class="hd-toggle-label">
+        {{ trabajaFeriados ? 'El doctor SI trabaja en dias feriados' : 'El doctor NO trabaja en dias feriados' }}
+      </span>
+    </div>
+
+    <!-- Lista de feriados -->
+    <div class="hd-feriados-list">
+      <div class="hd-feriados-year">
+        <h6>{{ anioActual }}</h6>
+        <div class="hd-feriados-chips">
+          <div *ngFor="let f of feriadosAnioActual" class="hd-feriado-chip" [class.hd-feriado-libre]="!trabajaFeriados">
+            <i class="fas fa-calendar-day"></i>
+            <span class="hd-feriado-fecha">{{ f.fecha }}</span>
+            <span class="hd-feriado-nombre">{{ f.nombre }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="hd-feriados-year">
+        <h6>{{ anioActual + 1 }}</h6>
+        <div class="hd-feriados-chips">
+          <div *ngFor="let f of feriadosAnioSiguiente" class="hd-feriado-chip" [class.hd-feriado-libre]="!trabajaFeriados">
+            <i class="fas fa-calendar-day"></i>
+            <span class="hd-feriado-fecha">{{ f.fecha }}</span>
+            <span class="hd-feriado-nombre">{{ f.nombre }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Boton Guardar -->
+  <div class="hd-actions">
+    <button class="hd-btn-save" (click)="guardarHorario()" [disabled]="guardando">
+      <span *ngIf="!guardando"><i class="fas fa-save"></i> Guardar Horario</span>
+      <span *ngIf="guardando" class="hd-spinner"></span>
+    </button>
+  </div>
+</div>

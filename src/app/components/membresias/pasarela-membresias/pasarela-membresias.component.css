@@ -1,11 +1,11 @@
 .pasarela-container{display:flex;justify-content:center;padding:50px 20px;background:#f9f5f0}
 .pasarela-card{width:100%;max-width:680px;background:#fff;padding:45px 50px;border-radius:12px;border:1px solid #efe8e1;box-shadow:0 8px 30px rgba(0,0,0,0.04)}
-.pasarela-title{margin:0 0 6px;font-size:2.1rem;color:#3e2723;font-weight:800;font-family:'Playfair Display','Lora',serif;}
-.pasarela-subtitle{color:#5d4037;margin-bottom:30px;font-size:1.05rem;font-weight:400;}
+.pasarela-title{margin:0 0 6px;font-size:2.1rem;color:#1a2b3c;font-weight:800;font-family:'Playfair Display','Lora',serif;}
+.pasarela-subtitle{color:#2a6b7c;margin-bottom:30px;font-size:1.05rem;font-weight:400;}
 .paso-container h3{font-size:1.6rem;color:#9a7d0a;margin-bottom:12px;font-weight:800;font-family:'Playfair Display','Lora',serif;}
 .paso-container p{color:#4a4a4a;margin-bottom:24px;line-height:1.6;font-size:0.95rem;}
 .form-group{margin-bottom:24px}
-.form-group label{display:block;margin-bottom:8px;font-weight:700;color:#3e2723;font-size:0.9rem;}
+.form-group label{display:block;margin-bottom:8px;font-weight:700;color:#1a2b3c;font-size:0.9rem;}
 .form-control{width:100%;border:1px solid #d7ccc8;border-radius:8px;padding:12px 16px;font-size:1.05rem;background-color:#fafafa;transition:all 0.3s ease;box-sizing:border-box;}
 .form-control:focus{outline:none;border-color:#9a7d0a;background-color:#fff;box-shadow:0 0 0 2px rgba(197, 160, 40, 0.15)}
 .botones-accion{display:flex;gap:10px;justify-content:space-between}
@@ -21,8 +21,8 @@
 
 /* Estilos para alinear los botones al tema visual */
 .btn-primary, .btn-success {
-  background-color: #C5A028 !important;
-  border-color: #C5A028 !important;
+  background-color: #8b7d4f !important;
+  border-color: #8b7d4f !important;
   color: white !important;
   padding: 12px 24px;
   border-radius: 6px;

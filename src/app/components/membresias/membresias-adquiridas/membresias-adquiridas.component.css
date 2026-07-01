@@ -1,32 +1,157 @@
-.membresias-adquiridas-container{padding:16px;background:#fff;border-radius:12px;border:1px solid #e9dde4;box-shadow:0 10px 24px rgba(70,39,59,0.08)}
-.membresias-adquiridas-container h3{margin:0 0 6px;color:#3f2234}
-.subtitle{color:#6f5b67;margin-bottom:12px}
-.loading-state,.empty-state{text-align:center;color:#666;padding:12px}
-.error-state{display:flex;align-items:flex-start;justify-content:center;gap:12px;text-align:left;color:#7a4b48;padding:16px;border-radius:10px;background:#fff3f2;border:1px solid #f1c3bd}
-.error-state.auth-error{background:linear-gradient(180deg,#fff4ec,#fff6f5);border-color:#f2d3bc;color:#7b4a26}
-.error-copy p{margin:0 0 12px;line-height:1.6}
-.error-actions{display:flex;gap:10px;flex-wrap:wrap}
-.error-btn{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:999px;text-decoration:none;font-weight:700;border:1px solid transparent;cursor:pointer}
-.error-btn.primary{background:#5b3a2e;color:#fff}
-.error-btn.secondary{background:#fff;color:#5b3a2e;border-color:#d9bfb6}
-.table-responsive{border:1px solid #efe5ea;border-radius:10px;overflow:hidden}
-.membresias-table{width:100%;border-collapse:collapse;font-size:0.95rem;background:#fff}
-.membresias-table th,.membresias-table td{padding:10px;border-bottom:1px solid #f1e8ed;text-align:left}
-.membresias-table thead th{background:#fbf7fa;color:#5c3d50;font-weight:700}
-.paciente-info .nombre{display:block;font-weight:600}
-.status-badge{display:inline-block;padding:5px 10px;border-radius:999px;font-size:0.8rem;color:#fff;font-weight:700}
-.status-badge.pending{background:#f79009}
-.status-badge.active{background:#12b76a}
-.status-badge.cancelled{background:#f04438}
-.dinero{white-space:nowrap}
-.progreso-pagos{min-width:120px}
-.progress-bar-container{height:9px;background:#f2e8ee;border-radius:8px;overflow:hidden;margin-top:6px}
-.progress-bar{height:100%;background:linear-gradient(90deg,#8b5cf6,#ec4899);width:0}
-@media (max-width:800px){
-  .membresias-table thead{display:none}
-  .table-responsive{border:0}
-  .membresias-table tr{display:block;margin-bottom:12px;border:1px solid #f0e7ec;border-radius:10px;padding:8px;box-shadow:0 4px 12px rgba(70,39,59,0.06)}
-  .membresias-table td{display:block;padding:6px;border-bottom:0}
-  .membresias-table td .paciente-info{margin-bottom:6px}
-  .error-state{flex-direction:column;align-items:stretch}
+.membresias-adquiridas-container {
+  padding: 16px;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e1eff2;
+  box-shadow: 0 10px 24px rgba(26, 43, 60, 0.05);
+}
+.membresias-adquiridas-container h3 {
+  margin: 0 0 6px;
+  color: #1a2b3c;
+}
+.subtitle {
+  color: #64748b;
+  margin-bottom: 12px;
+}
+.loading-state,
+.empty-state {
+  text-align: center;
+  color: #666;
+  padding: 12px;
+}
+.error-state {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 12px;
+  text-align: left;
+  color: #7a4b48;
+  padding: 16px;
+  border-radius: 10px;
+  background: #fff3f2;
+  border: 1px solid #f1c3bd;
+}
+.error-state.auth-error {
+  background: linear-gradient(180deg, #fff4ec, #fff6f5);
+  border-color: #f2d3bc;
+  color: #7b4a26;
+}
+.error-copy p {
+  margin: 0 0 12px;
+  line-height: 1.6;
+}
+.error-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.error-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 700;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+.error-btn.primary {
+  background: #1a2b3c;
+  color: #fff;
+}
+.error-btn.secondary {
+  background: #fff;
+  color: #1a2b3c;
+  border-color: #d0e0e5;
+}
+.table-responsive {
+  border: 1px solid #e1eff2;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.membresias-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  background: #fff;
+}
+.membresias-table th,
+.membresias-table td {
+  padding: 10px;
+  border-bottom: 1px solid #e1eff2;
+  text-align: left;
+}
+.membresias-table thead th {
+  background: #eef5f8;
+  color: #1a2b3c;
+  font-weight: 700;
+}
+.paciente-info .nombre {
+  display: block;
+  font-weight: 600;
+}
+.status-badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  color: #fff;
+  font-weight: 700;
+}
+.status-badge.pending {
+  background: #f79009;
+}
+.status-badge.active {
+  background: #12b76a;
+}
+.status-badge.cancelled {
+  background: #f04438;
+}
+.dinero {
+  white-space: nowrap;
+}
+.progreso-pagos {
+  min-width: 120px;
+}
+.progress-bar-container {
+  height: 9px;
+  background: #eef5f8;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #1a2b3c, #2a6b7c);
+  width: 0;
+}
+@media (max-width: 800px) {
+  .membresias-table thead {
+    display: none;
+  }
+  .table-responsive {
+    border: 0;
+  }
+  .membresias-table tr {
+    display: block;
+    margin-bottom: 12px;
+    border: 1px solid #e1eff2;
+    border-radius: 10px;
+    padding: 8px;
+    box-shadow: 0 4px 12px rgba(26, 43, 60, 0.04);
+  }
+  .membresias-table td {
+    display: block;
+    padding: 6px;
+    border-bottom: 0;
+  }
+  .membresias-table td .paciente-info {
+    margin-bottom: 6px;
+  }
+  .error-state {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }

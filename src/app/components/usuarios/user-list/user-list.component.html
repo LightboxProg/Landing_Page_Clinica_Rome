@@ -1,112 +1,285 @@
-<div class="contenedor-usuarios">
-  <!-- Encabezado de la página -->
-  <div class="encabezado-pagina">
-    <div class="contenido-encabezado">
-      <h1 class="titulo-pagina">Gestión de Usuarios</h1>
-      <p class="subtitulo-pagina">ROME HARMONY CLINIC - Sistema de Administración</p>
+<div class="ul-page">
+
+  <!-- Header con stats -->
+  <div class="ul-header">
+    <div class="ul-header-left">
+      <div class="ul-header-icon"><i class="fas fa-users-cog"></i></div>
+      <div>
+        <h1 class="ul-title">Gestión de Usuarios</h1>
+        <p class="ul-subtitle">Rome Harmony Clinic &mdash; Sistema de Administración</p>
+      </div>
+    </div>
+    <div class="ul-stats">
+      <div class="ul-stat-chip">
+        <span class="ul-stat-num">{{ usuarios.length }}</span>
+        <span class="ul-stat-label">Total</span>
+      </div>
+      <div class="ul-stat-chip tipo-doctor">
+        <span class="ul-stat-num">{{ countByTipo('Doctor') }}</span>
+        <span class="ul-stat-label">Doctores</span>
+      </div>
+      <div class="ul-stat-chip tipo-especialista">
+        <span class="ul-stat-num">{{ countByTipo('Especialista') }}</span>
+        <span class="ul-stat-label">Especialistas</span>
+      </div>
+      <div class="ul-stat-chip tipo-recepcionista">
+        <span class="ul-stat-num">{{ countByTipo('Recepcionista') }}</span>
+        <span class="ul-stat-label">Recepcionistas</span>
+      </div>
     </div>
   </div>
 
-  <!-- Barra de filtros y acciones -->
-  <div class="barra-filtros">
-    <div class="filtros">
-      <input 
-        type="text" 
-        [(ngModel)]="filtroTexto" 
-        (input)="aplicarFiltros()"
-        placeholder="Buscar por nombre, usuario o correo..."
-        class="campo-busqueda"
-      />
-      <select [(ngModel)]="filtroTipo" (change)="aplicarFiltros()" class="select-filtro">
-        <option value="">Todos los tipos</option>
+  <!-- Toolbar -->
+  <div class="ul-toolbar">
+    <div class="ul-filters">
+      <div class="ul-search-wrap">
+        <i class="fas fa-search ul-search-icon"></i>
+        <input
+          id="user-search"
+          type="text"
+          [(ngModel)]="filtroTexto"
+          (input)="aplicarFiltros()"
+          placeholder="Buscar por nombre, usuario o correo..."
+          class="ul-search-input"
+        />
+      </div>
+      <select id="filter-tipo" [(ngModel)]="filtroTipo" (change)="aplicarFiltros()" class="ul-select">
+        <option value="">Todos los roles</option>
         <option value="Administrador">Administrador</option>
         <option value="Doctor">Doctor</option>
         <option value="Especialista">Especialista</option>
         <option value="Recepcionista">Recepcionista</option>
       </select>
-      <select *ngIf="filtroTipo === 'Doctor' || filtroTipo === 'Especialista'" 
-              [(ngModel)]="filtroAtencion" 
-              (change)="aplicarFiltros()" 
-              class="select-filtro">
-        <option value="">Todas las atenciones</option>
+      <select id="filter-atencion"
+        *ngIf="!filtroTipo || filtroTipo === 'Doctor' || filtroTipo === 'Especialista'"
+        [(ngModel)]="filtroAtencion"
+        (change)="aplicarFiltros()"
+        class="ul-select">
+        <option value="">Todas las áreas</option>
         <option value="Dental">Dental</option>
         <option value="Estetica">Estética</option>
       </select>
     </div>
-    <a routerLink="/admin/usuarios/nuevo" class="btn-primary">
-      <i class="fas fa-user-plus"></i> Nuevo Usuario
+    <a id="btn-nuevo-usuario" routerLink="/admin/usuarios/nuevo" class="ul-btn-add">
+      <i class="fas fa-user-plus"></i>
+      <span>Nuevo Usuario</span>
     </a>
   </div>
 
-  <!-- Lista de usuarios filtrados -->
-  <div class="contenedor-lista">
-    <div class="elementos-usuario">
-      <div *ngFor="let user of usuariosFiltrados" class="tarjeta-usuario">
-        <div class="contenido-tarjeta" (click)="verDetalles(user)">
-          <div class="contenedor-avatar">
-            <div class="avatar-circulo">
-              <i class="fas fa-user icono-usuario"></i>
+  <!-- Tabla -->
+  <div class="ul-table-wrap">
+    <table class="ul-table" *ngIf="usuariosFiltrados.length > 0">
+      <thead>
+        <tr>
+          <th>Usuario</th>
+          <th>Rol</th>
+          <th>Contacto</th>
+          <th>Especialidad</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of usuariosFiltrados" class="ul-row" (click)="verDetalles(user)">
+          <td class="td-usuario">
+            <div class="ul-user-cell">
+              <div class="ul-avatar" [ngClass]="getAvatarClass(user.tipo)">
+                {{ getInitials(user) }}
+              </div>
+              <div class="ul-user-info">
+                <span class="ul-nombre">{{ user.nombre }} {{ user.apeP }} {{ user.apeM }}</span>
+                <span class="ul-username">{{'@'}}{{ user.usuario }}</span>
+              </div>
             </div>
-            <div class="indicador-tipo" [ngClass]="{
-              'tipo-admin': user.tipo === 'Administrador',
-              'tipo-doctor': user.tipo === 'Doctor',
-              'tipo-especialista': user.tipo === 'Especialista',
-              'tipo-recepcionista': user.tipo === 'Recepcionista'
-            }">
+          </td>
+          <td class="td-rol">
+            <span class="ul-role-badge" [ngClass]="getRoleClass(user.tipo)">
               <i class="fas" [ngClass]="{
                 'fa-crown': user.tipo === 'Administrador',
                 'fa-user-md': user.tipo === 'Doctor',
-                'fa-stethoscope': user.tipo === 'Especialista',
+                'fa-spa': user.tipo === 'Especialista',
                 'fa-user-tie': user.tipo === 'Recepcionista'
               }"></i>
+              {{ user.tipo }}
+            </span>
+          </td>
+          <td class="td-contacto">
+            <div class="ul-contact-item">
+              <i class="fas fa-envelope"></i>
+              <span>{{ user.correo }}</span>
+            </div>
+            <div class="ul-contact-item" *ngIf="user.telefono">
+              <i class="fas fa-phone"></i>
+              <span>{{ user.telefono }}</span>
+            </div>
+          </td>
+          <td class="td-esp">
+            <span *ngIf="user.especialidad" class="ul-esp-tag">{{ user.especialidad }}</span>
+            <span *ngIf="user.atencion" class="ul-atencion-tag" [ngClass]="user.atencion === 'Dental' ? 'dental' : 'estetica'">
+              {{ user.atencion }}
+            </span>
+            <span *ngIf="!user.especialidad && !user.atencion" class="ul-muted">&mdash;</span>
+          </td>
+          <td class="td-estado">
+            <div class="ul-status-cell">
+              <span class="ul-status-dot" [ngClass]="user.activo !== false ? 'activo' : 'inactivo'"></span>
+              <span class="ul-status-label">{{ user.activo !== false ? 'Activo' : 'Inactivo' }}</span>
+            </div>
+          </td>
+          <td class="td-acciones" (click)="$event.stopPropagation()">
+            <div class="ul-actions-cell">
+              <button
+                *ngIf="user.tipo === 'Especialista' || user.tipo === 'Doctor'"
+                class="ul-action-btn horario"
+                (click)="irADisponibilidad(user)"
+                title="Horarios">
+                <i class="fas fa-calendar-alt"></i>
+              </button>
+              <button class="ul-action-btn editar" (click)="abrirModalEditar(user)" title="Editar">
+                <i class="fas fa-pen"></i>
+              </button>
+              <button class="ul-action-btn eliminar" (click)="eliminarUsuario(user)" title="Eliminar">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Estado vacio -->
+    <div class="ul-empty" *ngIf="usuariosFiltrados.length === 0">
+      <div class="ul-empty-icon"><i class="fas fa-user-slash"></i></div>
+      <p>No se encontraron usuarios con los filtros aplicados.</p>
+      <button class="ul-clear-btn" (click)="limpiarFiltros()">Limpiar filtros</button>
+    </div>
+  </div>
+
+  <!-- Modal detalle -->
+  <app-user-modal #userModal></app-user-modal>
+
+  <!-- Modal editar usuario -->
+  <div class="edit-overlay" *ngIf="showEditModal" (click)="cerrarModalEditar()">
+    <div class="edit-modal" (click)="$event.stopPropagation()">
+      <div class="edit-modal-header">
+        <div class="edit-modal-title">
+          <div class="edit-modal-icon"><i class="fas fa-user-edit"></i></div>
+          <div>
+            <h3>Editar Usuario</h3>
+            <p>Modifica la informacion del personal</p>
+          </div>
+        </div>
+        <button class="edit-close-btn" (click)="cerrarModalEditar()">&times;</button>
+      </div>
+
+      <div class="edit-modal-body" *ngIf="editForm">
+        <form [formGroup]="editForm" (ngSubmit)="guardarEdicion()">
+
+          <div class="edit-section-label">Informacion Personal</div>
+          <div class="edit-row">
+            <div class="edit-field">
+              <label>Nombre *</label>
+              <div class="edit-input-wrap">
+                <i class="fas fa-user"></i>
+                <input formControlName="nombre" type="text" placeholder="Nombre(s)">
+              </div>
+            </div>
+            <div class="edit-field">
+              <label>Apellido Paterno *</label>
+              <div class="edit-input-wrap">
+                <i class="fas fa-signature"></i>
+                <input formControlName="apeP" type="text" placeholder="Apellido paterno">
+              </div>
+            </div>
+            <div class="edit-field">
+              <label>Apellido Materno</label>
+              <div class="edit-input-wrap">
+                <i class="fas fa-signature"></i>
+                <input formControlName="apeM" type="text" placeholder="Apellido materno">
+              </div>
             </div>
           </div>
 
-          <div class="info-usuario">
-            <h3 class="nombre-usuario">{{ user.nombre }} {{ user.apeP }} {{ user.apeM }}</h3>
-            <div class="detalles-usuario">
-              <div class="detalle-item">
-                <i class="fas fa-at icono-detalle"></i>
-                <span class="etiqueta-detalle">Usuario:</span>
-                <span class="valor-detalle">{{ user.usuario }}</span>
+          <div class="edit-section-label">Contacto</div>
+          <div class="edit-row">
+            <div class="edit-field">
+              <label>Correo *</label>
+              <div class="edit-input-wrap">
+                <i class="fas fa-envelope"></i>
+                <input formControlName="correo" type="email" placeholder="correo@clinica.com">
               </div>
-              <div class="detalle-item">
-                <i class="fas fa-user-tag icono-detalle"></i>
-                <span class="etiqueta-detalle">Tipo:</span>
-                <span class="valor-detalle">{{ user.tipo }}</span>
-              </div>
-              <div class="detalle-item" *ngIf="user.especialidad">
-                <i class="fas fa-stethoscope icono-detalle"></i>
-                <span class="etiqueta-detalle">Especialidad:</span>
-                <span class="valor-detalle">{{ user.especialidad }}</span>
-              </div>
-              <div class="detalle-item" *ngIf="user.atencion">
-                <i class="fas fa-briefcase-medical icono-detalle"></i>
-                <span class="etiqueta-detalle">Atención:</span>
-                <span class="valor-detalle">{{ user.atencion }}</span>
+            </div>
+            <div class="edit-field">
+              <label>Telefono *</label>
+              <div class="edit-input-wrap">
+                <i class="fas fa-phone"></i>
+                <input formControlName="telefono" type="tel" placeholder="10 digitos">
               </div>
             </div>
           </div>
-        </div>
 
-        <div class="contenedor-acciones">
-          <button *ngIf="user.tipo === 'Especialista'" class="boton-disponibilidad" (click)="irADisponibilidad(user)" title="Configurar disponibilidad">
-            <i class="fas fa-calendar-alt"></i>
-            <span>Horarios</span>
-          </button>
-          <button class="boton-editar" (click)="editarUsuario(user)" title="Editar usuario">
-            <i class="fas fa-edit"></i>
-            <span>Editar</span>
-          </button>
-          <button class="boton-eliminar" (click)="eliminarUsuario(user)" title="Eliminar usuario">
-            <i class="fas fa-trash-alt"></i>
-            <span>Eliminar</span>
-          </button>
-        </div>
+          <div class="edit-section-label">Cuenta y Rol</div>
+          <div class="edit-row">
+            <div class="edit-field">
+              <label>Usuario *</label>
+              <div class="edit-input-wrap">
+                <i class="fas fa-at"></i>
+                <input formControlName="usuario" type="text" placeholder="Nombre de usuario">
+              </div>
+            </div>
+            <div class="edit-field">
+              <label>Nueva Contrasena <span class="edit-optional">(dejar vacio para no cambiar)</span></label>
+              <div class="edit-input-wrap">
+                <i class="fas fa-lock"></i>
+                <input formControlName="password" type="password" placeholder="Nueva contrasena">
+              </div>
+            </div>
+          </div>
+
+          <div class="edit-row">
+            <div class="edit-field">
+              <label>Rol *</label>
+              <div class="edit-input-wrap">
+                <i class="fas fa-user-shield"></i>
+                <select formControlName="tipo">
+                  <option value="Administrador">Administrador</option>
+                  <option value="Recepcionista">Recepcionista</option>
+                  <option value="Doctor">Doctor</option>
+                  <option value="Especialista">Especialista</option>
+                </select>
+              </div>
+            </div>
+            <div class="edit-field" *ngIf="editForm.get('tipo')?.value === 'Doctor' || editForm.get('tipo')?.value === 'Especialista'">
+              <label>Especialidad *</label>
+              <div class="edit-input-wrap">
+                <i class="fas fa-award"></i>
+                <input formControlName="especialidad" type="text" placeholder="Ej. Ortodoncia">
+              </div>
+            </div>
+            <div class="edit-field">
+              <label>Estado</label>
+              <div class="edit-input-wrap">
+                <i class="fas fa-toggle-on"></i>
+                <select formControlName="activo">
+                  <option [value]="true">Activo</option>
+                  <option [value]="false">Inactivo</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="edit-modal-actions">
+            <button type="button" class="edit-btn-cancel" (click)="cerrarModalEditar()">
+              <i class="fas fa-times"></i> Cancelar
+            </button>
+            <button type="submit" class="edit-btn-save" [disabled]="editForm.invalid || guardando">
+              <i class="fas fa-save"></i>
+              {{ guardando ? 'Guardando...' : 'Guardar Cambios' }}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
 
-  <!-- Modal de usuario -->
-  <app-user-modal #userModal></app-user-modal>
 </div>

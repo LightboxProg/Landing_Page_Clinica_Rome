@@ -1,74 +1,163 @@
-<div class="form-container">
-  <h2>{{ editMode ? 'Editar Usuario' : 'Registro de Usuario' }}</h2>
-  <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      <div class="form-row">
-        <div class="field">
-          <label>Nombre *</label>
-          <input formControlName="nombre" type="text">
+<div class="uf-wrapper">
+  <div class="uf-container">
+
+    <!-- Header -->
+    <div class="uf-header">
+      <div class="uf-header-bg"></div>
+      <div class="uf-header-content">
+        <div class="uf-header-icon">
+          <i class="fas" [ngClass]="editMode ? 'fa-user-edit' : 'fa-user-plus'"></i>
         </div>
-        <div class="field">
-          <label>Apellido Paterno *</label>
-          <input formControlName="apeP" type="text">
+        <div>
+          <h2 class="uf-title">{{ editMode ? 'Editar Usuario' : 'Nuevo Usuario' }}</h2>
+          <p class="uf-subtitle">{{ editMode ? 'Modifica los datos del personal' : 'Registra un nuevo miembro del equipo' }}</p>
         </div>
-        <div class="field">
-          <label>Apellido Materno</label>
-          <input formControlName="apeM" type="text">
+      </div>
+    </div>
+
+    <!-- Form -->
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="uf-form">
+
+      <!-- Seccion: Informacion Personal -->
+      <div class="uf-section">
+        <div class="uf-section-header">
+          <div class="uf-section-dot"></div>
+          <span>Informacion Personal</span>
+        </div>
+        <div class="uf-grid-3">
+          <div class="uf-field">
+            <label class="uf-label" for="f-nombre">Nombre <span class="uf-req">*</span></label>
+            <div class="uf-input-wrap">
+              <i class="fas fa-user uf-icon"></i>
+              <input id="f-nombre" formControlName="nombre" type="text" placeholder="Nombre(s)" class="uf-input">
+            </div>
+          </div>
+          <div class="uf-field">
+            <label class="uf-label" for="f-apeP">Apellido Paterno <span class="uf-req">*</span></label>
+            <div class="uf-input-wrap">
+              <i class="fas fa-id-card uf-icon"></i>
+              <input id="f-apeP" formControlName="apeP" type="text" placeholder="Apellido paterno" class="uf-input">
+            </div>
+          </div>
+          <div class="uf-field">
+            <label class="uf-label" for="f-apeM">Apellido Materno</label>
+            <div class="uf-input-wrap">
+              <i class="fas fa-id-card uf-icon"></i>
+              <input id="f-apeM" formControlName="apeM" type="text" placeholder="Apellido materno" class="uf-input">
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="form-row">
-        <div class="field">
-          <label>Correo *</label>
-          <input formControlName="correo" type="email">
+      <!-- Seccion: Contacto -->
+      <div class="uf-section">
+        <div class="uf-section-header">
+          <div class="uf-section-dot"></div>
+          <span>Datos de Contacto</span>
         </div>
-        <div class="field">
-          <label>Teléfono *</label>
-          <input formControlName="telefono" type="tel">
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="field">
-          <label>Usuario *</label>
-          <input formControlName="usuario" type="text">
-        </div>
-        <div class="field">
-          <label>Contraseña {{ editMode ? '(dejar vacío para no cambiarla)' : '*' }}</label>
-          <input formControlName="password" type="password">
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="field">
-          <label>Tipo *</label>
-          <select formControlName="tipo">
-            <option value="">Seleccionar</option>
-            <option value="Administrador">Administrador</option>
-            <option value="Recepcionista">Recepcionista</option>
-            <option value="Doctor">Doctor</option>
-            <option value="Especialista">Especialista</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Especialidad</label>
-          <input formControlName="especialidad" type="text">
+        <div class="uf-grid-2">
+          <div class="uf-field">
+            <label class="uf-label" for="f-correo">Correo Electronico <span class="uf-req">*</span></label>
+            <div class="uf-input-wrap">
+              <i class="fas fa-envelope uf-icon"></i>
+              <input id="f-correo" formControlName="correo" type="email" placeholder="correo@clinica.com" class="uf-input">
+            </div>
+          </div>
+          <div class="uf-field">
+            <label class="uf-label" for="f-telefono">Telefono <span class="uf-req">*</span></label>
+            <div class="uf-input-wrap">
+              <i class="fas fa-phone uf-icon"></i>
+              <input id="f-telefono" formControlName="telefono" type="tel" placeholder="10 digitos" class="uf-input">
+            </div>
+          </div>
         </div>
       </div>
 
-      <div *ngIf="isDoctorOrSpecialist">
-        <div class="field">
-          <label>Atención *</label>
-          <select formControlName="atencion">
-            <option value="">Seleccionar</option>
-            <option value="Dental">Dental</option>
-            <option value="Estetica">Estética</option>
-          </select>
+      <!-- Seccion: Cuenta -->
+      <div class="uf-section">
+        <div class="uf-section-header">
+          <div class="uf-section-dot"></div>
+          <span>Credenciales de Acceso</span>
+        </div>
+        <div class="uf-grid-2">
+          <div class="uf-field">
+            <label class="uf-label" for="f-usuario">Nombre de Usuario <span class="uf-req">*</span></label>
+            <div class="uf-input-wrap">
+              <i class="fas fa-at uf-icon"></i>
+              <input id="f-usuario" formControlName="usuario" type="text" placeholder="usuario_sistema" class="uf-input">
+            </div>
+          </div>
+          <div class="uf-field">
+            <label class="uf-label" for="f-password">
+              Contrasena
+              <span class="uf-req" *ngIf="!editMode">*</span>
+              <span class="uf-hint" *ngIf="editMode">(dejar vacio para no cambiar)</span>
+            </label>
+            <div class="uf-input-wrap">
+              <i class="fas fa-lock uf-icon"></i>
+              <input id="f-password" formControlName="password" type="password" placeholder="Minimo 6 caracteres" class="uf-input">
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="form-actions">
-        <button type="submit" class="btn-primary">{{ editMode ? 'Actualizar' : 'Registrar' }}</button>
-        <button type="button" class="btn-secondary" (click)="router.navigate(['/admin/usuarios'])">Cancelar</button>
+      <!-- Seccion: Rol -->
+      <div class="uf-section">
+        <div class="uf-section-header">
+          <div class="uf-section-dot"></div>
+          <span>Rol y Especialidad</span>
+        </div>
+        <div class="uf-grid-2">
+          <div class="uf-field">
+            <label class="uf-label" for="f-tipo">Tipo de Usuario <span class="uf-req">*</span></label>
+            <div class="uf-input-wrap">
+              <i class="fas fa-user-shield uf-icon"></i>
+              <select id="f-tipo" formControlName="tipo" class="uf-input uf-select">
+                <option value="">Seleccionar rol...</option>
+                <option value="Administrador">Administrador</option>
+                <option value="Recepcionista">Recepcionista</option>
+                <option value="Doctor">Doctor (Dental)</option>
+                <option value="Especialista">Especialista (Estetico)</option>
+              </select>
+            </div>
+          </div>
+          <div class="uf-field" *ngIf="isDoctorOrSpecialist">
+            <label class="uf-label" for="f-especialidad">Especialidad <span class="uf-req">*</span></label>
+            <div class="uf-input-wrap">
+              <i class="fas fa-award uf-icon"></i>
+              <input id="f-especialidad" formControlName="especialidad" type="text" placeholder="Ej. Ortodoncia, Implantes..." class="uf-input">
+            </div>
+          </div>
+        </div>
+
+        <!-- Preview del rol seleccionado -->
+        <div class="uf-role-preview" *ngIf="form.get('tipo')?.value">
+          <div class="uf-role-badge" [ngClass]="getRoleClass(form.get('tipo')?.value)">
+            <i class="fas" [ngClass]="{
+              'fa-crown':     form.get('tipo')?.value === 'Administrador',
+              'fa-user-md':   form.get('tipo')?.value === 'Doctor',
+              'fa-spa':       form.get('tipo')?.value === 'Especialista',
+              'fa-user-tie':  form.get('tipo')?.value === 'Recepcionista'
+            }"></i>
+            {{ form.get('tipo')?.value }}
+            <span *ngIf="form.get('atencion')?.value" class="uf-atencion">
+              &mdash; {{ form.get('atencion')?.value }}
+            </span>
+          </div>
+        </div>
       </div>
+
+      <!-- Acciones -->
+      <div class="uf-actions">
+        <button type="button" class="uf-btn-cancel" (click)="router.navigate(['/admin/usuarios'])">
+          <i class="fas fa-arrow-left"></i> Cancelar
+        </button>
+        <button type="submit" class="uf-btn-submit" [disabled]="form.invalid">
+          <i class="fas" [ngClass]="editMode ? 'fa-save' : 'fa-check-circle'"></i>
+          {{ editMode ? 'Actualizar Usuario' : 'Registrar Usuario' }}
+        </button>
+      </div>
+
     </form>
+  </div>
 </div>

@@ -23,7 +23,7 @@
 
 .header-left h3 {
   font-size: 22px;
-  color: #3e2723;
+  color: #1a2b3c;
   margin: 0;
   display: flex;
   align-items: center;
@@ -31,7 +31,7 @@
 }
 
 .header-left h3 i {
-  color: #c5a028;
+  color: #8b7d4f;
 }
 
 .badge {
@@ -48,8 +48,8 @@
   align-items: center;
   gap: 8px;
   padding: 10px 22px;
-  background: linear-gradient(135deg, #3e2723, #5d4037);
-  color: #f4d03f;
+  background: linear-gradient(135deg, #1a2b3c, #2a6b7c);
+  color: #8b7d4f;
   border: none;
   border-radius: 10px;
   font-weight: 600;

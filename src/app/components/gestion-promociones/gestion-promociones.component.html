@@ -1,0 +1,231 @@
+<div class="promociones-wrapper">
+  <div class="promociones-grid">
+    
+    <!-- Formulario de Creación -->
+    <div class="promo-card form-section">
+      <h3 class="panel-subtitle"><i class="fas fa-plus-circle"></i> Nueva Promoción Campaña</h3>
+      
+      <form (ngSubmit)="guardarPromocion()" class="promo-form">
+        <div class="form-group">
+          <label>Nombre de la Promoción *</label>
+          <input 
+            type="text" 
+            [(ngModel)]="nuevaPromo.nombre" 
+            name="nombre" 
+            placeholder="Ej. Buen Fin - Labios" 
+            required 
+            class="form-control"
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Descripción</label>
+          <textarea 
+            [(ngModel)]="nuevaPromo.descripcion" 
+            name="descripcion" 
+            placeholder="Breve detalle de la oferta..." 
+            rows="2" 
+            class="form-control"
+          ></textarea>
+        </div>
+
+        <!-- Carga de Imagen Promocional (S3) -->
+        <div class="form-group">
+          <label>Imágenes de la Promoción (Subida Múltiple)</label>
+          <div class="file-upload-wrapper">
+            <input 
+              type="file" 
+              (change)="onFotoSelected($event)" 
+              accept="image/*"
+              multiple
+              class="file-input"
+              id="file-promo-photo"
+            />
+            <label for="file-promo-photo" class="file-label">
+              <i class="fas fa-images"></i> Seleccionar Imágenes
+            </label>
+          </div>
+          <div *ngIf="fotosPreviews.length > 0" class="photos-preview-gallery">
+            <div *ngFor="let preview of fotosPreviews" class="photo-preview-box">
+              <img [src]="preview" alt="Vista previa" class="preview-img" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Alcance -->
+        <div class="form-group">
+          <label>Alcance de la Promoción</label>
+          <div class="alcance-toggle">
+            <button 
+              type="button" 
+              class="toggle-btn" 
+              [class.active]="alcance === 'Servicio'" 
+              (click)="alcance = 'Servicio'">
+              <i class="fas fa-spa"></i> Servicio
+            </button>
+            <button 
+              type="button" 
+              class="toggle-btn" 
+              [class.active]="alcance === 'Categoria'" 
+              (click)="alcance = 'Categoria'">
+              <i class="fas fa-tags"></i> Categoría
+            </button>
+          </div>
+        </div>
+
+        <!-- Selectores dinámicos -->
+        <div class="form-group" *ngIf="alcance === 'Servicio'">
+          <label>Servicio Estético *</label>
+          <select [(ngModel)]="seleccionServicioId" name="servicioId" class="form-control">
+            <option value="">-- Selecciona un servicio --</option>
+            <option *ngFor="let s of servicios" [value]="s._id">
+              {{ s.nombre }} (Base: {{ s.costo | currency:'MXN' }})
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group" *ngIf="alcance === 'Categoria'">
+          <label>Categoría Estética *</label>
+          <select [(ngModel)]="seleccionCategoriaId" name="categoriaId" class="form-control">
+            <option value="">-- Selecciona una categoría --</option>
+            <option *ngFor="let c of categorias" [value]="c._id">{{ c.nombre }}</option>
+          </select>
+        </div>
+
+        <!-- Configuración de Descuento -->
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>Tipo Descuento *</label>
+            <select [(ngModel)]="nuevaPromo.tipoDescuento" name="tipoDescuento" class="form-control">
+              <option value="Monto">Precio Final ($)</option>
+              <option value="Porcentaje">Porcentaje (%)</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Valor de Descuento *</label>
+            <input 
+              type="number" 
+              [(ngModel)]="nuevaPromo.valorDescuento" 
+              name="valorDescuento" 
+              min="0" 
+              required 
+              class="form-control"
+            />
+          </div>
+        </div>
+
+        <!-- Fechas de Vigencia -->
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>Fecha de Inicio *</label>
+            <input 
+              type="date" 
+              [(ngModel)]="nuevaPromo.fechaInicio" 
+              name="fechaInicio" 
+              required 
+              class="form-control"
+            />
+          </div>
+          <div class="form-group">
+            <label>Fecha de Fin *</label>
+            <input 
+              type="date" 
+              [(ngModel)]="nuevaPromo.fechaFin" 
+              name="fechaFin" 
+              required 
+              class="form-control"
+            />
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-submit-promo">
+            <i class="fas fa-save"></i> Guardar Promoción
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Listado de Promociones -->
+    <div class="promo-card list-section">
+      <h3 class="panel-subtitle"><i class="fas fa-percent"></i> Promociones Activas</h3>
+      
+      <div *ngIf="cargando" class="promo-loading">
+        <div class="spinner"></div>
+        <p>Cargando promociones...</p>
+      </div>
+
+      <div *ngIf="!cargando && promociones.length === 0" class="sin-promos">
+        <i class="fas fa-percentage"></i>
+        <p>No hay promociones registradas para esta campaña o Buen Fin.</p>
+      </div>
+
+      <div class="table-container" *ngIf="!cargando && promociones.length > 0">
+        <table class="promo-table">
+          <thead>
+            <tr>
+              <th>Foto</th>
+              <th>Campaña</th>
+              <th>Aplica a</th>
+              <th>Descuento</th>
+              <th>Vigencia</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of promociones">
+              <td class="td-photo-cell">
+                <div class="promo-img-wrapper" *ngIf="(p.fotos && p.fotos.length > 0) || p.foto?.url">
+                  <img [src]="p.fotos && p.fotos.length > 0 ? p.fotos[0].url : p.foto.url" alt="Promo" class="promo-thumb-img" />
+                  <span class="photos-count-badge" *ngIf="p.fotos && p.fotos.length > 1">+{{ p.fotos.length }}</span>
+                </div>
+                <div class="promo-no-img" *ngIf="(!p.fotos || p.fotos.length === 0) && !p.foto?.url">
+                  <i class="fas fa-image"></i>
+                </div>
+              </td>
+              <td class="td-bold">
+                <div class="promo-title-text">{{ p.nombre }}</div>
+                <!-- Countdown Timer -->
+                <div *ngIf="p.tiempoRestanteStr" class="countdown-badge" [ngClass]="p.estadoTimer">
+                  <i class="fas" [ngClass]="{
+                    'fa-hourglass-start': p.estadoTimer === 'proximamente',
+                    'fa-stopwatch': p.estadoTimer === 'activo',
+                    'fa-calendar-times': p.estadoTimer === 'expirado'
+                  }"></i>
+                  {{ p.tiempoRestanteStr }}
+                </div>
+              </td>
+              <td>
+                <div *ngIf="p.servicioId" class="td-alcance">
+                  <span class="badge-alcance svc"><i class="fas fa-spa"></i> Servicio</span>
+                  <div class="alcance-name">{{ p.servicioId.nombre }}</div>
+                </div>
+                <div *ngIf="p.categoriaId" class="td-alcance">
+                  <span class="badge-alcance cat"><i class="fas fa-tags"></i> Categoría</span>
+                  <div class="alcance-name">{{ p.categoriaId.nombre }}</div>
+                </div>
+              </td>
+              <td>
+                <span class="badge-discount" [ngClass]="p.tipoDescuento">
+                  {{ p.tipoDescuento === 'Monto' ? 'Precio Final:' : '' }}
+                  {{ p.tipoDescuento === 'Monto' ? (p.valorDescuento | currency:'MXN') : (p.valorDescuento + '% desc.') }}
+                </span>
+              </td>
+              <td class="td-dates">
+                <div>Ini: {{ p.fechaInicio | date:'dd/MM/yyyy' }}</div>
+                <div>Fin: {{ p.fechaFin | date:'dd/MM/yyyy' }}</div>
+              </td>
+              <td>
+                <button class="btn-delete-promo" (click)="eliminarPromocion(p._id!)" title="Eliminar Promoción">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>

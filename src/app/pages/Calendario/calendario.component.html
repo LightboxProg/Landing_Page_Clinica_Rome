@@ -12,6 +12,7 @@
   <app-calendar-event-modal
     [isOpen]="isModalOpen"
     [event]="selectedEvent"
-    (close)="closeModal()">
+    (close)="closeModal()"
+    (cobroRegistrado)="onDoctorChange()">
   </app-calendar-event-modal>
 </div>

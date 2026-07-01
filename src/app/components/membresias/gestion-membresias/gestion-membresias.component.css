@@ -14,11 +14,11 @@
 .header-left { display: flex; align-items: center; gap: 12px; }
 
 .header-left h3 {
-  font-size: 22px; color: #3E2723; margin: 0;
+  font-size: 22px; color: #1a2b3c; margin: 0;
   display: flex; align-items: center; gap: 10px;
 }
 
-.header-left h3 i { color: #C5A028; }
+.header-left h3 i { color: #8b7d4f; }
 
 .badge {
   background: rgba(197, 160, 40, 0.15); color: #9A7D0A;
@@ -27,7 +27,7 @@
 
 .btn-primary {
   display: flex; align-items: center; gap: 8px; padding: 10px 22px;
-  background: linear-gradient(135deg, #3E2723, #5D4037); color: #F4D03F;
+  background: linear-gradient(135deg, #1a2b3c, #2a6b7c); color: #8b7d4f;
   border: none; border-radius: 10px; font-weight: 600; font-size: 14px;
   cursor: pointer; transition: all 0.3s ease;
 }

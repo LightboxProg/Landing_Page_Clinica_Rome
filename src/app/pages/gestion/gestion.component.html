@@ -33,7 +33,22 @@
         <i class="fas fa-users"></i>
         <span>Suscripciones Activas</span>
       </button>
-      <div class="tab-indicator" [class.tab-2]="tabActivo === 'membresias'" [class.tab-3]="tabActivo === 'suscripciones'"></div>
+      <button class="tab-btn" [class.active]="tabActivo === 'corteDiario'" (click)="cambiarTab('corteDiario')"
+        id="tab-corte-diario">
+        <i class="fas fa-cash-register"></i>
+        <span>Corte Diario</span>
+      </button>
+      <button class="tab-btn" [class.active]="tabActivo === 'promociones'" (click)="cambiarTab('promociones')"
+        id="tab-promociones">
+        <i class="fas fa-percent"></i>
+        <span>Promociones</span>
+      </button>
+      <div class="tab-indicator" 
+           [class.tab-1]="tabActivo === 'serviciosDentales'"
+           [class.tab-2]="tabActivo === 'membresias'" 
+           [class.tab-3]="tabActivo === 'suscripciones'"
+           [class.tab-4]="tabActivo === 'corteDiario'"
+           [class.tab-5]="tabActivo === 'promociones'"></div>
     </div>
   </div>
 
@@ -71,6 +86,16 @@
     <!-- Tab: Suscripciones Activas -->
     <div class="tab-panel" *ngIf="tabActivo === 'suscripciones'">
       <app-membresias-adquiridas></app-membresias-adquiridas>
+    </div>
+
+    <!-- Tab: Corte Diario -->
+    <div class="tab-panel" *ngIf="tabActivo === 'corteDiario'">
+      <app-corte-diario></app-corte-diario>
+    </div>
+
+    <!-- Tab: Promociones -->
+    <div class="tab-panel" *ngIf="tabActivo === 'promociones'">
+      <app-gestion-promociones></app-gestion-promociones>
     </div>
   </div>
 </div>

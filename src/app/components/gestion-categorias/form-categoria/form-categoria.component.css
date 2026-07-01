@@ -11,17 +11,17 @@
 .form-group { margin-bottom: 12px; }
 
 .form-group label {
-  display: block; font-size: 13px; font-weight: 600; color: #5D4037; margin-bottom: 4px;
+  display: block; font-size: 13px; font-weight: 600; color: #2a6b7c; margin-bottom: 4px;
 }
 
 .form-group input {
   width: 100%; padding: 10px 14px; border: 1px solid #D7CCC8; border-radius: 8px;
-  font-size: 14px; color: #3E2723; background: #fff; transition: border-color 0.2s ease;
+  font-size: 14px; color: #1a2b3c; background: #fff; transition: border-color 0.2s ease;
   box-sizing: border-box;
 }
 
 .form-group input:focus {
-  outline: none; border-color: #C5A028; box-shadow: 0 0 0 3px rgba(197, 160, 40, 0.15);
+  outline: none; border-color: #8b7d4f; box-shadow: 0 0 0 3px rgba(197, 160, 40, 0.15);
 }
 
 .form-acciones { display: flex; gap: 10px; }
@@ -32,12 +32,12 @@
   gap: 6px; transition: all 0.2s ease;
 }
 
-.btn-guardar { background: #3E2723; color: #F4D03F; }
-.btn-guardar:hover { background: #5D4037; }
+.btn-guardar { background: #1a2b3c; color: #8b7d4f; }
+.btn-guardar:hover { background: #2a6b7c; }
 .btn-guardar:disabled { opacity: 0.6; cursor: not-allowed; }
 
 .btn-cancelar { background: transparent; color: #8D6E63; border: 1px solid #D7CCC8; }
-.btn-cancelar:hover { background: #f5f0e6; }
+.btn-cancelar:hover { background: #f4f7f6; }
 
 .mensaje {
   padding: 10px 16px; border-radius: 8px; font-size: 13px; margin-bottom: 14px;

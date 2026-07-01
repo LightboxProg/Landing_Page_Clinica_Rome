@@ -43,10 +43,16 @@ export class ChatsComponent implements OnInit {
   }
 
   cargarConversaciones() {
-    this.chatService.obtenerConversaciones(this.tipoSeleccionado).subscribe(data => {
-      if (data && data.length > 0) {
-        this.conversaciones = data;
-      } else {
+    this.chatService.obtenerConversaciones(this.tipoSeleccionado).subscribe({
+      next: data => {
+        if (data && data.length > 0) {
+          this.conversaciones = data;
+        } else {
+          this.conversaciones = this.getMockConversations();
+        }
+      },
+      error: err => {
+        console.error('Error cargando conversaciones, usando mock data', err);
         this.conversaciones = this.getMockConversations();
       }
     });
@@ -95,13 +101,20 @@ export class ChatsComponent implements OnInit {
 
   seleccionarConversacion(conv: ChatConversation) {
     this.conversacionActiva = conv;
-    this.chatService.obtenerMensajes(conv._id).subscribe(data => {
-      if (data && data.length > 0) {
-        this.mensajes = data;
-      } else {
+    this.chatService.obtenerMensajes(conv._id).subscribe({
+      next: data => {
+        if (data && data.length > 0) {
+          this.mensajes = data;
+        } else {
+          this.mensajes = this.getMockMessages(conv);
+        }
+        conv.mensajesSinLeer = 0;
+      },
+      error: err => {
+        console.error('Error cargando mensajes, usando mock data', err);
         this.mensajes = this.getMockMessages(conv);
+        conv.mensajesSinLeer = 0;
       }
-      conv.mensajesSinLeer = 0;
     });
   }
 

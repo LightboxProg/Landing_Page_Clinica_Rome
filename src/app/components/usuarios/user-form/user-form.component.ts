@@ -55,14 +55,31 @@ export class UserFormComponent implements OnInit {
     this.form.get('tipo')?.valueChanges.subscribe(tipo => {
       this.isDoctorOrSpecialist = tipo === 'Doctor' || tipo === 'Especialista';
       const atencionCtrl = this.form.get('atencion');
-      if (this.isDoctorOrSpecialist) {
-        atencionCtrl?.setValidators(Validators.required);
+      const especialidadCtrl = this.form.get('especialidad');
+      if (tipo === 'Doctor') {
+        atencionCtrl?.setValue('Dental');
+      } else if (tipo === 'Especialista') {
+        atencionCtrl?.setValue('Estetica');
       } else {
-        atencionCtrl?.clearValidators();
         atencionCtrl?.setValue('');
       }
-      atencionCtrl?.updateValueAndValidity();
+      if (this.isDoctorOrSpecialist) {
+        especialidadCtrl?.setValidators(Validators.required);
+      } else {
+        especialidadCtrl?.clearValidators();
+        especialidadCtrl?.setValue('');
+      }
+      especialidadCtrl?.updateValueAndValidity();
     });
+  }
+
+  getRoleClass(tipo: string): string {
+    switch (tipo) {
+      case 'Administrador': return 'role-admin';
+      case 'Doctor': return 'role-doctor';
+      case 'Especialista': return 'role-especialista';
+      default: return 'role-recepcionista';
+    }
   }
 
   cargarUsuario(id: string): void {

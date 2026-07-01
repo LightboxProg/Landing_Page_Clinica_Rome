@@ -45,4 +45,17 @@ export class SwalService {
       text: title ? message : ''
     });
   }
+
+  confirm(message: string, title = '¿Estás seguro?'): Promise<any> {
+    return Swal.fire({
+      title,
+      text: message,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#1a7a4a',
+      cancelButtonColor: '#dc3545',
+      confirmButtonText: 'Sí, confirmar',
+      cancelButtonText: 'Cancelar'
+    });
+  }
 }

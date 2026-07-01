@@ -1,3 +1,13 @@
 <div class="disponibilidad-page-container">
-  <app-horario-atencion *ngIf="usuarioId" [doctorId]="usuarioId"></app-horario-atencion>
+  <!-- Doctor (dentista): muestra config de horario simple -->
+  <app-horario-doctor *ngIf="usuarioId && tipoUsuario === 'Doctor'" [doctorId]="usuarioId"></app-horario-doctor>
+
+  <!-- Especialista (estetico): muestra config de disponibilidad con links -->
+  <app-horario-atencion *ngIf="usuarioId && tipoUsuario === 'Especialista'" [doctorId]="usuarioId"></app-horario-atencion>
+
+  <!-- Admin: muestra ambos segun seleccion, o el que corresponda -->
+  <ng-container *ngIf="usuarioId && tipoUsuario === 'Administrador'">
+    <app-horario-doctor [doctorId]="usuarioId"></app-horario-doctor>
+    <app-horario-atencion [doctorId]="usuarioId"></app-horario-atencion>
+  </ng-container>
 </div>

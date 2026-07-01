@@ -223,20 +223,48 @@
           <div class="categoria-citas">
             <h4>Estética</h4>
             <div *ngFor="let cita of citasEstetica" class="cita-card">
-              <div class="cita-titulo">{{ cita.titulo }}</div>
+              <div class="cita-header-row">
+                <div class="cita-titulo">{{ cita.titulo }}</div>
+                <span class="cita-estado" [ngClass]="cita.estado">{{ cita.estado }}</span>
+              </div>
               <div class="cita-fecha">{{ cita.fechaHoraInicio | date:'dd/MM/yyyy HH:mm' }}</div>
-              <div class="cita-doctor">Dr. {{ doctoresMap[cita.doctorId] || 'No asignado' }}</div>
-              <div class="cita-estado" [ngClass]="cita.estado">{{ cita.estado }}</div>
+              <div class="cita-doctor">Dr. {{ cita.doctorId?.nombre || doctoresMap[cita.doctorId?._id || cita.doctorId] || 'No asignado' }}</div>
+              
+              <div class="cita-payment-footer">
+                <span *ngIf="cita.cobrado" class="perfil-badge-pagado">
+                  <i class="fas fa-check-circle"></i> Pagado
+                </span>
+                <button 
+                  *ngIf="!cita.cobrado && puedeVender" 
+                  class="btn-cobrar-perfil" 
+                  (click)="abrirCobroCita(cita)">
+                  <i class="fas fa-cash-register"></i> Cobrar
+                </button>
+              </div>
             </div>
             <div *ngIf="citasEstetica.length === 0" class="sin-registros">Sin historial estético</div>
           </div>
           <div class="categoria-citas">
             <h4>Dental</h4>
             <div *ngFor="let cita of citasDental" class="cita-card">
-              <div class="cita-titulo">{{ cita.titulo }}</div>
+              <div class="cita-header-row">
+                <div class="cita-titulo">{{ cita.titulo }}</div>
+                <span class="cita-estado" [ngClass]="cita.estado">{{ cita.estado }}</span>
+              </div>
               <div class="cita-fecha">{{ cita.fechaHoraInicio | date:'dd/MM/yyyy HH:mm' }}</div>
-              <div class="cita-doctor">Dr. {{ doctoresMap[cita.doctorId] || 'No asignado' }}</div>
-              <div class="cita-estado" [ngClass]="cita.estado">{{ cita.estado }}</div>
+              <div class="cita-doctor">Dr. {{ cita.doctorId?.nombre || doctoresMap[cita.doctorId?._id || cita.doctorId] || 'No asignado' }}</div>
+              
+              <div class="cita-payment-footer">
+                <span *ngIf="cita.cobrado" class="perfil-badge-pagado">
+                  <i class="fas fa-check-circle"></i> Pagado
+                </span>
+                <button 
+                  *ngIf="!cita.cobrado && puedeVender" 
+                  class="btn-cobrar-perfil" 
+                  (click)="abrirCobroCita(cita)">
+                  <i class="fas fa-cash-register"></i> Cobrar
+                </button>
+              </div>
             </div>
             <div *ngIf="citasDental.length === 0" class="sin-registros">Sin historial dental</div>
           </div>
@@ -356,3 +384,11 @@
     </div>
   </form>
 </app-modal>
+
+<!-- Modal de Cobro de Citas -->
+<app-calendar-event-modal
+  [isOpen]="isModalOpen"
+  [event]="selectedEvent"
+  (close)="isModalOpen = false"
+  (cobroRegistrado)="recargarCitas()">
+</app-calendar-event-modal>

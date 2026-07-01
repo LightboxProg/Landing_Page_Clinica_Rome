@@ -16,15 +16,15 @@
 }
 
 .panel-header h3 {
-  font-size: 20px; color: #3E2723; margin: 0;
+  font-size: 20px; color: #1a2b3c; margin: 0;
   display: flex; align-items: center; gap: 10px;
 }
 
-.panel-header h3 i { color: #C5A028; }
+.panel-header h3 i { color: #8b7d4f; }
 
 .btn-nuevo {
   display: flex; align-items: center; gap: 6px; padding: 8px 16px;
-  background: linear-gradient(135deg, #C5A028, #F4D03F); color: #3E2723;
+  background: linear-gradient(135deg, #8b7d4f, #8b7d4f); color: #1a2b3c;
   border: none; border-radius: 8px; font-weight: 600; font-size: 13px;
   cursor: pointer; transition: all 0.3s ease;
 }

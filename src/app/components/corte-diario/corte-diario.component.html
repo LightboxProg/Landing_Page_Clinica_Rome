@@ -1,0 +1,325 @@
+<div class="corte-container">
+  
+  <!-- Filtro y Botón Imprimir -->
+  <div class="corte-toolbar no-print">
+    <div class="toolbar-left">
+      <div class="input-fecha-wrap">
+        <i class="fas fa-calendar-alt"></i>
+        <input 
+          type="date" 
+          [(ngModel)]="fechaSeleccionada" 
+          (change)="cargarCorte()" 
+          class="input-fecha"
+        />
+      </div>
+      <button class="btn-refresh" (click)="cargarCorte()" [disabled]="cargando">
+        <i class="fas fa-sync-alt" [class.fa-spin]="cargando"></i> Actualizar
+      </button>
+    </div>
+
+    <!-- Toggle de cortes independientes -->
+    <div class="corte-toggle-tabs">
+      <button 
+        class="toggle-tab" 
+        [class.active]="corteActivo === 'dental'" 
+        (click)="corteActivo = 'dental'">
+        <i class="fas fa-tooth"></i> Corte Dental
+      </button>
+      <button 
+        class="toggle-tab" 
+        [class.active]="corteActivo === 'estetica'" 
+        (click)="corteActivo = 'estetica'">
+        <i class="fas fa-spa"></i> Corte Estético
+      </button>
+    </div>
+    
+    <button class="btn-print" (click)="imprimirCorte()" *ngIf="corteData">
+      <i class="fas fa-print"></i> Imprimir Corte
+    </button>
+  </div>
+
+  <div *ngIf="cargando" class="corte-loading">
+    <div class="spinner"></div>
+    <p>Generando reporte del día...</p>
+  </div>
+
+  <div *ngIf="!cargando && corteData" class="corte-report-wrapper">
+    <!-- Encabezado del Reporte (Auditoría e Impresión) -->
+    <div class="print-header">
+      <h2>ROME HARMONY CLINIC</h2>
+      <h3>Reporte de Corte de Caja Diario &mdash; Área {{ corteActivo === 'dental' ? 'Dental' : 'Estética' }}</h3>
+      <p class="print-date">Fecha del reporte: <strong>{{ corteData.fecha | date:'dd/MM/yyyy' }}</strong></p>
+    </div>
+
+    <!-- Sección Corte Dental -->
+    <div *ngIf="corteActivo === 'dental'">
+      <!-- KPIs de Ingresos Dental -->
+      <div class="kpis-grid">
+        <div class="kpi-card card-efectivo">
+          <div class="kpi-icon"><i class="fas fa-money-bill-wave"></i></div>
+          <div class="kpi-info">
+            <span class="kpi-label">Efectivo (Dental)</span>
+            <h3 class="kpi-val">{{ totalesDental.efectivo | currency:'MXN':'symbol':'1.2-2' }}</h3>
+          </div>
+        </div>
+        
+        <div class="kpi-card card-tarjeta">
+          <div class="kpi-icon"><i class="fas fa-credit-card"></i></div>
+          <div class="kpi-info">
+            <span class="kpi-label">Tarjeta (Dental)</span>
+            <h3 class="kpi-val">{{ totalesDental.tarjeta | currency:'MXN':'symbol':'1.2-2' }}</h3>
+          </div>
+        </div>
+
+        <div class="kpi-card card-transferencia">
+          <div class="kpi-icon"><i class="fas fa-university"></i></div>
+          <div class="kpi-info">
+            <span class="kpi-label">Transferencia (Dental)</span>
+            <h3 class="kpi-val">{{ totalesDental.transferencia | currency:'MXN':'symbol':'1.2-2' }}</h3>
+          </div>
+        </div>
+        
+        <div class="kpi-card card-stripe">
+          <div class="kpi-icon"><i class="fab fa-stripe"></i></div>
+          <div class="kpi-info">
+            <span class="kpi-label">Stripe (Online Dental)</span>
+            <h3 class="kpi-val">{{ totalesDental.stripe | currency:'MXN':'symbol':'1.2-2' }}</h3>
+          </div>
+        </div>
+
+        <div class="kpi-card card-descuentos">
+          <div class="kpi-icon"><i class="fas fa-percentage"></i></div>
+          <div class="kpi-info">
+            <span class="kpi-label">Descuentos Dental</span>
+            <h3 class="kpi-val">{{ totalesDental.descuentos | currency:'MXN':'symbol':'1.2-2' }}</h3>
+          </div>
+        </div>
+
+        <div class="kpi-card card-neto">
+          <div class="kpi-icon"><i class="fas fa-hand-holding-usd"></i></div>
+          <div class="kpi-info">
+            <span class="kpi-label">Neto Dental Cobrado</span>
+            <h3 class="kpi-val">{{ totalesDental.granTotal | currency:'MXN':'symbol':'1.2-2' }}</h3>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detalle de Citas del Día Dental -->
+      <div class="corte-table-section">
+        <h4 class="section-title"><i class="fas fa-tooth"></i> Detalle de Caja Dental</h4>
+        
+        <div class="table-container">
+          <table class="corte-table">
+            <thead>
+              <tr>
+                <th>Paciente</th>
+                <th>Doctor</th>
+                <th>Cita / Servicio</th>
+                <th>Total</th>
+                <th>Stripe (Antic.)</th>
+                <th>Descuento</th>
+                <th>Cobrado Clínica</th>
+                <th>Método Pago</th>
+                <th>Origen</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let cita of citasDental">
+                <td class="td-bold">{{ cita.pacienteNombre }}</td>
+                <td>{{ cita.doctor }}</td>
+                <td>{{ cita.servicioNombre }}</td>
+                <td class="td-price">{{ cita.costoTotal | currency:'MXN':'symbol':'1.2-2' }}</td>
+                <td class="td-price text-stripe" [class.has-stripe]="cita.montoAnticipo > 0">
+                  {{ cita.montoAnticipo | currency:'MXN':'symbol':'1.2-2' }}
+                </td>
+                <td class="td-price text-discount" [class.has-discount]="cita.descuentoMonto > 0">
+                  {{ cita.descuentoMonto | currency:'MXN':'symbol':'1.2-2' }}
+                </td>
+                <td class="td-price td-bold text-success">
+                  {{ cita.montoPagadoClinica | currency:'MXN':'symbol':'1.2-2' }}
+                </td>
+                <td>
+                  <span class="badge-payment" [ngClass]="{
+                    'pay-efectivo': cita.metodoPago === 'Efectivo',
+                    'pay-tarjeta': cita.metodoPago === 'Tarjeta',
+                    'pay-transferencia': cita.metodoPago === 'Transferencia',
+                    'pay-stripe': cita.montoAnticipo > 0 && cita.montoPagadoClinica === 0,
+                    'pay-mixto': cita.montoAnticipo > 0 && cita.montoPagadoClinica > 0,
+                    'pay-ninguno': cita.metodoPago === 'Ninguno' && cita.montoAnticipo === 0
+                  }">
+                    <i class="fas" [ngClass]="{
+                      'fa-money-bill-alt': cita.metodoPago === 'Efectivo',
+                      'fa-credit-card': cita.metodoPago === 'Tarjeta',
+                      'fa-university': cita.metodoPago === 'Transferencia',
+                      'fa-wallet': cita.montoAnticipo > 0 && cita.montoPagadoClinica === 0,
+                      'fa-exchange-alt': cita.montoAnticipo > 0 && cita.montoPagadoClinica > 0,
+                      'fa-exclamation-circle': cita.metodoPago === 'Ninguno' && cita.montoAnticipo === 0
+                    }"></i>
+                    {{ 
+                      cita.montoAnticipo > 0 && cita.montoPagadoClinica > 0 ? 'Mixto (Stripe + Clínica)' :
+                      cita.montoAnticipo > 0 && cita.montoPagadoClinica === 0 ? 'Stripe (Online)' :
+                      cita.metodoPago !== 'Ninguno' ? cita.metodoPago : 'Pendiente de cobro'
+                    }}
+                  </span>
+                </td>
+                <td>
+                  <span class="badge-origen" [ngClass]="cita.montoAnticipo > 0 ? 'online' : 'clinica'">
+                    {{ cita.montoAnticipo > 0 ? 'Online' : 'En Clínica' }}
+                  </span>
+                </td>
+              </tr>
+              <tr *ngIf="citasDental.length === 0">
+                <td colspan="9" class="td-empty">
+                  <i class="fas fa-folder-open"></i>
+                  <p>No se registraron transacciones dentales en esta fecha.</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sección Corte Estético -->
+    <div *ngIf="corteActivo === 'estetica'">
+      <!-- KPIs de Ingresos Estéticos -->
+      <div class="kpis-grid">
+        <div class="kpi-card card-efectivo">
+          <div class="kpi-icon"><i class="fas fa-money-bill-wave"></i></div>
+          <div class="kpi-info">
+            <span class="kpi-label">Efectivo (Estética)</span>
+            <h3 class="kpi-val">{{ totalesEstetica.efectivo | currency:'MXN':'symbol':'1.2-2' }}</h3>
+          </div>
+        </div>
+        
+        <div class="kpi-card card-tarjeta">
+          <div class="kpi-icon"><i class="fas fa-credit-card"></i></div>
+          <div class="kpi-info">
+            <span class="kpi-label">Tarjeta (Estética)</span>
+            <h3 class="kpi-val">{{ totalesEstetica.tarjeta | currency:'MXN':'symbol':'1.2-2' }}</h3>
+          </div>
+        </div>
+
+        <div class="kpi-card card-transferencia">
+          <div class="kpi-icon"><i class="fas fa-university"></i></div>
+          <div class="kpi-info">
+            <span class="kpi-label">Transferencia (Estética)</span>
+            <h3 class="kpi-val">{{ totalesEstetica.transferencia | currency:'MXN':'symbol':'1.2-2' }}</h3>
+          </div>
+        </div>
+        
+        <div class="kpi-card card-stripe">
+          <div class="kpi-icon"><i class="fab fa-stripe"></i></div>
+          <div class="kpi-info">
+            <span class="kpi-label">Stripe (Online Estética)</span>
+            <h3 class="kpi-val">{{ totalesEstetica.stripe | currency:'MXN':'symbol':'1.2-2' }}</h3>
+          </div>
+        </div>
+
+        <div class="kpi-card card-descuentos">
+          <div class="kpi-icon"><i class="fas fa-percentage"></i></div>
+          <div class="kpi-info">
+            <span class="kpi-label">Descuentos Estética</span>
+            <h3 class="kpi-val">{{ totalesEstetica.descuentos | currency:'MXN':'symbol':'1.2-2' }}</h3>
+          </div>
+        </div>
+
+        <div class="kpi-card card-neto">
+          <div class="kpi-icon"><i class="fas fa-hand-holding-usd"></i></div>
+          <div class="kpi-info">
+            <span class="kpi-label">Neto Estético Cobrado</span>
+            <h3 class="kpi-val">{{ totalesEstetica.granTotal | currency:'MXN':'symbol':'1.2-2' }}</h3>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detalle de Citas del Día Estética -->
+      <div class="corte-table-section">
+        <h4 class="section-title"><i class="fas fa-spa"></i> Detalle de Caja Estética</h4>
+        
+        <div class="table-container">
+          <table class="corte-table">
+            <thead>
+              <tr>
+                <th>Paciente</th>
+                <th>Doctor</th>
+                <th>Cita / Servicio</th>
+                <th>Total</th>
+                <th>Stripe (Antic.)</th>
+                <th>Descuento</th>
+                <th>Cobrado Clínica</th>
+                <th>Método Pago</th>
+                <th>Origen</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let cita of citasEstetica">
+                <td class="td-bold">{{ cita.pacienteNombre }}</td>
+                <td>{{ cita.doctor }}</td>
+                <td>{{ cita.servicioNombre }}</td>
+                <td class="td-price">{{ cita.costoTotal | currency:'MXN':'symbol':'1.2-2' }}</td>
+                <td class="td-price text-stripe" [class.has-stripe]="cita.montoAnticipo > 0">
+                  {{ cita.montoAnticipo | currency:'MXN':'symbol':'1.2-2' }}
+                </td>
+                <td class="td-price text-discount" [class.has-discount]="cita.descuentoMonto > 0">
+                  {{ cita.descuentoMonto | currency:'MXN':'symbol':'1.2-2' }}
+                </td>
+                <td class="td-price td-bold text-success">
+                  {{ cita.montoPagadoClinica | currency:'MXN':'symbol':'1.2-2' }}
+                </td>
+                <td>
+                  <span class="badge-payment" [ngClass]="{
+                    'pay-efectivo': cita.metodoPago === 'Efectivo',
+                    'pay-tarjeta': cita.metodoPago === 'Tarjeta',
+                    'pay-transferencia': cita.metodoPago === 'Transferencia',
+                    'pay-stripe': cita.montoAnticipo > 0 && cita.montoPagadoClinica === 0,
+                    'pay-mixto': cita.montoAnticipo > 0 && cita.montoPagadoClinica > 0,
+                    'pay-ninguno': cita.metodoPago === 'Ninguno' && cita.montoAnticipo === 0
+                  }">
+                    <i class="fas" [ngClass]="{
+                      'fa-money-bill-alt': cita.metodoPago === 'Efectivo',
+                      'fa-credit-card': cita.metodoPago === 'Tarjeta',
+                      'fa-university': cita.metodoPago === 'Transferencia',
+                      'fa-wallet': cita.montoAnticipo > 0 && cita.montoPagadoClinica === 0,
+                      'fa-exchange-alt': cita.montoAnticipo > 0 && cita.montoPagadoClinica > 0,
+                      'fa-exclamation-circle': cita.metodoPago === 'Ninguno' && cita.montoAnticipo === 0
+                    }"></i>
+                    {{ 
+                      cita.montoAnticipo > 0 && cita.montoPagadoClinica > 0 ? 'Mixto (Stripe + Clínica)' :
+                      cita.montoAnticipo > 0 && cita.montoPagadoClinica === 0 ? 'Stripe (Online)' :
+                      cita.metodoPago !== 'Ninguno' ? cita.metodoPago : 'Pendiente de cobro'
+                    }}
+                  </span>
+                </td>
+                <td>
+                  <span class="badge-origen" [ngClass]="cita.montoAnticipo > 0 ? 'online' : 'clinica'">
+                    {{ cita.montoAnticipo > 0 ? 'Online' : 'En Clínica' }}
+                  </span>
+                </td>
+              </tr>
+              <tr *ngIf="citasEstetica.length === 0">
+                <td colspan="9" class="td-empty">
+                  <i class="fas fa-folder-open"></i>
+                  <p>No se registraron transacciones estéticas en esta fecha.</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Firmas / Cierre -->
+    <div class="print-signatures-block">
+      <div class="signature-line">
+        <div class="line"></div>
+        <p>Firma de Recepción / Cajero</p>
+      </div>
+      <div class="signature-line">
+        <div class="line"></div>
+        <p>Firma de Auditor / Administrador</p>
+      </div>
+    </div>
+
+  </div>
+</div>

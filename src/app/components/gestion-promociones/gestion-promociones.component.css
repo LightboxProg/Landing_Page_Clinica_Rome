@@ -1,0 +1,447 @@
+/* Contenedor principal de promociones */
+:host {
+  --coffee-dark: #1a2b3c;
+  --coffee-medium: #2a6b7c;
+  --coffee-light: #64748b;
+  --coffee-soft: #e8e4dc;
+  --coffee-cream: #f8f5f0;
+  --gold-primary: #8b7d4f;
+  --gold-light: #8b7d4f;
+  --gold-dark: #9a7d0a;
+  --white-pure: #ffffff;
+}
+
+.promociones-wrapper {
+  margin-top: 1rem;
+}
+
+.promociones-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1.9fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 992px) {
+  .promociones-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.promo-card {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e8e4dc;
+  padding: 1.75rem;
+  box-shadow: 0 4px 16px rgba(26, 43, 60, 0.04);
+}
+
+.panel-subtitle {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--coffee-dark);
+  margin-bottom: 1.5rem;
+  border-bottom: 1.5px solid #e8e4dc;
+  padding-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.panel-subtitle i {
+  color: var(--gold-primary);
+}
+
+/* Formulario */
+.promo-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.form-control {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid #d5cbd0;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  outline: none;
+  background: white;
+  color: var(--coffee-dark);
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.form-control:focus {
+  border-color: var(--coffee-medium);
+  box-shadow: 0 0 0 3px rgba(93, 64, 55, 0.15);
+}
+
+/* Alcance Toggle */
+.alcance-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: #f8f5f0;
+  padding: 4px;
+  border-radius: 40px;
+  border: 1px solid #e8e4dc;
+}
+
+.toggle-btn {
+  padding: 8px;
+  border-radius: 40px;
+  border: none;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.toggle-btn.active {
+  background: #ffffff;
+  color: var(--coffee-medium);
+  box-shadow: 0 2px 8px rgba(93, 64, 55, 0.1);
+}
+
+/* Botón submit */
+.btn-submit-promo {
+  width: 100%;
+  background: linear-gradient(135deg, var(--coffee-dark) 0%, var(--coffee-medium) 100%);
+  color: white;
+  border: none;
+  border-radius: 40px;
+  padding: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px rgba(62, 39, 35, 0.15);
+}
+
+.btn-submit-promo:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(62, 39, 35, 0.25);
+}
+
+/* Tabla de Promociones */
+.table-container {
+  overflow-x: auto;
+}
+
+.promo-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  text-align: left;
+}
+
+.promo-table th {
+  padding: 12px 16px;
+  border-bottom: 2px solid #e8e4dc;
+  color: #64748b;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+}
+
+.promo-table td {
+  padding: 16px;
+  border-bottom: 1px solid #e8e4dc;
+  vertical-align: middle;
+}
+
+.td-bold {
+  font-weight: 700;
+  color: var(--coffee-dark);
+}
+
+.td-alcance {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.badge-alcance {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.badge-alcance.svc { background: rgba(93, 64, 55, 0.1); color: var(--coffee-medium); }
+.badge-alcance.cat { background: rgba(197, 160, 40, 0.1); color: var(--gold-primary); }
+
+.alcance-name {
+  font-size: 12px;
+  color: var(--coffee-dark);
+  font-weight: 500;
+}
+
+.badge-discount {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.badge-discount.Monto { background: rgba(26, 122, 74, 0.08); color: #1a7a4a; }
+.badge-discount.Porcentaje { background: rgba(197, 160, 40, 0.08); color: var(--gold-primary); }
+
+.td-dates {
+  font-size: 11px;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.btn-delete-promo {
+  background: transparent;
+  color: #dc3545;
+  border: 1px solid rgba(220, 53, 69, 0.2);
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-delete-promo:hover {
+  background: #dc3545;
+  color: white;
+  border-color: #dc3545;
+}
+
+/* Vacío */
+.sin-promos {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  color: #64748b;
+}
+
+.sin-promos i {
+  font-size: 2.5rem;
+  color: #e8e4dc;
+  margin-bottom: 1rem;
+}
+
+.sin-promos p {
+  font-size: 13px;
+  margin: 0;
+}
+
+/* Spinner carga */
+.promo-loading {
+  text-align: center;
+  padding: 2rem;
+  color: #64748b;
+}
+
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid rgba(93, 64, 55, 0.1);
+  border-top-color: var(--coffee-medium);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 10px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* File Upload & Preview */
+.file-upload-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.file-input {
+  display: none;
+}
+
+.file-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #f8f5f0;
+  color: #64748b;
+  border: 1.5px dashed #d5cbd0;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.file-label:hover {
+  background: #f4f7f6;
+  border-color: var(--coffee-medium);
+  color: var(--coffee-dark);
+}
+
+.photo-preview-box {
+  margin-top: 10px;
+  border: 1px solid #e8e4dc;
+  border-radius: 10px;
+  overflow: hidden;
+  max-width: 120px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+}
+
+.preview-img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Table Thumbnail Styles */
+.td-photo-cell {
+  width: 60px;
+  text-align: center;
+}
+
+.promo-img-wrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e8e4dc;
+  background: #f8f5f0;
+}
+
+.promo-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.promo-no-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  border: 1px dashed #d5cbd0;
+  background: #f8f5f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  font-size: 1.25rem;
+}
+
+/* Countdown Badge Styles */
+.countdown-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-family: monospace;
+}
+
+.countdown-badge.proximamente {
+  background: rgba(99, 91, 255, 0.1);
+  color: #635bff;
+}
+
+.countdown-badge.activo {
+  background: rgba(26, 122, 74, 0.1);
+  color: #1a7a4a;
+}
+
+.countdown-badge.expirado {
+  background: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+}
+
+.promo-title-text {
+  font-weight: 700;
+  color: var(--coffee-dark);
+}
+
+/* Galería de vistas previas */
+.photos-preview-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.photos-preview-gallery .photo-preview-box {
+  margin-top: 0;
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  border: 1px solid #e8e4dc;
+  overflow: hidden;
+}
+
+.photos-preview-gallery .preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Insignia de total de imágenes en miniatura */
+.promo-img-wrapper {
+  position: relative;
+}
+
+.photos-count-badge {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  background: rgba(26, 43, 60, 0.9);
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 4px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}

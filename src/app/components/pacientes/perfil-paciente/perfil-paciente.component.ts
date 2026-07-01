@@ -11,11 +11,12 @@ import { ModalComponent } from '../../modal/modal.component';
 import { UserService, Usuario } from '../../../services/user/user.service';
 import { MembresiasService } from '../../../services/membresias/membresias.service';
 import { FotosService } from '../../../services/fotos/fotos.service';
+import { CalendarEventModalComponent } from '../../calendario/calendar-event-modal/calendar-event-modal.component';
 
 @Component({
   selector: 'app-perfil-paciente',
   standalone: true,
-  imports: [CommonModule, FormsModule, ModalComponent],
+  imports: [CommonModule, FormsModule, ModalComponent, CalendarEventModalComponent],
   templateUrl: './perfil-paciente.component.html',
   styleUrl: './perfil-paciente.component.css'
 })
@@ -26,6 +27,10 @@ export class PerfilPacienteComponent implements OnInit {
   editando = false;
   listaNegra: any = null;
   esAdmin = false;
+  puedeVender = false;
+
+  isModalOpen = false;
+  selectedEvent: any = null;
 
   citasEstetica: any[] = [];
   citasDental: any[] = [];
@@ -71,6 +76,7 @@ export class PerfilPacienteComponent implements OnInit {
     }
     const usuario = this.authService.getUsuario();
     this.esAdmin = usuario?.tipo === 'Administrador';
+    this.puedeVender = usuario?.tipo === 'Administrador' || usuario?.tipo === 'Recepcionista';
   }
 
   cargarPaciente(id: string) {
@@ -268,5 +274,34 @@ export class PerfilPacienteComponent implements OnInit {
     const nombre = this.paciente.nombre ? this.paciente.nombre.charAt(0) : '';
     const apeP = this.paciente.apeP ? this.paciente.apeP.charAt(0) : '';
     return (nombre + apeP).toUpperCase();
+  }
+
+  // Prepara el objeto de la cita y abre el modal de cobro interactivo
+  abrirCobroCita(cita: any): void {
+    if (!this.paciente) return;
+    this.selectedEvent = {
+      citaId: cita._id,
+      pacienteNombre: `${this.paciente.nombre} ${this.paciente.apeP}`,
+      medicoNombre: cita.doctorId?.nombre || this.doctoresMap[cita.doctorId?._id || cita.doctorId] || 'No asignado',
+      servicioNombre: cita.titulo,
+      tipoCita: cita.tipoCita,
+      pacienteTelefono: this.paciente.telefonoWhatsapp || this.paciente.telefonoPaciente || '',
+      description: cita.notas || '',
+      costoTotal: cita.costoTotal || 0,
+      montoAnticipo: cita.montoAnticipo || 0,
+      descuentoMonto: cita.descuentoMonto || 0,
+      montoPagadoClinica: cita.montoPagadoClinica || 0,
+      metodoPago: cita.metodoPago || 'Ninguno',
+      cobrado: !!cita.cobrado
+    };
+    this.isModalOpen = true;
+  }
+
+  // Refresca la lista de citas del paciente tras confirmar un cobro
+  recargarCitas(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.cargarCitas(id);
+    }
   }
 }

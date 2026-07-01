@@ -8,6 +8,11 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
+  // Si la petición ya tiene Authorization o tiene el token en la URL (evita el bug de Safari/WebKit con FormData), pasar de largo
+  if (req.headers.has('Authorization') || req.url.includes('token=')) {
+    return next(req);
+  }
+
   const token = authService.getToken();
 
   // No adjuntar token a la ruta de login
@@ -17,9 +22,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   if (token) {
     req = req.clone({
-      setHeaders: {
-        Authorization: `Bearer ${token}`
-      }
+      headers: req.headers.set('Authorization', `Bearer ${token}`),
+      body: req.body
     });
   }
 
