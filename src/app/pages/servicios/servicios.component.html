@@ -1,104 +1,136 @@
-<div class="servicios-page">
-    <!-- Cabecera -->
-    <section class="page-header">
-        <div class="container">
-            <h1 class="page-title">Nuestros Servicios</h1>
-            <div class="elegant-detail"></div>
-            <p class="page-subtitle">Tratamientos faciales personalizados y odontología de alta calidad</p>
-        </div>
-    </section>
+<!-- ============================================================
+     SERVICIOS — a price list is data. It is set as one.
+     ============================================================ -->
+<section class="page-head">
+  <div class="u-shell">
+    <p class="u-eyebrow">Catálogo</p>
+    <h1 class="page-head__title">Tratamientos<br />y honorarios.</h1>
+    <p class="u-lede">
+      Precios de lista en pesos mexicanos, por sesión salvo que se indique lo
+      contrario. La valoración previa no tiene costo y define qué aplica en tu caso.
+    </p>
 
-    <!-- Sección: Tratamientos Faciales (Dra. Corazón) -->
-    <section class="section facial-section">
-        <div class="container">
-            <div class="fancy_heading">
-                <h2 class="title">Dra. Corazón – Armonización Facial</h2>
-                <div class="elegant-detail"></div>
-                <p class="inside">Protocolos avanzados y tratamientos personalizados para realzar tu belleza natural.
-                </p>
-            </div>
+    <!-- The clinic has two arms. This is the switch between them. -->
+    <div class="arms" role="tablist" aria-label="Tipo de tratamiento">
+      <button
+        type="button"
+        role="tab"
+        class="arms__tab"
+        [class.is-on]="tipoServicioActivo === 'esteticos'"
+        [attr.aria-selected]="tipoServicioActivo === 'esteticos'"
+        (click)="seleccionarTipoServicio('esteticos')">
+        <span class="arms__label">Armonización facial</span>
+        <span class="arms__sub u-data">Medicina estética</span>
+      </button>
+      <button
+        type="button"
+        role="tab"
+        class="arms__tab"
+        [class.is-on]="tipoServicioActivo === 'dentales'"
+        [attr.aria-selected]="tipoServicioActivo === 'dentales'"
+        (click)="seleccionarTipoServicio('dentales')">
+        <span class="arms__label">Odontología</span>
+        <span class="arms__sub u-data">Salud y estética dental</span>
+      </button>
+    </div>
+  </div>
+</section>
 
-            <!-- Indicador de carga / error -->
-            <div *ngIf="cargando" class="loading-message">
-                <i class="fas fa-spinner fa-spin"></i> Cargando servicios...
-            </div>
-            <div *ngIf="error" class="error-message">
-                <i class="fas fa-exclamation-circle"></i> {{ error }}
-            </div>
+<section class="band band--tight">
+  <div class="u-shell">
+    <div class="arm">
+      <header class="arm__head" appReveal>
+        <h2 *ngIf="tipoServicioActivo === 'esteticos'">Dra. Corazón — armonización facial</h2>
+        <h2 *ngIf="tipoServicioActivo === 'dentales'">Odontología estética y especializada</h2>
+        <p class="u-lede" *ngIf="tipoServicioActivo === 'esteticos'">
+          Protocolos médicos para equilibrar proporciones y calidad de piel, sin cirugía.
+        </p>
+        <p class="u-lede" *ngIf="tipoServicioActivo === 'dentales'">
+          Tecnología de precisión para devolver salud, función y estética a tu sonrisa.
+        </p>
+      </header>
 
-            <!-- Condiciones generales (fijo) -->
-            <div class="condiciones-card">
-                <i class="fas fa-circle-check"></i>
-                <span><strong>Plan de pagos:</strong> {{ planPagos.mensaje }}</span>
-            </div>
+      <p *ngIf="cargando" class="state u-data">Cargando catálogo…</p>
+      <p *ngIf="error" class="state state--error u-data">{{ error }}</p>
 
-            <!-- Grid de categorías dinámico -->
-            <div class="categorias-grid" *ngIf="!cargando && !error">
-                <div class="categoria-card" *ngFor="let cat of categoriasEsteticas; trackBy: trackByCategoria">
-                    <!-- Asignamos el array a una variable y verificamos que tenga elementos -->
-                    <ng-container *ngIf="serviciosAgrupados.get(cat._id) as serviciosCategoria">
-                        <ng-container *ngIf="serviciosCategoria.length > 0">
-                            <h3 class="categoria-titulo">
-                                <i class="fa-regular fa-star"></i> {{ cat.nombre }}
-                            </h3>
-                            <div class="tratamiento-item" *ngFor="let servicio of serviciosCategoria">
-                                <div class="tratamiento-content" [class.has-photo]="servicio.foto?.url">
-                                    <!-- Foto del servicio (solo si existe) -->
-                                    <div *ngIf="servicio.foto?.url" class="servicio-foto">
-                                        <img [src]="servicio.foto?.url" [alt]="servicio.nombre" loading="lazy">
-                                    </div>
+      <p *ngIf="!cargando && !error && tarifario.length === 0" class="state u-data">
+        Aún no hay tratamientos publicados en esta rama.
+      </p>
 
-                                    <!-- Información textual del servicio -->
-                                    <div class="tratamiento-info">
-                                        <div class="tratamiento-header">
-                                            <span class="nombre">{{ servicio.nombre }}</span>
-                                            <span class="precio-total">{{ formatearPrecio(servicio.costo) }}</span>
-                                        </div>
-                                        <div>
-                                            <span class="pagos">({{ getTextoPlanPagos(servicio.costo) }})</span>
-                                        </div>
-                                        <div class="tratamiento-detalle">
-                                            <span class="descripcion">{{ servicio.descripcion }}</span>
-                                        </div>
-                                        <div *ngIf="servicio.duracion" class="duracion">
-                                            <i class="far fa-clock"></i> {{ servicio.duracion }}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <p *ngIf="cat.descripcion" class="nota">{{ cat.descripcion }}</p>
-                        </ng-container>
-                    </ng-container>
+      <!-- The tariff: a measured index on the left, the rates on the right. -->
+      <div class="tariff" *ngIf="!cargando && !error && tarifario.length > 0">
+
+        <!-- The scale. Each category is a tick; the one being read carries
+             the brass mark. -->
+        <nav class="scale" aria-label="Índice de categorías">
+          <p class="scale__label u-data">Índice</p>
+          <ul class="scale__list">
+            <li *ngFor="let bloque of tarifario; trackBy: trackByBloque">
+              <button
+                type="button"
+                class="scale__tick"
+                [class.is-on]="anclaActiva === bloque.ancla"
+                [attr.aria-current]="anclaActiva === bloque.ancla ? 'true' : null"
+                (click)="irACategoria(bloque.ancla)">
+                <span class="scale__name">{{ bloque.nombre }}</span>
+                <span class="scale__n u-data">{{ bloque.filas.length }}</span>
+              </button>
+            </li>
+          </ul>
+        </nav>
+
+        <div class="tariff__body">
+          <section class="cat" appReveal *ngFor="let bloque of tarifario; trackBy: trackByBloque" [id]="bloque.ancla">
+            <header class="cat__head">
+              <h3 class="cat__name">{{ bloque.nombre }}</h3>
+              <p class="cat__meta u-data">
+                <span>{{ bloque.filas.length }}
+                  {{ bloque.filas.length === 1 ? 'tratamiento' : 'tratamientos' }}</span>
+                <span class="cat__from">desde {{ bloque.desde }}</span>
+              </p>
+            </header>
+
+            <p *ngIf="bloque.descripcion" class="cat__note">{{ bloque.descripcion }}</p>
+
+            <ul class="items">
+              <li class="item" *ngFor="let fila of bloque.filas; trackBy: trackByFila">
+                <!-- Every row keeps its plate, photographed or not, so the
+                     column holds one edge down the whole tariff. -->
+                <div class="item__plate" [class.is-empty]="!fila.foto">
+                  <img *ngIf="fila.foto" [src]="fila.foto" [alt]="fila.nombre" loading="lazy" />
                 </div>
-            </div>
 
-            <!-- Mensaje si no hay servicios -->
-            <div *ngIf="!cargando && !error && serviciosAgrupados.size === 0" class="no-services">
-                <p>No hay servicios disponibles en este momento.</p>
-            </div>
-        </div>
-    </section>
+                <div class="item__main">
+                  <h4 class="item__name">
+                    {{ fila.nombre }}
+                    <span class="item__variant u-data" *ngIf="fila.variante">{{ fila.variante }}</span>
+                  </h4>
+                  <p class="item__desc" *ngIf="fila.descripcion">{{ fila.descripcion }}</p>
+                </div>
 
-    <!-- Sección: Tratamientos Dentales (puedes mantenerla estática o también dinámica) -->
-    <section class="section dental-section">
-        <div class="container">
-            <div class="fancy_heading">
-                <h2 class="title">Odontología Estética y General</h2>
-                <div class="elegant-detail"></div>
-                <p class="inside">Cuidamos tu sonrisa con tecnología de vanguardia y atención personalizada.</p>
-            </div>
-            <!-- ... contenido dental (puedes dejarlo como está o adaptarlo similarmente) ... -->
+                <div class="item__meta">
+                  <p class="item__price u-data">{{ fila.precio }}</p>
+                  <p class="item__dur u-data" *ngIf="fila.duracion">{{ fila.duracion }}</p>
+                </div>
+              </li>
+            </ul>
+          </section>
         </div>
-    </section>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <!-- Sección CTA final -->
-    <section class="cta-section">
-        <div class="container">
-            <div class="cta-content">
-                <h3>¿Lista para tu transformación?</h3>
-                <p>Agenda tu cita de valoración sin costo y descubre el tratamiento ideal para ti.</p>
-                <a routerLink="/agendar-cita" class="cta-button">Agendar Cita</a>
-            </div>
-        </div>
-    </section>
-</div>
+<section class="band band--ink band--tight">
+  <div class="u-shell page-close" appReveal>
+    <img src="assets/images/Manual_Rome-10-removebg.png" alt="" class="mark page-close__mark" width="54" height="44" />
+    <h2 class="page-close__title">¿No sabes cuál te toca?</h2>
+    <p class="page-close__note">
+      Esa es exactamente la pregunta que resuelve la valoración. Cuarenta minutos,
+      sin costo, con un plan por escrito al final.
+    </p>
+    <div class="page-close__actions">
+      <a routerLink="/agendar-cita" class="btn btn--onink">Agendar valoración</a>
+    </div>
+  </div>
+</section>

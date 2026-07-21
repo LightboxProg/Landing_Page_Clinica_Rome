@@ -1,40 +1,76 @@
-<section class="info-page">
-  <div class="hero-card">
-    <p class="eyebrow">Rome Harmony Clinic</p>
-    <h1>Contacto</h1>
-    <p class="lead">
-      Escríbenos, llámanos o visita la clínica para recibir orientación y agendar tu valoración.
+<section class="page-head">
+  <div class="u-shell">
+    <p class="u-eyebrow">Contacto</p>
+    <h1 class="page-head__title">Hablemos.</h1>
+    <p class="u-lede">
+      Para resolver dudas de un tratamiento o confirmar disponibilidad. Si ya
+      sabes que quieres tu valoración, agéndala directamente.
     </p>
+    <a routerLink="/agendar-cita" class="btn btn--solid head__cta">Agendar valoración</a>
   </div>
+</section>
 
-  <div class="grid-cards">
-    <article class="info-card accent">
-      <h2>WhatsApp</h2>
-      <p>Respuesta rápida para dudas, horarios y disponibilidad.</p>
-      <a [href]="whatsappHref" target="_blank" rel="noopener" class="btn primary">Abrir WhatsApp</a>
-    </article>
+<section class="band band--tight">
+  <div class="u-shell">
+    <ul class="ways">
+      <li class="way row-tick" [appReveal]="0">
+        <p class="way__k u-data">WhatsApp</p>
+        <div class="way__main">
+          <h2 class="way__name">Respuesta el mismo día</h2>
+          <p class="way__note">Horarios, disponibilidad y dudas rápidas sobre un tratamiento.</p>
+        </div>
+        <a [href]="whatsappHref" target="_blank" rel="noopener" class="btn btn--line way__cta">
+          <i class="fab fa-whatsapp" aria-hidden="true"></i> Escribir
+        </a>
+      </li>
 
-    <article class="info-card">
-      <h2>Teléfono</h2>
-      <p>Atención directa en horario de clínica.</p>
-      <a [href]="phoneHref" class="btn secondary dark">Llamar</a>
-    </article>
+      <li class="way row-tick" [appReveal]="1">
+        <p class="way__k u-data">Teléfono</p>
+        <div class="way__main">
+          <h2 class="way__name">(449) 366 4109</h2>
+          <p class="way__note">Atención directa en horario de clínica, de lunes a sábado.</p>
+        </div>
+        <a [href]="phoneHref" class="btn btn--line way__cta">
+          <i class="fas fa-phone" aria-hidden="true"></i> Llamar
+        </a>
+      </li>
 
-    <article class="info-card">
-      <h2>Correo</h2>
-      <p>Envíanos tus datos y te ayudamos a coordinar una cita.</p>
-      <a [href]="emailHref" class="btn secondary dark">Enviar correo</a>
-    </article>
+      <li class="way row-tick" [appReveal]="2">
+        <p class="way__k u-data">Correo</p>
+        <div class="way__main">
+          <h2 class="way__name">contacto&#64;clinicarome.com</h2>
+          <p class="way__note">Para presupuestos, facturación y seguimiento por escrito.</p>
+        </div>
+        <a [href]="emailHref" class="btn btn--line way__cta">
+          <i class="fas fa-envelope" aria-hidden="true"></i> Enviar correo
+        </a>
+      </li>
 
-    <article class="info-card">
-      <h2>Ubicación</h2>
-      <p>Mayo de 1812 #805 Frac. Morelos 1, Aguascalientes, Ags.</p>
-      <a [href]="mapsHref" target="_blank" rel="noopener" class="btn secondary dark">Ver en Maps</a>
-    </article>
+      <li class="way row-tick" [appReveal]="3">
+        <p class="way__k u-data">Clínica</p>
+        <div class="way__main">
+          <h2 class="way__name">Mayo de 1812 #805</h2>
+          <p class="way__note">Frac. Morelos 1, Aguascalientes, Ags. Estacionamiento sobre la calle.</p>
+        </div>
+        <a [href]="mapsHref" target="_blank" rel="noopener" class="btn btn--line way__cta">
+          <i class="fas fa-location-dot" aria-hidden="true"></i> Cómo llegar
+        </a>
+      </li>
+    </ul>
   </div>
+</section>
 
-  <div class="footer-links">
-    <a routerLink="/agendar-cita">Agendar cita</a>
-    <a routerLink="/servicios">Ver servicios</a>
+<section class="band band--ink band--tight">
+  <div class="u-shell page-close" appReveal>
+    <img src="assets/images/Manual_Rome-10-removebg.png" alt="" class="mark page-close__mark" width="54" height="44" />
+    <h2 class="page-close__title">La valoración no tiene costo.</h2>
+    <p class="page-close__note">
+      Cuarenta minutos, diagnóstico completo y un plan por escrito. Sin
+      compromiso de tratarte ese día.
+    </p>
+    <div class="page-close__actions">
+      <a routerLink="/agendar-cita" class="btn btn--onink">Agendar valoración</a>
+      <a routerLink="/servicios" class="btn btn--onink">Ver tratamientos</a>
+    </div>
   </div>
 </section>

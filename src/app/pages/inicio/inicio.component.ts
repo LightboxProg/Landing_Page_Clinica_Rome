@@ -2,11 +2,12 @@ import { Component, HostListener, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { PromocionesService } from '../../services/promociones/promociones.service';
+import { RevealDirective } from '../../directives/reveal.directive';
 
 @Component({
   selector: 'app-inicio',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, RevealDirective],
   templateUrl: './inicio.component.html',
   styleUrl: './inicio.component.css'
 })
@@ -67,8 +68,11 @@ export class InicioComponent implements OnInit, OnDestroy {
 
         if (diff > 0) {
           p.tiempoRestanteStr = this.calcularDiferenciaTiempo(diff);
+          // Under 24h the countdown switches to the urgency colour
+          p.estadoTimer = diff < 1000 * 60 * 60 * 24 ? 'is-urgent' : 'is-live';
         } else {
-          p.tiempoRestanteStr = 'Campaña Finalizada';
+          p.tiempoRestanteStr = 'Campaña finalizada';
+          p.estadoTimer = 'is-ended';
         }
       });
     };

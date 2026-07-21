@@ -1,83 +1,60 @@
-<div class="status-page-wrapper animate-fade">
-  <div class="status-card-luxury">
-    <!-- Header Marca -->
-    <div class="clinic-brand-header">
-      <div class="brand-logo">
-        <i class="fas fa-spa"></i>
-      </div>
-      <p class="brand-subtitle">ROME HARMONY CLINIC</p>
-    </div>
+<section class="res">
 
-    <!-- ESTADO ÉXITO -->
-    <div class="status-body" *ngIf="status === 'success'">
-      <div class="icon-badge success-badge">
-        <i class="fas fa-check"></i>
-      </div>
-      
-      <ng-container *ngIf="type === 'cita'; else membershipSuccess">
-        <h2 class="status-headline">¡Cita Agendada con Éxito!</h2>
-        <p class="status-lead">Tu pago de anticipo se ha procesado de forma segura y tu cita ha sido reservada.</p>
-        
-        <div class="info-box-luxury">
-          <p class="info-text">En breve recibirás una confirmación con los detalles de tu cita. ¡Te esperamos en la clínica!</p>
-          <div *ngIf="sessionId" class="ref-tag">
-            <i class="fas fa-receipt"></i> Referencia: {{ sessionId.substring(0, 18) }}...
-          </div>
-        </div>
+  <!-- ÉXITO -->
+  <div class="res__card panel" *ngIf="status === 'success'">
+    <p class="res__mark res__mark--ok" aria-hidden="true"><i class="fas fa-check"></i></p>
 
-        <button class="btn-clinic-primary" (click)="volver()">
-          <i class="fas fa-calendar-alt"></i> Volver a Citas
-        </button>
-      </ng-container>
+    <ng-container *ngIf="type === 'cita'; else okMembresia">
+      <h1 class="res__title">Tu cita está confirmada</h1>
+      <p class="res__note">
+        Recibimos tu pago y el horario quedó reservado a tu nombre. Te enviaremos
+        la confirmación con los datos de tu cita.
+      </p>
+      <p class="res__next u-data">Llega 10 minutos antes · Trae identificación</p>
+    </ng-container>
 
-      <ng-template #membershipSuccess>
-        <h2 class="status-headline">¡Pago Exitoso!</h2>
-        <p class="status-lead">Tu membresía ha sido activada y tu pago se ha procesado de forma segura.</p>
-        
-        <div class="info-box-luxury">
-          <p class="info-text">Nos pondremos en contacto contigo pronto o puedes acudir a la clínica para agendar tu primera cita.</p>
-          <div *ngIf="sessionId" class="ref-tag">
-            <i class="fas fa-receipt"></i> Referencia: {{ sessionId.substring(0, 18) }}...
-          </div>
-        </div>
+    <ng-template #okMembresia>
+      <h1 class="res__title">Tu membresía está activa</h1>
+      <p class="res__note">
+        Recibimos tu pago. Agenda tu primera sesión cuando quieras, o pasa
+        directamente a la clínica.
+      </p>
+    </ng-template>
 
-        <button class="btn-clinic-primary" (click)="volver()">
-          <i class="fas fa-gem"></i> Volver al Catálogo
-        </button>
-      </ng-template>
-    </div>
+    <p class="res__ref u-data" *ngIf="sessionId">
+      Referencia {{ sessionId.substring(0, 18) }}
+    </p>
 
-    <!-- ESTADO CANCELADO -->
-    <div class="status-body" *ngIf="status === 'canceled'">
-      <div class="icon-badge cancel-badge">
-        <i class="fas fa-times"></i>
-      </div>
-
-      <ng-container *ngIf="type === 'cita'; else membershipCancel">
-        <h2 class="status-headline">Agendamiento Cancelado</h2>
-        <p class="status-lead">El proceso de pago del anticipo fue cancelado o no se pudo completar.</p>
-        
-        <div class="info-box-luxury error-box">
-          <p class="info-text">El horario seleccionado ha sido liberado. No se ha realizado ningún cargo a tu tarjeta. Puedes intentar nuevamente cuando lo desees.</p>
-        </div>
-
-        <button class="btn-clinic-primary" (click)="volver()">
-          <i class="fas fa-redo"></i> Volver a Intentar
-        </button>
-      </ng-container>
-
-      <ng-template #membershipCancel>
-        <h2 class="status-headline">Pago Cancelado</h2>
-        <p class="status-lead">El proceso de pago fue cancelado o no se pudo completar.</p>
-        
-        <div class="info-box-luxury error-box">
-          <p class="info-text">No se ha realizado ningún cargo a tu tarjeta. Puedes intentar nuevamente cuando lo desees.</p>
-        </div>
-
-        <button class="btn-clinic-primary" (click)="volver()">
-          <i class="fas fa-arrow-left"></i> Volver al Catálogo
-        </button>
-      </ng-template>
+    <div class="res__actions">
+      <button class="btn btn--solid" (click)="volver()" type="button">
+        {{ type === 'cita' ? 'Volver a citas' : 'Ver membresías' }}
+      </button>
     </div>
   </div>
-</div>
+
+  <!-- CANCELADO -->
+  <div class="res__card panel" *ngIf="status === 'canceled'">
+    <p class="res__mark res__mark--stop" aria-hidden="true"><i class="fas fa-xmark"></i></p>
+
+    <ng-container *ngIf="type === 'cita'; else cancelMembresia">
+      <h1 class="res__title">No se completó el pago</h1>
+      <p class="res__note">
+        El horario volvió a quedar disponible y no se hizo ningún cargo a tu
+        tarjeta. Puedes elegir otro horario cuando quieras.
+      </p>
+    </ng-container>
+
+    <ng-template #cancelMembresia>
+      <h1 class="res__title">No se completó el pago</h1>
+      <p class="res__note">
+        No se hizo ningún cargo a tu tarjeta. Puedes retomar la contratación
+        cuando quieras.
+      </p>
+    </ng-template>
+
+    <div class="res__actions">
+      <button class="btn btn--solid" (click)="volver()" type="button">Intentar de nuevo</button>
+    </div>
+  </div>
+
+</section>

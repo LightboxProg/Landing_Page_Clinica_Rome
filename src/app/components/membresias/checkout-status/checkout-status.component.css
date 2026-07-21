@@ -1,151 +1,72 @@
-.status-page-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 75vh;
-  padding: 40px 20px;
-  background: linear-gradient(180deg, #faf7f4 0%, #f3ede8 100%);
-}
+/* ============================================================
+   Resultado del pago — one clear statement, one way forward
+   ============================================================ */
 
-.status-card-luxury {
-  max-width: 620px;
+:host { display: block; }
+
+.res {
   width: 100%;
-  background: #ffffff;
-  padding: 48px 40px;
-  border-radius: 20px;
-  box-shadow: 0 20px 50px rgba(84, 56, 34, 0.08);
-  border: 1px solid rgba(197, 160, 40, 0.2);
+  max-width: 560px;
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.res__card {
+  padding: clamp(2rem, 5vw, 3rem);
   text-align: center;
 }
 
-.clinic-brand-header {
-  margin-bottom: 24px;
-}
-
-.brand-logo {
-  width: 54px;
-  height: 54px;
-  background: linear-gradient(135deg, #c59d5f 0%, #b38b4d 100%);
-  color: #ffffff;
+.res__mark {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 1.5rem;
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.6rem;
-  margin: 0 auto 12px;
-  box-shadow: 0 6px 16px rgba(197, 157, 95, 0.3);
+  font-size: 1.15rem;
 }
 
-.brand-subtitle {
-  font-size: 0.85rem;
-  letter-spacing: 2px;
+.res__mark--ok {
+  background: var(--ink);
+  color: var(--porcelain);
+}
+
+.res__mark--stop {
+  background: transparent;
+  border: 1px solid var(--clay);
+  color: var(--clay);
+}
+
+.res__title {
+  margin: 0 0 0.9rem;
+  font-size: clamp(1.55rem, 3.4vw, 2.2rem);
+}
+
+.res__note {
+  margin: 0 auto;
+  max-width: 42ch;
+  font-size: 0.95rem;
+  color: var(--ink-soft);
+}
+
+.res__next {
+  margin: 1.5rem 0 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #8c7355;
-  font-weight: 600;
-  margin: 0;
+  color: var(--brass-ink);
 }
 
-.icon-badge {
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2.2rem;
-  margin: 0 auto 24px;
+.res__ref {
+  margin: 1.35rem 0 0;
+  font-size: 0.63rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  overflow-wrap: anywhere;
 }
 
-.success-badge {
-  background: rgba(16, 185, 129, 0.1);
-  color: #10b981;
-  border: 2px solid rgba(16, 185, 129, 0.2);
-}
-
-.cancel-badge {
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
-  border: 2px solid rgba(239, 68, 68, 0.2);
-}
-
-.status-headline {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 2rem;
-  color: #3c2a1f;
-  margin: 0 0 12px;
-  font-weight: 700;
-}
-
-.status-lead {
-  color: #6f5546;
-  font-size: 1.05rem;
-  margin-bottom: 28px;
-  line-height: 1.5;
-}
-
-.info-box-luxury {
-  background: #faf8f6;
-  border: 1px solid #eadfd6;
-  border-radius: 14px;
-  padding: 24px;
-  margin-bottom: 32px;
-  text-align: center;
-}
-
-.info-text {
-  color: #5d4f45;
-  font-size: 0.98rem;
-  line-height: 1.6;
-  margin: 0;
-}
-
-.ref-tag {
-  display: inline-block;
-  margin-top: 12px;
-  padding: 6px 14px;
-  background: rgba(197, 157, 95, 0.1);
-  color: #8c7355;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 500;
-}
-
-.btn-clinic-primary {
-  background: linear-gradient(135deg, #c59d5f 0%, #b38b4d 100%) !important;
-  color: #ffffff !important;
-  border: none !important;
-  padding: 14px 36px;
-  border-radius: 10px;
-  font-size: 1.05rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  box-shadow: 0 8px 20px rgba(197, 157, 95, 0.3);
-}
-
-.btn-clinic-primary:hover {
-  background: linear-gradient(135deg, #b38b4d 0%, #a0783d 100%) !important;
-  transform: translateY(-2px);
-  box-shadow: 0 12px 24px rgba(197, 157, 95, 0.4);
-}
-
-.animate-fade {
-  animation: fadeIn 0.4s ease-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@media (max-width: 640px) {
-  .status-card-luxury {
-    padding: 32px 20px;
-  }
-  .status-headline {
-    font-size: 1.6rem;
-  }
-}
+.res__actions { margin-top: 2rem; }
+.res__actions .btn { width: 100%; }

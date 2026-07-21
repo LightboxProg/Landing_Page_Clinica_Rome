@@ -1,120 +1,142 @@
-<div class="pasarela-container">
-  <div class="pasarela-card">
-    <h2 class="pasarela-title">Contratación de Membresía</h2>
-    <p class="pasarela-subtitle">Completa tu información para proceder al pago</p>
+<section class="pay">
 
-    <!-- Paso 1: Buscar Paciente -->
-    <div *ngIf="paso === 1" class="paso-container">
-      <h3>Verificación de paciente</h3>
-      <p>Por favor, ingresa tu número de teléfono para verificar si ya estás registrado.</p>
-      
-      <div class="form-group mb-4">
-        <label for="telefonoBusqueda">Número de Teléfono</label>
-        <div class="input-phone-wrapper">
-          <input type="tel" id="telefonoBusqueda" [(ngModel)]="telefonoBusqueda" class="form-control input-lg" placeholder="Ej. 5512345678" style="letter-spacing: 1px;">
+  <header class="pay__head">
+    <p class="u-eyebrow">Membresía</p>
+    <h1 class="pay__title">Contratación</h1>
+  </header>
+
+  <ol class="steps" aria-label="Progreso">
+    <li class="steps__item" [class.is-now]="paso === 1" [class.is-done]="paso > 1">
+      <span class="steps__n u-data">1</span><span class="steps__label">Teléfono</span>
+    </li>
+    <li class="steps__item" [class.is-now]="paso === 2" [class.is-done]="paso > 2">
+      <span class="steps__n u-data">2</span><span class="steps__label">Tus datos</span>
+    </li>
+    <li class="steps__item" [class.is-now]="paso === 3">
+      <span class="steps__n u-data">3</span><span class="steps__label">Pago</span>
+    </li>
+  </ol>
+
+  <!-- PASO 1 — identificación -->
+  <div class="panel form-card" *ngIf="paso === 1">
+    <h2 class="form-card__title">¿Cuál es tu teléfono?</h2>
+    <p class="form-card__note">Lo usamos para buscar tu expediente. Si eres nuevo, te registramos en el siguiente paso.</p>
+
+    <div class="field">
+      <label for="telefonoBusqueda">Teléfono a 10 dígitos</label>
+      <input type="tel" id="telefonoBusqueda" [(ngModel)]="telefonoBusqueda"
+             placeholder="4491234567" inputmode="numeric" maxlength="10"
+             (keyup.enter)="buscarPaciente()" />
+    </div>
+
+    <p class="alert" *ngIf="errorBusqueda" role="alert">
+      <i class="fas fa-triangle-exclamation" aria-hidden="true"></i>
+      <span>{{ errorBusqueda }}</span>
+    </p>
+
+    <div class="form-card__actions">
+      <button class="btn btn--solid" (click)="buscarPaciente()" type="button"
+              [disabled]="buscando || !telefonoBusqueda">
+        {{ buscando ? 'Buscando…' : 'Continuar' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- PASO 2 — registro -->
+  <div class="panel form-card" *ngIf="paso === 2">
+    <h2 class="form-card__title">Crea tu expediente</h2>
+    <p class="form-card__note">No encontramos un expediente con ese teléfono. Sólo necesitamos lo básico.</p>
+
+    <div class="form-card__grid">
+      <div class="field">
+        <label for="pmNombre">Nombre(s) *</label>
+        <input type="text" id="pmNombre" [(ngModel)]="nuevoPaciente.nombre" placeholder="María Fernanda" />
+      </div>
+      <div class="field">
+        <label for="pmApeP">Apellido paterno *</label>
+        <input type="text" id="pmApeP" [(ngModel)]="nuevoPaciente.apeP" placeholder="López" />
+      </div>
+      <div class="field">
+        <label for="pmApeM">Apellido materno *</label>
+        <input type="text" id="pmApeM" [(ngModel)]="nuevoPaciente.apeM" placeholder="Hernández" />
+      </div>
+      <div class="field">
+        <label for="pmApodo">Cómo prefieres que te llamemos *</label>
+        <input type="text" id="pmApodo" [(ngModel)]="nuevoPaciente.apodo" placeholder="Fer" />
+      </div>
+      <div class="field">
+        <label for="pmTel">Teléfono *</label>
+        <input type="tel" id="pmTel" [(ngModel)]="nuevoPaciente.telefonoPaciente"
+               placeholder="4491234567" inputmode="numeric" />
+      </div>
+      <div class="field">
+        <label for="pmMail">Correo electrónico</label>
+        <input type="email" id="pmMail" [(ngModel)]="nuevoPaciente.correoElectronico"
+               placeholder="tucorreo@dominio.com" />
+      </div>
+    </div>
+
+    <p class="alert" *ngIf="errorRegistro" role="alert">
+      <i class="fas fa-triangle-exclamation" aria-hidden="true"></i>
+      <span>{{ errorRegistro }}</span>
+    </p>
+
+    <div class="form-card__actions">
+      <button class="btn btn--line" (click)="volver()" type="button">Atrás</button>
+      <button class="btn btn--solid" (click)="registrarPaciente()" [disabled]="registrando" type="button">
+        {{ registrando ? 'Guardando…' : 'Continuar' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- PASO 3 — confirmación y pago -->
+  <div class="panel form-card" *ngIf="paso === 3 && pacienteEncontrado">
+    <h2 class="form-card__title">Confirma y paga</h2>
+
+    <div class="plan" *ngIf="catalogo">
+      <h3 class="plan__name">{{ catalogo.nombreTratamiento }}</h3>
+      <p class="plan__desc" *ngIf="catalogo.descripcion">{{ catalogo.descripcion }}</p>
+
+      <dl class="brief">
+        <div class="brief__row">
+          <dt>Costo total</dt>
+          <dd class="u-data">{{ formatearPrecio(catalogo.costoTotal) }}</dd>
         </div>
-      </div>
-      
-      <div *ngIf="errorBusqueda" class="error-msg mb-3">
-        <i class="fas fa-exclamation-circle" style="margin-right: 6px;"></i> {{ errorBusqueda }}
-      </div>
+        <div class="brief__row">
+          <dt>{{ catalogo.installmentsCount }} pagos de</dt>
+          <dd class="u-data">{{ formatearPrecio(obtenerMontoPorCuota()) }}</dd>
+        </div>
+        <div class="brief__row">
+          <dt>Frecuencia</dt>
+          <dd>{{ catalogo.paymentFrequency }}</dd>
+        </div>
+        <div class="brief__row brief__row--pay">
+          <dt>Pagas ahora</dt>
+          <dd class="u-data">{{ formatearPrecio(catalogo.enganche) }}</dd>
+        </div>
+      </dl>
+    </div>
 
-      <button class="btn btn-primary w-100" (click)="buscarPaciente()" [disabled]="buscando || !telefonoBusqueda">
-        <span *ngIf="buscando"><i class="fas fa-spinner fa-spin"></i> Buscando...</span>
-        <span *ngIf="!buscando">Verificar</span>
+    <dl class="brief brief--who">
+      <div class="brief__row">
+        <dt>Paciente</dt>
+        <dd>{{ pacienteEncontrado.nombre }} {{ pacienteEncontrado.apeP }}</dd>
+      </div>
+      <div class="brief__row">
+        <dt>Teléfono</dt>
+        <dd class="u-data">{{ pacienteEncontrado.telefonoPaciente || pacienteEncontrado.telefonoWhatsapp }}</dd>
+      </div>
+    </dl>
+
+    <div class="form-card__actions">
+      <button class="btn btn--solid" (click)="procederAlPago()" [disabled]="procesandoPago" type="button">
+        {{ procesandoPago ? 'Abriendo pago…' : 'Pagar ' + formatearPrecio(catalogo?.enganche || 0) }}
       </button>
     </div>
 
-    <!-- Paso 2: Pre-registro -->
-    <div *ngIf="paso === 2" class="paso-container">
-      <h3>Pre-registro</h3>
-      <p>Parece que eres nuevo. Por favor, completa tus datos básicos para continuar.</p>
-      
-      <div class="form-group">
-        <label>Nombre(s) *</label>
-        <input type="text" [(ngModel)]="nuevoPaciente.nombre" class="form-control" placeholder="Ej. María Fernanda">
-      </div>
-      
-      <div class="form-group">
-        <label>Apellido Paterno *</label>
-        <input type="text" [(ngModel)]="nuevoPaciente.apeP" class="form-control" placeholder="Ej. López">
-      </div>
-
-      <div class="form-group">
-        <label>Apellido Materno *</label>
-        <input type="text" [(ngModel)]="nuevoPaciente.apeM" class="form-control" placeholder="Ej. Hernández">
-      </div>
-
-      <div class="form-group">
-        <label>Apodo o Nombre Preferido *</label>
-        <input type="text" [(ngModel)]="nuevoPaciente.apodo" class="form-control" placeholder="Ej. Fer">
-      </div>
-      
-      <div class="form-group">
-        <label>Teléfono *</label>
-        <input type="tel" [(ngModel)]="nuevoPaciente.telefonoPaciente" class="form-control" placeholder="Ej. 4491234567">
-      </div>
-
-      <div class="form-group">
-        <label>Correo Electrónico (Opcional)</label>
-        <input type="email" [(ngModel)]="nuevoPaciente.correoElectronico" class="form-control" placeholder="Ej. correo@dominio.com">
-      </div>
-
-      <div *ngIf="errorRegistro" class="error-msg">{{ errorRegistro }}</div>
-
-      <div class="botones-accion mt-4">
-        <button class="btn btn-secondary" (click)="volver()">Atrás</button>
-        <button class="btn btn-primary" (click)="registrarPaciente()" [disabled]="registrando">
-          <span *ngIf="registrando">Registrando...</span>
-          <span *ngIf="!registrando">Registrar y Continuar</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- Paso 3: Confirmación y Pago -->
-    <div *ngIf="paso === 3 && pacienteEncontrado" class="paso-container">
-      <h3>Confirmación</h3>
-
-      <!-- Resumen del catálogo seleccionado (si está disponible) -->
-      <div *ngIf="catalogo" class="catalogo-resumen">
-        <h4 class="catalogo-title">{{ catalogo.nombreTratamiento }}</h4>
-        <p class="catalogo-desc">{{ catalogo.descripcion }}</p>
-        <div class="grid-datos">
-          <div class="dato">
-            <small>Costo total</small>
-            <div class="valor">{{ formatearPrecio(catalogo.costoTotal) }}</div>
-          </div>
-          <div class="dato">
-            <small>Enganche</small>
-            <div class="valor">{{ formatearPrecio(catalogo.enganche) }}</div>
-          </div>
-          <div class="dato">
-            <small>Cuotas</small>
-            <div class="valor">{{ catalogo.installmentsCount }} x {{ formatearPrecio(obtenerMontoPorCuota()) }}</div>
-          </div>
-          <div class="dato">
-            <small>Frecuencia</small>
-            <div class="valor">{{ catalogo.paymentFrequency }}</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="paciente-info-box">
-        <p><strong>Paciente:</strong> {{ pacienteEncontrado.nombre }} {{ pacienteEncontrado.apeP }}</p>
-        <p><strong>Teléfono:</strong> {{ pacienteEncontrado.telefonoPaciente || pacienteEncontrado.telefonoWhatsapp }}</p>
-        <div class="success-msg mt-2">
-          <i class="fas fa-check-circle"></i> ¡Información verificada correctamente!
-        </div>
-      </div>
-
-      <p class="mt-4 text-center">Serás redirigido a Stripe para completar tu pago de forma segura.</p>
-
-      <div class="botones-accion mt-4">
-        <button class="btn btn-success" (click)="procederAlPago()" [disabled]="procesandoPago">
-          <span *ngIf="procesandoPago">Iniciando pago...</span>
-          <span *ngIf="!procesandoPago"><i class="fab fa-stripe"></i> Proceder al Pago Seguro</span>
-        </button>
-      </div>
-    </div>
+    <p class="form-card__secure u-data">
+      <i class="fas fa-lock" aria-hidden="true"></i> El cobro lo procesa Stripe. No guardamos tu tarjeta.
+    </p>
   </div>
-</div>
+
+</section>

@@ -1,77 +1,49 @@
-<header id="header" class="navbar-header">
-  <!-- Action Bar superior con contacto y redes -->
-  <div class="action-bar">
-    <div class="container action-bar-container">
-      <div class="contact-details">
-        <span class="contact-item slogan">¿Tienes alguna pregunta?</span>
-        <span class="contact-item phone">
-          <i class="fa-solid fa-phone"></i>
-          <a class="phone" href="tel:+524491234567">+52 449 123 4567</a>
-        </span>
-        <span class="contact-item email">
-          <i class="fa-solid fa-envelope"></i>
-          <a class="mail" href="mailto:contacto&#64;clinicarome.com">contacto&#64;clinicarome.com</a>
-        </span>
-      </div>
-      <div class="social-links">
-        <a href="#" aria-label="Facebook" class="social-link">
-          <i class="fab fa-facebook-f"></i>
-        </a>
-        <a href="#" aria-label="Instagram" class="social-link">
-          <i class="fab fa-instagram"></i>
-        </a>
+<header class="mast" [class.is-condensed]="condensed">
+  <!-- Practice strip: the two arms of the clinic, stated plainly -->
+  <div class="mast-strip">
+    <div class="u-shell mast-strip__inner">
+      <p class="mast-strip__disciplines u-data">
+        Armonización facial<span class="mast-strip__sep">·</span>Odontología estética
+      </p>
+      <div class="mast-strip__reach u-data">
+        <a href="tel:+524493664109">(449) 366 4109</a>
+        <span class="mast-strip__sep">·</span>
+        <a href="mailto:contacto&#64;clinicarome.com">contacto&#64;clinicarome.com</a>
       </div>
     </div>
   </div>
 
-  <!-- Barra de navegación principal -->
-  <div class="top-bar">
-    <div class="container top-bar-container">
-      <!-- Logo -->
-      <div class="logo-wrapper">
-        <a routerLink="/" class="logo-link" aria-label="Inicio">
-          <img src="assets/images/rome-logo-blanco.webp" alt="Clínica Rome" class="logo-img" />
-        </a>
-      </div>
+  <div class="mast-bar">
+    <div class="u-shell mast-bar__inner">
+      <a routerLink="/" class="mast-logo" aria-label="ROME Harmony Clinic — inicio" (click)="closeMenu()">
+        <img src="assets/images/rome.webp" alt="ROME Harmony Clinic" />
+      </a>
 
-      <!-- Menú de navegación -->
-      <nav class="main-nav" [class.active]="menuOpen">
-        <ul class="nav-menu">
-          <li routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">
-            <a routerLink="/">Inicio</a>
-          </li>
-          <li routerLinkActive="active-link">
-            <a routerLink="/servicios">Servicios</a>
-          </li>
-          <li routerLinkActive="active-link">
-            <a routerLink="/membresias">Membresías</a>
-          </li>
-          <li routerLinkActive="active-link">
-            <a routerLink="/nosotros">Nosotros</a>
-          </li>
-          <li routerLinkActive="active-link">
-            <a routerLink="/contacto">Contacto</a>
-          </li>
-          <li routerLinkActive="active-link">
-            <a routerLink="/aviso-privacidad">Aviso de Privacidad</a>
-          </li>
-          <li routerLinkActive="active-link">
-            <a routerLink="/aviso-terminos">Aviso de Términos</a>
-          </li>
+      <nav class="mast-nav" [class.is-open]="menuOpen" aria-label="Principal">
+        <ul>
+          <li><a routerLink="/" routerLinkActive="is-current" [routerLinkActiveOptions]="{exact: true}" (click)="closeMenu()">Inicio</a></li>
+          <li><a routerLink="/servicios" routerLinkActive="is-current" (click)="closeMenu()">Servicios</a></li>
+          <li><a routerLink="/membresias" routerLinkActive="is-current" (click)="closeMenu()">Membresías</a></li>
+          <li><a routerLink="/nosotros" routerLinkActive="is-current" (click)="closeMenu()">Nosotros</a></li>
+          <li><a routerLink="/contacto" routerLinkActive="is-current" (click)="closeMenu()">Contacto</a></li>
         </ul>
+
+        <a routerLink="/agendar-cita" class="btn btn--solid mast-nav__cta" (click)="closeMenu()">
+          Agendar valoración
+        </a>
       </nav>
 
-      <!-- Botón de acción -->
-      <div class="header-cta">
-        <!-- Si la ruta /agendar-cita aún no existe, puedes cambiarla temporalmente a '#' o crearla después -->
-        <a routerLink="/agendar-cita" class="cta-button">
-          <span>Agendar Cita</span>
-        </a>
-      </div>
+      <a routerLink="/agendar-cita" class="btn btn--solid mast-cta" (click)="closeMenu()">
+        Agendar valoración
+      </a>
 
-      <!-- Hamburguesa móvil -->
-      <button class="mobile-toggle" (click)="toggleMenu()" [class.open]="menuOpen" aria-label="Menú">
-        <span></span>
+      <button
+        class="mast-toggle"
+        (click)="toggleMenu()"
+        [class.is-open]="menuOpen"
+        [attr.aria-expanded]="menuOpen"
+        aria-controls="mast-nav"
+        aria-label="Menú de navegación">
         <span></span>
         <span></span>
       </button>

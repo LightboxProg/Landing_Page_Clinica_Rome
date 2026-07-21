@@ -27,12 +27,12 @@
               "src/firebase-messaging-sw.js"
             ],
             "styles": [
-              "src/styles.css",
               "src/assets/css/global.css",
               "src/assets/css/structure.css",
               "src/assets/css/beauty.css",
               "src/assets/css/custom.css",
-              "src/assets/plugins/rs-plugin/css/settings.css"
+              "src/assets/plugins/rs-plugin/css/settings.css",
+              "src/styles.css"
             ],
             "scripts": [
               "src/assets/js/jquery-3.6.0.min.js",
@@ -116,12 +116,12 @@
               "src/firebase-messaging-sw.js"
             ],
             "styles": [
-              "src/styles.css",
               "src/assets/css/global.css",
               "src/assets/css/structure.css",
               "src/assets/css/beauty.css",
               "src/assets/css/custom.css",
-              "src/assets/plugins/rs-plugin/css/settings.css"
+              "src/assets/plugins/rs-plugin/css/settings.css",
+              "src/styles.css"
             ],
             "scripts": []
           }

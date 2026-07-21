@@ -1,280 +1,108 @@
-/* Heredamos las variables y estilos base de servicios */
-:host {
-  --coffee-dark: #1a2b3c;
-  --coffee-medium: #2a6b7c;
-  --coffee-light: #8D6E63;
-  --coffee-soft: #D7CCC8;
-  --coffee-cream: #f4f7f6;
-  --gold-primary: #8b7d4f;
-  --gold-light: #8b7d4f;
-  --gold-dark: #9A7D0A;
-  --white-pure: #FFFFFF;
-  --text-dark: #2C1E1A;
-  --text-light: #6D4C41;
-  --shadow-sm: 0 2px 16px rgba(62, 39, 35, 0.08);
-  --shadow-md: 0 8px 24px rgba(62, 39, 35, 0.12);
-  --transition: all 0.3s ease;
-  --border-radius: 12px;
-  --accent-rose: #B76E79;
+/* ============================================================
+   Membresías — the payment schedule is a table, not a badge
+   ============================================================ */
+
+:host { display: block; }
+
+.state {
+  padding: 3rem 0;
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+.state--error { color: var(--clay); }
+
+.plans {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
 }
 
-/* Contenedor principal */
-.servicios-page {
-  background-color: var(--coffee-cream);
-  color: var(--text-dark);
-  font-family: 'Lato', 'Roboto', sans-serif;
-}
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-
-.section {
-  padding: 70px 0;
-}
-
-.page-header {
-  background: linear-gradient(135deg, #f7ede8 0%, #efe2d9 100%);
-  padding: 60px 0 40px;
-  text-align: center;
-  border-bottom: 1px solid rgba(93, 64, 55, 0.15);
-}
-
-.page-title {
-  font-size: 48px;
-  font-weight: 600;
-  color: var(--coffee-dark);
-  margin-bottom: 10px;
-  letter-spacing: 1px;
-}
-
-.page-subtitle {
-  font-size: 18px;
-  color: var(--text-light);
-  margin-top: 15px;
-}
-
-.elegant-detail {
-  width: 80px;
-  height: 2px;
-  background: var(--gold-primary);
-  margin: 15px auto 20px;
-}
-
-/* Grid de tarjetas (mismo masonry de servicios) */
-.categorias-grid {
-  column-count: 2;
-  column-gap: 30px;
-  margin-bottom: 40px;
-}
-
-@media (max-width: 992px) {
-  .categorias-grid {
-    column-count: 1;
-  }
-}
-
-/* Tarjeta de membresía */
-.categoria-card.membresia-card {
-  break-inside: avoid;
-  page-break-inside: avoid;
-  margin-bottom: 30px;
-  display: inline-block;
-  width: 100%;
-  background: var(--white-pure);
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow-sm);
-  border: 1px solid rgba(93, 64, 55, 0.1);
-  transition: var(--transition);
-  overflow: hidden; /* para que la imagen respete bordes */
-  padding: 0; /* el padding se maneja dentro de membresia-contenido */
-}
-
-.categoria-card.membresia-card:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-4px);
-}
-
-/* Imagen de la membresía */
-.membresia-imagen {
-  width: 100%;
-  height: 200px;
-  background-color: #f3ede8;
+.plan {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
+  flex-direction: column;
+  background: var(--porcelain-lift);
+  transition: background-color 0.45s var(--ease);
 }
 
-.membresia-imagen img {
+/* Same restraint as the route steps on the homepage: the photograph
+   breathes, the card does not jump. */
+.plan:hover { background: var(--porcelain); }
+
+.plan__media {
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: var(--porcelain-sink);
+}
+
+.plan__media img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.5s ease;
+  transition: transform 0.85s var(--ease);
 }
 
-.membresia-card:hover .membresia-imagen img {
-  transform: scale(1.05);
-}
+.plan:hover .plan__media img { transform: scale(1.04); }
 
-.membresia-imagen.placeholder i {
-  font-size: 64px;
-  color: var(--gold-primary);
-  opacity: 0.6;
+.plan__nomedia {
+  display: grid;
+  place-items: center;
+  height: 100%;
 }
+.plan__nomedia .mark { width: 46px; opacity: 0.5; }
 
-/* Contenido de la tarjeta */
-.membresia-contenido {
-  padding: 25px;
-}
-
-.categoria-titulo {
-  font-size: 22px;
-  font-weight: 600;
-  color: var(--coffee-dark);
-  margin-bottom: 15px;
+.plan__body {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  border-bottom: 1px dashed var(--coffee-soft);
-  padding-bottom: 12px;
+  flex-direction: column;
+  flex: 1;
+  padding: clamp(1.5rem, 2.6vw, 2.1rem);
 }
 
-.categoria-titulo i {
-  color: var(--gold-primary);
+.plan__name { margin: 0 0 0.6rem; font-size: 1.5rem; }
+
+.plan__desc {
+  margin: 0 0 1.5rem;
+  font-size: 0.92rem;
+  color: var(--ink-soft);
 }
 
-.descripcion-membresia {
-  color: var(--text-light);
-  font-size: 15px;
-  line-height: 1.5;
-  margin-bottom: 20px;
-  font-style: italic;
+/* ---- terms ---- */
+.plan__terms {
+  margin: auto 0 0;
+  border-top: 1px solid var(--rule);
 }
 
-/* Bloque de precios */
-.precios-membresia {
-  background: #fcf9f6;
-  border-radius: var(--border-radius);
-  padding: 15px 20px;
-  margin-bottom: 25px;
-}
-
-.precio-item {
+.plan__term {
   display: flex;
-  justify-content: space-between;
   align-items: baseline;
-  padding: 6px 0;
-  border-bottom: 1px dashed #e5d5cb;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--rule);
 }
 
-.precio-item:last-of-type {
-  border-bottom: none;
+.plan__term dt {
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
 }
 
-.precio-item.destacado {
-  background: linear-gradient(to right, #fff8f0, transparent);
-  margin: 5px -10px;
-  padding: 8px 10px;
-  border-radius: 30px;
-}
-
-.precio-label {
+.plan__term dd {
+  margin: 0;
+  font-size: 0.95rem;
   font-weight: 500;
-  color: var(--coffee-dark);
-  font-size: 15px;
+  color: var(--ink);
+  white-space: nowrap;
 }
 
-.precio-valor {
-  font-weight: 700;
-  color: var(--accent-rose);
-  background: #f9e6e8;
-  padding: 3px 12px;
-  border-radius: 30px;
-  font-size: 16px;
-}
+/* the enganche is what you actually pay today — the one emphasised figure */
+.plan__term--lead dd { font-size: 1.4rem; color: var(--brass-ink); }
 
-.frecuencia-badge {
-  display: inline-block;
-  margin-top: 12px;
-  padding: 5px 15px;
-  background: var(--coffee-soft);
-  color: var(--coffee-dark);
-  border-radius: 30px;
-  font-size: 13px;
-  font-weight: 600;
-  text-transform: capitalize;
-}
+.plan__term--total { border-bottom: 0; }
+.plan__term--total dt { color: var(--ink-soft); }
 
-.frecuencia-badge i {
-  margin-right: 5px;
-  color: var(--gold-primary);
-}
-
-/* Botón de contratar (estilo CTA) */
-.cta-button.membresia-btn {
-  display: block;
-  width: 100%;
-  text-align: center;
-  background: var(--gold-primary);
-  color: var(--coffee-dark);
-  padding: 14px 20px;
-  font-weight: 700;
-  font-size: 16px;
-  text-decoration: none;
-  border-radius: 40px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-  transition: var(--transition);
-  border: none;
-  cursor: pointer;
-  margin-top: 10px;
-}
-
-.cta-button.membresia-btn:hover {
-  background: var(--gold-light);
-  color: var(--coffee-dark);
-  transform: translateY(-3px);
-  box-shadow: 0 12px 24px rgba(0,0,0,0.2);
-}
-
-/* Estados de carga/error (compartidos) */
-.loading-message,
-.error-message,
-.no-services {
-  text-align: center;
-  padding: 40px 20px;
-  font-size: 18px;
-  color: var(--text-light);
-}
-
-.loading-message i,
-.error-message i {
-  margin-right: 8px;
-}
-
-.error-message {
-  color: #c0392b;
-}
-
-/* Responsive adicional */
-@media (max-width: 768px) {
-  .page-title {
-    font-size: 38px;
-  }
-  .membresia-contenido {
-    padding: 20px;
-  }
-}
-
-@media (max-width: 480px) {
-  .precios-membresia {
-    padding: 12px;
-  }
-  .precio-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 5px;
-  }
-}
+.plan__cta { margin-top: 1.5rem; width: 100%; }

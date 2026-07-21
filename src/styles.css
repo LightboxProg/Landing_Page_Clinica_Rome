@@ -1,1 +1,420 @@
-/* You can add global styles to this file, and also import other style files */
+/* ============================================================
+   ROME Harmony Clinic — design system
+   ------------------------------------------------------------
+   Direction: "Measured proportion."
+   Armonización facial is a practice of measurement: the face is
+   read in thirds, marked, then treated. The page is built on that
+   act — a cool clinical porcelain ground, hairline brass rules,
+   and data set in mono because prices and durations ARE data.
+
+   Every value below is sampled from the clinic's own assets:
+   - brass  #B1994C  sampled from rome.webp (the wordmark itself)
+   - ground #EEF1F4  sampled from banner.webp (the clinic's light)
+   The previous cream/#C7974E palette matched neither.
+   ============================================================ */
+
+:root {
+  /* --- ground: cool clinical light, straight off the photography --- */
+  --porcelain:      #EEF1F4;
+  --porcelain-lift: #F8FAFB;  /* raised surfaces — cards lift by light, not shadow */
+  --porcelain-sink: #E3E7EB;  /* recessed bands */
+
+  /* --- ink: the brand navy-black, sampled from the manual's mark --- */
+  --ink:      #101A2C;
+  --ink-soft: #55606E;        /* secondary text — 5.6:1 on porcelain */
+  --ink-mute: #626C7A;        /* captions, labels — 4.7:1, still AA */
+
+  /* --- brass: the true wordmark gold. Lines and marks only. --- */
+  --brass:      #B1994C;
+  --brass-ink:  #77642F;      /* readable brass text — 5.4:1 on porcelain */
+  --brass-haze: rgba(177, 153, 76, 0.28);
+
+  /* --- clay: reserved exclusively for live urgency (promo countdown) --- */
+  --clay: #B0553C;
+
+  /* --- rules --- */
+  --rule:      rgba(16, 26, 44, 0.14);
+  --rule-soft: rgba(16, 26, 44, 0.08);
+
+  /* --- type --- */
+  --display: 'Bodoni Moda', 'Didot', Georgia, serif;
+  --body:    'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+  --data:    'IBM Plex Mono', ui-monospace, 'SF Mono', monospace;
+
+  /* --- fluid type scale --- */
+  --t-hero: clamp(2.55rem, 4.7vw, 4.7rem);
+  --t-h1:   clamp(2.4rem, 5.4vw, 4.25rem);
+  --t-h2:   clamp(1.85rem, 3.6vw, 2.9rem);
+  --t-h3:   clamp(1.2rem, 1.9vw, 1.5rem);
+  --t-body: clamp(1rem, 1.08vw, 1.075rem);
+  --t-sm:   0.875rem;
+  --t-xs:   0.75rem;
+
+  /* --- rhythm. One owner for band padding (see .band). --- */
+  --band-y: clamp(4.5rem, 9vw, 8rem);
+  --shell:  1240px;
+  --gutter: clamp(1.15rem, 4vw, 3rem);
+
+  /* --- geometry: near-square. The only curve on the site is the caliper. --- */
+  --r: 2px;
+
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--porcelain);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: var(--t-body);
+  font-weight: 400;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img { max-width: 100%; display: block; border: 0; }
+
+/* ---- display type: Bodoni, used large and with restraint ---- */
+h1, h2, h3, h4, .u-display {
+  font-family: var(--display);
+  font-optical-sizing: auto;
+  color: var(--ink);
+  font-weight: 500;
+  line-height: 1.06;
+  letter-spacing: -0.015em;
+  margin-top: 0;
+  text-wrap: balance;
+}
+
+h1 { font-size: var(--t-h1); }
+h2 { font-size: var(--t-h2); }
+h3 { font-size: var(--t-h3); line-height: 1.2; }
+
+p { text-wrap: pretty; }
+
+a { color: inherit; }
+
+/* ============================================================
+   Layout primitives
+   ============================================================ */
+
+.u-shell {
+  width: 100%;
+  max-width: var(--shell);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+/* Band = vertical rhythm. Modifiers only change the custom property,
+   never re-declare padding — that is what makes them collision-proof. */
+.band { padding-block: var(--band-y); }
+.band--tight { --band-y: clamp(3rem, 5.5vw, 4.5rem); }
+.band--sink  { background: var(--porcelain-sink); }
+.band--ink   { background: var(--ink); color: var(--porcelain); }
+.band--ink h1, .band--ink h2, .band--ink h3 { color: var(--porcelain); }
+
+/* ============================================================
+   The measured axis
+   Section headers carry a hairline that runs to the page edge —
+   the horizontal rule of a facial-thirds diagram.
+   ============================================================ */
+
+.u-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-family: var(--data);
+  font-size: var(--t-xs);
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--brass-ink);
+  margin: 0 0 1.4rem;
+}
+
+.u-eyebrow::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, var(--brass-haze), transparent);
+}
+
+.u-eyebrow--center { justify-content: center; }
+.u-eyebrow--center::after { display: none; }
+
+.u-lede {
+  font-size: clamp(1.05rem, 1.5vw, 1.2rem);
+  line-height: 1.6;
+  color: var(--ink-soft);
+  max-width: 56ch;
+  margin: 1.25rem 0 0;
+}
+
+/* Data voice — prices, durations, counts, anatomical labels */
+.u-data {
+  font-family: var(--data);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* ============================================================
+   The orchid — the clinic's own secondary mark, from the brand
+   manual. Its top petal is a molar: the flower and the tooth in
+   one form, which is exactly what this practice is. It is the
+   site's only ornament, so it is never decorated further.
+   ============================================================ */
+
+.mark {
+  display: block;
+  width: 76px;
+  height: auto;
+  margin-inline: auto;
+  flex: none;
+}
+
+.mark--lg { width: 132px; }
+
+/* ============================================================
+   Buttons
+   Primary is ink, not brass: brass on porcelain is 2.6:1 and can
+   never carry text. Ink gives 15:1 and reads more clinical.
+   ============================================================ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  padding: 0.95rem 1.7rem;
+  border: 1px solid transparent;
+  border-radius: var(--r);
+  font-family: var(--data);
+  font-size: var(--t-xs);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.4s var(--ease), color 0.4s var(--ease),
+              border-color 0.4s var(--ease), transform 0.4s var(--ease);
+}
+
+.btn--solid {
+  background: var(--ink);
+  color: var(--porcelain);
+}
+.btn--solid:hover { background: var(--brass-ink); }
+
+.btn--line {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--rule);
+}
+.btn--line:hover { border-color: var(--brass); color: var(--brass-ink); }
+
+.btn--onink {
+  background: transparent;
+  color: var(--porcelain);
+  border-color: rgba(238, 241, 244, 0.3);
+}
+.btn--onink:hover { background: var(--porcelain); color: var(--ink); border-color: var(--porcelain); }
+
+/* ============================================================
+   Shared page furniture — used by every interior page
+   ============================================================ */
+
+.page-head { padding-block: clamp(3rem, 6vw, 5rem) 0; }
+.page-head__title { margin: 0; }
+
+/* the closing band, always on ink */
+.page-close { text-align: center; }
+.page-close__mark { margin-bottom: 1.6rem; }
+.page-close__title { margin: 0; font-size: var(--t-h2); }
+
+.page-close__note {
+  max-width: 52ch;
+  margin: 1.25rem auto 0;
+  color: rgba(238, 241, 244, 0.66);
+}
+
+.page-close__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 2.25rem;
+}
+
+/* ============================================================
+   Surfaces
+   ============================================================ */
+
+.panel {
+  background: var(--porcelain-lift);
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--r);
+}
+
+/* ============================================================
+   Motion
+   ------------------------------------------------------------
+   One idea, reused: a measurement being taken. The eyebrow's
+   hairline draws out from the left exactly like the facial-thirds
+   rules on the hero, then the type settles under it. Nothing
+   bounces — this is a clinic, not a carousel.
+   ============================================================ */
+
+@keyframes m-rule  { from { transform: scaleX(0); } }
+@keyframes m-rise  { from { opacity: 0; transform: translateY(14px); } }
+@keyframes m-fade  { from { opacity: 0; } }
+
+@media (prefers-reduced-motion: no-preference) {
+
+  /* --- page entrance: runs on every route change --- */
+  .page-head .u-eyebrow,
+  .hero__eyebrow { animation: m-fade 0.5s var(--ease) both; }
+
+  .page-head .u-eyebrow::after,
+  .hero__eyebrow::after {
+    transform-origin: left center;
+    animation: m-rule 0.8s var(--ease) 0.12s both;
+  }
+
+  .page-head__title,
+  .page-head > .u-shell > h1 { animation: m-rise 0.7s var(--ease) 0.18s both; }
+
+  .page-head .u-lede { animation: m-rise 0.7s var(--ease) 0.28s both; }
+
+  /* --- scroll reveal, opted in by RevealDirective --- */
+  .reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+      opacity 0.65s var(--ease) var(--reveal-delay, 0ms),
+      transform 0.65s var(--ease) var(--reveal-delay, 0ms);
+  }
+
+  .reveal.is-in { opacity: 1; transform: none; }
+}
+
+/* ============================================================
+   Shared hover: a brass tick against the row being read.
+   Used on every tabular list so the gesture means one thing.
+   ============================================================ */
+
+.row-tick {
+  transition: box-shadow 0.35s var(--ease), background-color 0.35s var(--ease);
+}
+
+.row-tick:hover {
+  background: var(--porcelain-lift);
+  box-shadow: inset 2px 0 0 var(--brass);
+}
+
+/* ============================================================
+   Accessibility floor
+   ============================================================ */
+
+:focus-visible {
+  outline: 2px solid var(--brass-ink);
+  outline-offset: 3px;
+}
+
+.u-skip {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 999;
+  background: var(--ink);
+  color: var(--porcelain);
+  padding: 0.85rem 1.4rem;
+  font-family: var(--data);
+  font-size: var(--t-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+.u-skip:focus { left: 0; }
+
+::selection { background: var(--brass-haze); color: var(--ink); }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ---- scrollbar ---- */
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: var(--porcelain-sink); }
+::-webkit-scrollbar-thumb { background: var(--ink-mute); border-radius: 0; }
+::-webkit-scrollbar-thumb:hover { background: var(--brass-ink); }
+
+/* ============================================================
+   Neutralise the legacy 27k-line theme on public pages.
+   These stylesheets load before this file and still set fonts,
+   pill radii and cream backgrounds on generic tags.
+   ============================================================ */
+
+/* structure.css puts `overflow-x: hidden` on <body>. Because the other axis
+   then computes to `auto`, the body becomes a scroll container — and a scroll
+   container between the viewport and a `position: sticky` element disables the
+   stickiness entirely. That is why the masthead, written as sticky, has never
+   stuck. `clip` clips the same horizontal overflow without creating a scroll
+   container, so `visible` survives on the other axis and sticky works again. */
+html body {
+  overflow-x: clip;
+  overflow-y: visible;
+}
+
+/* Scoped to the shells (0-1-1) rather than bare tags, so these win on
+   specificity instead of on stylesheet order. `.landing-wrapper` is the
+   public site, `.co` the checkout. Admin keeps the legacy theme. */
+
+.landing-wrapper h1, .landing-wrapper h2,
+.landing-wrapper h3, .landing-wrapper h4,
+.co h1, .co h2, .co h3, .co h4 {
+  font-family: var(--display);
+  letter-spacing: -0.015em;
+  text-shadow: none;
+  text-transform: none;
+}
+
+/* Colour only in checkout — the landing has intentional white-on-ink
+   headings (.band--ink) that an equal-specificity rule here would undo. */
+.co h1, .co h2, .co h3, .co h4 { color: var(--ink); }
+
+.landing-wrapper p,
+.landing-wrapper li,
+.landing-wrapper a,
+.landing-wrapper span,
+.landing-wrapper button,
+.landing-wrapper input,
+.landing-wrapper select,
+.landing-wrapper textarea,
+.co p, .co li, .co a, .co span,
+.co button, .co input, .co select, .co textarea, .co label {
+  font-family: var(--body);
+}
+
+.landing-wrapper .u-data,
+.landing-wrapper .u-eyebrow,
+.landing-wrapper .btn,
+.co .u-data, .co .u-eyebrow, .co .btn,
+.co .steps__label, .co .field label { font-family: var(--data); }
+
+/* the legacy theme puts a 2px gold border on every image */
+.landing-wrapper img,
+.co img { border: 0; box-shadow: none; }
+
+/* …and colours every link pink */
+.co a { color: inherit; }

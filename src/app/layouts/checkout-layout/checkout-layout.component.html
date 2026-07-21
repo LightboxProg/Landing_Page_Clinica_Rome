@@ -1,42 +1,34 @@
-<div class="checkout-layout-wrapper">
-  <!-- Header de Reserva Cero Distracciones -->
-  <header class="checkout-header">
-    <div class="checkout-header-container">
-      <!-- Logo Marca -->
-      <a routerLink="/" class="checkout-brand" title="Volver al Inicio">
-        <div class="brand-icon">
-          <i class="fas fa-spa"></i>
-        </div>
-        <div class="brand-text">
-          <span class="brand-title">ROME HARMONY CLINIC</span>
-          <span class="brand-tagline">Centro Estético & Odontológico</span>
-        </div>
+<div class="co">
+  <!-- A checkout frame should recede. Wordmark, one exit, nothing else. -->
+  <header class="co__mast">
+    <div class="co__shell co__mast-inner">
+      <a routerLink="/" class="co__brand" aria-label="ROME Harmony Clinic — inicio">
+        <img src="assets/images/rome.webp" alt="ROME Harmony Clinic" />
       </a>
 
-      <!-- Badges de Confianza -->
-      <div class="checkout-trust-badges">
-        <a routerLink="/" class="btn-exit-checkout">
-          <span>Volver al Inicio</span>
-          <i class="fas fa-times"></i>
-        </a>
-      </div>
+      <p class="co__secure u-data">
+        <i class="fas fa-lock" aria-hidden="true"></i>
+        Conexión segura
+      </p>
+
+      <a routerLink="/" class="co__exit u-data">
+        Salir
+        <i class="fas fa-xmark" aria-hidden="true"></i>
+      </a>
     </div>
   </header>
 
-  <!-- Contenido Principal Dinámico -->
-  <main class="checkout-main-content">
+  <main class="co__main">
     <router-outlet></router-outlet>
   </main>
 
-  <!-- Footer Minimalista de Reserva -->
-  <footer class="checkout-footer">
-    <div class="checkout-footer-container">
-      <p class="copyright-text">&copy; 2026 Rome Harmony Clinic. Todos los derechos reservados.</p>
-      <div class="footer-links">
-        <a routerLink="/aviso-privacidad" target="_blank">Aviso de Privacidad</a>
-        <span class="separator">&bull;</span>
-        <a routerLink="/aviso-terminos" target="_blank">Términos del Servicio</a>
-      </div>
+  <footer class="co__foot">
+    <div class="co__shell co__foot-inner">
+      <p class="co__copy u-data">© 2025 ROME Harmony Clinic</p>
+      <nav class="co__legal u-data" aria-label="Avisos legales">
+        <a routerLink="/aviso-privacidad" target="_blank" rel="noopener">Aviso de privacidad</a>
+        <a routerLink="/aviso-terminos" target="_blank" rel="noopener">Términos del servicio</a>
+      </nav>
     </div>
   </footer>
 </div>

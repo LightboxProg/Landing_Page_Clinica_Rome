@@ -1,70 +1,63 @@
-<footer id="Footer" class="clearfix rome-contact-footer">
-  <div class="widgets_wrapper">
-    <div class="container">
-      <div class="rome-footer-shell">
-        <div class="rome-footer-brand">
-          ROME
-          <span>HARMONY CLINIC</span>
-        </div>
+<footer class="foot">
+  <div class="u-shell foot__inner">
 
-        <h2 class="rome-footer-title">Contáctanos</h2>
+    <div class="foot__brand">
+      <img src="assets/images/rome-logo-blanco.webp" alt="ROME Harmony Clinic" class="foot__logo" />
+      <p class="foot__line">
+        Armonización facial y odontología estética. Valoración médica sin costo,
+        de lunes a sábado.
+      </p>
+      <a routerLink="/agendar-cita" class="btn btn--onink foot__cta">Agendar valoración</a>
+    </div>
 
-        <p class="rome-footer-subtitle">
-          Agenda tu cita y déjanos realzar tu belleza.
-        </p>
+    <div class="foot__cols">
+      <section class="foot__col">
+        <h2 class="foot__head u-data">Clínica</h2>
+        <ul>
+          <li><a routerLink="/servicios">Servicios</a></li>
+          <li><a routerLink="/membresias">Membresías</a></li>
+          <li><a routerLink="/nosotros">Nosotros</a></li>
+          <li><a routerLink="/contacto">Contacto</a></li>
+        </ul>
+      </section>
 
-        <div class="rome-footer-contact">
-          <a
-            class="rome-footer-contact-link"
-            href="https://maps.google.com/?q=Mayo+de+1812+805+Frac+Morelos+1+Aguascalientes+Aguascalientes"
-            target="_blank"
-            rel="noopener"
-          >
-            <i class="fa-solid fa-location-dot"></i>
-            <span>Mayo de 1812 #805 Frac Morelos 1, Aguascalientes, Ags.</span>
-          </a>
+      <section class="foot__col">
+        <h2 class="foot__head u-data">Contacto</h2>
+        <ul>
+          <li><a href="tel:+524493664109" class="u-data">(449) 366 4109</a></li>
+          <li><a href="mailto:contacto&#64;clinicarome.com">contacto&#64;clinicarome.com</a></li>
+          <li>
+            <a href="https://maps.google.com/?q=Mayo+de+1812+805+Frac+Morelos+1+Aguascalientes+Aguascalientes"
+               target="_blank" rel="noopener">
+              Mayo de 1812 #805,<br />Frac. Morelos 1, Aguascalientes
+            </a>
+          </li>
+        </ul>
+      </section>
 
-          <a class="rome-footer-contact-link" href="tel:+524493664109">
-            <i class="fa-solid fa-phone"></i>
-            <span>(449) 366 4109</span>
-          </a>
-
-          <a
-            class="rome-footer-contact-link"
-            href="https://maps.google.com/?q=Mayo+de+1812+805+Frac+Morelos+1+Aguascalientes+Aguascalientes"
-            target="_blank"
-            rel="noopener"
-          >
-            <i class="fa-solid fa-map"></i>
-            <span>Ver en Google Maps</span>
-          </a>
-        </div>
-
-        <div class="rome-footer-social">
-          <a href="#" title="Instagram">
-            <i class="fab fa-instagram"></i>
-          </a>
-          <a href="#" title="WhatsApp">
-            <i class="fab fa-whatsapp"></i>
-          </a>
-        </div>
-      </div>
+      <section class="foot__col">
+        <h2 class="foot__head u-data">Síguenos</h2>
+        <ul class="foot__social">
+          <li>
+            <a href="#" rel="noopener">
+              <i class="fab fa-instagram" aria-hidden="true"></i> Instagram
+            </a>
+          </li>
+          <li>
+            <a href="https://wa.me/524493664109" target="_blank" rel="noopener">
+              <i class="fab fa-whatsapp" aria-hidden="true"></i> WhatsApp
+            </a>
+          </li>
+        </ul>
+      </section>
     </div>
   </div>
 
-  <div class="footer_copy">
-    <div class="container">
-      <div class="column one">
-        <div class="rome-footer-legal">
-          <a routerLink="/aviso-terminos">Términos y Condiciones</a>
-          <span class="rome-footer-separator">|</span>
-          <a routerLink="/aviso-privacidad">Aviso de Privacidad</a>
-        </div>
-
-        <div class="copyright">
-          © 2025 ROME Harmony Clinic. Todos los derechos reservados.
-        </div>
-      </div>
-    </div>
+  <div class="u-shell foot__base">
+    <p class="foot__copy u-data">© 2025 ROME Harmony Clinic</p>
+    <nav class="foot__legal u-data" aria-label="Avisos legales">
+      <a routerLink="/aviso-terminos">Términos y condiciones</a>
+      <a routerLink="/aviso-privacidad">Aviso de privacidad</a>
+    </nav>
   </div>
 </footer>

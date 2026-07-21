@@ -70,6 +70,29 @@ export class AgendarCitaComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Importe que realmente se cobrará ahora. Refleja exactamente la lógica
+  // del backend (checkout.controller): si la configuración de disponibilidad
+  // define un anticipo, ese manda sobre el costo del servicio.
+  get montoApartado(): number {
+    const anticipo = this.activeConfig?.montoAnticipo;
+    if (anticipo !== undefined && anticipo !== null) return Number(anticipo);
+    return this.selectedService?.costo ?? 500;
+  }
+
+  // ¿El apartado es menor que el tratamiento? Entonces sí es un anticipo.
+  get apartadoEsParcial(): boolean {
+    return !!this.selectedService && this.montoApartado < this.selectedService.costo;
+  }
+
+  formatearPrecio(valor: number): string {
+    return new Intl.NumberFormat('es-MX', {
+      style: 'currency',
+      currency: 'MXN',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(valor ?? 0);
+  }
+
   // Obtiene el objeto doctor seleccionado
   getSelectedDoctor(): DoctorPublic | undefined {
     return this.doctores.find(d => d._id === this.selectedDoctorId);

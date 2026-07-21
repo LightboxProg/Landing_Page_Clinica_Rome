@@ -1,38 +1,134 @@
-<section class="info-page">
-  <div class="hero-card">
-    <p class="eyebrow">Rome Harmony Clinic</p>
-    <h1>Nosotros</h1>
-    <p class="lead">
-      Somos una clínica enfocada en tratamientos estéticos y clínicos con atención personalizada,
-      tecnología actual y un trato humano en cada paso del proceso.
+<section class="page-head">
+  <div class="u-shell">
+    <p class="u-eyebrow">La clínica</p>
+    <h1 class="page-head__title">Dos disciplinas,<br />un solo criterio.</h1>
+    <p class="u-lede">
+      ROME Harmony Clinic reúne armonización facial y odontología estética en
+      Aguascalientes. Ambas trabajan sobre lo mismo: la proporción del rostro.
+      Por eso se valoran juntas y no por separado.
     </p>
   </div>
+</section>
 
-  <div class="grid-cards">
-    <article class="info-card">
-      <h2>Qué hacemos</h2>
-      <p>Diseñamos experiencias de salud y belleza con procedimientos claros, seguimiento y resultados visibles.</p>
+<!-- the two arms, stated as what each one treats.
+     The clinic's own mark already says this: a flower whose top
+     petal is a molar. -->
+<section class="band band--tight">
+  <div class="u-shell">
+    <figure class="emblem" appReveal>
+      <img src="assets/images/Manual_Rome-10-removebg.png"
+           alt="Emblema de ROME Harmony Clinic: una flor cuyo pétalo superior tiene forma de molar"
+           class="mark mark--lg" />
+      <figcaption class="emblem__note u-data">
+        El emblema de la clínica: una flor cuyo pétalo superior es un molar
+      </figcaption>
+    </figure>
+  </div>
+
+  <div class="u-shell arms-grid">
+    <article class="arm-card" [appReveal]="0">
+      <p class="arm-card__k u-data">Medicina estética</p>
+      <h2 class="arm-card__name">Armonización facial</h2>
+      <p class="arm-card__note">
+        Proporción, volumen y calidad de piel mediante procedimientos no
+        quirúrgicos: bioestimulación, perfilado, rinomodelación y definición
+        mandibular.
+      </p>
+      <a routerLink="/servicios" class="btn btn--line arm-card__cta">Ver tratamientos</a>
     </article>
-    <article class="info-card">
-      <h2>Nuestra visión</h2>
-      <p>Ser una clínica confiable y cercana, reconocida por su atención, seguridad y calidad en cada tratamiento.</p>
+
+    <article class="arm-card" [appReveal]="1">
+      <p class="arm-card__k u-data">Odontología</p>
+      <h2 class="arm-card__name">Salud y estética dental</h2>
+      <p class="arm-card__note">
+        Diseño de sonrisa, ortodoncia y odontología restauradora. La sonrisa
+        define el tercio inferior del rostro, así que entra en la misma
+        valoración.
+      </p>
+      <a routerLink="/servicios" class="btn btn--line arm-card__cta">Ver tratamientos</a>
     </article>
-    <article class="info-card">
-      <h2>Principios</h2>
-      <ul>
-        <li>Atención profesional</li>
-        <li>Seguridad clínica</li>
-        <li>Comunicación clara</li>
-        <li>Seguimiento real</li>
-      </ul>
-    </article>
-    <article class="info-card callout">
-      <h2>¿Quieres conocer más?</h2>
-      <p>Agenda tu valoración o revisa nuestros servicios para encontrar el tratamiento ideal para ti.</p>
-      <div class="actions">
-        <a routerLink="/agendar-cita" class="btn primary">Agendar cita</a>
-        <a routerLink="/servicios" class="btn secondary">Ver servicios</a>
+  </div>
+</section>
+
+<!-- principles: what the clinic commits to, in plain terms -->
+<section class="band band--sink">
+  <div class="u-shell">
+    <header class="stance-head" appReveal>
+      <p class="u-eyebrow">Cómo atendemos</p>
+      <h2>Lo que puedes<br />dar por hecho.</h2>
+    </header>
+
+    <ul class="stance">
+      <li [appReveal]="0">
+        <h3 class="stance__name">Te atiende personal titulado</h3>
+        <p class="stance__note">
+          Cada procedimiento lo realiza personal médico u odontológico con
+          cédula, no personal de mostrador.
+        </p>
+      </li>
+      <li [appReveal]="1">
+        <h3 class="stance__name">El precio se dice antes</h3>
+        <p class="stance__note">
+          Recibes el plan y el costo total por escrito al terminar la
+          valoración. Sin cargos que aparecen después.
+        </p>
+      </li>
+      <li [appReveal]="0">
+        <h3 class="stance__name">Si no aplica, te lo decimos</h3>
+        <p class="stance__note">
+          Hay casos en los que el tratamiento que pides no es el indicado.
+          Preferimos decirlo en consulta que corregirlo después.
+        </p>
+      </li>
+      <li [appReveal]="1">
+        <h3 class="stance__name">El seguimiento va incluido</h3>
+        <p class="stance__note">
+          La revisión posterior forma parte del tratamiento y se compara contra
+          tu fotografía inicial.
+        </p>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- where we are -->
+<section class="band">
+  <div class="u-shell place">
+    <div class="place__body" appReveal>
+      <p class="u-eyebrow">Dónde estamos</p>
+      <h2 class="place__title">Aguascalientes.</h2>
+      <p class="place__addr u-data">
+        Mayo de 1812 #805<br />
+        Frac. Morelos 1<br />
+        Aguascalientes, Ags.
+      </p>
+      <div class="place__actions">
+        <a href="https://maps.google.com/?q=Mayo+de+1812+805+Frac+Morelos+1+Aguascalientes+Aguascalientes"
+           target="_blank" rel="noopener" class="btn btn--line">Ver en Google Maps</a>
+        <a href="tel:+524493664109" class="btn btn--line">(449) 366 4109</a>
       </div>
-    </article>
+    </div>
+
+    <figure class="place__figure" [appReveal]="1">
+      <img src="assets/images/doc.webp"
+           alt="Especialista de ROME Harmony Clinic"
+           loading="lazy" />
+      <figcaption class="place__cap u-data">Te recibe el equipo de la clínica</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="band band--ink band--tight">
+  <div class="u-shell page-close" appReveal>
+    <img src="assets/images/Manual_Rome-10-removebg.png" alt="" class="mark page-close__mark" width="54" height="44" />
+    <h2 class="page-close__title">Conócenos en consulta.</h2>
+    <p class="page-close__note">
+      La valoración no tiene costo y termina con un plan por escrito, decidas
+      tratarte o no.
+    </p>
+    <div class="page-close__actions">
+      <a routerLink="/agendar-cita" class="btn btn--onink">Agendar valoración</a>
+      <a routerLink="/contacto" class="btn btn--onink">Contacto</a>
+    </div>
   </div>
 </section>

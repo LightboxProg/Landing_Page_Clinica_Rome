@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MembresiasService } from '../../../services/membresias/membresias.service';
 import { HttpClientModule } from '@angular/common/http';
+import { RevealDirective } from '../../../directives/reveal.directive';
 
 interface CatalogoMembresia {
   _id: string;
@@ -22,7 +23,7 @@ interface CatalogoMembresia {
 @Component({
   selector: 'app-catalogo-membresias',
   standalone: true,
-  imports: [CommonModule, HttpClientModule],
+  imports: [CommonModule, HttpClientModule, RevealDirective],
   providers: [MembresiasService],
   templateUrl: './catalogo-membresias.component.html',
   styleUrl: './catalogo-membresias.component.css'

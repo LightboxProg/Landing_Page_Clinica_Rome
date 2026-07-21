@@ -1,73 +1,76 @@
-<div class="servicios-page">
-  <!-- Cabecera -->
-  <section class="page-header">
-    <div class="container">
-      <h1 class="page-title">Membresías Exclusivas</h1>
-      <div class="elegant-detail"></div>
-      <p class="page-subtitle">Planes de tratamiento con pagos flexibles y beneficios especiales</p>
-    </div>
-  </section>
+<section class="page-head">
+  <div class="u-shell">
+    <p class="u-eyebrow">Membresías</p>
+    <h1 class="page-head__title">Tratamientos<br />a plazos fijos.</h1>
+    <p class="u-lede">
+      Planes con enganche y pagos programados, para tratamientos que se realizan
+      en varias sesiones. El costo total se fija al contratar y no cambia.
+    </p>
+  </div>
+</section>
 
-  <!-- Contenido principal -->
-  <section class="section membresias-section">
-    <div class="container">
-      <!-- Indicador de carga / error -->
-      <div *ngIf="loading" class="loading-message">
-        <i class="fas fa-spinner fa-spin"></i> Cargando membresías...
-      </div>
-      <div *ngIf="error" class="error-message">
-        <i class="fas fa-exclamation-circle"></i> {{ error }}
-      </div>
+<section class="band band--tight">
+  <div class="u-shell">
+    <p *ngIf="loading" class="state u-data">Cargando membresías…</p>
+    <p *ngIf="error" class="state state--error u-data">{{ error }}</p>
 
-      <!-- Grid de membresías -->
-      <div class="categorias-grid" *ngIf="!loading && !error && membresias.length > 0">
-        <div class="categoria-card membresia-card" *ngFor="let m of membresias; trackBy: trackByMembresia">
-          <!-- Imagen de la membresía -->
-          <div class="membresia-imagen" *ngIf="m.photoUrl">
-            <img [src]="m.photoUrl" [alt]="m.nombreTratamiento" loading="lazy">
-          </div>
-          <div class="membresia-imagen placeholder" *ngIf="!m.photoUrl">
-            <i class="fas fa-gem"></i>
-          </div>
-
-          <!-- Contenido -->
-          <div class="membresia-contenido">
-            <h3 class="categoria-titulo">
-              <i class="fa-regular fa-gem"></i> {{ m.nombreTratamiento }}
-            </h3>
-            <p class="descripcion-membresia">{{ m.descripcion }}</p>
-
-            <!-- Detalles de precios -->
-            <div class="precios-membresia">
-              <div class="precio-item">
-                <span class="precio-label">Costo total:</span>
-                <span class="precio-valor">{{ formatearPrecio(m.costoTotal) }}</span>
-              </div>
-              <div class="precio-item destacado">
-                <span class="precio-label">Enganche:</span>
-                <span class="precio-valor">{{ formatearPrecio(m.enganche) }}</span>
-              </div>
-              <div class="precio-item">
-                <span class="precio-label">Resto en {{ m.installmentsCount }} pagos:</span>
-                <span class="precio-valor">{{ formatearPrecio(calcularPagoPeriodico(m)) }} c/u</span>
-              </div>
-              <div class="frecuencia-badge">
-                <i class="far fa-calendar-alt"></i> {{ m.paymentFrequency | titlecase }}
-              </div>
-            </div>
-
-            <!-- Botón de acción -->
-            <button class="cta-button membresia-btn" (click)="contratar(m._id)">
-              Contratar Membresía
-            </button>
+    <div class="plans" *ngIf="!loading && !error && membresias.length > 0">
+      <article class="plan" *ngFor="let m of membresias; let i = index; trackBy: trackByMembresia" [appReveal]="i">
+        <div class="plan__media">
+          <img *ngIf="m.photoUrl" [src]="m.photoUrl" [alt]="m.nombreTratamiento" loading="lazy" />
+          <div *ngIf="!m.photoUrl" class="plan__nomedia">
+            <img src="assets/images/Manual_Rome-10-removebg.png" alt="" class="mark" width="54" height="44" />
           </div>
         </div>
-      </div>
 
-      <!-- Mensaje sin resultados -->
-      <div *ngIf="!loading && !error && membresias.length === 0" class="no-services">
-        <p>No hay membresías disponibles en este momento.</p>
-      </div>
+        <div class="plan__body">
+          <h2 class="plan__name">{{ m.nombreTratamiento }}</h2>
+          <p class="plan__desc">{{ m.descripcion }}</p>
+
+          <!-- the payment schedule is data, so it is set as a table -->
+          <dl class="plan__terms u-data">
+            <div class="plan__term plan__term--lead">
+              <dt>Enganche</dt>
+              <dd>{{ formatearPrecio(m.enganche) }}</dd>
+            </div>
+            <div class="plan__term">
+              <dt>{{ m.installmentsCount }} pagos de</dt>
+              <dd>{{ formatearPrecio(calcularPagoPeriodico(m)) }}</dd>
+            </div>
+            <div class="plan__term">
+              <dt>Frecuencia</dt>
+              <dd>{{ m.paymentFrequency | titlecase }}</dd>
+            </div>
+            <div class="plan__term plan__term--total">
+              <dt>Costo total</dt>
+              <dd>{{ formatearPrecio(m.costoTotal) }}</dd>
+            </div>
+          </dl>
+
+          <button type="button" class="btn btn--solid plan__cta" (click)="contratar(m._id)">
+            Contratar
+          </button>
+        </div>
+      </article>
     </div>
-  </section>
-</div>
+
+    <p *ngIf="!loading && !error && membresias.length === 0" class="state u-data">
+      No hay membresías disponibles por ahora. Escríbenos y te armamos un plan.
+    </p>
+  </div>
+</section>
+
+<section class="band band--ink band--tight">
+  <div class="u-shell page-close" appReveal>
+    <img src="assets/images/Manual_Rome-10-removebg.png" alt="" class="mark page-close__mark" width="54" height="44" />
+    <h2 class="page-close__title">¿Cuál plan te conviene?</h2>
+    <p class="page-close__note">
+      Depende del tratamiento que necesites, y eso se define en la valoración.
+      No tiene costo.
+    </p>
+    <div class="page-close__actions">
+      <a routerLink="/agendar-cita" class="btn btn--onink">Agendar valoración</a>
+      <a routerLink="/servicios" class="btn btn--onink">Ver tratamientos</a>
+    </div>
+  </div>
+</section>
