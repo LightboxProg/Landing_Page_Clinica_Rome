@@ -1,0 +1,242 @@
+<div class="cp-page">
+  <header class="cp-header">
+    <div>
+      <span class="cp-eyebrow">Marketing</span>
+      <h1>Campañas</h1>
+      <p>Define qué palabra, comentario o enlace activa a tu bot en WhatsApp e Instagram. Cada persona que entra queda registrada como lead.</p>
+    </div>
+    <button type="button" class="cp-btn cp-btn--primary" (click)="abrirNueva()">
+      <i class="fas fa-plus"></i> Nueva campaña
+    </button>
+  </header>
+
+  <section class="cp-kpis" aria-label="Resumen de campañas">
+    <div class="cp-kpi">
+      <span class="cp-kpi__label">Activas</span>
+      <span class="cp-kpi__value">{{ totales.activas }}</span>
+    </div>
+    <div class="cp-kpi">
+      <span class="cp-kpi__label">Personas registradas</span>
+      <span class="cp-kpi__value">{{ totales.inscritos }}</span>
+    </div>
+    <div class="cp-kpi">
+      <span class="cp-kpi__label">Leads nuevos</span>
+      <span class="cp-kpi__value">{{ totales.nuevos }}</span>
+    </div>
+    <div class="cp-kpi">
+      <span class="cp-kpi__label">Convertidos a paciente</span>
+      <span class="cp-kpi__value">{{ totales.conversiones }}</span>
+    </div>
+  </section>
+
+  <div class="cp-toolbar">
+    <div class="cp-segmented" role="group" aria-label="Filtrar por canal">
+      <button type="button" [class.is-active]="filtroCanal === ''" [attr.aria-pressed]="filtroCanal === ''" (click)="filtroCanal = ''">Todas</button>
+      <button type="button" [class.is-active]="filtroCanal === 'WhatsApp'" [attr.aria-pressed]="filtroCanal === 'WhatsApp'" (click)="filtroCanal = 'WhatsApp'">
+        <i class="fab fa-whatsapp"></i> WhatsApp
+      </button>
+      <button type="button" [class.is-active]="filtroCanal === 'Instagram'" [attr.aria-pressed]="filtroCanal === 'Instagram'" (click)="filtroCanal = 'Instagram'">
+        <i class="fab fa-instagram"></i> Instagram
+      </button>
+    </div>
+    <select class="cp-select" [(ngModel)]="filtroEstado" aria-label="Filtrar por estado">
+      <option value="">Todos los estados</option>
+      <option *ngFor="let e of estados" [value]="e">{{ e }}</option>
+    </select>
+    <div class="cp-search">
+      <i class="fas fa-search" aria-hidden="true"></i>
+      <input type="search" [(ngModel)]="busqueda" placeholder="Buscar por nombre, palabra o código" aria-label="Buscar campaña">
+    </div>
+  </div>
+
+  <div class="cp-layout" [class.cp-layout--single]="!cargando && campanas.length === 0">
+    <div class="cp-list">
+      <div class="cp-empty" *ngIf="cargando">Cargando campañas…</div>
+
+      <div class="cp-empty" *ngIf="!cargando && campanas.length === 0">
+        <i class="fas fa-bullhorn" aria-hidden="true"></i>
+        <h3>Aún no hay campañas</h3>
+        <p>Crea la primera: por ejemplo, que el bot responda con precios a quien escriba “BOTOX”.</p>
+        <button type="button" class="cp-btn cp-btn--primary" (click)="abrirNueva()">Crear campaña</button>
+      </div>
+
+      <div class="cp-empty" *ngIf="!cargando && campanas.length > 0 && filtradas.length === 0">
+        Ninguna campaña coincide con los filtros.
+      </div>
+
+      <button type="button" class="cp-row" *ngFor="let c of filtradas; trackBy: trackById"
+              [class.is-selected]="c._id === seleccionada?._id"
+              [attr.aria-pressed]="c._id === seleccionada?._id"
+              (click)="seleccionar(c)">
+        <span class="cp-channel" [class.cp-channel--wa]="c.canal === 'WhatsApp'" [class.cp-channel--ig]="c.canal === 'Instagram'">
+          <i [class]="c.canal === 'WhatsApp' ? 'fab fa-whatsapp' : 'fab fa-instagram'" aria-hidden="true"></i>
+        </span>
+        <span class="cp-row__main">
+          <span class="cp-row__name">{{ c.nombre }}</span>
+          <span class="cp-row__meta">{{ disparadores[c.disparador] }} · {{ resumenDisparador(c) }}</span>
+        </span>
+        <span class="cp-row__side">
+          <span class="cp-status" [attr.data-estado]="c.estado">{{ c.estado }}</span>
+          <span class="cp-row__count">{{ c.metricas?.inscritos || 0 }} registrados</span>
+        </span>
+      </button>
+    </div>
+
+    <aside class="cp-detail" id="cp-detail" *ngIf="seleccionada as c; else sinSeleccion">
+      <div class="cp-detail__head">
+        <div>
+          <div class="cp-detail__tags">
+            <span class="cp-channel-label" [class.cp-channel-label--wa]="c.canal === 'WhatsApp'" [class.cp-channel-label--ig]="c.canal === 'Instagram'">
+              <i [class]="c.canal === 'WhatsApp' ? 'fab fa-whatsapp' : 'fab fa-instagram'" aria-hidden="true"></i> {{ c.canal }}
+            </span>
+            <span class="cp-status" [attr.data-estado]="c.estado">{{ c.estado }}</span>
+          </div>
+          <h2>{{ c.nombre }}</h2>
+          <p *ngIf="c.descripcion">{{ c.descripcion }}</p>
+        </div>
+        <button type="button" class="cp-icon-btn" (click)="seleccionada = null" aria-label="Cerrar detalle">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <div class="cp-actions">
+        <button type="button" *ngFor="let a of acciones[c.estado]" class="cp-btn"
+                [class.cp-btn--primary]="a.estado === 'Activa'" (click)="cambiarEstado(c, a.estado)">
+          <i [class]="a.icono" aria-hidden="true"></i> {{ a.etiqueta }}
+        </button>
+        <button type="button" class="cp-btn" (click)="editar(c)">
+          <i class="fas fa-pen" aria-hidden="true"></i> Editar
+        </button>
+        <button type="button" *ngIf="esAdmin" class="cp-btn cp-btn--danger" (click)="eliminar(c)">
+          <i class="fas fa-trash-alt" aria-hidden="true"></i> Eliminar
+        </button>
+      </div>
+
+      <div class="cp-metrics">
+        <div class="cp-metric">
+          <span class="cp-metric__value">{{ c.metricas?.disparos || 0 }}</span>
+          <span class="cp-metric__label">Disparos</span>
+        </div>
+        <div class="cp-metric">
+          <span class="cp-metric__value">{{ c.metricas?.inscritos || 0 }}</span>
+          <span class="cp-metric__label">Personas</span>
+        </div>
+        <div class="cp-metric">
+          <span class="cp-metric__value">{{ c.metricas?.nuevos || 0 }}</span>
+          <span class="cp-metric__label">Leads nuevos</span>
+        </div>
+        <div class="cp-metric">
+          <span class="cp-metric__value">{{ c.metricas?.conversiones || 0 }}</span>
+          <span class="cp-metric__label">Pacientes · {{ tasaConversion(c) }}%</span>
+        </div>
+      </div>
+
+      <section class="cp-section">
+        <h3>Disparador</h3>
+        <ng-container *ngIf="c.disparador === 'enlace'; else porPalabra">
+          <p class="cp-muted">Comparte este enlace en anuncios, tu bio o un QR. Quien entre por él quedará registrado.</p>
+          <div class="cp-link" *ngIf="c.enlace; else sinEnlace">
+            <code>{{ c.enlace }}</code>
+            <button type="button" class="cp-btn" (click)="copiar(c.enlace)">
+              <i class="fas fa-copy" aria-hidden="true"></i> Copiar
+            </button>
+          </div>
+          <ng-template #sinEnlace>
+            <p class="cp-warning">
+              <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+              Para generar el enlace falta configurar
+              <code>{{ c.canal === 'WhatsApp' ? 'WHATSAPP_NUMERO' : 'INSTAGRAM_USUARIO' }}</code> en el <code>.env</code> del backend.
+            </p>
+          </ng-template>
+        </ng-container>
+        <ng-template #porPalabra>
+          <p class="cp-muted">{{ fraseDisparo(c) }}</p>
+          <div class="cp-chips">
+            <span class="cp-chip" *ngFor="let p of c.palabrasClave">{{ p }}</span>
+          </div>
+          <p class="cp-muted" *ngIf="c.disparador === 'comentario'">
+            En {{ c.publicacionId ? 'la publicación ' + c.publicacionId : 'cualquier publicación' }}
+          </p>
+        </ng-template>
+        <p class="cp-muted cp-small">
+          Código <code>{{ c.codigo }}</code> ·
+          <ng-container *ngIf="!c.fechaInicio && !c.fechaFin">sin fecha límite</ng-container>
+          <ng-container *ngIf="c.fechaInicio || c.fechaFin">
+            {{ (c.fechaInicio | date:'dd/MM/yy') || 'desde hoy' }} → {{ (c.fechaFin | date:'dd/MM/yy') || 'sin fin' }}
+          </ng-container>
+        </p>
+      </section>
+
+      <section class="cp-section">
+        <h3>Respuesta del bot</h3>
+        <div class="cp-chat">
+          <div class="cp-bubble cp-bubble--in">{{ mensajeEntrada(c) }}</div>
+          <div class="cp-bubble cp-bubble--out" *ngIf="c.respuesta.mensaje || c.respuesta.mediaUrl">
+            <img *ngIf="c.respuesta.mediaUrl" [src]="c.respuesta.mediaUrl" alt="">
+            {{ vistaPrevia(c.respuesta.mensaje) }}
+          </div>
+          <p class="cp-muted" *ngIf="!c.respuesta.mensaje && !c.respuesta.mediaUrl">Sin respuesta configurada: el bot sólo registrará al contacto.</p>
+        </div>
+        <p class="cp-muted cp-small" *ngIf="c.etiquetas.length || c.interes !== 'Desconocido'">
+          Al registrarse:
+          <ng-container *ngIf="c.interes !== 'Desconocido'">interés {{ c.interes }}</ng-container>
+          <ng-container *ngIf="c.etiquetas.length"> · etiquetas {{ c.etiquetas.join(', ') }}</ng-container>
+        </p>
+      </section>
+
+      <section class="cp-section">
+        <div class="cp-section__head">
+          <h3>Registrados</h3>
+          <span class="cp-muted" *ngIf="!cargandoRegistros">{{ registros.length }}{{ registros.length === 500 ? '+' : '' }}</span>
+        </div>
+        <p class="cp-muted" *ngIf="cargandoRegistros">Cargando…</p>
+        <p class="cp-muted" *ngIf="!cargandoRegistros && registros.length === 0">
+          Nadie ha entrado todavía. Cuando tu bot registre a alguien aparecerá aquí.
+        </p>
+        <div class="cp-table-wrap" *ngIf="!cargandoRegistros && registros.length > 0">
+          <table class="cp-table">
+            <thead>
+              <tr>
+                <th scope="col">Contacto</th>
+                <th scope="col">Entró con</th>
+                <th scope="col">Fecha</th>
+                <th scope="col" class="num">Veces</th>
+                <th scope="col">Resultado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let r of registros">
+                <td>
+                  <strong>{{ r.lead?.nombre || 'Prospecto' }}</strong>
+                  <span class="cp-muted">{{ r.identificador }}</span>
+                </td>
+                <td class="cp-truncate" [title]="r.textoEntrada">{{ r.textoEntrada || '—' }}</td>
+                <td>{{ r.createdAt | date:'dd/MM/yy HH:mm' }}</td>
+                <td class="num">{{ r.disparos }}</td>
+                <td>
+                  <span class="cp-pill" [class.cp-pill--ok]="r.convertido">
+                    {{ r.convertido ? 'Paciente' : (r.esNuevo ? 'Lead nuevo' : 'Ya existía') }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </aside>
+
+    <ng-template #sinSeleccion>
+      <aside class="cp-detail cp-detail--empty" *ngIf="!cargando && campanas.length > 0">
+        <i class="fas fa-hand-pointer" aria-hidden="true"></i>
+        <p>Selecciona una campaña para ver su enlace, la respuesta del bot y quién se ha registrado.</p>
+      </aside>
+    </ng-template>
+  </div>
+</div>
+
+<app-campana-form
+  *ngIf="formularioAbierto"
+  [campana]="campanaEnEdicion"
+  (guardado)="onGuardado($event)"
+  (cerrado)="formularioAbierto = false">
+</app-campana-form>

@@ -231,6 +231,31 @@
   cursor: not-allowed;
 }
 
+/* El navegador dibuja el autocompletado en claro si no sabe que el tema es oscuro */
+.login-wrapper {
+  color-scheme: dark;
+}
+
+/* Safari y Chrome pintan de blanco el campo autocompletado e ignoran su fondo:
+   el texto claro quedaba invisible. Se fija el color del texto y se tapa ese
+   relleno con una sombra interior del mismo tono oscuro del campo. */
+.form-group input:-webkit-autofill,
+.form-group input:-webkit-autofill:hover,
+.form-group input:-webkit-autofill:focus,
+.form-group input:-webkit-autofill:active {
+  -webkit-text-fill-color: var(--white);
+  caret-color: var(--white);
+  -webkit-box-shadow: 0 0 0 1000px #1e2a35 inset;
+  box-shadow: 0 0 0 1000px #1e2a35 inset;
+  /* El relleno llega con una animación; así el blanco nunca alcanza a verse */
+  transition: background-color 600000s 0s, color 600000s 0s;
+}
+
+.form-group input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 3px rgba(139, 125, 79, 0.15), 0 0 0 1000px #1e2a35 inset;
+  box-shadow: 0 0 0 3px rgba(139, 125, 79, 0.15), 0 0 0 1000px #1e2a35 inset;
+}
+
 /* Password Toggle */
 .password-wrapper {
   position: relative;

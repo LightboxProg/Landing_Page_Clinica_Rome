@@ -1,378 +1,339 @@
+/* ============================================================
+   Modal de cobro — la caja de la clínica.
+   ------------------------------------------------------------
+   Se usa muchas veces al día, de prisa y con el paciente
+   enfrente. Un solo trabajo: cobrar la cantidad correcta sin
+   equivocarse. Por eso el número a cobrar es lo único grande
+   y las cifras van en mono tabular, para poder verificar la
+   cuenta corriendo la vista por una columna.
+
+   Usa los tokens de marca de styles.css (:root es global), así
+   el panel y el sitio público se leen como un mismo producto.
+   ============================================================ */
+
+:host {
+  --caja-borde: rgba(16, 26, 44, 0.14);
+  --caja-borde-suave: rgba(16, 26, 44, 0.08);
+  --caja-menos: #4F7A52;   /* lo que resta de la cuenta */
+  --caja-alerta: #B0553C;
+}
+
+/* ---------- envoltura ---------- */
 .event-modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  inset: 0;
   z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: fadeIn 0.2s ease-out;
+  padding: 20px;
+  background: rgba(16, 26, 44, 0.28);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: fadeIn 0.18s ease-out;
 }
 
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeIn { from { opacity: 0; } }
 
 .event-modal-card {
-  width: 90%;
-  max-width: 440px;
-  background: white;
-  border-radius: 16px;
-  border: 1px solid #e8e4dc;
-  position: relative;
-  box-shadow: 0 20px 50px rgba(26, 43, 60, 0.1);
-  overflow: hidden;
-  animation: slideUpModal 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  width: 100%;
+  max-width: 460px;
+  max-height: 90vh;
   display: flex;
   flex-direction: column;
-}
-
-.event-modal-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #2a6b7c 0%, #8b7d4f 100%);
-  z-index: 10;
+  background: #ffffff;
+  border: 1px solid var(--caja-borde);
+  border-radius: 12px;
+  box-shadow: 0 24px 60px rgba(16, 26, 44, 0.18);
+  overflow: hidden;
+  animation: slideUpModal 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes slideUpModal {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(14px); }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .event-modal-overlay,
+  .event-modal-card { animation: none; }
+}
+
+/* ---------- encabezado ---------- */
 .modal-header {
-  padding: 24px 32px 20px;
-  background: white;
-  border-bottom: 1px solid #eaeaea;
   display: flex;
-  justify-content: space-between;
   align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--caja-borde);
 }
 
 .modal-header h3 {
-  margin: 0;
-  font-size: 20px;
+  margin: 0 0 6px;
+  font-size: 19px;
   font-weight: 600;
-  color: #111;
-  letter-spacing: -0.02em;
-  line-height: 1.3;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: var(--ink, #101A2C);
 }
 
+.badge-tipo {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 3px;
+  font-family: var(--data, monospace);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.badge-tipo.estetica { background: rgba(177, 153, 76, 0.16); color: #77642F; }
+.badge-tipo.dental   { background: rgba(16, 26, 44, 0.08);  color: #3C4757; }
+
 .modal-header .close-btn {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
   background: transparent;
-  border: none;
-  color: #737373;
-  font-size: 16px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: #6E7887;
+  font-size: 15px;
   cursor: pointer;
-  padding: 4px;
-  margin-top: -4px;
-  transition: color 0.2s ease;
+  transition: color 0.2s ease, background-color 0.2s ease;
 }
 
 .modal-header .close-btn:hover {
-  color: #111;
+  background: rgba(16, 26, 44, 0.05);
+  color: var(--ink, #101A2C);
 }
 
+/* ---------- cuerpo ---------- */
 .modal-content {
-  padding: 24px 32px;
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px 24px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  background: white;
+  gap: 18px;
 }
 
-.modal-content .info-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
-}
+/* ---------- ficha de la cita ---------- */
+.ficha { margin: 0; }
 
-.modal-content .info-row .icon-primary {
-  font-size: 16px;
-  color: #737373; /* Iconos sutiles, no dorados */
-  width: 20px;
-  text-align: center;
-  margin-top: 2px;
+.ficha__row {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  gap: 12px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--caja-borde-suave);
 }
+.ficha__row:last-child { border-bottom: 0; }
 
-.modal-content .info-row .info-text {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.modal-content .info-row .info-text .label {
-  font-size: 11px;
+.ficha__row dt {
+  font-family: var(--data, monospace);
+  font-size: 10.5px;
   font-weight: 500;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #737373;
+  color: #6E7887;
+  padding-top: 2px;
 }
 
-.modal-content .info-row .info-text .value {
+.ficha__row dd {
+  margin: 0;
   font-size: 14px;
   font-weight: 500;
-  color: #111;
+  color: var(--ink, #101A2C);
+  overflow-wrap: anywhere;
 }
 
-.modal-content .info-row .info-text .status-badge {
-  display: inline-block;
-  padding: 4px 8px;
-  background: #fafafa;
-  border: 1px solid #eaeaea;
-  color: #737373;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  width: fit-content;
-  margin-top: 4px;
+.ficha__row dd.num { font-family: var(--data, monospace); font-size: 13px; }
+
+/* ---------- notas ---------- */
+.notas {
+  padding: 12px 14px;
+  background: #F6F7F9;
+  border-left: 2px solid var(--brass, #B1994C);
+  border-radius: 0 6px 6px 0;
 }
 
-.modal-content .info-row .info-text .status-badge.registered {
-  background: #f0fdf4;
-  border-color: #bbf7d0;
-  color: #166534;
-}
-
-.modal-content .notes-section {
-  padding: 16px;
-  background: #fafafa;
-  border-radius: 6px;
-  border: 1px solid #eaeaea;
-  margin-top: 8px;
-}
-
-.modal-content .notes-section .label {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #737373;
-  margin-bottom: 8px;
+.notas__k {
   display: block;
-}
-
-.modal-content .notes-section .notes-text {
-  font-size: 13px;
-  line-height: 1.6;
-  color: #111;
-  margin: 0;
-  font-weight: 400;
-}
-
-.modal-footer {
-  padding: 24px 32px;
-  background: #fafafa;
-  border-top: 1px solid #eaeaea;
-  display: flex;
-  gap: 12px;
-}
-
-.modal-footer .action-btn {
-  flex: 1;
-  padding: 12px;
-  background: white;
-  border: 1px solid #eaeaea;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  color: #111;
-  transition: all 0.2s ease;
-}
-
-.modal-footer .action-btn i { font-size: 14px; }
-
-.modal-footer .action-btn.wapp-btn:hover {
-  background: #f0fdf4;
-  border-color: #25D366;
-  color: #166534;
-}
-
-.modal-footer .action-btn.wapp-btn:hover i {
-  color: #25D366;
-}
-
-.modal-footer .action-btn.calendar-btn:hover {
-  background: #eff6ff;
-  border-color: #4285F4;
-  color: #1e40af;
-}
-
-.modal-footer .action-btn.calendar-btn:hover i {
-  color: #4285F4;
-}
-
-/* ---- ESTILOS DE COBRO ---- */
-.badge-tipo {
-  display: inline-block;
+  margin-bottom: 4px;
+  font-family: var(--data, monospace);
   font-size: 10px;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-top: 4px;
-}
-.badge-tipo.dental   { background: rgba(42,107,124,0.1); color: #2a6b7c; }
-.badge-tipo.estetica { background: rgba(139,125,79,0.1); color: #8b7d4f; }
-
-.payment-section {
-  border-top: 1px solid #eaeaea;
-  padding-top: 16px;
-  margin-top: 8px;
-}
-
-.section-title {
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: #1a2b3c;
-  margin: 0 0 12px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  letter-spacing: 0.5px;
-}
-
-.section-title i { color: #8b7d4f; }
-
-.payment-status-box {
-  background: #fcfbfa;
-  border: 1px dashed #e8e4dc;
-  border-radius: 8px;
-  padding: 14px;
-}
-
-.payment-status-box.paid {
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
-}
-
-.status-header {
-  margin-bottom: 10px;
-}
-
-.status-badge-paid {
-  font-size: 11px;
-  font-weight: 700;
-  color: #166534;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.status-badge-pending {
-  font-size: 11px;
-  font-weight: 700;
-  color: #c2780e;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.payment-details {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  font-size: 12px;
-}
-
-.detail-row {
-  display: flex;
-  justify-content: space-between;
-  color: #555;
-}
-
-.detail-row.total {
-  border-top: 1px solid #eaeaea;
-  padding-top: 6px;
-  margin-top: 4px;
-}
-
-.detail-row.total strong { font-size: 14px; }
-.detail-row strong { font-family: monospace; font-size: 13px; color: #111; }
-.font-sm { font-size: 11px; color: #888; }
-
-.text-stripe { color: #635bff !important; }
-.text-discount { color: #dc3545 !important; }
-.text-success { color: #166534 !important; }
-
-/* Botones */
-.btn-cobrar-trigger {
-  width: 100%;
-  background: linear-gradient(135deg, #1a2b3c 0%, #2a6b7c 100%);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 10px;
-  font-size: 12px;
   font-weight: 600;
-  cursor: pointer;
-  margin-top: 12px;
-  display: flex;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #77642F;
+}
+
+.notas p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #3C4757;
+  white-space: pre-line;
+}
+
+/* ============================================================
+   COBRO
+   ============================================================ */
+
+.cobro { display: flex; flex-direction: column; gap: 14px; }
+
+.cobro__estado {
+  padding: 16px;
+  border: 1px solid var(--caja-borde);
+  border-radius: 8px;
+  background: #FBFBFC;
+}
+
+.cobro__estado.is-pagada {
+  background: #F4F8F4;
+  border-color: rgba(79, 122, 82, 0.3);
+}
+
+/* sello de estado */
+.sello {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
   gap: 6px;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 6px rgba(42, 107, 124, 0.15);
+  margin: 0 0 12px;
+  padding: 4px 10px;
+  border-radius: 3px;
+  background: var(--caja-menos);
+  color: #fff;
+  font-family: var(--data, monospace);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
-.btn-cobrar-trigger:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(42, 107, 124, 0.25);
+.sello.is-pendiente {
+  background: rgba(177, 153, 76, 0.18);
+  color: #77642F;
 }
 
-/* Panel formulario de cobro */
+/* ---------- la cuenta ---------- */
+.cuenta { margin: 0; }
+
+.cuenta__row,
+.cuenta__hero {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 6px 0;
+}
+
+.cuenta__row dt,
+.cuenta__hero dt {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 12.5px;
+  color: #4A5563;
+}
+
+/* el método de pago, como apostilla del renglón */
+.cuenta__row dt em,
+.cuenta__hero dt em {
+  font-family: var(--data, monospace);
+  font-size: 9.5px;
+  font-style: normal;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #6E7887;
+  padding: 1px 5px;
+  border: 1px solid var(--caja-borde);
+  border-radius: 3px;
+}
+
+.cuenta__row dd,
+.cuenta__hero dd {
+  margin: 0;
+  font-family: var(--data, monospace);
+  font-variant-numeric: tabular-nums;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--ink, #101A2C);
+  white-space: nowrap;
+}
+
+/* lo que resta de la cuenta se ve restando */
+.cuenta__row--menos dd { color: var(--caja-menos); }
+
+.cuenta__row--sub {
+  border-top: 1px dashed var(--caja-borde);
+  margin-top: 2px;
+  padding-top: 8px;
+}
+.cuenta__row--sub dt { font-weight: 600; color: var(--ink, #101A2C); }
+
+/* el total: lo único grande de la pantalla */
+.cuenta__hero {
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1.5px solid var(--ink, #101A2C);
+}
+
+.cuenta__hero dt {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  font-family: var(--data, monospace);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #4A5563;
+}
+
+.cuenta__hero dd { font-size: 20px; font-weight: 600; }
+
+.cuenta__hero--grande dd {
+  font-size: 30px;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+
+/* El total necesita aire: es el número que se dice en voz alta,
+   no una fila más de la lista. */
+.cuenta--viva .cuenta__hero--grande { padding-bottom: 4px; }
+.cuenta--viva { margin-bottom: 6px; }
+
+/* ============================================================
+   Panel de captura
+   ============================================================ */
+
 .panel-cobro {
-  background: #fbfaf8;
-  border: 1px solid #e8e2d5;
-  border-radius: 12px;
-  padding: 20px;
-  margin-top: 16px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  animation: slideDownCobro 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 12px rgba(26, 43, 60, 0.02);
-}
-
-@keyframes slideDownCobro {
-  from { opacity: 0; transform: translateY(-12px); }
-  to { opacity: 1; transform: translateY(0); }
+  gap: 14px;
+  padding: 16px;
+  background: #FBFBFC;
+  border: 1px solid var(--caja-borde);
+  border-radius: 8px;
 }
 
 .panel-cobro-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: #1a2b3c;
-  border-bottom: 1.5px solid #e8e2d5;
-  padding-bottom: 8px;
-  margin-bottom: 4px;
-  letter-spacing: -0.01em;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--caja-borde);
+  font-family: var(--data, monospace);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink, #101A2C);
 }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
+.form-group { display: flex; flex-direction: column; gap: 6px; }
 
 .form-row-2 {
   display: grid;
@@ -381,105 +342,243 @@
 }
 
 .form-group label {
+  font-family: var(--data, monospace);
   font-size: 10px;
-  font-weight: 700;
-  color: #64748b;
+  font-weight: 600;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  color: #4A5563;
 }
 
 .form-control {
   width: 100%;
-  padding: 10px 14px;
-  border: 1.5px solid #d5cbd0;
-  border-radius: 8px;
-  font-family: inherit;
-  font-size: 13px;
+  padding: 10px 12px;
   box-sizing: border-box;
+  background: #fff;
+  border: 1px solid var(--caja-borde);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--ink, #101A2C);
   outline: none;
-  background: white;
-  color: #1a2b3c;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
+
+/* el importe se captura, así que se teclea en cifras tabulares */
+input.form-control[type='number'] {
+  font-family: var(--data, monospace);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+
+.form-control:hover { border-color: #9AA3AE; }
 
 .form-control:focus {
-  border-color: #2a6b7c;
-  box-shadow: 0 0 0 3px rgba(42, 107, 124, 0.15);
+  border-color: var(--brass, #B1994C);
+  box-shadow: 0 0 0 3px rgba(177, 153, 76, 0.18);
 }
 
-/* Desglose contable */
-.desglose-cobro {
-  background: white;
-  border: 1px solid #e8e2d5;
-  border-radius: 10px;
-  padding: 14px;
+.form-control:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* avisos bajo el campo de costo */
+.hint-precio {
+  margin: 2px 0 0;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: #6E7887;
+}
+.hint-precio--warn { color: var(--caja-alerta); font-weight: 600; }
+.hint-precio--promo { color: #77642F; font-weight: 600; }
+
+/* ---------- método de pago: se toca, no se despliega ---------- */
+.metodos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.metodo {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 11px 6px;
+  background: #fff;
+  border: 1px solid var(--caja-borde);
+  border-radius: 6px;
+  font-family: var(--data, monospace);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #4A5563;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+.metodo i { font-size: 15px; color: #6E7887; transition: color 0.2s ease; }
+
+.metodo:hover { border-color: #9AA3AE; }
+
+.metodo.is-on {
+  background: var(--ink, #101A2C);
+  border-color: var(--ink, #101A2C);
+  color: #fff;
+}
+.metodo.is-on i { color: var(--brass, #B1994C); }
+
+.metodo:focus-visible {
+  outline: 2px solid var(--brass, #B1994C);
+  outline-offset: 2px;
+}
+
+/* ---------- botones ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   gap: 8px;
-  font-size: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.01);
-}
-
-.desglose-row {
-  display: flex;
-  justify-content: space-between;
-  color: #64748b;
-}
-
-.desglose-row.total {
-  border-top: 1.5px solid #e8e2d5;
-  padding-top: 8px;
-  margin-top: 4px;
-}
-
-.desglose-row.total strong { font-size: 14px; color: #1a2b3c; font-family: monospace; }
-.desglose-row span:last-child { font-family: monospace; font-weight: 600; }
-
-/* Acciones cobro */
-.panel-cobro-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 8px;
-}
-
-.btn-cancel-cobro,
-.btn-confirm-cobro {
-  padding: 10px 20px;
-  border-radius: 40px;
+  padding: 12px 18px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-family: inherit;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  border: none;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
-.btn-cancel-cobro {
+.btn:focus-visible {
+  outline: 2px solid var(--brass, #B1994C);
+  outline-offset: 2px;
+}
+
+.btn-cobrar {
+  width: 100%;
+  margin-top: 4px;
+  background: var(--ink, #101A2C);
+  color: #fff;
+}
+.btn-cobrar:hover { background: #1D2B44; }
+
+/* En pantallas de portátil el panel no cabe y el modal scrollea. Ni el
+   importe ni el botón pueden quedar fuera de vista: van juntos, anclados
+   al fondo del área que scrollea. Verificar y cobrar es un solo acto. */
+.cierre {
+  position: sticky;
+  bottom: -16px;
+  z-index: 2;
+  margin: 4px -16px -16px;
+  padding: 12px 16px 14px;
+  background: #fff;
+  border-top: 1.5px solid var(--ink, #101A2C);
+  box-shadow: 0 -8px 20px rgba(16, 26, 44, 0.06);
+}
+
+.cierre__total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 10px;
+}
+
+.cierre__total span {
+  font-family: var(--data, monospace);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #4A5563;
+}
+
+.cierre__total strong {
+  font-family: var(--data, monospace);
+  font-variant-numeric: tabular-nums;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--ink, #101A2C);
+}
+
+.cierre__acciones {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+}
+
+.btn-cancelar {
   background: transparent;
-  color: #64748b;
-  border: 1.5px solid #d5cbd0;
+  border-color: var(--caja-borde);
+  color: #4A5563;
 }
+.btn-cancelar:hover { border-color: #9AA3AE; color: var(--ink, #101A2C); }
 
-.btn-cancel-cobro:hover {
-  background: rgba(100, 116, 139, 0.05);
-  color: #1a2b3c;
-  border-color: #1a2b3c;
+.btn-confirmar {
+  background: var(--ink, #101A2C);
+  color: #fff;
+  font-variant-numeric: tabular-nums;
 }
+.btn-confirmar:hover:not(:disabled) { background: #1D2B44; }
 
-.btn-confirm-cobro {
-  background: linear-gradient(135deg, #1a7a4a 0%, #15613a 100%);
-  color: white;
-  box-shadow: 0 4px 12px rgba(26, 122, 74, 0.2);
-}
-
-.btn-confirm-cobro:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(26, 122, 74, 0.3);
-}
-
-.btn-confirm-cobro:disabled {
-  opacity: 0.5;
+.btn-confirmar:disabled {
+  background: #C7CCD3;
+  color: #fff;
   cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
+}
+
+/* ---------- pie ---------- */
+.modal-footer {
+  display: flex;
+  gap: 8px;
+  padding: 14px 24px;
+  border-top: 1px solid var(--caja-borde);
+  background: #FBFBFC;
+}
+
+.modal-footer .action-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid var(--caja-borde);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #4A5563;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.modal-footer .action-btn:hover { border-color: #9AA3AE; color: var(--ink, #101A2C); }
+.modal-footer .wapp-btn:hover { border-color: #25D366; color: #128C4A; }
+.modal-footer .calendar-btn:hover { border-color: #4285F4; color: #1A62D6; }
+
+.modal-footer .action-btn:focus-visible {
+  outline: 2px solid var(--brass, #B1994C);
+  outline-offset: 2px;
+}
+
+/* ---------- responsive ---------- */
+@media (max-width: 480px) {
+  .event-modal-overlay { padding: 0; align-items: flex-end; }
+
+  .event-modal-card {
+    max-width: none;
+    max-height: 94vh;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .modal-header,
+  .modal-content { padding-inline: 18px; }
+
+  .ficha__row { grid-template-columns: 80px minmax(0, 1fr); }
+  .form-row-2 { grid-template-columns: 1fr; }
+  .cierre__total strong { font-size: 24px; }
+  .cierre__acciones { grid-template-columns: 1fr 1.6fr; }
 }

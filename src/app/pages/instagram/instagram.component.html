@@ -1,0 +1,102 @@
+<div class="ig-page">
+  <header class="ig-header">
+    <div>
+      <span class="ig-eyebrow">Marketing</span>
+      <h1>Instagram</h1>
+      <p>Publica fotos, carruseles, reels e historias directo en la cuenta de la clínica.</p>
+    </div>
+    <div class="ig-cuenta" *ngIf="cuenta">
+      <img *ngIf="cuenta.foto" [src]="cuenta.foto" alt="" class="ig-cuenta__foto">
+      <div>
+        <strong>&#64;{{ cuenta.usuario }}</strong>
+        <span>{{ cuenta.publicacionesUsadas }} de {{ cuenta.publicacionesPermitidas }} publicaciones en 24 h</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="ig-alerta" *ngIf="errorCuenta" role="alert">
+    <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+    <span>{{ errorCuenta }} Revisa que el Bot esté corriendo y que <code>INSTAGRAM_TOKEN</code> siga vigente.</span>
+  </div>
+
+  <div class="ig-layout">
+    <section class="ig-card" aria-labelledby="ig-nueva">
+      <h2 id="ig-nueva">Nueva publicación</h2>
+
+      <div class="ig-tipos" role="radiogroup" aria-label="Tipo de publicación">
+        <button type="button" *ngFor="let t of tipos" role="radio" [attr.aria-checked]="tipo === t.tipo"
+                [class.is-active]="tipo === t.tipo" (click)="cambiarTipo(t.tipo)">
+          <i [class]="t.icono" aria-hidden="true"></i> {{ t.etiqueta }}
+        </button>
+      </div>
+      <p class="ig-ayuda">{{ opcion.ayuda }}</p>
+
+      <div class="ig-medios">
+        <figure class="ig-medio" *ngFor="let a of archivos; let i = index">
+          <video *ngIf="a.esVideo" [src]="a.vista" muted playsinline preload="metadata"></video>
+          <img *ngIf="!a.esVideo" [src]="a.vista" [alt]="a.archivo.name">
+          <span class="ig-medio__num" *ngIf="tipo === 'carrusel'">{{ i + 1 }}</span>
+          <div class="ig-medio__acciones">
+            <button type="button" *ngIf="tipo === 'carrusel'" (click)="mover(i, -1)" [disabled]="i === 0" aria-label="Mover antes"><i class="fas fa-arrow-left"></i></button>
+            <button type="button" *ngIf="tipo === 'carrusel'" (click)="mover(i, 1)" [disabled]="i === archivos.length - 1" aria-label="Mover después"><i class="fas fa-arrow-right"></i></button>
+            <button type="button" (click)="quitar(i)" aria-label="Quitar archivo"><i class="fas fa-times"></i></button>
+          </div>
+        </figure>
+
+        <label class="ig-agregar" *ngIf="archivos.length < maxArchivos">
+          <input type="file" [accept]="opcion.acepta" [multiple]="maxArchivos > 1" (change)="agregarArchivos($event)">
+          <i class="fas fa-plus" aria-hidden="true"></i>
+          <span>{{ archivos.length ? 'Agregar' : 'Elegir archivo' }}</span>
+        </label>
+      </div>
+      <p class="ig-nota">Las fotos se convierten a JPEG y, si no tienen una proporción válida para Instagram, se completan con bandas blancas.</p>
+
+      <label class="ig-campo" *ngIf="tipo !== 'historia'">
+        <span class="ig-campo__etiqueta">Texto</span>
+        <textarea [(ngModel)]="caption" rows="6" placeholder="Escribe el texto de la publicación… #ClinicaRome"></textarea>
+        <span class="ig-contador" [class.is-error]="caption.length > maxCaption || hashtags > maxHashtags">
+          {{ caption.length }}/{{ maxCaption }} · {{ hashtags }}/{{ maxHashtags }} hashtags
+        </span>
+      </label>
+
+      <div class="ig-pie">
+        <span class="ig-faltante" *ngIf="faltante">{{ faltante }}</span>
+        <button type="button" class="ig-btn ig-btn--primary" (click)="publicar()" [disabled]="!!faltante || enviando">
+          <i class="fas" [class.fa-spinner]="enviando" [class.fa-spin]="enviando" [class.fa-paper-plane]="!enviando" aria-hidden="true"></i>
+          {{ enviando ? 'Subiendo…' : 'Publicar' }}
+        </button>
+      </div>
+    </section>
+
+    <section class="ig-card" aria-labelledby="ig-historial">
+      <h2 id="ig-historial">Publicado desde aquí</h2>
+      <div class="ig-vacio" *ngIf="cargando">Cargando…</div>
+      <div class="ig-vacio" *ngIf="!cargando && publicaciones.length === 0">Todavía no hay publicaciones.</div>
+
+      <ul class="ig-lista">
+        <li class="ig-fila" *ngFor="let p of publicaciones">
+          <div class="ig-fila__mini">
+            <video *ngIf="p.medios[0]?.tipo === 'video'" [src]="p.medios[0].url" muted preload="metadata"></video>
+            <img *ngIf="p.medios[0]?.tipo === 'imagen'" [src]="p.medios[0].url" alt="">
+          </div>
+          <div class="ig-fila__info">
+            <div class="ig-fila__titulo">
+              <strong>{{ etiquetaTipo[p.tipo] }}</strong>
+              <span class="ig-chip" [class]="'ig-chip ig-chip--' + p.estado">
+                <i class="fas fa-spinner fa-spin" *ngIf="p.estado === 'publicando'" aria-hidden="true"></i>
+                {{ p.estado === 'publicando' ? 'Publicando' : p.estado === 'publicada' ? (p.simulada ? 'Simulada' : 'Publicada') : 'Error' }}
+              </span>
+            </div>
+            <p class="ig-fila__texto" *ngIf="p.caption">{{ p.caption }}</p>
+            <p class="ig-fila__error" *ngIf="p.error">{{ p.error }}</p>
+            <span class="ig-fila__meta">{{ p.createdAt | date:'d MMM, HH:mm' }}<ng-container *ngIf="p.creadoPor"> · {{ p.creadoPor.nombre }}</ng-container></span>
+          </div>
+          <div class="ig-fila__acciones" *ngIf="p.estado === 'publicada'">
+            <a *ngIf="p.permalink" [href]="p.permalink" target="_blank" rel="noopener" class="ig-btn">Ver</a>
+            <button type="button" class="ig-btn" *ngIf="p.tipo !== 'historia'" (click)="copiarId(p)" title="Para una campaña de comentarios">Copiar ID</button>
+          </div>
+        </li>
+      </ul>
+    </section>
+  </div>
+</div>

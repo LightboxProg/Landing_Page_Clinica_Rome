@@ -64,6 +64,12 @@
         <a routerLink="/admin/mensajeria" routerLinkActive="active">
           <i class="fas fa-paper-plane"></i> Mensajería Masiva
         </a>
+        <a routerLink="/admin/campanas" routerLinkActive="active">
+          <i class="fas fa-bullhorn"></i> Campañas WhatsApp / IG
+        </a>
+        <a routerLink="/admin/instagram" routerLinkActive="active">
+          <i class="fab fa-instagram"></i> Publicar en Instagram
+        </a>
         <a routerLink="/admin/configuracion" routerLinkActive="active">
           <i class="fas fa-tools"></i> Configuración de Servicios
         </a>
@@ -128,7 +134,7 @@
       </div>
     </div>
 
-    <app-auth-google></app-auth-google>
+    <app-auth-google *ngIf="usuarioTipo === 'Administrador'"></app-auth-google>
     <div class="user-info" *ngIf="usuarioNombre">
       <div class="avatar">
         <i class="fas fa-user-circle"></i>

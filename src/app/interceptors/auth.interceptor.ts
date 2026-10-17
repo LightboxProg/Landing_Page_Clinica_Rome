@@ -29,10 +29,11 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError(error => {
-      if (error.status === 401 || error.status === 403) {
-        // Token expirado o inválido
+      if (error.status === 401) {
+        // Token ausente o expirado: la sesión ya no sirve
         authService.logout();
       }
+      // El 403 es falta de permisos con sesión válida, no se cierra sesión
       return throwError(() => error);
     })
   );

@@ -8,32 +8,36 @@ import { WhatsappPreviewComponent } from '../../components/whatsapp/preview/prev
 import { TemplateConfigComponent } from '../../components/whatsapp/template-config/template-config.component';
 import { ContactListComponent } from '../../components/whatsapp/contact-list/contact-list.component';
 import { MultimediaGalleryComponent } from '../../components/whatsapp/multimedia-gallery/multimedia-gallery.component';
+import { HistorialEnviosComponent } from '../../components/whatsapp/historial-envios/historial-envios.component';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-mensajeria-masiva-page',
   standalone: true,
   imports: [
-    CommonModule, 
+    CommonModule,
     FormsModule,
-    WhatsappPreviewComponent, 
-    TemplateConfigComponent, 
-    ContactListComponent, 
-    MultimediaGalleryComponent
+    WhatsappPreviewComponent,
+    TemplateConfigComponent,
+    ContactListComponent,
+    MultimediaGalleryComponent,
+    HistorialEnviosComponent
   ],
   templateUrl: './mensajeria-masiva-page.component.html',
   styleUrl: './mensajeria-masiva-page.component.css'
 })
 export class MensajeriaMasivaPageComponent implements OnInit {
+  vista: 'nuevo' | 'historial' = 'nuevo';
+  envioSeleccionadoId: string | null = null;
   pasoActual = 1;
   nombreCampania = '';
-  
+
   plantillas: any[] = [];
   plantillaSeleccionada: any = null;
   pacientes: any[] = [];
   leads: any[] = [];
   galeria: any[] = [];
-  
+
   contactosSeleccionados: { id: string, tipo: 'paciente' | 'lead', nombre: string }[] = [];
   imagenSeleccionada: string | null = null;
   mapeo: any = { header: [], body: [], footer: [] };
@@ -60,6 +64,15 @@ export class MensajeriaMasivaPageComponent implements OnInit {
     if (!this.plantillaSeleccionada) return false;
     const header = this.plantillaSeleccionada.components.find((c: any) => c.type === 'HEADER');
     return header && (header.format === 'IMAGE' || header.format === 'VIDEO' || header.format === 'DOCUMENT');
+  }
+
+  irAPaso(paso: number) {
+    this.vista = 'nuevo';
+    this.pasoActual = paso;
+  }
+
+  verHistorial() {
+    this.vista = 'historial';
   }
 
   handleTemplateChange(name: string) {
@@ -126,19 +139,25 @@ export class MensajeriaMasivaPageComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         const payload: any = {
+          nombre: this.nombreCampania,
           plantilla: this.plantillaSeleccionada.name,
           idioma: this.plantillaSeleccionada.language,
+          // Para que cada mensaje se vea completo en el Centro de Chats
+          textoPlantilla: this.plantillaSeleccionada.components.find((c: any) => c.type === 'BODY')?.text,
           contactos: this.contactosSeleccionados.map(c => ({ id: c.id, tipo: c.tipo })),
           mapeo: this.mapeo,
           multimedia: this.imagenSeleccionada ? { type: 'IMAGE', url: this.imagenSeleccionada } : undefined
         };
 
         this.whatsappService.enviarMensajesMasivos(payload).subscribe({
-          next: (res: any) => {
-            Swal.fire('¡Éxito!', `La campaña se ha iniciado para ${res.total} contactos.`, 'success');
+          next: (res) => {
+            const omitidos = res.omitidos ? ` ${res.omitidos} contacto(s) no tienen WhatsApp válido y se omitieron.` : '';
+            Swal.fire('Envío en curso', `Se están enviando ${res.total} mensajes.${omitidos} Aquí verás cuántos llegan, cuántos se leen y quién responde.`, 'success');
             this.clearContactos();
+            this.envioSeleccionadoId = res.envioId;
+            this.vista = 'historial';
           },
-          error: (err: any) => Swal.fire('Error', 'No se pudo procesar el envío masivo.', 'error')
+          error: (err: any) => Swal.fire('Error', err.error?.mensaje || 'No se pudo procesar el envío masivo.', 'error')
         });
       }
     });

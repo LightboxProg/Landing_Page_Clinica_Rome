@@ -17,4 +17,17 @@ export class ChatMessageComponent {
     const d = new Date(date);
     return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   }
+
+  // Texto de la palomita para el tooltip y los lectores de pantalla
+  get descripcionEstado(): string {
+    const m = this.message || {};
+    switch (m.status) {
+      case 'pending': return 'Enviando';
+      case 'sent': return 'Enviado';
+      case 'delivered': return m.fechaEntrega ? `Entregado · ${this.formatTime(m.fechaEntrega)}` : 'Entregado';
+      case 'read': return m.fechaLectura ? `Leído · ${this.formatTime(m.fechaLectura)}` : 'Leído';
+      case 'failed': return 'No entregado';
+      default: return '';
+    }
+  }
 }

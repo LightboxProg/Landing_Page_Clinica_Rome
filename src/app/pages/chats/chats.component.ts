@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -17,7 +17,7 @@ import Swal from 'sweetalert2';
   templateUrl: './chats.component.html',
   styleUrl: './chats.component.css'
 })
-export class ChatsComponent implements OnInit {
+export class ChatsComponent implements OnInit, OnDestroy {
   conversaciones: ChatConversation[] = [];
   tipoSeleccionado: 'Lead' | 'Paciente' = 'Lead';
   conversacionActiva: ChatConversation | null = null;
@@ -25,6 +25,7 @@ export class ChatsComponent implements OnInit {
   nuevoMensaje = '';
   filtro = '';
   isDarkMode = false;
+  private refresco?: ReturnType<typeof setInterval>;
 
   constructor(
     private chatService: ChatService,
@@ -40,6 +41,39 @@ export class ChatsComponent implements OnInit {
 
   ngOnInit() {
     this.cargarConversaciones();
+    // Palomitas (entregado / leído) y mensajes nuevos del chat abierto, sin recargar
+    this.refresco = setInterval(() => this.refrescarMensajes(), 5000);
+  }
+
+  ngOnDestroy() {
+    clearInterval(this.refresco);
+  }
+
+  private refrescarMensajes() {
+    const conv = this.conversacionActiva;
+    if (!conv || document.hidden || !/^[a-f\d]{24}$/i.test(conv._id)) return;
+
+    this.chatService.obtenerMensajes(conv._id).subscribe({
+      next: data => {
+        if (this.conversacionActiva?._id !== conv._id || !Array.isArray(data)) return;
+        // Se actualiza en su lugar para no re-pintar la conversación ni mover el scroll
+        const actuales = new Map(this.mensajes.filter(m => m._id).map(m => [m._id, m]));
+        for (const m of data) {
+          const actual = actuales.get(m._id);
+          if (actual) {
+            Object.assign(actual, {
+              status: m.status,
+              errorEnvio: m.errorEnvio,
+              fechaEntrega: m.fechaEntrega,
+              fechaLectura: m.fechaLectura
+            });
+          } else {
+            this.mensajes.push(m);
+          }
+        }
+      },
+      error: () => {}
+    });
   }
 
   cargarConversaciones() {
@@ -137,12 +171,16 @@ export class ChatsComponent implements OnInit {
       body: body
     };
 
-    this.chatService.enviarMensaje(payload).subscribe(msg => {
-      this.mensajes.push(msg);
-      this.nuevoMensaje = '';
-      if (this.conversacionActiva) {
-        this.conversacionActiva.ultimoMensaje = msg;
-      }
+    this.chatService.enviarMensaje(payload).subscribe({
+      next: msg => {
+        this.mensajes.push(msg);
+        this.nuevoMensaje = '';
+        if (this.conversacionActiva) {
+          this.conversacionActiva.ultimoMensaje = msg;
+        }
+      },
+      // El texto se conserva en la caja para poder reintentar
+      error: err => Swal.fire('No se pudo enviar', err.error?.mensaje || 'Intenta de nuevo.', 'error')
     });
   }
 

@@ -950,7 +950,9 @@
   margin-bottom: 6px;
 }
 
-.form-modal-cita input, .form-modal-cita textarea {
+.form-modal-cita input,
+.form-modal-cita textarea,
+.form-modal-cita select {
   width: 100%;
   padding: 10px 12px;
   border: 1px solid var(--border-light);
@@ -962,10 +964,120 @@
   transition: all 0.2s ease;
 }
 
-.form-modal-cita input:focus, .form-modal-cita textarea:focus {
+.form-modal-cita input:focus,
+.form-modal-cita textarea:focus,
+.form-modal-cita select:focus {
   outline: none;
   border-color: var(--primary-gold);
   background: var(--bg-main);
+}
+
+/* Dos campos que se leen juntos (inicio/fin, costo/anticipo) */
+.form-modal-cita .campo-par {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.form-modal-cita .campo-par label { margin-top: 16px; }
+
+.form-modal-cita .campo-ayuda {
+  margin: 6px 0 0;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.form-modal-cita .campo-error {
+  margin: 10px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #B0553C;
+}
+
+/* Lo que queda por cobrar: el número que decide la conversación */
+.form-modal-cita .resumen-cita {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 18px;
+  padding: 12px 14px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-left: 3px solid var(--primary-gold);
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.form-modal-cita .resumen-cita strong {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.form-modal-cita .botones-modal {
+  display: flex;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.form-modal-cita .btn-guardar:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---- Estado de cuenta dentro de la tarjeta de cita ---- */
+.cita-notas {
+  margin: 10px 0 0;
+  padding-left: 10px;
+  border-left: 2px solid var(--border-light);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-muted);
+  white-space: pre-line;
+}
+
+.cita-cuenta {
+  margin: 12px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-light);
+}
+
+.cita-cuenta__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 3px 0;
+}
+
+.cita-cuenta__row dt {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.cita-cuenta__row dd {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-main);
+  font-variant-numeric: tabular-nums;
+}
+
+.cita-cuenta__row dd.is-neg { color: #4F7A52; }
+
+.cita-cuenta__row--total {
+  margin-top: 4px;
+  padding-top: 7px;
+  border-top: 1px dashed var(--border-light);
+}
+
+.cita-cuenta__row--total dt { font-weight: 600; color: var(--text-main); }
+.cita-cuenta__row--total dd { font-size: 15px; font-weight: 700; }
+
+@media (max-width: 520px) {
+  .form-modal-cita .campo-par { grid-template-columns: 1fr; gap: 0; }
 }
 
 .form-modal-cita .botones-modal {

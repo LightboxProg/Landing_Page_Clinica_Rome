@@ -37,10 +37,10 @@ export class PromocionesService {
     return this.http.delete<any>(`${this.apiUrl}/promociones/${id}`);
   }
 
-  obtenerPrecioSugerido(servicioId: string): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/promociones/calcular`, {
-      params: { servicioId }
-    });
+  obtenerPrecioSugerido(servicioId: string, tipoCita?: string): Observable<any> {
+    const params: any = { servicioId };
+    if (tipoCita) params.tipoCita = tipoCita;
+    return this.http.get<any>(`${this.apiUrl}/promociones/calcular`, { params });
   }
 
   obtenerPromocionesActivas(): Observable<any[]> {

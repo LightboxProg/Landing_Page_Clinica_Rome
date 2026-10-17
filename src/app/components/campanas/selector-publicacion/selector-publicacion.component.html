@@ -1,0 +1,47 @@
+<div class="sp">
+  <div class="sp-cabecera">
+    <span class="sp-titulo">Publicación</span>
+    <button type="button" class="sp-link" (click)="manual = !manual">{{ manual ? 'Elegir de la lista' : 'Escribir ID' }}</button>
+  </div>
+
+  <p class="sp-error" *ngIf="error" role="alert">{{ error }}</p>
+
+  <label class="sp-manual" *ngIf="manual">
+    <span class="sr-only">ID de la publicación</span>
+    <input [ngModel]="publicacionId" (ngModelChange)="elegir($event.trim())" placeholder="Vacío = cualquier publicación">
+  </label>
+
+  <ng-container *ngIf="!manual">
+    <div class="sp-cargando" *ngIf="cargando">Cargando publicaciones…</div>
+
+    <div class="sp-grid" *ngIf="!cargando" role="radiogroup" aria-label="Publicación de la campaña">
+      <button type="button" class="sp-item sp-item--todas" role="radio" [attr.aria-checked]="!publicacionId"
+              [class.is-activa]="!publicacionId" (click)="elegir('')">
+        <i class="fas fa-th" aria-hidden="true"></i>
+        <span>Cualquier publicación</span>
+      </button>
+
+      <button type="button" class="sp-item" *ngFor="let m of medios" role="radio" [attr.aria-checked]="publicacionId === m.id"
+              [class.is-activa]="publicacionId === m.id" (click)="elegir(m.id)"
+              [title]="m.caption || 'Sin texto'" [attr.aria-label]="(m.caption || 'Publicación sin texto') | slice:0:80">
+        <img *ngIf="m.miniatura" [src]="m.miniatura" alt="" loading="lazy">
+        <span class="sp-sin-imagen" *ngIf="!m.miniatura"><i class="far fa-image" aria-hidden="true"></i></span>
+        <i class="sp-tipo" *ngIf="iconoTipo[m.tipo]" [class]="'sp-tipo ' + iconoTipo[m.tipo]" aria-hidden="true"></i>
+        <span class="sp-check" *ngIf="publicacionId === m.id" aria-hidden="true"><i class="fas fa-check"></i></span>
+      </button>
+    </div>
+
+    <button type="button" class="sp-mas" *ngIf="siguiente && !cargando" (click)="cargarMas()" [disabled]="cargandoMas">
+      {{ cargandoMas ? 'Cargando…' : 'Ver más publicaciones' }}
+    </button>
+  </ng-container>
+
+  <div class="sp-elegida" *ngIf="seleccionada as s">
+    <img *ngIf="s.miniatura" [src]="s.miniatura" alt="">
+    <div>
+      <p>{{ s.caption || 'Sin texto' }}</p>
+      <small>{{ s.fecha | date:'d MMM y' }}<ng-container *ngIf="s.permalink"> · <a [href]="s.permalink" target="_blank" rel="noopener">Ver en Instagram</a></ng-container></small>
+    </div>
+  </div>
+  <small class="sp-ayuda" *ngIf="!publicacionId">La campaña responde a la palabra clave en cualquier publicación de la cuenta.</small>
+</div>

@@ -21,7 +21,15 @@ export interface CitaPayload {
   origen?: string;
   googleEventId?: string;
   googleEventLink?: string;
+
+  // Contabilidad capturada al registrar la cita. El saldo restante se
+  // liquida después con registrarCobro(), que descuenta el anticipo.
+  costoTotal?: number;
+  montoAnticipo?: number;
+  anticipoMetodoPago?: MetodoPago;
 }
+
+export type MetodoPago = 'Ninguno' | 'Efectivo' | 'Tarjeta' | 'Transferencia';
 
 @Injectable({
   providedIn: 'root'

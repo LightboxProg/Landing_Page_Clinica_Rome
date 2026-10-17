@@ -7,11 +7,13 @@ export interface Lead {
   _id?: string;
   identificador: string;
   nombre: string;
-  origen: 'WhatsApp' | 'Instagram' | 'Facebook' | 'Otro';
+  origen: 'WhatsApp' | 'Instagram' | 'Facebook' | 'Panel' | 'Otro';
   estado: 'Nuevo' | 'Atendido' | 'Preguntón' | 'Convertido' | 'Lista Negra';
   interacciones: number;
   interes: 'Dental' | 'Estética' | 'Ambos' | 'Desconocido';
   notas: string;
+  etiquetas?: string[];
+  campanaOrigen?: { _id: string; nombre: string; canal: string; codigo: string } | null;
   ultimoContacto: Date;
   createdAt?: Date;
 }

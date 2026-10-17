@@ -22,7 +22,6 @@ import { PerfilPacienteComponent } from './components/pacientes/perfil-paciente/
 import { PacientesListadosComponent } from './components/pacientes/pacientes-listados/pacientes-listados.component';
 import { LeadsComponent } from './pages/leads/leads.component';
 import { CalendarioAdminComponent } from './pages/Calendario/calendario.component';
-import { MensajeriaMasivaPageComponent } from './pages/mensajeria-masiva-page/mensajeria-masiva-page.component';
 import { ChatsComponent } from './pages/chats/chats.component';
 import { DisponibilidadComponent } from './pages/disponibilidad/disponibilidad.component';
 
@@ -79,7 +78,19 @@ export const routes: Routes = [
       { path: 'admin/gestion', component: CalendarioAdminComponent },
       { path: 'admin/configuracion', component: GestionComponent },
       { path: 'admin/leads', component: LeadsComponent },
-      { path: 'admin/mensajeria', component: MensajeriaMasivaPageComponent },
+      {
+        path: 'admin/mensajeria',
+        loadComponent: () => import('./pages/mensajeria-masiva-page/mensajeria-masiva-page.component').then(m => m.MensajeriaMasivaPageComponent)
+      },
+      // Carga diferida: el bundle inicial ya roza el budget de 3 MB de angular.json
+      {
+        path: 'admin/campanas',
+        loadComponent: () => import('./pages/campanas/campanas.component').then(m => m.CampanasComponent)
+      },
+      {
+        path: 'admin/instagram',
+        loadComponent: () => import('./pages/instagram/instagram.component').then(m => m.InstagramComponent)
+      },
       { path: 'admin/chats', component: ChatsComponent },
       { path: 'admin/disponibilidad', component: DisponibilidadComponent },
 

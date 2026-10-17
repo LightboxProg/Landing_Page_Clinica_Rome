@@ -2,7 +2,11 @@ import { CommonModule } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Paciente, PacientesService } from '../../../services/pacientes/pacientes.service';
-import { CitaPayload, CitasService } from '../../../services/citas/citas.service';
+import { CitaPayload, CitasService, MetodoPago } from '../../../services/citas/citas.service';
+import { CategoriasService } from '../../../services/categorias/categorias.service';
+import { ServiciosService } from '../../../services/servicios/servicios.service';
+import { CategoriasDentalesService } from '../../../services/categorias-dentales/categorias-dentales.service';
+import { ServiciosDentalesService } from '../../../services/servicios-dentales/servicios-dentales.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ListaNegraService } from '../../../services/lista-negra/lista-negra.service';
 import { SwalService } from '../../../services/swal/swal.service';
@@ -35,10 +39,19 @@ export class PerfilPacienteComponent implements OnInit {
   citasEstetica: any[] = [];
   citasDental: any[] = [];
   doctoresMap: { [key: string]: string } = {};
-  showModalEstetica = false;
-  showModalDental = false;
-  nuevaCitaEstetica: Partial<CitaPayload> = { titulo: '', notas: '' };
-  nuevaCitaDental: Partial<CitaPayload> = { titulo: '', notas: '' };
+
+  // ---- Registro de citas -------------------------------------------------
+  showModalCita = false;
+  citaTipo: 'Estetica' | 'Dental' = 'Estetica';
+  guardandoCita = false;
+
+  doctores: Usuario[] = [];
+  categoriasEstetica: any[] = [];
+  serviciosEstetica: any[] = [];
+  categoriasDental: any[] = [];
+  serviciosDental: any[] = [];
+
+  citaForm = this.formularioVacio();
 
   fotos: any[] = [];
   imagenModal: string | null = null;
@@ -61,7 +74,11 @@ export class PerfilPacienteComponent implements OnInit {
     private authService: AuthService,
     private swal: SwalService,
     private usuariosService: UserService,
-    private membresiasService: MembresiasService
+    private membresiasService: MembresiasService,
+    private categoriasService: CategoriasService,
+    private serviciosService: ServiciosService,
+    private categoriasDentalesService: CategoriasDentalesService,
+    private serviciosDentalesService: ServiciosDentalesService
   ) { }
 
   ngOnInit() {
@@ -73,6 +90,7 @@ export class PerfilPacienteComponent implements OnInit {
       this.cargarFotos(id);
       this.cargarDoctores();
       this.cargarMembresias(id);
+      this.cargarCatalogos();
     }
     const usuario = this.authService.getUsuario();
     this.esAdmin = usuario?.tipo === 'Administrador';
@@ -103,10 +121,175 @@ export class PerfilPacienteComponent implements OnInit {
 
   cargarDoctores() {
     this.usuariosService.getUsuarios().subscribe((usuarios: Usuario[]) => {
-      const doctores = usuarios.filter((u: Usuario) => u.tipo === 'Doctor' || u.tipo === 'Especialista');
-      doctores.forEach((d: Usuario) => {
+      this.doctores = usuarios.filter((u: Usuario) => u.tipo === 'Doctor' || u.tipo === 'Especialista');
+      this.doctores.forEach((d: Usuario) => {
         if (d._id) this.doctoresMap[d._id] = `${d.nombre} ${d.apeP}`;
       });
+    });
+  }
+
+  // Catálogos para el selector de tratamiento del modal de registro
+  cargarCatalogos() {
+    this.categoriasService.obtenerCategorias().subscribe({
+      next: (res) => this.categoriasEstetica = res || [],
+      error: () => this.categoriasEstetica = []
+    });
+    this.serviciosService.obtenerServicios().subscribe({
+      next: (res) => this.serviciosEstetica = (res || []).filter((s: any) => s.activo !== false),
+      error: () => this.serviciosEstetica = []
+    });
+    this.categoriasDentalesService.obtenerCategorias().subscribe({
+      next: (res) => this.categoriasDental = res || [],
+      error: () => this.categoriasDental = []
+    });
+    this.serviciosDentalesService.obtenerServicios().subscribe({
+      next: (res) => this.serviciosDental = (res || []).filter((s: any) => s.activo !== false),
+      error: () => this.serviciosDental = []
+    });
+  }
+
+  // ---- Registro de citas -------------------------------------------------
+
+  private formularioVacio() {
+    return {
+      categoriaId: '',
+      servicioId: '',
+      doctorId: '',
+      fechaHoraInicio: '',
+      fechaHoraFin: '',
+      costoTotal: 0,
+      montoAnticipo: 0,
+      anticipoMetodoPago: 'Ninguno' as MetodoPago,
+      notas: ''
+    };
+  }
+
+  abrirRegistroCita(tipo: 'Estetica' | 'Dental') {
+    this.citaTipo = tipo;
+    this.citaForm = this.formularioVacio();
+    this.showModalCita = true;
+  }
+
+  /** Categorías de la rama activa. */
+  get categoriasActivas(): any[] {
+    return this.citaTipo === 'Dental' ? this.categoriasDental : this.categoriasEstetica;
+  }
+
+  /** Tratamientos de la rama activa, filtrados por la categoría elegida. */
+  get serviciosActivos(): any[] {
+    const lista = this.citaTipo === 'Dental' ? this.serviciosDental : this.serviciosEstetica;
+    if (!this.citaForm.categoriaId) return lista;
+    return lista.filter((s: any) => {
+      const cat = typeof s.categoria === 'object' ? s.categoria?._id : s.categoria;
+      return String(cat) === String(this.citaForm.categoriaId);
+    });
+  }
+
+  get servicioSeleccionado(): any | null {
+    const lista = this.citaTipo === 'Dental' ? this.serviciosDental : this.serviciosEstetica;
+    return lista.find((s: any) => String(s._id) === String(this.citaForm.servicioId)) || null;
+  }
+
+  /** Lo que quedará por cobrar el día de la visita. */
+  get restaPorCobrar(): number {
+    const resta = (Number(this.citaForm.costoTotal) || 0) - (Number(this.citaForm.montoAnticipo) || 0);
+    return resta > 0 ? resta : 0;
+  }
+
+  get anticipoExcedeCosto(): boolean {
+    const costo = Number(this.citaForm.costoTotal) || 0;
+    const anticipo = Number(this.citaForm.montoAnticipo) || 0;
+    return costo > 0 && anticipo > costo;
+  }
+
+  /** Al cambiar de categoría, el tratamiento elegido deja de ser válido. */
+  onCategoriaChange() {
+    this.citaForm.servicioId = '';
+    this.citaForm.costoTotal = 0;
+  }
+
+  /** Elegir tratamiento rellena costo y calcula la hora de fin. */
+  onServicioChange() {
+    const servicio = this.servicioSeleccionado;
+    if (!servicio) return;
+    this.citaForm.costoTotal = servicio.costo ?? 0;
+    this.recalcularFin();
+  }
+
+  onInicioChange() {
+    this.recalcularFin();
+  }
+
+  /** Fin = inicio + duración del tratamiento (60 min si no está definida). */
+  private recalcularFin() {
+    const inicio = this.citaForm.fechaHoraInicio;
+    if (!inicio) return;
+    const minutos = Number(this.servicioSeleccionado?.duracionMinutos) || 60;
+    const fin = new Date(new Date(inicio).getTime() + minutos * 60000);
+    const pad = (n: number) => String(n).padStart(2, '0');
+    this.citaForm.fechaHoraFin =
+      `${fin.getFullYear()}-${pad(fin.getMonth() + 1)}-${pad(fin.getDate())}` +
+      `T${pad(fin.getHours())}:${pad(fin.getMinutes())}`;
+  }
+
+  registrarCita() {
+    if (!this.paciente?._id) {
+      this.swal.error('No se encontró el expediente del paciente.');
+      return;
+    }
+    if (!this.citaForm.servicioId) {
+      this.swal.error('Elige el tratamiento que se va a realizar.');
+      return;
+    }
+    if (!this.citaForm.doctorId) {
+      this.swal.error('Elige quién atenderá la cita.');
+      return;
+    }
+    if (!this.citaForm.fechaHoraInicio || !this.citaForm.fechaHoraFin) {
+      this.swal.error('Indica la fecha y hora de la cita.');
+      return;
+    }
+    if (this.anticipoExcedeCosto) {
+      this.swal.error('El anticipo no puede ser mayor al costo del tratamiento.');
+      return;
+    }
+    const anticipo = Number(this.citaForm.montoAnticipo) || 0;
+    if (anticipo > 0 && this.citaForm.anticipoMetodoPago === 'Ninguno') {
+      this.swal.error('Indica cómo se recibió el anticipo.');
+      return;
+    }
+
+    const p = this.paciente;
+    const payload: CitaPayload = {
+      pacienteId: p._id,
+      pacienteNombre: `${p.nombre} ${p.apeP} ${p.apeM || ''}`.trim(),
+      pacienteTelefono: p.telefonoWhatsapp || p.telefonoPaciente || '',
+      pacienteEmail: p.correoElectronico,
+      doctorId: this.citaForm.doctorId,
+      servicioId: this.citaForm.servicioId,
+      tipoCita: this.citaTipo,
+      // El backend reescribe el título con el nombre del tratamiento.
+      titulo: this.servicioSeleccionado?.nombre || '',
+      fechaHoraInicio: new Date(this.citaForm.fechaHoraInicio),
+      fechaHoraFin: new Date(this.citaForm.fechaHoraFin),
+      notas: this.citaForm.notas,
+      costoTotal: Number(this.citaForm.costoTotal) || 0,
+      montoAnticipo: anticipo,
+      anticipoMetodoPago: anticipo > 0 ? this.citaForm.anticipoMetodoPago : 'Ninguno'
+    };
+
+    this.guardandoCita = true;
+    this.citasService.agendarCita(payload).subscribe({
+      next: () => {
+        this.guardandoCita = false;
+        this.showModalCita = false;
+        this.swal.success('Cita registrada');
+        if (this.paciente?._id) this.cargarCitas(this.paciente._id);
+      },
+      error: (err) => {
+        this.guardandoCita = false;
+        this.swal.error(err?.error?.message || 'No se pudo registrar la cita.');
+      }
     });
   }
 
@@ -131,35 +314,6 @@ export class PerfilPacienteComponent implements OnInit {
       next: () => this.swal.success('Medicamentos guardados'),
       error: () => this.swal.error('Error')
     });
-  }
-
-  crearCitaEstetica() {
-    if (!this.paciente?._id) {
-      this.swal.error('ID del paciente no disponible');
-      return;
-    }
-    const cita: CitaPayload = {
-      ...this.nuevaCitaEstetica as CitaPayload,
-      pacienteId: this.paciente._id,
-      pacienteNombre: `${this.paciente.nombre} ${this.paciente.apeP} ${this.paciente.apeM}`,
-      pacienteTelefono: this.paciente.telefonoWhatsapp,
-      pacienteEmail: this.paciente.correoElectronico,
-      doctorId: this.nuevaCitaEstetica.doctorId || '',
-      tipoCita: 'Estetica',
-      fechaHoraInicio: new Date(this.nuevaCitaEstetica.fechaHoraInicio || new Date()),
-      fechaHoraFin: new Date(this.nuevaCitaEstetica.fechaHoraFin || new Date())
-    };
-    this.citasService.crearCitaEstetica(cita).subscribe({
-      next: () => {
-        this.swal.success('Cita estética creada');
-        if (this.paciente?._id) this.cargarCitas(this.paciente._id);
-        this.showModalEstetica = false;
-      },
-      error: () => this.swal.error('Error al crear cita')
-    });
-  }
-  crearCitaDental() {
-    this.swal.warning('Función en desarrollo');
   }
 
   triggerFileInput() { this.fileInput.nativeElement.click(); }
@@ -284,6 +438,9 @@ export class PerfilPacienteComponent implements OnInit {
       pacienteNombre: `${this.paciente.nombre} ${this.paciente.apeP}`,
       medicoNombre: cita.doctorId?.nombre || this.doctoresMap[cita.doctorId?._id || cita.doctorId] || 'No asignado',
       servicioNombre: cita.titulo,
+      // Sin servicioId el modal de cobro no puede consultar el precio de
+      // lista y terminaba proponiendo una cifra fija.
+      servicioId: cita.servicioId?._id || cita.servicioId || null,
       tipoCita: cita.tipoCita,
       pacienteTelefono: this.paciente.telefonoWhatsapp || this.paciente.telefonoPaciente || '',
       description: cita.notas || '',

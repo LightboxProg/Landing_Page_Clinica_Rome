@@ -1,0 +1,117 @@
+<div class="he">
+  <aside class="he-lista" aria-label="Envíos anteriores">
+    <div class="he-lista__head">
+      <h2>Envíos</h2>
+      <span class="he-muted" *ngIf="!cargandoLista">{{ envios.length }}</span>
+    </div>
+
+    <p class="he-muted" *ngIf="cargandoLista">Cargando…</p>
+
+    <div class="he-vacio" *ngIf="!cargandoLista && envios.length === 0">
+      <i class="fas fa-paper-plane" aria-hidden="true"></i>
+      <p>Aún no hay envíos. Cuando lances uno verás aquí cuántos llegaron, cuántos se leyeron y quién respondió.</p>
+    </div>
+
+    <button type="button" class="he-item" *ngFor="let e of envios; trackBy: porId"
+            [class.is-activo]="e._id === seleccionadoId"
+            [attr.aria-pressed]="e._id === seleccionadoId"
+            (click)="seleccionar(e._id)">
+      <span class="he-item__nombre">{{ e.nombre || e.plantilla }}</span>
+      <span class="he-item__meta">{{ e.createdAt | date:'dd/MM/yy HH:mm' }} · {{ e.metricas.total | number }} destinatarios</span>
+      <span class="he-meter" aria-hidden="true">
+        <span class="he-meter__fill" [style.width.%]="porcentaje(e.metricas.entregados, e.metricas.total)"></span>
+      </span>
+      <span class="he-item__meta">
+        {{ e.metricas.entregados | number }} llegaron · {{ e.metricas.leidos | number }} leídos<ng-container *ngIf="e.metricas.fallidos"> · {{ e.metricas.fallidos | number }} fallaron</ng-container>
+      </span>
+    </button>
+  </aside>
+
+  <section class="he-detalle" *ngIf="detalle as d; else sinDetalle" [class.is-actualizando]="actualizando" aria-live="polite">
+    <header class="he-detalle__head">
+      <div>
+        <span class="he-eyebrow">{{ d.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+        <h2>{{ d.nombre || 'Envío sin nombre' }}</h2>
+        <p class="he-muted">
+          Plantilla <code>{{ d.plantilla }}</code> · {{ d.metricas.total | number }} destinatarios
+          <ng-container *ngIf="d.omitidos"> · {{ d.omitidos }} omitidos sin WhatsApp válido</ng-container>
+        </p>
+      </div>
+      <button type="button" class="he-btn" (click)="actualizarAhora()" [disabled]="actualizando">
+        <i class="fas fa-sync-alt" aria-hidden="true"></i> Actualizar
+      </button>
+    </header>
+
+    <div class="he-kpis">
+      <div class="he-kpi" *ngFor="let k of kpis" [class.he-kpi--critico]="k.critico">
+        <span class="he-kpi__label"><i [class]="k.icono" aria-hidden="true"></i> {{ k.etiqueta }}</span>
+        <span class="he-kpi__valor">{{ k.valor | number }}</span>
+        <span class="he-meter" role="img"
+              [attr.aria-label]="k.valor + ' de ' + d.metricas.total + ' (' + k.pct + '%)'"
+              [attr.title]="k.valor + ' de ' + d.metricas.total + ' (' + k.pct + '%)'">
+          <span class="he-meter__fill" [style.width.%]="k.pct"></span>
+        </span>
+        <span class="he-kpi__pct">{{ k.pct }}% de {{ d.metricas.total | number }}</span>
+      </div>
+    </div>
+
+    <p class="he-aviso" *ngIf="d.metricas.pendientes > 0">
+      <i class="fas fa-clock" aria-hidden="true"></i>
+      {{ d.metricas.pendientes | number }} mensaje(s) todavía en cola. Esta vista se actualiza sola.
+    </p>
+    <p class="he-nota">
+      “Leído” sólo se sabe si el contacto tiene activadas las confirmaciones de lectura. Si las desactivó,
+      WhatsApp nunca lo avisa y el mensaje se queda en “Llegó”.
+    </p>
+
+    <div class="he-filtros" role="group" aria-label="Filtrar destinatarios">
+      <button type="button" *ngFor="let f of filtros"
+              [class.is-activo]="filtro === f.clave"
+              [attr.aria-pressed]="filtro === f.clave"
+              (click)="filtro = f.clave">
+        {{ f.etiqueta }} <span class="he-cuenta">{{ conteos[f.clave] | number }}</span>
+      </button>
+    </div>
+
+    <div class="he-tabla-wrap">
+      <table class="he-tabla">
+        <thead>
+          <tr>
+            <th scope="col">Contacto</th>
+            <th scope="col">Estado</th>
+            <th scope="col">Respondió</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let r of destinatariosFiltrados; trackBy: porId">
+            <td>
+              <strong>{{ r.nombre }}</strong>
+              <span class="he-muted">{{ r.telefono }} · {{ r.contactType }}</span>
+            </td>
+            <td>
+              <span class="he-estado" [attr.data-estado]="r.estado">
+                <i [class]="estados[r.estado].icono" aria-hidden="true"></i>
+                {{ estados[r.estado].etiqueta }}
+                <span class="he-muted" *ngIf="fechaEstado(r) as fecha">{{ fecha | date:'dd/MM HH:mm' }}</span>
+              </span>
+              <span class="he-error" *ngIf="r.error">{{ r.error }}</span>
+            </td>
+            <td>
+              <span class="he-respuesta" *ngIf="r.respondio; else sinRespuesta">
+                <i class="fas fa-reply" aria-hidden="true"></i> {{ r.fechaRespuesta | date:'dd/MM HH:mm' }}
+              </span>
+              <ng-template #sinRespuesta><span class="he-muted">—</span></ng-template>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="he-muted he-tabla-vacia" *ngIf="destinatariosFiltrados.length === 0">Nadie en este filtro.</p>
+    </div>
+  </section>
+
+  <ng-template #sinDetalle>
+    <section class="he-detalle he-detalle--vacio" *ngIf="envios.length || seleccionadoId">
+      <p class="he-muted">Cargando envío…</p>
+    </section>
+  </ng-template>
+</div>

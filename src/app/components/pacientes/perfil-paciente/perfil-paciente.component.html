@@ -212,60 +212,26 @@
       <!-- CITAS -->
       <div *ngIf="tabActivo === 'citas'" class="tab-content">
         <div class="acciones-citas">
-          <button class="btn-primario" (click)="showModalEstetica = true">
-            Agendar Estética
+          <button class="btn-primario" (click)="abrirRegistroCita('Estetica')">
+            <i class="fas fa-plus"></i> Registrar cita estética
           </button>
-          <button class="btn-primario" (click)="showModalDental = true">
-            Agendar Dental
+          <button class="btn-primario" (click)="abrirRegistroCita('Dental')">
+            <i class="fas fa-plus"></i> Registrar cita dental
           </button>
         </div>
         <div class="citas-grid">
           <div class="categoria-citas">
             <h4>Estética</h4>
-            <div *ngFor="let cita of citasEstetica" class="cita-card">
-              <div class="cita-header-row">
-                <div class="cita-titulo">{{ cita.titulo }}</div>
-                <span class="cita-estado" [ngClass]="cita.estado">{{ cita.estado }}</span>
-              </div>
-              <div class="cita-fecha">{{ cita.fechaHoraInicio | date:'dd/MM/yyyy HH:mm' }}</div>
-              <div class="cita-doctor">Dr. {{ cita.doctorId?.nombre || doctoresMap[cita.doctorId?._id || cita.doctorId] || 'No asignado' }}</div>
-              
-              <div class="cita-payment-footer">
-                <span *ngIf="cita.cobrado" class="perfil-badge-pagado">
-                  <i class="fas fa-check-circle"></i> Pagado
-                </span>
-                <button 
-                  *ngIf="!cita.cobrado && puedeVender" 
-                  class="btn-cobrar-perfil" 
-                  (click)="abrirCobroCita(cita)">
-                  <i class="fas fa-cash-register"></i> Cobrar
-                </button>
-              </div>
-            </div>
+            <ng-container *ngFor="let cita of citasEstetica">
+              <ng-container *ngTemplateOutlet="tarjetaCita; context: { $implicit: cita }"></ng-container>
+            </ng-container>
             <div *ngIf="citasEstetica.length === 0" class="sin-registros">Sin historial estético</div>
           </div>
           <div class="categoria-citas">
             <h4>Dental</h4>
-            <div *ngFor="let cita of citasDental" class="cita-card">
-              <div class="cita-header-row">
-                <div class="cita-titulo">{{ cita.titulo }}</div>
-                <span class="cita-estado" [ngClass]="cita.estado">{{ cita.estado }}</span>
-              </div>
-              <div class="cita-fecha">{{ cita.fechaHoraInicio | date:'dd/MM/yyyy HH:mm' }}</div>
-              <div class="cita-doctor">Dr. {{ cita.doctorId?.nombre || doctoresMap[cita.doctorId?._id || cita.doctorId] || 'No asignado' }}</div>
-              
-              <div class="cita-payment-footer">
-                <span *ngIf="cita.cobrado" class="perfil-badge-pagado">
-                  <i class="fas fa-check-circle"></i> Pagado
-                </span>
-                <button 
-                  *ngIf="!cita.cobrado && puedeVender" 
-                  class="btn-cobrar-perfil" 
-                  (click)="abrirCobroCita(cita)">
-                  <i class="fas fa-cash-register"></i> Cobrar
-                </button>
-              </div>
-            </div>
+            <ng-container *ngFor="let cita of citasDental">
+              <ng-container *ngTemplateOutlet="tarjetaCita; context: { $implicit: cita }"></ng-container>
+            </ng-container>
             <div *ngIf="citasDental.length === 0" class="sin-registros">Sin historial dental</div>
           </div>
         </div>
@@ -364,23 +330,137 @@
   <div class="cargando">Cargando expediente...</div>
 </ng-template>
 
-<!-- Modales para nueva cita -->
-<app-modal [isVisible]="showModalEstetica" (close)="showModalEstetica=false">
-  <form (ngSubmit)="crearCitaEstetica()" class="form-modal-cita">
-    <h3>Agendar Estética</h3>
-    <label>Título</label>
-    <input [(ngModel)]="nuevaCitaEstetica.titulo" name="titulo" required>
-    <label>Inicio</label>
-    <input type="datetime-local" [(ngModel)]="nuevaCitaEstetica.fechaHoraInicio" name="inicio">
-    <label>Fin</label>
-    <input type="datetime-local" [(ngModel)]="nuevaCitaEstetica.fechaHoraFin" name="fin">
-    <label>ID Especialista</label>
-    <input [(ngModel)]="nuevaCitaEstetica.doctorId" name="doctor">
-    <label>Observaciones</label>
-    <textarea [(ngModel)]="nuevaCitaEstetica.notas" rows="3"></textarea>
+<!-- Tarjeta de cita, compartida por ambas ramas -->
+<ng-template #tarjetaCita let-cita>
+  <div class="cita-card">
+    <div class="cita-header-row">
+      <div class="cita-titulo">{{ cita.titulo }}</div>
+      <span class="cita-estado" [ngClass]="cita.estado">{{ cita.estado }}</span>
+    </div>
+    <div class="cita-fecha">{{ cita.fechaHoraInicio | date:'dd/MM/yyyy HH:mm' }}</div>
+    <div class="cita-doctor">Dr. {{ cita.doctorId?.nombre || doctoresMap[cita.doctorId?._id || cita.doctorId] || 'No asignado' }}</div>
+
+    <p class="cita-notas" *ngIf="cita.notas">{{ cita.notas }}</p>
+
+    <!-- Estado de cuenta de la cita -->
+    <dl class="cita-cuenta" *ngIf="cita.costoTotal || cita.montoAnticipo">
+      <div class="cita-cuenta__row" *ngIf="cita.costoTotal">
+        <dt>Tratamiento</dt>
+        <dd>{{ cita.costoTotal | currency:'MXN':'symbol-narrow':'1.0-0' }}</dd>
+      </div>
+      <div class="cita-cuenta__row" *ngIf="cita.descuentoMonto">
+        <dt>Descuento</dt>
+        <dd class="is-neg">−{{ cita.descuentoMonto | currency:'MXN':'symbol-narrow':'1.0-0' }}</dd>
+      </div>
+      <div class="cita-cuenta__row" *ngIf="cita.montoAnticipo">
+        <dt>Anticipo<span *ngIf="cita.anticipoMetodoPago && cita.anticipoMetodoPago !== 'Ninguno'"> · {{ cita.anticipoMetodoPago }}</span></dt>
+        <dd class="is-neg">−{{ cita.montoAnticipo | currency:'MXN':'symbol-narrow':'1.0-0' }}</dd>
+      </div>
+      <div class="cita-cuenta__row cita-cuenta__row--total" *ngIf="!cita.cobrado">
+        <dt>Resta</dt>
+        <dd>{{ (cita.costoTotal || 0) - (cita.descuentoMonto || 0) - (cita.montoAnticipo || 0) | currency:'MXN':'symbol-narrow':'1.0-0' }}</dd>
+      </div>
+      <div class="cita-cuenta__row cita-cuenta__row--total" *ngIf="cita.cobrado">
+        <dt>Cobrado<span *ngIf="cita.metodoPago && cita.metodoPago !== 'Ninguno'"> · {{ cita.metodoPago }}</span></dt>
+        <dd>{{ cita.montoPagadoClinica | currency:'MXN':'symbol-narrow':'1.0-0' }}</dd>
+      </div>
+    </dl>
+
+    <div class="cita-payment-footer">
+      <span *ngIf="cita.cobrado" class="perfil-badge-pagado">
+        <i class="fas fa-check-circle"></i> Pagado
+      </span>
+      <button
+        *ngIf="!cita.cobrado && puedeVender"
+        class="btn-cobrar-perfil"
+        (click)="abrirCobroCita(cita)">
+        <i class="fas fa-cash-register"></i> Cobrar
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<!-- Registrar cita -->
+<app-modal [isVisible]="showModalCita" (close)="showModalCita=false">
+  <form (ngSubmit)="registrarCita()" class="form-modal-cita">
+    <h3>Registrar cita {{ citaTipo === 'Dental' ? 'dental' : 'estética' }}</h3>
+
+    <label for="cita-cat">Categoría</label>
+    <select id="cita-cat" name="categoria" [(ngModel)]="citaForm.categoriaId" (ngModelChange)="onCategoriaChange()">
+      <option value="">Todas las categorías</option>
+      <option *ngFor="let c of categoriasActivas" [value]="c._id">{{ c.nombre }}</option>
+    </select>
+
+    <label for="cita-serv">Tratamiento *</label>
+    <select id="cita-serv" name="servicio" [(ngModel)]="citaForm.servicioId" (ngModelChange)="onServicioChange()" required>
+      <option value="" disabled>Elige el tratamiento</option>
+      <option *ngFor="let s of serviciosActivos" [value]="s._id">{{ s.nombre }}</option>
+    </select>
+    <p class="campo-ayuda" *ngIf="serviciosActivos.length === 0">
+      No hay tratamientos en esta categoría.
+    </p>
+
+    <label for="cita-doc">Atiende *</label>
+    <select id="cita-doc" name="doctor" [(ngModel)]="citaForm.doctorId" required>
+      <option value="" disabled>Elige al especialista</option>
+      <option *ngFor="let d of doctores" [value]="d._id">
+        Dr(a). {{ d.nombre }} {{ d.apeP }}<span *ngIf="d.especialidad"> — {{ d.especialidad }}</span>
+      </option>
+    </select>
+
+    <div class="campo-par">
+      <div>
+        <label for="cita-ini">Inicio *</label>
+        <input id="cita-ini" type="datetime-local" name="inicio"
+               [(ngModel)]="citaForm.fechaHoraInicio" (ngModelChange)="onInicioChange()" required>
+      </div>
+      <div>
+        <label for="cita-fin">Fin *</label>
+        <input id="cita-fin" type="datetime-local" name="fin" [(ngModel)]="citaForm.fechaHoraFin" required>
+      </div>
+    </div>
+    <p class="campo-ayuda" *ngIf="servicioSeleccionado?.duracionMinutos">
+      Duración sugerida: {{ servicioSeleccionado.duracionMinutos }} min.
+    </p>
+
+    <!-- Contabilidad -->
+    <div class="campo-par">
+      <div>
+        <label for="cita-costo">Costo del tratamiento</label>
+        <input id="cita-costo" type="number" min="0" step="1" name="costo" [(ngModel)]="citaForm.costoTotal">
+      </div>
+      <div>
+        <label for="cita-ant">Anticipo</label>
+        <input id="cita-ant" type="number" min="0" step="1" name="anticipo" [(ngModel)]="citaForm.montoAnticipo">
+      </div>
+    </div>
+
+    <label for="cita-met" *ngIf="citaForm.montoAnticipo > 0">¿Cómo se recibió el anticipo? *</label>
+    <select id="cita-met" name="metodo" *ngIf="citaForm.montoAnticipo > 0" [(ngModel)]="citaForm.anticipoMetodoPago">
+      <option value="Ninguno" disabled>Elige el método</option>
+      <option value="Efectivo">Efectivo</option>
+      <option value="Tarjeta">Tarjeta</option>
+      <option value="Transferencia">Transferencia</option>
+    </select>
+
+    <p class="campo-error" *ngIf="anticipoExcedeCosto">
+      El anticipo no puede ser mayor al costo del tratamiento.
+    </p>
+
+    <div class="resumen-cita" *ngIf="citaForm.costoTotal > 0">
+      <span>Resta por cobrar el día de la visita</span>
+      <strong>{{ restaPorCobrar | currency:'MXN':'symbol-narrow':'1.0-0' }}</strong>
+    </div>
+
+    <label for="cita-notas">Notas</label>
+    <textarea id="cita-notas" name="notas" rows="3" [(ngModel)]="citaForm.notas"
+              placeholder="Indicaciones, antecedentes o acuerdos con el paciente"></textarea>
+
     <div class="botones-modal">
-      <button type="submit" class="btn-guardar">Confirmar</button>
-      <button type="button" class="btn-cancelar" (click)="showModalEstetica=false">Descartar</button>
+      <button type="submit" class="btn-guardar" [disabled]="guardandoCita || anticipoExcedeCosto">
+        {{ guardandoCita ? 'Registrando…' : 'Registrar cita' }}
+      </button>
+      <button type="button" class="btn-cancelar" (click)="showModalCita=false">Cancelar</button>
     </div>
   </form>
 </app-modal>

@@ -180,6 +180,30 @@
     padding: 48px;
 }
 
+.historial-workspace {
+    padding: 32px clamp(16px, 3vw, 40px);
+}
+
+.nav-step-historial {
+    margin-top: 14px;
+    position: relative;
+}
+
+.nav-step-historial::after {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 20px;
+    right: 20px;
+    height: 1px;
+    background: oklch(0.92 0.01 250);
+}
+
+.nav-step-historial:focus-visible {
+    outline: 2px solid oklch(0.55 0.18 250);
+    outline-offset: 2px;
+}
+
 .workspace-container {
     max-width: 800px;
     margin: 0 auto;

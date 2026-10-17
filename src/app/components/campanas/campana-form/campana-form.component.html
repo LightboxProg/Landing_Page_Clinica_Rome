@@ -1,0 +1,211 @@
+<div class="cf-backdrop" (click)="cerrar()"></div>
+
+<div class="cf-dialog" role="dialog" aria-modal="true" aria-labelledby="cf-title">
+  <header class="cf-head">
+    <div>
+      <span class="cf-eyebrow">{{ esEdicion ? 'Editar campaña' : 'Nueva campaña' }}</span>
+      <h2 id="cf-title">{{ modelo.nombre || 'Sin nombre' }}</h2>
+    </div>
+    <button type="button" class="cf-icon-btn" (click)="cerrar()" aria-label="Cerrar">
+      <i class="fas fa-times"></i>
+    </button>
+  </header>
+
+  <div class="cf-body">
+    <div class="cf-form">
+      <!-- 1. Datos básicos -->
+      <section class="cf-section">
+        <h3><span class="cf-step">1</span> Datos básicos</h3>
+        <label class="cf-field">
+          <span class="cf-label">Nombre</span>
+          <input [(ngModel)]="modelo.nombre" maxlength="80" placeholder="Ej. Botox septiembre">
+        </label>
+        <label class="cf-field">
+          <span class="cf-label">Descripción <em>opcional</em></span>
+          <input [(ngModel)]="modelo.descripcion" placeholder="Para qué es y dónde se va a publicar">
+        </label>
+        <div class="cf-field">
+          <span class="cf-label" id="cf-canal">Canal</span>
+          <div class="cf-segmented" role="radiogroup" aria-labelledby="cf-canal">
+            <button type="button" role="radio" [attr.aria-checked]="modelo.canal === 'WhatsApp'"
+                    [class.is-active]="modelo.canal === 'WhatsApp'" (click)="elegirCanal('WhatsApp')">
+              <i class="fab fa-whatsapp" aria-hidden="true"></i> WhatsApp
+            </button>
+            <button type="button" role="radio" [attr.aria-checked]="modelo.canal === 'Instagram'"
+                    [class.is-active]="modelo.canal === 'Instagram'" (click)="elegirCanal('Instagram')">
+              <i class="fab fa-instagram" aria-hidden="true"></i> Instagram
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. Disparador -->
+      <section class="cf-section">
+        <h3><span class="cf-step">2</span> ¿Qué activa al bot?</h3>
+        <div class="cf-options" role="radiogroup" aria-label="Disparador">
+          <button type="button" class="cf-option" role="radio" *ngFor="let o of opcionesDisparador"
+                  [attr.aria-checked]="modelo.disparador === o.valor"
+                  [class.is-active]="modelo.disparador === o.valor"
+                  [disabled]="o.valor === 'comentario' && modelo.canal !== 'Instagram'"
+                  (click)="modelo.disparador = o.valor">
+            <i [class]="o.icono" aria-hidden="true"></i>
+            <strong>{{ o.titulo }}</strong>
+            <span>{{ o.valor === 'comentario' && modelo.canal !== 'Instagram' ? 'Sólo en Instagram.' : o.descripcion }}</span>
+          </button>
+        </div>
+
+        <ng-container *ngIf="modelo.disparador !== 'enlace'">
+          <div class="cf-field">
+            <label class="cf-label" for="cf-palabra">Palabras clave</label>
+            <div class="cf-chip-input">
+              <span class="cf-chip" *ngFor="let p of modelo.palabrasClave; let i = index">
+                {{ p }}
+                <button type="button" (click)="quitar(modelo.palabrasClave, i)" [attr.aria-label]="'Quitar ' + p">
+                  <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
+              </span>
+              <input id="cf-palabra" [(ngModel)]="nuevaPalabra"
+                     (keydown.enter)="agregar(modelo.palabrasClave, 'nuevaPalabra', $event)"
+                     (blur)="agregar(modelo.palabrasClave, 'nuevaPalabra')"
+                     placeholder="Escribe y pulsa Enter">
+            </div>
+            <small>No distingue mayúsculas ni acentos: “Bótox” y “botox” cuentan igual.</small>
+          </div>
+          <label class="cf-field">
+            <span class="cf-label">Coincidencia</span>
+            <select [(ngModel)]="modelo.coincidencia">
+              <option value="contiene">El mensaje incluye la palabra</option>
+              <option value="exacta">El mensaje es exactamente la palabra</option>
+            </select>
+          </label>
+        </ng-container>
+
+        <ng-container *ngIf="modelo.disparador === 'comentario'">
+          <app-selector-publicacion [(publicacionId)]="modelo.publicacionId"></app-selector-publicacion>
+          <label class="cf-field">
+            <span class="cf-label">Respuesta pública al comentario <em>opcional</em></span>
+            <input [(ngModel)]="modelo.respuestaComentario" placeholder="Ej. ¡Te mandamos la info por mensaje!">
+          </label>
+        </ng-container>
+
+        <ng-container *ngIf="modelo.disparador === 'enlace'">
+          <label class="cf-field" *ngIf="modelo.canal === 'WhatsApp'">
+            <span class="cf-label">Mensaje prellenado</span>
+            <input [(ngModel)]="modelo.mensajeEnlace">
+            <small>Al abrir el enlace, WhatsApp escribe este texto y el código de la campaña al final.</small>
+          </label>
+          <p class="cf-note" *ngIf="modelo.canal === 'Instagram'">
+            El enlace abre el chat con tu cuenta de Instagram y le pasa al bot el código de la campaña.
+          </p>
+          <label class="cf-field">
+            <span class="cf-label">Código <em *ngIf="!esEdicion">opcional</em></span>
+            <input [ngModel]="modelo.codigo" (ngModelChange)="modelo.codigo = limpiarCodigo($event)" placeholder="Se genera automáticamente">
+            <small *ngIf="esEdicion">Si lo cambias, los enlaces que ya compartiste dejarán de funcionar.</small>
+          </label>
+        </ng-container>
+      </section>
+
+      <!-- 3. Respuesta -->
+      <section class="cf-section">
+        <h3><span class="cf-step">3</span> Respuesta del bot</h3>
+        <label class="cf-field">
+          <span class="cf-label">Mensaje</span>
+          <textarea rows="4" [(ngModel)]="modelo.respuesta.mensaje" [placeholder]="placeholderMensaje"></textarea>
+          <small>Escribe <code>{{ variableNombre }}</code> para usar el nombre del contacto.</small>
+        </label>
+        <label class="cf-field">
+          <span class="cf-label">URL de imagen <em>opcional</em></span>
+          <input type="url" [(ngModel)]="modelo.respuesta.mediaUrl" placeholder="https://…">
+        </label>
+      </section>
+
+      <!-- 4. Registro -->
+      <section class="cf-section">
+        <h3><span class="cf-step">4</span> Al registrar al contacto</h3>
+        <div class="cf-grid">
+          <label class="cf-field">
+            <span class="cf-label">Interés</span>
+            <select [(ngModel)]="modelo.interes">
+              <option value="Desconocido">Sin definir</option>
+              <option value="Estetica">Estética</option>
+              <option value="Dental">Dental</option>
+              <option value="Ambos">Ambos</option>
+            </select>
+          </label>
+          <label class="cf-field">
+            <span class="cf-label">Asignar a</span>
+            <select [(ngModel)]="modelo.idDoctor">
+              <option [ngValue]="null">Nadie</option>
+              <option *ngFor="let d of doctores" [ngValue]="d._id">{{ d.nombre }} {{ d.apeP }}</option>
+            </select>
+          </label>
+        </div>
+        <div class="cf-field">
+          <label class="cf-label" for="cf-etiqueta">Etiquetas <em>opcional</em></label>
+          <div class="cf-chip-input">
+            <span class="cf-chip" *ngFor="let e of modelo.etiquetas; let i = index">
+              {{ e }}
+              <button type="button" (click)="quitar(modelo.etiquetas, i)" [attr.aria-label]="'Quitar ' + e">
+                <i class="fas fa-times" aria-hidden="true"></i>
+              </button>
+            </span>
+            <input id="cf-etiqueta" [(ngModel)]="nuevaEtiqueta"
+                   (keydown.enter)="agregar(modelo.etiquetas, 'nuevaEtiqueta', $event)"
+                   (blur)="agregar(modelo.etiquetas, 'nuevaEtiqueta')"
+                   placeholder="Ej. botox, septiembre">
+          </div>
+        </div>
+        <div class="cf-grid">
+          <label class="cf-field">
+            <span class="cf-label">Inicio <em>opcional</em></span>
+            <input type="date" [(ngModel)]="fechaInicio">
+          </label>
+          <label class="cf-field">
+            <span class="cf-label">Fin <em>opcional</em></span>
+            <input type="date" [(ngModel)]="fechaFin">
+          </label>
+        </div>
+      </section>
+    </div>
+
+    <aside class="cf-preview" aria-label="Vista previa">
+      <span class="cf-eyebrow">Vista previa</span>
+      <div class="cf-phone">
+        <div class="cf-phone__bar" [class.cf-phone__bar--ig]="modelo.canal === 'Instagram'">
+          <i [class]="modelo.canal === 'WhatsApp' ? 'fab fa-whatsapp' : 'fab fa-instagram'" aria-hidden="true"></i>
+          Clínica Rome
+        </div>
+        <div class="cf-phone__chat">
+          <ng-container *ngIf="modelo.disparador === 'comentario'">
+            <div class="cf-comment"><strong>maria.lopez</strong> {{ mensajeEntrada }}</div>
+            <div class="cf-comment cf-comment--reply" *ngIf="modelo.respuestaComentario">
+              <strong>clinicarome</strong> {{ vistaPrevia(modelo.respuestaComentario) }}
+            </div>
+            <div class="cf-divider">Mensaje directo</div>
+          </ng-container>
+          <div class="cf-msg cf-msg--in" *ngIf="modelo.disparador !== 'comentario'">{{ mensajeEntrada }}</div>
+          <div class="cf-msg cf-msg--out" *ngIf="modelo.respuesta.mensaje || modelo.respuesta.mediaUrl">
+            <img *ngIf="modelo.respuesta.mediaUrl" [src]="modelo.respuesta.mediaUrl" alt="">
+            {{ vistaPrevia(modelo.respuesta.mensaje) }}
+          </div>
+          <p class="cf-empty" *ngIf="!modelo.respuesta.mensaje && !modelo.respuesta.mediaUrl">
+            Sin respuesta: el bot sólo registrará al contacto.
+          </p>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <footer class="cf-foot">
+    <button type="button" class="cf-btn" (click)="cerrar()" [disabled]="guardando">Cancelar</button>
+    <ng-container *ngIf="!esEdicion; else botonEditar">
+      <button type="button" class="cf-btn" [disabled]="guardando" (click)="guardar(false)">Guardar borrador</button>
+      <button type="button" class="cf-btn cf-btn--primary" [disabled]="guardando" (click)="guardar(true)">
+        <i class="fas fa-play" aria-hidden="true"></i> Guardar y activar
+      </button>
+    </ng-container>
+    <ng-template #botonEditar>
+      <button type="button" class="cf-btn cf-btn--primary" [disabled]="guardando" (click)="guardar(false)">Guardar cambios</button>
+    </ng-template>
+  </footer>
+</div>

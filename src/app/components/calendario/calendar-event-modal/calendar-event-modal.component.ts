@@ -26,168 +26,190 @@ import { PromocionesService } from '../../../services/promociones/promociones.se
         </header>
         
         <div class="modal-content">
-          <div class="info-row">
-            <i class="fas fa-user-md icon-primary"></i>
-            <div class="info-text">
-              <span class="label">Médico</span>
-              <span class="value">{{ event?.medicoNombre }}</span>
+          <!-- Contexto de la cita: se lee de corrido, sin adornos -->
+          <dl class="ficha">
+            <div class="ficha__row">
+              <dt>Atiende</dt>
+              <dd>{{ event?.medicoNombre }}</dd>
             </div>
-          </div>
-          
-          <div class="info-row">
-            <i class="fas fa-stethoscope icon-primary"></i>
-            <div class="info-text">
-              <span class="label">Servicio</span>
-              <span class="value">{{ event?.servicioNombre }}</span>
+            <div class="ficha__row">
+              <dt>Tratamiento</dt>
+              <dd>{{ event?.servicioNombre }}</dd>
             </div>
-          </div>
+            <div class="ficha__row" *ngIf="event?.pacienteTelefono">
+              <dt>Teléfono</dt>
+              <dd class="num">{{ event?.pacienteTelefono }}</dd>
+            </div>
+          </dl>
 
-          <div class="info-row" *ngIf="event?.pacienteTelefono">
-            <i class="fas fa-phone-alt icon-primary"></i>
-            <div class="info-text">
-              <span class="label">Teléfono</span>
-              <span class="value">{{ event?.pacienteTelefono }}</span>
-            </div>
+          <div *ngIf="event?.description" class="notas">
+            <span class="notas__k">Notas</span>
+            <p>{{ event?.description }}</p>
           </div>
 
-          <div *ngIf="event?.description" class="notes-section">
-            <span class="label">Notas:</span>
-            <p class="notes-text">{{ event?.description }}</p>
-          </div>
+          <!-- Cobro -->
+          <section class="cobro" *ngIf="event?.citaId">
 
-          <!-- Información de Pago/Cobro -->
-          <div class="payment-section" *ngIf="event?.citaId">
-            <h4 class="section-title"><i class="fas fa-file-invoice-dollar"></i> Estado de Pago</h4>
-            
-            <!-- Si ya está cobrada -->
-            <div class="payment-status-box paid" *ngIf="event?.cobrado">
-              <div class="status-header">
-                <span class="status-badge-paid"><i class="fas fa-check-circle"></i> Cita Cobrada</span>
-              </div>
-              <div class="payment-details">
-                <div class="detail-row">
-                  <span>Costo Total:</span>
-                  <strong>{{ event.costoTotal | currency:'MXN':'symbol':'1.2-2' }}</strong>
+            <!-- Ya cobrada -->
+            <div class="cobro__estado is-pagada" *ngIf="event?.cobrado">
+              <p class="sello"><i class="fas fa-check"></i> Cobrada</p>
+
+              <dl class="cuenta">
+                <div class="cuenta__row">
+                  <dt>Tratamiento</dt>
+                  <dd>{{ event.costoTotal | currency:'MXN':'symbol-narrow':'1.0-0' }}</dd>
                 </div>
-                <div class="detail-row" *ngIf="event.montoAnticipo > 0">
-                  <span>Anticipo Stripe:</span>
-                  <strong class="text-stripe">-{{ event.montoAnticipo | currency:'MXN':'symbol':'1.2-2' }}</strong>
+                <div class="cuenta__row cuenta__row--menos" *ngIf="event.descuentoMonto > 0">
+                  <dt>Descuento</dt>
+                  <dd>−{{ event.descuentoMonto | currency:'MXN':'symbol-narrow':'1.0-0' }}</dd>
                 </div>
-                <div class="detail-row" *ngIf="event.descuentoMonto > 0">
-                  <span>Descuento:</span>
-                  <strong class="text-discount">-{{ event.descuentoMonto | currency:'MXN':'symbol':'1.2-2' }}</strong>
+                <div class="cuenta__row cuenta__row--menos" *ngIf="event.montoAnticipo > 0">
+                  <dt>Anticipo<em *ngIf="event.anticipoMetodoPago && event.anticipoMetodoPago !== 'Ninguno'">{{ event.anticipoMetodoPago }}</em></dt>
+                  <dd>−{{ event.montoAnticipo | currency:'MXN':'symbol-narrow':'1.0-0' }}</dd>
                 </div>
-                <div class="detail-row total">
-                  <span>Cobrado en Clínica:</span>
-                  <strong class="text-success">{{ event.montoPagadoClinica | currency:'MXN':'symbol':'1.2-2' }}</strong>
+                <div class="cuenta__hero">
+                  <dt>Cobrado en clínica<em *ngIf="event.metodoPago && event.metodoPago !== 'Ninguno'">{{ event.metodoPago }}</em></dt>
+                  <dd>{{ event.montoPagadoClinica | currency:'MXN':'symbol-narrow':'1.0-0' }}</dd>
                 </div>
-                <div class="detail-row font-sm" *ngIf="event.metodoPago !== 'Ninguno'">
-                  <span>Método de pago:</span>
-                  <span>{{ event.metodoPago }}</span>
-                </div>
-              </div>
+              </dl>
             </div>
 
-            <!-- Si NO está cobrada pero tiene anticipo de Stripe -->
-            <div class="payment-status-box pending" *ngIf="!event?.cobrado">
-              <div class="status-header">
-                <span class="status-badge-pending"><i class="fas fa-clock"></i> Pendiente de cobro</span>
-              </div>
-              <div class="payment-details">
-                <div class="detail-row" *ngIf="event.montoAnticipo > 0">
-                  <span>Anticipo Pagado (Stripe):</span>
-                  <strong class="text-stripe">{{ event.montoAnticipo | currency:'MXN':'symbol':'1.2-2' }}</strong>
-                </div>
-              </div>
+            <!-- Pendiente -->
+            <div class="cobro__estado" *ngIf="!event?.cobrado && !mostrarPanelCobro">
+              <p class="sello is-pendiente"><i class="fas fa-clock"></i> Pendiente de cobro</p>
 
-              <!-- Botón para expandir panel de cobro (sólo Admin/Recepcionista) -->
-              <button 
-                *ngIf="puedeVender && !mostrarPanelCobro" 
-                class="btn-cobrar-trigger" 
-                (click)="abrirPanelCobro()">
-                <i class="fas fa-cash-register"></i> Registrar Cobro / Completar
+              <dl class="cuenta" *ngIf="event.montoAnticipo > 0">
+                <div class="cuenta__row cuenta__row--menos">
+                  <dt>Anticipo recibido<em *ngIf="event.anticipoMetodoPago && event.anticipoMetodoPago !== 'Ninguno'">{{ event.anticipoMetodoPago }}</em></dt>
+                  <dd>{{ event.montoAnticipo | currency:'MXN':'symbol-narrow':'1.0-0' }}</dd>
+                </div>
+              </dl>
+
+              <button *ngIf="puedeVender" class="btn btn-cobrar" (click)="abrirPanelCobro()">
+                <i class="fas fa-cash-register"></i> Cobrar
               </button>
             </div>
 
             <!-- Panel interactivo de cobro -->
             <div class="panel-cobro" *ngIf="mostrarPanelCobro && !event?.cobrado">
-              <div class="panel-cobro-title">Registrar Transacción de Caja</div>
-              
+              <div class="panel-cobro-title">Registrar cobro</div>
+
               <div class="form-group">
-                <label>Costo Total del Servicio ($) *</label>
-                <input 
-                  type="number" 
-                  [(ngModel)]="costoTotal" 
-                  placeholder="Costo total de la consulta"
+                <label>Costo del tratamiento *</label>
+                <input
+                  type="number"
+                  [(ngModel)]="costoTotal"
+                  [placeholder]="cargandoPrecio ? 'Consultando precio…' : 'Costo total de la consulta'"
+                  [disabled]="cargandoPrecio"
                   class="form-control"
                   min="0"
                 />
+                <p class="hint-precio" *ngIf="cargandoPrecio">Consultando el precio de lista…</p>
+                <p class="hint-precio hint-precio--warn" *ngIf="avisoPrecio">{{ avisoPrecio }}</p>
+                <p class="hint-precio hint-precio--promo" *ngIf="promocionNombreAsociada">
+                  Campaña aplicada: {{ promocionNombreAsociada }}
+                </p>
               </div>
 
               <div class="form-row-2">
                 <div class="form-group">
                   <label>Tipo Descuento</label>
                   <select [(ngModel)]="descuentoTipo" class="form-control" (change)="onDescuentoTipoChange()">
-                    <option value="Ninguno">Ninguno</option>
+                    <option value="Ninguno">Sin descuento</option>
+                    <option value="Monto">Monto fijo ($)</option>
                     <option value="Porcentaje">Porcentaje (%)</option>
-                    <option value="Monto">Monto Fijo ($)</option>
                   </select>
                 </div>
                 <div class="form-group" *ngIf="descuentoTipo !== 'Ninguno'">
-                  <label>Valor Descuento</label>
-                  <input 
-                    type="number" 
-                    [(ngModel)]="descuentoValor" 
+                  <label>{{ descuentoTipo === 'Porcentaje' ? 'Porcentaje a descontar' : 'Pesos a descontar' }}</label>
+                  <input
+                    type="number"
+                    [(ngModel)]="descuentoValor"
                     class="form-control"
                     min="0"
+                    [max]="descuentoTipo === 'Porcentaje' ? 100 : costoTotal"
+                    [placeholder]="descuentoTipo === 'Porcentaje' ? 'Ej. 10' : 'Ej. 100'"
                   />
                 </div>
               </div>
 
-              <!-- Desglose dinámico de cobro -->
-              <div class="desglose-cobro">
-                <div class="desglose-row">
-                  <span>Costo Total:</span>
-                  <span>{{ costoTotal | currency:'MXN' }}</span>
-                </div>
-                <div class="desglose-row text-discount" *ngIf="descuentoTipo !== 'Ninguno' && descuentoValor > 0">
-                  <span>Descuento aplicado:</span>
-                  <span>-{{ obtenerDescuentoCalculado() | currency:'MXN' }}</span>
-                </div>
-                <div class="desglose-row text-stripe" *ngIf="event.montoAnticipo > 0">
-                  <span>Anticipo Stripe:</span>
-                  <span>-{{ event.montoAnticipo | currency:'MXN' }}</span>
-                </div>
-                <div class="desglose-row total">
-                  <span>Restante a cobrar en clínica:</span>
-                  <strong>{{ obtenerTotalNetoACobrar() | currency:'MXN' }}</strong>
-                </div>
-              </div>
+              <!-- Traducción en vivo: un 10% no dice nada hasta verlo en pesos -->
+              <p class="hint-precio hint-precio--promo"
+                 *ngIf="descuentoTipo === 'Porcentaje' && descuentoValor > 0 && !descuentoInvalido">
+                {{ descuentoValor }}% de {{ costoTotal | currency:'MXN' }} = {{ obtenerDescuentoCalculado() | currency:'MXN' }}
+              </p>
+              <p class="hint-precio hint-precio--warn" *ngIf="descuentoInvalido">
+                {{ mensajeDescuentoInvalido }}
+              </p>
+
 
               <div class="form-group">
-                <label>Método de Pago (Clínica) *</label>
-                <select [(ngModel)]="metodoPago" class="form-control">
-                  <option value="Efectivo">Efectivo</option>
-                  <option value="Tarjeta">Tarjeta (Terminal)</option>
-                  <option value="Transferencia">Transferencia Bancaria</option>
-                </select>
+                <label>¿Cómo paga? *</label>
+                <div class="metodos" role="radiogroup" aria-label="Método de pago">
+                  <button type="button" class="metodo" [class.is-on]="metodoPago === 'Efectivo'"
+                          [attr.aria-checked]="metodoPago === 'Efectivo'" role="radio"
+                          (click)="metodoPago = 'Efectivo'">
+                    <i class="fas fa-money-bill-wave"></i> Efectivo
+                  </button>
+                  <button type="button" class="metodo" [class.is-on]="metodoPago === 'Tarjeta'"
+                          [attr.aria-checked]="metodoPago === 'Tarjeta'" role="radio"
+                          (click)="metodoPago = 'Tarjeta'">
+                    <i class="fas fa-credit-card"></i> Tarjeta
+                  </button>
+                  <button type="button" class="metodo" [class.is-on]="metodoPago === 'Transferencia'"
+                          [attr.aria-checked]="metodoPago === 'Transferencia'" role="radio"
+                          (click)="metodoPago = 'Transferencia'">
+                    <i class="fas fa-building-columns"></i> Transferencia
+                  </button>
+                </div>
               </div>
 
-              <div class="panel-cobro-actions">
-                <button type="button" class="btn-cancel-cobro" (click)="mostrarPanelCobro = false">Cancelar</button>
-                <button 
-                  type="button" 
-                  class="btn-confirm-cobro" 
-                  [disabled]="costoTotal <= 0 || guardandoCobro"
-                  (click)="guardarCobro()">
-                  {{ guardandoCobro ? 'Guardando...' : 'Confirmar Cobro' }}
-                </button>
+              <!-- La cuenta. Se lee como un recibo: los descuentos restan
+                   visiblemente y abajo queda el número que se cobra. -->
+              <dl class="cuenta cuenta--viva">
+                <div class="cuenta__row">
+                  <dt>Tratamiento</dt>
+                  <dd>{{ costoTotal | currency:'MXN':'symbol-narrow':'1.0-0' }}</dd>
+                </div>
+                <div class="cuenta__row cuenta__row--menos"
+                     *ngIf="descuentoTipo !== 'Ninguno' && descuentoValor > 0 && !descuentoInvalido">
+                  <dt>Descuento<em *ngIf="descuentoTipo === 'Porcentaje'">{{ descuentoValor }}%</em></dt>
+                  <dd>−{{ obtenerDescuentoCalculado() | currency:'MXN':'symbol-narrow':'1.0-0' }}</dd>
+                </div>
+                <div class="cuenta__row cuenta__row--sub"
+                     *ngIf="descuentoTipo !== 'Ninguno' && descuentoValor > 0 && !descuentoInvalido">
+                  <dt>Subtotal</dt>
+                  <dd>{{ costoTotal - obtenerDescuentoCalculado() | currency:'MXN':'symbol-narrow':'1.0-0' }}</dd>
+                </div>
+                <div class="cuenta__row cuenta__row--menos" *ngIf="event.montoAnticipo > 0">
+                  <dt>Anticipo<em *ngIf="event.anticipoMetodoPago && event.anticipoMetodoPago !== 'Ninguno'">{{ event.anticipoMetodoPago }}</em></dt>
+                  <dd>−{{ event.montoAnticipo | currency:'MXN':'symbol-narrow':'1.0-0' }}</dd>
+                </div>
+              </dl>
+
+              <!-- El importe y el acto de cobrarlo no se separan: los dos
+                   quedan anclados y siempre a la vista. -->
+              <div class="cierre">
+                <div class="cierre__total">
+                  <span>A cobrar ahora</span>
+                  <strong>{{ obtenerTotalNetoACobrar() | currency:'MXN':'symbol-narrow':'1.0-0' }}</strong>
+                </div>
+                <div class="cierre__acciones">
+                  <button type="button" class="btn btn-cancelar" (click)="mostrarPanelCobro = false">Cancelar</button>
+                  <button
+                    type="button"
+                    class="btn btn-confirmar"
+                    [disabled]="costoTotal <= 0 || guardandoCobro || descuentoInvalido"
+                    (click)="guardarCobro()">
+                    {{ guardandoCobro ? 'Guardando…' : 'Confirmar cobro' }}
+                  </button>
+                </div>
               </div>
             </div>
 
-          </div>
+          </section>
         </div>
-        
+
         <footer class="modal-footer" *ngIf="!mostrarPanelCobro">
           <button *ngIf="event?.pacienteTelefono" class="action-btn wapp-btn" (click)="onOpenWhatsApp()">
             <i class="fab fa-whatsapp"></i> WhatsApp
@@ -210,6 +232,8 @@ export class CalendarEventModalComponent implements OnChanges {
   puedeVender = false;
   mostrarPanelCobro = false;
   guardandoCobro = false;
+  cargandoPrecio = false;
+  avisoPrecio: string | null = null;
 
   // Campos de cobro
   costoTotal: number = 0;
@@ -237,7 +261,9 @@ export class CalendarEventModalComponent implements OnChanges {
       this.metodoPago = 'Efectivo';
       this.promocionIdAsociada = null;
       this.promocionNombreAsociada = null;
-      
+      this.cargandoPrecio = false;
+      this.avisoPrecio = null;
+
       if (this.event) {
         // Inicializar costo sugerido
         this.costoTotal = this.event.costoTotal || 0;
@@ -251,26 +277,38 @@ export class CalendarEventModalComponent implements OnChanges {
 
   abrirPanelCobro() {
     this.mostrarPanelCobro = true;
-    
-    // Si no se ha ingresado un costo, obtener el precio del servicio o promo
-    if (this.costoTotal <= 0 && this.event?.servicioId) {
-      this.promosService.obtenerPrecioSugerido(this.event.servicioId).subscribe({
-        next: (res) => {
-          this.costoTotal = res.costoSugerido;
-          if (res.promocionId) {
-            this.promocionIdAsociada = res.promocionId;
-            this.promocionNombreAsociada = res.promocionNombre;
-            this.swal.toast(`Campaña "${res.promocionNombre}" aplicada automáticamente.`);
-          }
-        },
-        error: () => {
-          // Fallback en caso de error
-          this.costoTotal = 500;
-        }
-      });
-    } else if (this.costoTotal <= 0) {
-      this.costoTotal = 500;
+    this.avisoPrecio = null;
+
+    // El costo ya viene en la cita (se captura al registrarla): ése manda.
+    if (this.costoTotal > 0) return;
+
+    // Si no, se consulta el precio de lista del tratamiento, aplicando
+    // campaña vigente si la hay.
+    if (!this.event?.servicioId) {
+      this.avisoPrecio = 'Esta cita no tiene un tratamiento ligado, así que no hay precio de lista. Captura el total.';
+      return;
     }
+
+    this.cargandoPrecio = true;
+    this.promosService.obtenerPrecioSugerido(this.event.servicioId, this.event.tipoCita).subscribe({
+      next: (res) => {
+        this.cargandoPrecio = false;
+        this.costoTotal = res.costoSugerido ?? 0;
+        if (res.promocionId) {
+          this.promocionIdAsociada = res.promocionId;
+          this.promocionNombreAsociada = res.promocionNombre;
+          this.swal.toast(`Campaña "${res.promocionNombre}" aplicada automáticamente.`);
+        }
+        if (!this.costoTotal) {
+          this.avisoPrecio = 'El tratamiento no tiene precio registrado. Captura el total.';
+        }
+      },
+      error: () => {
+        // Nunca inventamos una cifra: es dinero. Se avisa y se captura.
+        this.cargandoPrecio = false;
+        this.avisoPrecio = 'No pudimos obtener el precio de lista. Captura el total.';
+      }
+    });
   }
 
   onDescuentoTipoChange() {
@@ -278,12 +316,32 @@ export class CalendarEventModalComponent implements OnChanges {
   }
 
   obtenerDescuentoCalculado(): number {
+    const valor = Number(this.descuentoValor) || 0;
+    if (valor <= 0) return 0;
     if (this.descuentoTipo === 'Porcentaje') {
-      return this.costoTotal * (this.descuentoValor / 100);
+      return (Number(this.costoTotal) || 0) * (valor / 100);
     } else if (this.descuentoTipo === 'Monto') {
-      return this.descuentoValor;
+      return valor;
     }
     return 0;
+  }
+
+  /** Un descuento mal capturado no debe llegar a caja. */
+  get descuentoInvalido(): boolean {
+    return this.mensajeDescuentoInvalido !== null;
+  }
+
+  get mensajeDescuentoInvalido(): string | null {
+    if (this.descuentoTipo === 'Ninguno') return null;
+    const valor = Number(this.descuentoValor) || 0;
+    if (valor < 0) return 'El descuento no puede ser negativo.';
+    if (this.descuentoTipo === 'Porcentaje' && valor > 100) {
+      return 'El porcentaje no puede pasar de 100%.';
+    }
+    if (this.descuentoTipo === 'Monto' && valor > (Number(this.costoTotal) || 0)) {
+      return 'El descuento no puede ser mayor al costo total.';
+    }
+    return null;
   }
 
   obtenerTotalNetoACobrar(): number {

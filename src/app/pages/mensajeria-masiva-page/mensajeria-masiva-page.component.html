@@ -8,32 +8,43 @@
     </div>
     
     <nav class="nav-steps p-3">
-      <div class="nav-step" [class.active]="pasoActual === 1" (click)="pasoActual = 1">
+      <div class="nav-step" [class.active]="vista === 'nuevo' && pasoActual === 1" (click)="irAPaso(1)">
         <div class="step-num">01</div>
         <div class="step-info">
           <span class="step-title">Identidad</span>
           <span class="step-desc">Configuración base</span>
         </div>
       </div>
-      <div class="nav-step" [class.active]="pasoActual === 2" (click)="pasoActual = 2" [class.disabled]="!plantillaSeleccionada">
+      <div class="nav-step" [class.active]="vista === 'nuevo' && pasoActual === 2" (click)="irAPaso(2)" [class.disabled]="!plantillaSeleccionada">
         <div class="step-num">02</div>
         <div class="step-info">
           <span class="step-title">Contenido</span>
           <span class="step-desc">Mensaje y Multimedia</span>
         </div>
       </div>
-      <div class="nav-step" [class.active]="pasoActual === 3" (click)="pasoActual = 3" [class.disabled]="!plantillaSeleccionada">
+      <div class="nav-step" [class.active]="vista === 'nuevo' && pasoActual === 3" (click)="irAPaso(3)" [class.disabled]="!plantillaSeleccionada">
         <div class="step-num">03</div>
         <div class="step-info">
           <span class="step-title">Audiencia</span>
           <span class="step-desc">Destinatarios</span>
         </div>
       </div>
-      <div class="nav-step" [class.active]="pasoActual === 4" (click)="pasoActual = 4" [class.disabled]="contactosSeleccionados.length === 0">
+      <div class="nav-step" [class.active]="vista === 'nuevo' && pasoActual === 4" (click)="irAPaso(4)" [class.disabled]="contactosSeleccionados.length === 0">
         <div class="step-num">04</div>
         <div class="step-info">
           <span class="step-title">Lanzamiento</span>
           <span class="step-desc">Resumen y Envío</span>
+        </div>
+      </div>
+      <div class="nav-step nav-step-historial" role="button" tabindex="0"
+           [class.active]="vista === 'historial'"
+           (click)="verHistorial()"
+           (keydown.enter)="verHistorial()"
+           (keydown.space)="verHistorial(); $event.preventDefault()">
+        <div class="step-num"><i class="fas fa-chart-bar" aria-hidden="true"></i></div>
+        <div class="step-info">
+          <span class="step-title">Historial</span>
+          <span class="step-desc">Llegaron, leídos y respuestas</span>
         </div>
       </div>
     </nav>
@@ -49,11 +60,15 @@
   <main class="main-content">
     <header class="top-bar d-flex justify-content-between align-items-center px-5 py-3 bg-white border-bottom">
       <div class="path-info">
-        <span class="text-muted">Marketing</span> / <span class="fw-bold text-navy">WhatsApp Masivo</span>
+        <span class="text-muted">Marketing</span> / <span class="fw-bold text-navy">{{ vista === 'historial' ? 'Historial de envíos' : 'WhatsApp Masivo' }}</span>
       </div>
     </header>
 
-    <div class="step-workspace p-5">
+    <div class="step-workspace historial-workspace" *ngIf="vista === 'historial'">
+      <app-historial-envios [envioInicialId]="envioSeleccionadoId"></app-historial-envios>
+    </div>
+
+    <div class="step-workspace p-5" *ngIf="vista === 'nuevo'">
       <div class="workspace-container">
         <!-- STEP 1 -->
         <div class="step-content" *ngIf="pasoActual === 1">
@@ -297,7 +312,7 @@
   </main>
 
   <!-- Floating Device Preview -->
-  <section class="device-preview-area">
+  <section class="device-preview-area" *ngIf="vista === 'nuevo'">
     <div class="preview-wrapper">
       <app-whatsapp-preview
         [plantillaSeleccionada]="plantillaSeleccionada"

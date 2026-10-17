@@ -68,3 +68,14 @@
 
 .sent .msg-time { color: white; }
 .sent .msg-footer i { color: white; }
+
+.msg-footer i.fa-exclamation-circle { opacity: 1; }
+
+.msg-error {
+  margin: 4px 4px 0;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #b42318;
+  text-align: right;
+}

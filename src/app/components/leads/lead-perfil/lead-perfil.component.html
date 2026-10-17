@@ -41,6 +41,14 @@
           <label>Estado Actual</label>
           <span class="current-status">{{ lead.estado }}</span>
         </div>
+        <div class="info-item" *ngIf="lead.campanaOrigen">
+          <label>Campaña de origen</label>
+          <span>{{ lead.campanaOrigen.nombre }} ({{ lead.campanaOrigen.canal }})</span>
+        </div>
+        <div class="info-item" *ngIf="lead.etiquetas?.length">
+          <label>Etiquetas</label>
+          <span>{{ lead.etiquetas?.join(', ') }}</span>
+        </div>
       </div>
     </div>
 
