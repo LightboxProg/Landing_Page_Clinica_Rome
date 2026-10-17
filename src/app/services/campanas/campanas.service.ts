@@ -30,6 +30,8 @@ export interface Campana {
   etiquetas: string[];
   interes: 'Dental' | 'Estetica' | 'Ambos' | 'Desconocido';
   idDoctor?: string | null;
+  // Promoción que vende la campaña; al agendar el bot ofrece sólo sus servicios
+  promocionId?: string | null;
   estado: EstadoCampana;
   fechaInicio?: string | null;
   fechaFin?: string | null;

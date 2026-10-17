@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 import { Campana, CampanasService, CanalCampana, DisparadorCampana } from '../../../services/campanas/campanas.service';
 import { UserService, Usuario } from '../../../services/user/user.service';
 import { SelectorPublicacionComponent } from '../selector-publicacion/selector-publicacion.component';
+import { PromocionesService } from '../../../services/promociones/promociones.service';
 
 // <input type="date"> trabaja con "YYYY-MM-DD" en hora local; el backend guarda
 // instantes. Se envía inicio y fin del día local para que una campaña que
@@ -38,6 +39,7 @@ export class CampanaFormComponent implements OnInit {
   fechaInicio = '';
   fechaFin = '';
   doctores: Usuario[] = [];
+  promociones: { _id: string; nombre: string; vigente: boolean }[] = [];
   guardando = false;
 
   readonly variableNombre = '{{nombre}}';
@@ -50,7 +52,8 @@ export class CampanaFormComponent implements OnInit {
 
   constructor(
     private campanasService: CampanasService,
-    private userService: UserService
+    private userService: UserService,
+    private promocionesService: PromocionesService
   ) {}
 
   get esEdicion(): boolean {
@@ -73,6 +76,7 @@ export class CampanaFormComponent implements OnInit {
       etiquetas: [],
       interes: 'Desconocido',
       idDoctor: null,
+      promocionId: null,
       estado: 'Borrador'
     };
 
@@ -97,6 +101,28 @@ export class CampanaFormComponent implements OnInit {
       },
       error: () => this.doctores = []
     });
+
+    // Se listan también las que aún no empiezan, para preparar la campaña antes
+    this.promocionesService.obtenerPromociones().subscribe({
+      next: (promos) => {
+        const ahora = Date.now();
+        this.promociones = promos
+          .filter(p => new Date(p.fechaFin).getTime() >= ahora || p._id === this.modelo.promocionId)
+          .map(p => ({
+            _id: p._id!,
+            nombre: p.nombre,
+            vigente: p.activo && new Date(p.fechaInicio).getTime() <= ahora && new Date(p.fechaFin).getTime() >= ahora
+          }));
+      },
+      error: () => this.promociones = []
+    });
+  }
+
+  // Las promociones son de estética: la campaña se marca con ese interés
+  alElegirPromocion(id: string | null) {
+    if (id && (this.modelo.interes === 'Desconocido' || this.modelo.interes === 'Dental')) {
+      this.modelo.interes = 'Estetica';
+    }
   }
 
   @HostListener('document:keydown.escape')

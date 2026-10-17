@@ -117,6 +117,17 @@
           <span class="cf-label">URL de imagen <em>opcional</em></span>
           <input type="url" [(ngModel)]="modelo.respuesta.mediaUrl" placeholder="https://…">
         </label>
+        <label class="cf-field">
+          <span class="cf-label">Promoción <em>opcional</em></span>
+          <select [(ngModel)]="modelo.promocionId" (ngModelChange)="alElegirPromocion($event)">
+            <option [ngValue]="null">Ninguna</option>
+            <option *ngFor="let p of promociones" [ngValue]="p._id">{{ p.nombre }}{{ p.vigente ? '' : ' (fuera de vigencia)' }}</option>
+          </select>
+          <small *ngIf="modelo.promocionId">
+            Si el contacto quiere agendar, el bot le ofrece sólo los servicios de esta promoción, con su precio.
+            Sin mensaje propio, el bot responde con la lista de precios de la promo.
+          </small>
+        </label>
       </section>
 
       <!-- 4. Registro -->

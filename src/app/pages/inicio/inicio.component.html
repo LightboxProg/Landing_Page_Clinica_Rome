@@ -116,22 +116,40 @@
         </div>
 
         <div class="promo__body">
-          <p class="promo__scope u-data">
-            <span *ngIf="p.servicioId">Tratamiento</span>
-            <span *ngIf="p.categoriaId">Categoría</span>
-          </p>
+          <p class="promo__scope u-data">{{ alcance(p) }}</p>
 
           <h3 class="promo__name">{{ p.nombre }}</h3>
           <p class="promo__desc">{{ p.descripcion || 'Tratamiento estético avanzado con precio de campaña.' }}</p>
 
-          <div class="promo__price">
-            <span class="promo__price-label u-data">Precio de campaña</span>
+          <!-- Un solo renglón con precio: el precio es la noticia, va grande -->
+          <div class="promo__price" *ngIf="p.items.length === 1 && p.items[0].precioFinal != null; else variosItems">
+            <span class="promo__price-label u-data">
+              {{ p.items[0].tipo === 'Paquete' ? p.items[0].nombre : 'Precio de campaña' }}
+            </span>
             <p class="promo__price-val u-data">
-              {{ p.tipoDescuento === 'Monto'
-                  ? (p.valorDescuento | currency:'MXN':'symbol':'1.2-2')
-                  : (p.valorDescuento + '% menos') }}
+              <s class="promo__was" *ngIf="p.items[0].precioLista > p.items[0].precioFinal">{{ p.items[0].precioLista | currency:'MXN':'symbol-narrow':'1.0-0' }}</s>
+              {{ p.items[0].precioFinal | currency:'MXN':'symbol-narrow':'1.0-0' }}
             </p>
           </div>
+
+          <ng-template #variosItems>
+            <ul class="promo__items">
+              <li class="promo__item" *ngFor="let item of itemsVisibles(p)">
+                <span class="promo__item-name">
+                  {{ item.tipo === 'Categoria' ? 'Todo ' + item.nombre : item.nombre }}
+                  <em *ngIf="item.tipo === 'Paquete' && item.formato === 'NxM'" class="u-data">{{ item.etiqueta }}</em>
+                </span>
+                <span class="promo__item-price u-data" *ngIf="item.precioFinal != null; else soloEtiqueta">
+                  <s *ngIf="item.precioLista > item.precioFinal">{{ item.precioLista | currency:'MXN':'symbol-narrow':'1.0-0' }}</s>
+                  {{ item.precioFinal | currency:'MXN':'symbol-narrow':'1.0-0' }}
+                </span>
+                <ng-template #soloEtiqueta>
+                  <span class="promo__item-price u-data">{{ item.etiqueta }}</span>
+                </ng-template>
+              </li>
+            </ul>
+            <p class="promo__more u-data" *ngIf="p.items.length > 4">y {{ p.items.length - 4 }} más en clínica</p>
+          </ng-template>
 
           <a routerLink="/agendar-cita" class="btn btn--line promo__cta">Agendar</a>
         </div>

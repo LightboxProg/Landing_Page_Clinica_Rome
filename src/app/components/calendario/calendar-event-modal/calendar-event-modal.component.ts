@@ -107,7 +107,7 @@ import { PromocionesService } from '../../../services/promociones/promociones.se
                 <p class="hint-precio" *ngIf="cargandoPrecio">Consultando el precio de lista…</p>
                 <p class="hint-precio hint-precio--warn" *ngIf="avisoPrecio">{{ avisoPrecio }}</p>
                 <p class="hint-precio hint-precio--promo" *ngIf="promocionNombreAsociada">
-                  Campaña aplicada: {{ promocionNombreAsociada }}
+                  Promoción aplicada: {{ promocionNombreAsociada }}
                 </p>
               </div>
 
@@ -267,6 +267,17 @@ export class CalendarEventModalComponent implements OnChanges {
       if (this.event) {
         // Inicializar costo sugerido
         this.costoTotal = this.event.costoTotal || 0;
+
+        // Las citas del bot o de la web con promoción ya traen el descuento
+        // calculado al apartar: se respeta el precio que se le prometió.
+        if (!this.event.cobrado && this.event.promocionId) {
+          this.promocionIdAsociada = this.event.promocionId;
+          this.promocionNombreAsociada = this.event.promocionNombre || 'Promoción';
+          if (this.event.descuentoTipo && this.event.descuentoTipo !== 'Ninguno') {
+            this.descuentoTipo = this.event.descuentoTipo;
+            this.descuentoValor = this.event.descuentoValor || 0;
+          }
+        }
       }
     }
   }
@@ -279,25 +290,32 @@ export class CalendarEventModalComponent implements OnChanges {
     this.mostrarPanelCobro = true;
     this.avisoPrecio = null;
 
-    // El costo ya viene en la cita (se captura al registrarla): ése manda.
-    if (this.costoTotal > 0) return;
+    // La cita ya trae su promoción (se fijó al apartar): ésa manda.
+    if (this.promocionIdAsociada) return;
 
-    // Si no, se consulta el precio de lista del tratamiento, aplicando
-    // campaña vigente si la hay.
     if (!this.event?.servicioId) {
+      if (this.costoTotal > 0) return;
       this.avisoPrecio = 'Esta cita no tiene un tratamiento ligado, así que no hay precio de lista. Captura el total.';
       return;
     }
 
+    // Se consulta el precio de lista y la mejor promoción vigente para este
+    // paciente. La promo entra como descuento (no como costo rebajado) para
+    // que el corte diario la cuente en "descuentos".
     this.cargandoPrecio = true;
-    this.promosService.obtenerPrecioSugerido(this.event.servicioId, this.event.tipoCita).subscribe({
+    this.promosService.obtenerPrecioSugerido(this.event.servicioId, this.event.tipoCita, this.event.pacienteId || undefined).subscribe({
       next: (res) => {
         this.cargandoPrecio = false;
-        this.costoTotal = res.costoSugerido ?? 0;
-        if (res.promocionId) {
+        if (!this.costoTotal) this.costoTotal = res.costoOriginal ?? 0;
+
+        // Sólo si la cita está a precio de lista y no le capturaron otro descuento
+        const aPrecioDeLista = this.costoTotal === res.costoOriginal;
+        if (res.promocionId && aPrecioDeLista && this.descuentoTipo === 'Ninguno') {
           this.promocionIdAsociada = res.promocionId;
           this.promocionNombreAsociada = res.promocionNombre;
-          this.swal.toast(`Campaña "${res.promocionNombre}" aplicada automáticamente.`);
+          this.descuentoTipo = 'Monto';
+          this.descuentoValor = res.descuentoAplicado;
+          this.swal.toast(`Promoción "${res.promocionNombre}" aplicada: ${res.etiqueta || 'descuento'}.`);
         }
         if (!this.costoTotal) {
           this.avisoPrecio = 'El tratamiento no tiene precio registrado. Captura el total.';
@@ -313,6 +331,11 @@ export class CalendarEventModalComponent implements OnChanges {
 
   onDescuentoTipoChange() {
     this.descuentoValor = 0;
+    // Quitar el descuento es quitar la promoción: la cita ya no cuenta para su cupo
+    if (this.descuentoTipo === 'Ninguno') {
+      this.promocionIdAsociada = null;
+      this.promocionNombreAsociada = null;
+    }
   }
 
   obtenerDescuentoCalculado(): number {

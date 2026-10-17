@@ -6,7 +6,6 @@ import { AvisoPrivacidadComponent } from './pages/aviso-privacidad/aviso-privaci
 import { AvisoTerminosComponent } from './pages/aviso-terminos/aviso-terminos.component';
 import { PasarelaMembresiasComponent } from './components/membresias/pasarela-membresias/pasarela-membresias.component';
 import { CheckoutStatusComponent } from './components/membresias/checkout-status/checkout-status.component';
-import { GestionComponent } from './pages/gestion/gestion.component';
 import { LoginPageComponent } from './pages/login/login.component';
 import { AgendarCitaComponent } from './pages/agendar-cita/agendar-cita.component';
 import { NosotrosComponent } from './pages/nosotros/nosotros.component';
@@ -76,7 +75,11 @@ export const routes: Routes = [
     children: [
       // Gestión y Leads
       { path: 'admin/gestion', component: CalendarioAdminComponent },
-      { path: 'admin/configuracion', component: GestionComponent },
+      // Lazy por el budget de 3 MB del bundle inicial (promociones creció con los renglones)
+      {
+        path: 'admin/configuracion',
+        loadComponent: () => import('./pages/gestion/gestion.component').then(m => m.GestionComponent)
+      },
       { path: 'admin/leads', component: LeadsComponent },
       {
         path: 'admin/mensajeria',

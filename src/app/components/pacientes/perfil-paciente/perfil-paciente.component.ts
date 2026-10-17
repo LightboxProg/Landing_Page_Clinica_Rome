@@ -447,6 +447,11 @@ export class PerfilPacienteComponent implements OnInit {
       costoTotal: cita.costoTotal || 0,
       montoAnticipo: cita.montoAnticipo || 0,
       descuentoMonto: cita.descuentoMonto || 0,
+      descuentoTipo: cita.descuentoTipo || 'Ninguno',
+      descuentoValor: cita.descuentoValor || 0,
+      promocionId: cita.promocionId?._id || cita.promocionId || null,
+      promocionNombre: cita.promocionId?.nombre || null,
+      pacienteId: this.paciente._id,
       montoPagadoClinica: cita.montoPagadoClinica || 0,
       metodoPago: cita.metodoPago || 'Ninguno',
       cobrado: !!cita.cobrado

@@ -42,6 +42,19 @@ export class InicioComponent implements OnInit, OnDestroy {
     });
   }
 
+  // La tarjeta muestra hasta cuatro renglones; el resto se resume en "y N más"
+  itemsVisibles(p: any): any[] {
+    return (p.items || []).slice(0, 4);
+  }
+
+  // Rótulo sobre el nombre: qué tipo de oferta es
+  alcance(p: any): string {
+    const items = p.items || [];
+    if (items.length !== 1) return `${items.length} tratamientos`;
+    if (items[0].tipo === 'Paquete') return items[0].modalidad === 'Sesiones' ? 'Paquete de sesiones' : 'Paquete';
+    return items[0].tipo === 'Categoria' ? 'Categoría' : 'Tratamiento';
+  }
+
   fotoSiguiente(p: any, event: Event): void {
     event.stopPropagation();
     event.preventDefault();

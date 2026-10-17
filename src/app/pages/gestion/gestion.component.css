@@ -242,3 +242,12 @@
     padding: 0 16px;
   }
 }
+
+/* structure.css (tema viejo) fuerza `.container { width: 260px !important }` en
+   pantallas angostas y dejaba la página en una columna de 260px centrada.
+   El selector del componente lleva atributo, así que este !important gana. */
+@media (max-width: 767px) {
+  .container {
+    width: 100% !important;
+  }
+}

@@ -340,6 +340,56 @@
   color: var(--ink);
 }
 
+.promo__was {
+  margin-right: 0.4rem;
+  font-size: 0.95rem;
+  color: var(--ink-mute);
+}
+
+/* Varios tratamientos: lista con precio de lista tachado, como un ticket */
+.promo__items {
+  list-style: none;
+  margin: auto 0 0;
+  padding: 1.1rem 0 0;
+}
+
+.promo__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(16, 26, 44, 0.08);
+  font-size: 0.9rem;
+}
+
+.promo__item:last-child { border-bottom: none; }
+
+.promo__item-name { color: var(--ink); }
+
+.promo__item-name em {
+  margin-left: 0.35rem;
+  font-style: normal;
+  font-size: 0.7rem;
+  color: var(--brass-ink);
+}
+
+.promo__item-price {
+  white-space: nowrap;
+  color: var(--ink);
+}
+
+.promo__item-price s {
+  margin-right: 0.35rem;
+  color: var(--ink-mute);
+}
+
+.promo__more {
+  margin: 0.35rem 0 0;
+  font-size: 0.7rem;
+  color: var(--ink-mute);
+}
+
 .promo__cta { margin-top: 1.25rem; align-self: flex-start; }
 
 /* ============================================================
