@@ -2,7 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Paciente, PacientesService } from '../../../services/pacientes/pacientes.service';
-import { CitaPayload, CitasService, MetodoPago } from '../../../services/citas/citas.service';
+import { CitaPayload, CitasService, MetodoPago, PaquetePaciente } from '../../../services/citas/citas.service';
+import { PromocionesService } from '../../../services/promociones/promociones.service';
 import { CategoriasService } from '../../../services/categorias/categorias.service';
 import { ServiciosService } from '../../../services/servicios/servicios.service';
 import { CategoriasDentalesService } from '../../../services/categorias-dentales/categorias-dentales.service';
@@ -13,7 +14,7 @@ import { SwalService } from '../../../services/swal/swal.service';
 import { AuthService } from '../../../services/auth/auth.service';
 import { ModalComponent } from '../../modal/modal.component';
 import { UserService, Usuario } from '../../../services/user/user.service';
-import { MembresiasService } from '../../../services/membresias/membresias.service';
+import { MembresiasService, ETIQUETAS_ESTADO } from '../../../services/membresias/membresias.service';
 import { FotosService } from '../../../services/fotos/fotos.service';
 import { CalendarEventModalComponent } from '../../calendario/calendar-event-modal/calendar-event-modal.component';
 
@@ -53,6 +54,11 @@ export class PerfilPacienteComponent implements OnInit {
 
   citaForm = this.formularioVacio();
 
+  // Paquetes de promoción: los que se pueden vender hoy y los que el paciente ya tiene
+  paquetesEnVenta: { valor: string; promocionId: string; itemId: string; nombre: string; promocionNombre: string;
+                     precioLista: number; precioFinal: number; modalidad: string; servicios: any[] }[] = [];
+  paquetesPaciente: PaquetePaciente[] = [];
+
   fotos: any[] = [];
   imagenModal: string | null = null;
   zoomScale = 1;
@@ -78,7 +84,8 @@ export class PerfilPacienteComponent implements OnInit {
     private categoriasService: CategoriasService,
     private serviciosService: ServiciosService,
     private categoriasDentalesService: CategoriasDentalesService,
-    private serviciosDentalesService: ServiciosDentalesService
+    private serviciosDentalesService: ServiciosDentalesService,
+    private promosService: PromocionesService
   ) { }
 
   ngOnInit() {
@@ -87,6 +94,7 @@ export class PerfilPacienteComponent implements OnInit {
       this.cargarPaciente(id);
       this.cargarListaNegra(id);
       this.cargarCitas(id);
+      this.cargarPaquetes(id);
       this.cargarFotos(id);
       this.cargarDoctores();
       this.cargarMembresias(id);
@@ -109,9 +117,25 @@ export class PerfilPacienteComponent implements OnInit {
     this.citasService.obtenerCitasEsteticaPorPaciente(id).subscribe(res => this.citasEstetica = res);
     this.citasService.obtenerCitasDentalPorPaciente(id).subscribe(res => this.citasDental = res);
   }
+  cargarPaquetes(id: string) {
+    this.citasService.obtenerPaquetesPaciente(id).subscribe({
+      next: (res) => this.paquetesPaciente = res || [],
+      error: () => this.paquetesPaciente = []
+    });
+  }
+
+  get paquetesConSesiones(): PaquetePaciente[] {
+    return this.paquetesPaciente.filter(p => p.estado === 'Activo');
+  }
+
   cargarFotos(id: string) {
     this.fotosService.obtenerFotos(id).subscribe((res: any) => this.fotos = res.fotos);
   }
+  etiquetaMembresia(m: any): string {
+    if (m.estado === 'atrasada') return `Atrasada ${m.diasAtraso} d`;
+    return (ETIQUETAS_ESTADO as any)[m.estado] || m.estado;
+  }
+
   cargarMembresias(id: string) {
     this.membresiasService.obtenerMembresiasPorPaciente(id).subscribe({
       next: (res: any[]) => this.membresias = res,
@@ -160,7 +184,11 @@ export class PerfilPacienteComponent implements OnInit {
       costoTotal: 0,
       montoAnticipo: 0,
       anticipoMetodoPago: 'Ninguno' as MetodoPago,
-      notas: ''
+      notas: '',
+      // Normal: a precio de lista o promo. Paquete: se vende uno. Sesion: usa una a favor.
+      modo: 'Normal' as 'Normal' | 'Paquete' | 'Sesion',
+      paqueteVenta: '',
+      paquetePacienteId: ''
     };
   }
 
@@ -168,6 +196,66 @@ export class PerfilPacienteComponent implements OnInit {
     this.citaTipo = tipo;
     this.citaForm = this.formularioVacio();
     this.showModalCita = true;
+    if (tipo === 'Estetica') this.cargarPaquetesEnVenta();
+  }
+
+  // Paquetes de las promociones vigentes; el backend revalida cupo y precio al guardar
+  private cargarPaquetesEnVenta() {
+    this.promosService.obtenerPromocionesActivas().subscribe({
+      next: (promos) => {
+        this.paquetesEnVenta = (promos || []).flatMap((p: any) => (p.items || [])
+          .filter((i: any) => i.tipo === 'Paquete' && i.servicios?.length)
+          .map((i: any) => ({
+            valor: `${p._id}:${i._id}`,
+            promocionId: p._id,
+            itemId: i._id,
+            nombre: i.nombre,
+            promocionNombre: p.nombre,
+            precioLista: i.precioLista,
+            precioFinal: i.precioFinal,
+            modalidad: i.modalidad,
+            servicios: i.servicios
+          })));
+      },
+      error: () => this.paquetesEnVenta = []
+    });
+  }
+
+  get paqueteVentaSeleccionado() {
+    return this.paquetesEnVenta.find(p => p.valor === this.citaForm.paqueteVenta) || null;
+  }
+
+  get paqueteSesionSeleccionado(): PaquetePaciente | null {
+    return this.paquetesPaciente.find(p => p._id === this.citaForm.paquetePacienteId) || null;
+  }
+
+  onModoChange() {
+    this.citaForm.paqueteVenta = '';
+    this.citaForm.paquetePacienteId = '';
+    this.citaForm.servicioId = '';
+    this.citaForm.costoTotal = 0;
+    this.citaForm.montoAnticipo = 0;
+  }
+
+  // Vender paquete: el costo es el precio del paquete y la cita se agenda con su primer servicio
+  onPaqueteVentaChange() {
+    const paquete = this.paqueteVentaSeleccionado;
+    this.citaForm.costoTotal = paquete ? paquete.precioFinal : 0;
+    this.citaForm.servicioId = paquete ? String(paquete.servicios[0].servicioId) : '';
+    this.recalcularFin();
+  }
+
+  // Usar sesión: sólo los tratamientos del paquete que aún tienen sesiones
+  get serviciosDeSesion(): { servicioId: string; nombre: string; restantes: number }[] {
+    return (this.paqueteSesionSeleccionado?.servicios || []).filter(s => s.restantes > 0);
+  }
+
+  onPaqueteSesionChange() {
+    const servicios = this.serviciosDeSesion;
+    this.citaForm.servicioId = servicios.length === 1 ? String(servicios[0].servicioId) : '';
+    this.citaForm.costoTotal = 0;
+    this.citaForm.montoAnticipo = 0;
+    this.recalcularFin();
   }
 
   /** Categorías de la rama activa. */
@@ -237,6 +325,16 @@ export class PerfilPacienteComponent implements OnInit {
       this.swal.error('No se encontró el expediente del paciente.');
       return;
     }
+    const modo = this.citaTipo === 'Estetica' ? this.citaForm.modo : 'Normal';
+    const venta = modo === 'Paquete' ? this.paqueteVentaSeleccionado : null;
+    if (modo === 'Paquete' && !venta) {
+      this.swal.error('Elige el paquete que se va a vender.');
+      return;
+    }
+    if (modo === 'Sesion' && !this.citaForm.paquetePacienteId) {
+      this.swal.error('Elige el paquete del que se toma la sesión.');
+      return;
+    }
     if (!this.citaForm.servicioId) {
       this.swal.error('Elige el tratamiento que se va a realizar.');
       return;
@@ -268,14 +366,16 @@ export class PerfilPacienteComponent implements OnInit {
       doctorId: this.citaForm.doctorId,
       servicioId: this.citaForm.servicioId,
       tipoCita: this.citaTipo,
-      // El backend reescribe el título con el nombre del tratamiento.
-      titulo: this.servicioSeleccionado?.nombre || '',
+      // El backend reescribe el título con el nombre del tratamiento (o del paquete).
+      titulo: venta?.nombre || this.servicioSeleccionado?.nombre || '',
       fechaHoraInicio: new Date(this.citaForm.fechaHoraInicio),
       fechaHoraFin: new Date(this.citaForm.fechaHoraFin),
       notas: this.citaForm.notas,
       costoTotal: Number(this.citaForm.costoTotal) || 0,
       montoAnticipo: anticipo,
-      anticipoMetodoPago: anticipo > 0 ? this.citaForm.anticipoMetodoPago : 'Ninguno'
+      anticipoMetodoPago: anticipo > 0 ? this.citaForm.anticipoMetodoPago : 'Ninguno',
+      ...(venta ? { promocionId: venta.promocionId, paqueteItemId: venta.itemId } : {}),
+      ...(modo === 'Sesion' ? { paquetePacienteId: this.citaForm.paquetePacienteId } : {})
     };
 
     this.guardandoCita = true;
@@ -284,7 +384,10 @@ export class PerfilPacienteComponent implements OnInit {
         this.guardandoCita = false;
         this.showModalCita = false;
         this.swal.success('Cita registrada');
-        if (this.paciente?._id) this.cargarCitas(this.paciente._id);
+        if (this.paciente?._id) {
+          this.cargarCitas(this.paciente._id);
+          this.cargarPaquetes(this.paciente._id);
+        }
       },
       error: (err) => {
         this.guardandoCita = false;
@@ -451,6 +554,8 @@ export class PerfilPacienteComponent implements OnInit {
       descuentoValor: cita.descuentoValor || 0,
       promocionId: cita.promocionId?._id || cita.promocionId || null,
       promocionNombre: cita.promocionId?.nombre || null,
+      paquete: cita.paquete || null,
+      paquetePacienteId: cita.paquetePacienteId || null,
       pacienteId: this.paciente._id,
       montoPagadoClinica: cita.montoPagadoClinica || 0,
       metodoPago: cita.metodoPago || 'Ninguno',

@@ -27,6 +27,21 @@ export interface CitaPayload {
   costoTotal?: number;
   montoAnticipo?: number;
   anticipoMetodoPago?: MetodoPago;
+
+  // Paquetes de promoción: vender uno (promocionId + paqueteItemId) o usar una sesión a favor
+  promocionId?: string;
+  paqueteItemId?: string;
+  paquetePacienteId?: string;
+}
+
+export interface PaquetePaciente {
+  _id: string;
+  nombre: string;
+  promocionNombre?: string;
+  estado: 'Activo' | 'Agotado' | 'Cancelado';
+  precio: number;
+  createdAt: string;
+  servicios: { servicioId: string; nombre: string; total: number; usadas: number; restantes: number }[];
 }
 
 export type MetodoPago = 'Ninguno' | 'Efectivo' | 'Tarjeta' | 'Transferencia';
@@ -49,6 +64,11 @@ export class CitasService {
 
   crearCitaDental(cita: CitaPayload): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/citas/agendar`, { ...cita, tipoCita: 'Dental' });
+  }
+
+  // Paquetes con sesiones a favor que el paciente ha comprado
+  obtenerPaquetesPaciente(pacienteId: string): Observable<PaquetePaciente[]> {
+    return this.http.get<PaquetePaciente[]>(`${this.apiUrl}/paquetes/paciente/${pacienteId}`);
   }
 
   obtenerCitasEsteticaPorPaciente(pacienteId: string): Observable<any[]> {

@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { calcularCuota } from '../../../services/membresias/membresias.service';
 
 @Component({
   selector: 'app-lista-membresias',
@@ -14,6 +15,7 @@ export class ListaMembresiasComponent {
 
   @Output() editar = new EventEmitter<any>();
   @Output() eliminar = new EventEmitter<any>();
+  @Output() reactivar = new EventEmitter<any>();
   @Output() nuevo = new EventEmitter<void>();
 
   frecuencias = [
@@ -29,6 +31,10 @@ export class ListaMembresiasComponent {
   onEliminar(cat: any): void {
     if (!confirm(`¿Desactivar la membresía "${cat.nombreTratamiento}"?`)) return;
     this.eliminar.emit(cat);
+  }
+
+  cuota(cat: any): number {
+    return calcularCuota(cat.costoTotal, cat.enganche, cat.installmentsCount);
   }
 
   formatCosto(costo: number): string {

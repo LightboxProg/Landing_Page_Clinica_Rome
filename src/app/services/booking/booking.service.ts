@@ -45,11 +45,15 @@ export class BookingService {
     return this.http.get<DoctorPublic[]>(`${this.apiUrl}/doctores/publico`);
   }
 
-  // Obtiene los slots libres de un doctor en una fecha específica
-  obtenerSlots(doctorId: string, fecha: string, configId?: string): Observable<SlotPublic[]> {
+  // Obtiene los slots libres de un doctor en una fecha específica.
+  // Con `duracion` (minutos de un combo) sólo los que tienen libres los siguientes.
+  obtenerSlots(doctorId: string, fecha: string, configId?: string, duracion?: number): Observable<SlotPublic[]> {
     const params: any = { doctorId, fecha };
     if (configId) {
       params.configId = configId;
+    }
+    if (duracion) {
+      params.duracion = duracion;
     }
     return this.http.get<SlotPublic[]>(`${this.apiUrl}/disponibilidad/slots`, { params });
   }
@@ -73,23 +77,29 @@ export class BookingService {
     return this.http.get<any>(`${this.apiUrl}/disponibilidad/config/id/${configId}`);
   }
 
-  // Realiza el apartado temporal de un slot por 10 minutos
-  apartarSlot(slotId: string, pacienteId: string): Observable<any> {
+  // Realiza el apartado temporal de un slot por 15 minutos (y los seguidos que pida `duracion`)
+  apartarSlot(slotId: string, pacienteId: string, duracion?: number): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/disponibilidad/apartar`, {
       slotId,
-      identifcadorUsuario: pacienteId
+      identifcadorUsuario: pacienteId,
+      duracion: duracion || undefined
     });
   }
 
   // Crea una sesión de Stripe Checkout para pagar el anticipo de la cita
-  crearCheckoutSesionCita(slotId: string, pacienteId: string, tipoCita: string, servicioId?: string): Observable<any> {
+  // Con `paquete` se compra un paquete de promoción: el backend fija servicio y precio
+  crearCheckoutSesionCita(slotId: string, pacienteId: string, tipoCita: string, servicioId?: string,
+                          paquete?: { promocionId: string; itemId: string }): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/reservas/checkout`, {
       slotId,
       pacienteId,
       tipoCita,
-      servicioId
+      servicioId,
+      promocionId: paquete?.promocionId,
+      paqueteItemId: paquete?.itemId
     });
   }
+
 
   // Verifica la sesión de checkout pagada y confirma la cita localmente y en Google Calendar
   verificarCitaCheckoutSession(sessionId: string): Observable<any> {

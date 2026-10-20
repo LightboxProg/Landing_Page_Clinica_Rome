@@ -307,6 +307,42 @@
           </table>
         </div>
       </div>
+
+      <!-- Pagos de membresías del día -->
+      <div class="corte-table-section" *ngIf="pagosMembresia.length > 0">
+        <h4 class="section-title"><i class="fas fa-id-card"></i> Pagos de Membresías</h4>
+        <div class="table-container">
+          <table class="corte-table">
+            <thead>
+              <tr>
+                <th>Paciente</th>
+                <th>Membresía</th>
+                <th>Concepto</th>
+                <th>Hora</th>
+                <th>Método Pago</th>
+                <th>Monto</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let p of pagosMembresia">
+                <td class="td-bold">{{ p.pacienteNombre }}</td>
+                <td>{{ p.tratamiento }}</td>
+                <td>{{ p.tipo === 'enganche' ? 'Enganche' : 'Parcialidad' }}</td>
+                <td>{{ p.fecha | date:'HH:mm' }}</td>
+                <td>
+                  <span class="badge-payment" [ngClass]="{
+                    'pay-efectivo': p.metodoPago === 'Efectivo',
+                    'pay-tarjeta': p.metodoPago === 'Tarjeta',
+                    'pay-transferencia': p.metodoPago === 'Transferencia',
+                    'pay-stripe': p.metodoPago === 'Stripe'
+                  }">{{ p.metodoPago === 'Stripe' ? 'Stripe (Online)' : p.metodoPago }}</span>
+                </td>
+                <td class="td-price td-bold text-success">{{ p.monto | currency:'MXN':'symbol':'1.2-2' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
     <!-- Firmas / Cierre -->

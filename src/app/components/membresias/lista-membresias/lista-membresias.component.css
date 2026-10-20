@@ -133,3 +133,15 @@
   .precio-divider { width: 100%; height: 1px; }
   .card-image { height: 140px; }
 }
+
+/* Plan desactivado: sigue visible en el panel para poder reactivarlo */
+.membresia-card.inactiva { opacity: 0.75; }
+.membresia-card.inactiva .card-image { filter: grayscale(1); }
+.inactiva-banda {
+  display: flex; justify-content: space-between; align-items: center; gap: 8px;
+  padding: 8px 12px; background: #f2f4f7; color: #475467; font-size: 0.8rem; font-weight: 600;
+}
+.inactiva-banda button {
+  border: 1px solid #d0d5dd; background: #fff; color: #1a2b3c; border-radius: 6px;
+  padding: 4px 10px; font-weight: 600; font-size: 0.8rem; cursor: pointer;
+}

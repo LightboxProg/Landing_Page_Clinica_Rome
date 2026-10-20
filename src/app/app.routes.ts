@@ -37,6 +37,10 @@ export const routes: Routes = [
       { path: '', component: InicioComponent },
       { path: 'inicio', component: InicioComponent },
       { path: 'servicios', component: ServiciosComponent },
+      {
+        path: 'promociones',
+        loadComponent: () => import('./pages/promociones/promociones.component').then(m => m.PromocionesComponent)
+      },
       { path: 'membresias', component: CatalogoMembresiasComponent },
       { path: 'nosotros', component: NosotrosComponent },
       { path: 'contacto', component: ContactoComponent },

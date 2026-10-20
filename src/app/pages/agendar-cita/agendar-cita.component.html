@@ -22,6 +22,11 @@
     </li>
   </ol>
 
+  <p class="alert" *ngIf="paqueteNoDisponible && step === 1" role="status">
+    <i class="fas fa-circle-info" aria-hidden="true"></i>
+    <span>Ese paquete ya no está disponible (la promoción cerró o se agotó). Puedes agendar el tratamiento a precio vigente.</span>
+  </p>
+
   <p class="alert" *ngIf="errorMessage" role="alert">
     <i class="fas fa-triangle-exclamation" aria-hidden="true"></i>
     <span>{{ errorMessage }}</span>
@@ -45,7 +50,19 @@
         </select>
       </div>
 
-      <div class="field" *ngIf="selectedDoctorId">
+      <!-- Compra de paquete: el tratamiento lo fija el paquete -->
+      <div class="pack" *ngIf="paquete">
+        <p class="pack__label u-data">Paquete · {{ paquete.promocionNombre }}</p>
+        <p class="pack__name">{{ paquete.nombre }}</p>
+        <p class="pack__detail">{{ incluyePaquete }}</p>
+        <p class="pack__detail">
+          {{ paquete.modalidad === 'Sesiones'
+            ? 'Esta cita es tu primera sesión; las demás quedan a tu favor para agendarlas después.'
+            : 'Todo se aplica en esta misma visita.' }}
+        </p>
+      </div>
+
+      <div class="field" *ngIf="selectedDoctorId && !paquete">
         <label for="servicio">Tratamiento</label>
         <select id="servicio" [(ngModel)]="selectedServiceId" (change)="onServiceChange()" [disabled]="loading">
           <option value="" disabled selected>Elige un tratamiento</option>
@@ -64,8 +81,15 @@
           <dd class="u-data">{{ selectedService.duracionMinutos || 60 }} min</dd>
         </div>
         <div class="brief__row">
-          <dt>Tratamiento</dt>
-          <dd class="u-data">{{ formatearPrecio(selectedService.costo) }}</dd>
+          <dt>{{ paquete ? 'Paquete' : 'Tratamiento' }}</dt>
+          <dd class="u-data">
+            <s class="brief__was" *ngIf="promoDelServicio">{{ formatearPrecio(costoLista ?? 0) }}</s>
+            {{ formatearPrecio(costoTratamiento ?? 0) }}
+          </dd>
+        </div>
+        <div class="brief__row brief__row--promo" *ngIf="promoDelServicio">
+          <dt>Promoción</dt>
+          <dd>{{ promoDelServicio.nombre }}</dd>
         </div>
         <div class="brief__row brief__row--pay">
           <dt>Pagas ahora</dt>
@@ -245,12 +269,15 @@
         <dd class="u-data">{{ selectedSlot?.horaInicio }} – {{ selectedSlot?.horaFin }}</dd>
       </div>
       <div class="brief__row">
-        <dt>Tratamiento</dt>
-        <dd>{{ selectedService?.nombre || selectedTipoCita }}</dd>
+        <dt>{{ paquete ? 'Paquete' : 'Tratamiento' }}</dt>
+        <dd>{{ paquete?.nombre || selectedService?.nombre || selectedTipoCita }}</dd>
       </div>
       <div class="brief__row" *ngIf="selectedService">
-        <dt>Costo del tratamiento</dt>
-        <dd class="u-data">{{ formatearPrecio(selectedService.costo) }}</dd>
+        <dt>{{ paquete ? 'Precio del paquete' : 'Costo del tratamiento' }}</dt>
+        <dd class="u-data">
+          <s class="brief__was" *ngIf="promoDelServicio">{{ formatearPrecio(costoLista ?? 0) }}</s>
+          {{ formatearPrecio(costoTratamiento ?? 0) }}
+        </dd>
       </div>
       <div class="brief__row brief__row--pay">
         <dt>Pagas ahora</dt>
@@ -261,6 +288,17 @@
     <p class="form-card__note" *ngIf="apartadoEsParcial">
       Este apartado se descuenta del total de tu tratamiento el día de tu visita.
     </p>
+
+    <!-- Las sesiones de un paquete ya pagado se agendan por WhatsApp -->
+    <div class="favor" *ngIf="!paquete && selectedTipoCita !== 'Dental'">
+      <div>
+        <p class="favor__title">¿Ya pagaste un paquete con sesiones?</p>
+        <p class="favor__note">No pagues aquí: agenda tu sesión por WhatsApp y no lleva anticipo.</p>
+      </div>
+      <a class="btn btn--line" [href]="whatsappSesiones" target="_blank" rel="noopener">
+        <i class="fab fa-whatsapp" aria-hidden="true"></i> Agendar por WhatsApp
+      </a>
+    </div>
 
     <div class="form-card__actions">
       <button class="btn btn--line" (click)="volverPaso(1)" [disabled]="loading" type="button">Cambiar horario</button>

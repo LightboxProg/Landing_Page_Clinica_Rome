@@ -2,7 +2,7 @@
 
   <!-- ÉXITO -->
   <div class="res__card panel" *ngIf="status === 'success'">
-    <p class="res__mark res__mark--ok" aria-hidden="true"><i class="fas fa-check"></i></p>
+    <p class="res__mark res__mark--ok" aria-hidden="true" *ngIf="type === 'cita' || membresia"><i class="fas fa-check"></i></p>
 
     <ng-container *ngIf="type === 'cita'; else okMembresia">
       <h1 class="res__title">Tu cita está confirmada</h1>
@@ -14,11 +14,34 @@
     </ng-container>
 
     <ng-template #okMembresia>
-      <h1 class="res__title">Tu membresía está activa</h1>
-      <p class="res__note">
-        Recibimos tu pago. Agenda tu primera sesión cuando quieras, o pasa
-        directamente a la clínica.
-      </p>
+      <ng-container *ngIf="verificandoMembresia">
+        <h1 class="res__title">Confirmando tu pago…</h1>
+        <p class="res__note">Esto toma unos segundos. No cierres esta página.</p>
+      </ng-container>
+
+      <ng-container *ngIf="membresia">
+        <h1 class="res__title">{{ soloTarjeta ? 'Tu tarjeta quedó registrada' : 'Tu membresía está activa' }}</h1>
+        <p class="res__note">
+          <ng-container *ngIf="!soloTarjeta">Recibimos tu enganche para <strong>{{ membresia.nombreTratamiento }}</strong>.</ng-container>
+          <ng-container *ngIf="soloTarjeta">Las parcialidades de <strong>{{ membresia.nombreTratamiento }}</strong> se cargarán solas.</ng-container>
+          Agenda tu sesión cuando quieras.
+        </p>
+        <p class="res__next u-data" *ngIf="membresia.proximoPago">
+          Próximo cargo {{ membresia.proximoPago.monto | currency:'MXN':'symbol-narrow':'1.0-2' }}
+          · {{ membresia.proximoPago.fecha | date:'d MMM y' }}{{ membresia.cobroAutomatico ? ' · automático' : '' }}
+        </p>
+      </ng-container>
+
+      <ng-container *ngIf="membresiaSinConfirmar">
+        <h1 class="res__title">Estamos confirmando tu pago</h1>
+        <p class="res__note">
+          Stripe todavía no nos confirma el cobro. Si ya se hizo el cargo a tu tarjeta,
+          tu membresía se activa en cuanto llegue la confirmación.
+        </p>
+        <div class="res__actions">
+          <button class="btn btn--line" (click)="verificarMembresia()" type="button">Revisar de nuevo</button>
+        </div>
+      </ng-container>
     </ng-template>
 
     <p class="res__ref u-data" *ngIf="sessionId">
@@ -29,6 +52,7 @@
       <button class="btn btn--solid" (click)="volver()" type="button">
         {{ type === 'cita' ? 'Volver a citas' : 'Ver membresías' }}
       </button>
+      <a *ngIf="type !== 'cita' && membresia" routerLink="/agendar-cita" class="btn btn--line">Agendar sesión</a>
     </div>
   </div>
 

@@ -802,8 +802,12 @@
   border: 1px solid var(--border-light);
 }
 
-.membresia-status.active { color: #16a34a; background: #f0fdf4; border-color: #bbf7d0; }
-.membresia-status.pending { color: #d97706; background: #fffbeb; border-color: #fde68a; }
+.membresia-status.al_corriente { color: #16a34a; background: #f0fdf4; border-color: #bbf7d0; }
+.membresia-status.atrasada { color: #b54708; background: #fff6ed; border-color: #f9d4ae; }
+.membresia-status.pendiente_pago { color: #475467; background: #f8fafc; }
+.membresia-status.liquidada { color: #3538cd; background: #eef4ff; border-color: #c7d7fe; }
+.membresia-status.cancelada { color: #b42318; background: #fef3f2; border-color: #fecdca; }
+.m-vencido { color: #b54708; }
 
 .membresia-body {
   display: flex;
@@ -1140,3 +1144,41 @@
 .cita-card {
   box-shadow: 0 1px 3px rgba(0,0,0,0.02);
 }
+
+/* ---- Paquetes de promoción ---- */
+.modo-cita {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.modo-cita label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0.45rem 0.75rem;
+  border: 1px solid var(--rule, #d6dbe1);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.modo-cita label.activo { border-color: var(--brass, #B1994C); background: rgba(177, 153, 76, 0.08); }
+.modo-cita label.deshabilitado { opacity: 0.45; cursor: not-allowed; }
+.modo-cita input { margin: 0; width: auto; }
+
+.paquetes-paciente { margin-bottom: 1.25rem; }
+.paquetes-paciente h4 { margin: 0 0 0.6rem; }
+.paquete-card {
+  padding: 0.85rem 1rem;
+  margin-bottom: 0.6rem;
+  border: 1px solid var(--rule, #d6dbe1);
+  border-left: 3px solid var(--brass, #B1994C);
+  border-radius: 6px;
+  background: #fff;
+}
+.paquete-card.inactivo { border-left-color: #c3c8cf; opacity: 0.75; }
+.paquete-card__head { display: flex; justify-content: space-between; gap: 1rem; }
+.paquete-card__estado { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: #77642F; }
+.paquete-card__meta { margin: 0.25rem 0 0.4rem; font-size: 0.8rem; color: #626C7A; }
+.paquete-card ul { margin: 0; padding-left: 1.1rem; font-size: 0.875rem; }

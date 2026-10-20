@@ -219,6 +219,25 @@
             <i class="fas fa-plus"></i> Registrar cita dental
           </button>
         </div>
+        <!-- Paquetes comprados y sus sesiones a favor -->
+        <div class="paquetes-paciente" *ngIf="paquetesPaciente.length > 0">
+          <h4>Paquetes</h4>
+          <div class="paquete-card" *ngFor="let p of paquetesPaciente" [class.inactivo]="p.estado !== 'Activo'">
+            <div class="paquete-card__head">
+              <strong>{{ p.nombre }}</strong>
+              <span class="paquete-card__estado">{{ p.estado === 'Activo' ? 'Con sesiones' : p.estado }}</span>
+            </div>
+            <p class="paquete-card__meta">
+              {{ p.promocionNombre || 'Promoción' }} · {{ p.precio | currency:'MXN':'symbol-narrow':'1.0-0' }} · {{ p.createdAt | date:'dd/MM/yyyy' }}
+            </p>
+            <ul>
+              <li *ngFor="let s of p.servicios">
+                {{ s.nombre }}: <strong>{{ s.restantes }}</strong> de {{ s.total }} {{ s.total === 1 ? 'sesión' : 'sesiones' }} a favor
+              </li>
+            </ul>
+          </div>
+        </div>
+
         <div class="citas-grid">
           <div class="categoria-citas">
             <h4>Estética</h4>
@@ -263,27 +282,27 @@
       <div *ngIf="tabActivo === 'membresias'" class="tab-content">
         <div class="tarjeta-seccion">
           <div class="titulo-seccion">
-            <h3>Planes Activos</h3>
+            <h3>Membresías</h3>
           </div>
           <div class="membresias-grid">
-            <div *ngFor="let m of membresias" class="membresia-card" [ngClass]="m.status">
+            <div *ngFor="let m of membresias" class="membresia-card" [ngClass]="m.estado">
               <div class="membresia-header">
                 <h4>{{ m.nombreTratamiento }}</h4>
-                <span class="membresia-status" [ngClass]="m.status">{{ m.status }}</span>
+                <span class="membresia-status" [ngClass]="m.estado">{{ etiquetaMembresia(m) }}</span>
               </div>
               <div class="membresia-body">
-                <div class="m-dato"><span class="m-label">Total</span> <span class="m-valor">${{ m.costoTotal | number:'1.2-2' }}</span></div>
-                <div class="m-dato"><span class="m-label">Anticipo</span> <span class="m-valor">${{ m.enganche | number:'1.2-2' }}</span></div>
-                <div class="m-dato"><span class="m-label">Cuota</span> <span class="m-valor">${{ m.installmentAmount | number:'1.2-2' }}</span></div>
+                <div class="m-dato"><span class="m-label">Pagado</span> <span class="m-valor">${{ m.totalPagado | number:'1.2-2' }} de ${{ m.costoTotal | number:'1.2-2' }}</span></div>
+                <div class="m-dato"><span class="m-label">Saldo</span> <span class="m-valor">${{ m.saldo | number:'1.2-2' }}</span></div>
+                <div class="m-dato"><span class="m-label">Parcialidades</span> <span class="m-valor">{{ m.parcialidadesCubiertas }} / {{ m.installmentsCount }} · ${{ m.installmentAmount | number:'1.2-2' }} c/u</span></div>
                 <div class="m-dato"><span class="m-label">Ciclo</span> <span class="m-valor capitalize">{{ m.paymentFrequency }}</span></div>
-                <div class="m-dato">
-                  <span class="m-label">Progreso</span>
-                  <span class="m-valor">{{ m.pagosRealizados }} / {{ m.installmentsCount }}</span>
+                <div class="m-dato" *ngIf="m.proximoPago">
+                  <span class="m-label">Próximo pago</span>
+                  <span class="m-valor" [class.m-vencido]="m.diasAtraso > 0">{{ m.proximoPago.fecha | date:'d MMM y' }}</span>
                 </div>
               </div>
             </div>
             <div *ngIf="membresias.length === 0" class="sin-registros">
-              No hay planes de membresía activos
+              No tiene membresías. Se venden en Gestión → Membresías contratadas.
             </div>
           </div>
         </div>
@@ -385,20 +404,72 @@
   <form (ngSubmit)="registrarCita()" class="form-modal-cita">
     <h3>Registrar cita {{ citaTipo === 'Dental' ? 'dental' : 'estética' }}</h3>
 
-    <label for="cita-cat">Categoría</label>
-    <select id="cita-cat" name="categoria" [(ngModel)]="citaForm.categoriaId" (ngModelChange)="onCategoriaChange()">
-      <option value="">Todas las categorías</option>
-      <option *ngFor="let c of categoriasActivas" [value]="c._id">{{ c.nombre }}</option>
-    </select>
+    <!-- Estética: cita normal, venta de un paquete de promoción o sesión a favor -->
+    <div class="modo-cita" *ngIf="citaTipo === 'Estetica'" role="radiogroup" aria-label="Tipo de cita">
+      <label [class.activo]="citaForm.modo === 'Normal'">
+        <input type="radio" name="modo" value="Normal" [(ngModel)]="citaForm.modo" (ngModelChange)="onModoChange()"> Tratamiento
+      </label>
+      <label [class.activo]="citaForm.modo === 'Paquete'" [class.deshabilitado]="paquetesEnVenta.length === 0">
+        <input type="radio" name="modo" value="Paquete" [(ngModel)]="citaForm.modo" (ngModelChange)="onModoChange()"
+               [disabled]="paquetesEnVenta.length === 0"> Vender paquete
+      </label>
+      <label [class.activo]="citaForm.modo === 'Sesion'" [class.deshabilitado]="paquetesConSesiones.length === 0">
+        <input type="radio" name="modo" value="Sesion" [(ngModel)]="citaForm.modo" (ngModelChange)="onModoChange()"
+               [disabled]="paquetesConSesiones.length === 0"> Usar sesión a favor
+      </label>
+    </div>
 
-    <label for="cita-serv">Tratamiento *</label>
-    <select id="cita-serv" name="servicio" [(ngModel)]="citaForm.servicioId" (ngModelChange)="onServicioChange()" required>
-      <option value="" disabled>Elige el tratamiento</option>
-      <option *ngFor="let s of serviciosActivos" [value]="s._id">{{ s.nombre }}</option>
-    </select>
-    <p class="campo-ayuda" *ngIf="serviciosActivos.length === 0">
-      No hay tratamientos en esta categoría.
-    </p>
+    <ng-container *ngIf="citaTipo !== 'Estetica' || citaForm.modo === 'Normal'">
+      <label for="cita-cat">Categoría</label>
+      <select id="cita-cat" name="categoria" [(ngModel)]="citaForm.categoriaId" (ngModelChange)="onCategoriaChange()">
+        <option value="">Todas las categorías</option>
+        <option *ngFor="let c of categoriasActivas" [value]="c._id">{{ c.nombre }}</option>
+      </select>
+
+      <label for="cita-serv">Tratamiento *</label>
+      <select id="cita-serv" name="servicio" [(ngModel)]="citaForm.servicioId" (ngModelChange)="onServicioChange()" required>
+        <option value="" disabled>Elige el tratamiento</option>
+        <option *ngFor="let s of serviciosActivos" [value]="s._id">{{ s.nombre }}</option>
+      </select>
+      <p class="campo-ayuda" *ngIf="serviciosActivos.length === 0">
+        No hay tratamientos en esta categoría.
+      </p>
+    </ng-container>
+
+    <ng-container *ngIf="citaTipo === 'Estetica' && citaForm.modo === 'Paquete'">
+      <label for="cita-paq">Paquete *</label>
+      <select id="cita-paq" name="paqueteVenta" [(ngModel)]="citaForm.paqueteVenta" (ngModelChange)="onPaqueteVentaChange()" required>
+        <option value="" disabled>Elige el paquete</option>
+        <option *ngFor="let p of paquetesEnVenta" [value]="p.valor">
+          {{ p.nombre }} — {{ p.precioFinal | currency:'MXN':'symbol-narrow':'1.0-0' }} ({{ p.promocionNombre }})
+        </option>
+      </select>
+      <p class="campo-ayuda" *ngIf="paqueteVentaSeleccionado as pv">
+        Incluye <span *ngFor="let s of pv.servicios; let ultimo = last">{{ s.cantidad > 1 ? s.cantidad + ' × ' : '' }}{{ s.nombre }}{{ ultimo ? '' : ' + ' }}</span>.
+        Precio de lista {{ pv.precioLista | currency:'MXN':'symbol-narrow':'1.0-0' }}.
+        {{ pv.modalidad === 'Sesiones'
+          ? 'Esta cita usa la primera sesión; las demás quedan a favor del paciente.'
+          : 'Todo se aplica en esta visita.' }}
+      </p>
+    </ng-container>
+
+    <ng-container *ngIf="citaTipo === 'Estetica' && citaForm.modo === 'Sesion'">
+      <label for="cita-ses">Paquete del paciente *</label>
+      <select id="cita-ses" name="paquetePaciente" [(ngModel)]="citaForm.paquetePacienteId" (ngModelChange)="onPaqueteSesionChange()" required>
+        <option value="" disabled>Elige el paquete</option>
+        <option *ngFor="let p of paquetesConSesiones" [value]="p._id">{{ p.nombre }}</option>
+      </select>
+
+      <label for="cita-ses-serv" *ngIf="citaForm.paquetePacienteId">Tratamiento *</label>
+      <select id="cita-ses-serv" name="servicioSesion" *ngIf="citaForm.paquetePacienteId"
+              [(ngModel)]="citaForm.servicioId" (ngModelChange)="onServicioChange(); citaForm.costoTotal = 0" required>
+        <option value="" disabled>Elige el tratamiento</option>
+        <option *ngFor="let s of serviciosDeSesion" [value]="s.servicioId">
+          {{ s.nombre }} — quedan {{ s.restantes }}
+        </option>
+      </select>
+      <p class="campo-ayuda">La sesión ya está pagada: la cita se registra sin costo.</p>
+    </ng-container>
 
     <label for="cita-doc">Atiende *</label>
     <select id="cita-doc" name="doctor" [(ngModel)]="citaForm.doctorId" required>
@@ -423,11 +494,12 @@
       Duración sugerida: {{ servicioSeleccionado.duracionMinutos }} min.
     </p>
 
-    <!-- Contabilidad -->
-    <div class="campo-par">
+    <!-- Contabilidad (una sesión a favor no lleva) -->
+    <div class="campo-par" *ngIf="citaTipo !== 'Estetica' || citaForm.modo !== 'Sesion'">
       <div>
         <label for="cita-costo">Costo del tratamiento</label>
-        <input id="cita-costo" type="number" min="0" step="1" name="costo" [(ngModel)]="citaForm.costoTotal">
+        <input id="cita-costo" type="number" min="0" step="1" name="costo" [(ngModel)]="citaForm.costoTotal"
+               [readonly]="citaTipo === 'Estetica' && citaForm.modo === 'Paquete'">
       </div>
       <div>
         <label for="cita-ant">Anticipo</label>

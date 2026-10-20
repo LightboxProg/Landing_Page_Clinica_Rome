@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { calcularCuota } from '../../../services/membresias/membresias.service';
 
 @Component({
   selector: 'app-modal-membresia',
@@ -24,6 +25,7 @@ export class ModalMembresiaComponent {
     enganche: null, paymentFrequency: 'mensual', installmentsCount: null
   };
 
+  errorValidacion = '';
   fotoSeleccionada: File | null = null;
   fotoPreview: string | null = null;
 
@@ -35,6 +37,7 @@ export class ModalMembresiaComponent {
 
   setFormData(data: any): void {
     this.formData = { ...data };
+    this.errorValidacion = '';
   }
 
   resetForm(): void {
@@ -42,6 +45,7 @@ export class ModalMembresiaComponent {
       nombreTratamiento: '', descripcion: '', costoTotal: null,
       enganche: null, paymentFrequency: 'mensual', installmentsCount: null
     };
+    this.errorValidacion = '';
     this.limpiarFoto();
   }
 
@@ -68,10 +72,22 @@ export class ModalMembresiaComponent {
 
   calcularParcialidad(): number {
     const { costoTotal, enganche, installmentsCount } = this.formData;
-    if (costoTotal && enganche && installmentsCount && installmentsCount > 0) {
-      return (costoTotal - enganche) / installmentsCount;
+    if (costoTotal && enganche && installmentsCount && installmentsCount > 0 && enganche < costoTotal) {
+      return calcularCuota(costoTotal, enganche, installmentsCount);
     }
     return 0;
+  }
+
+  // Mismas reglas que el backend, para avisar antes de enviar
+  private validar(): string {
+    const { nombreTratamiento, costoTotal, enganche, installmentsCount } = this.formData;
+    if (!nombreTratamiento?.trim()) return 'Escribe el nombre del tratamiento.';
+    if (!(Number(costoTotal) > 0)) return 'El costo total debe ser mayor a 0.';
+    if (!(Number(enganche) > 0)) return 'El enganche debe ser mayor a 0: es lo que se cobra al contratar.';
+    if (Number(enganche) >= Number(costoTotal)) return 'El enganche debe ser menor al costo total.';
+    const cuotas = Number(installmentsCount);
+    if (!Number.isInteger(cuotas) || cuotas < 1 || cuotas > 104) return 'Las parcialidades deben ser un número entero entre 1 y 104.';
+    return '';
   }
 
   formatCosto(costo: number): string {
@@ -85,7 +101,8 @@ export class ModalMembresiaComponent {
 
   onGuardar(): void {
     const { nombreTratamiento, costoTotal, enganche, paymentFrequency, installmentsCount } = this.formData;
-    if (!nombreTratamiento?.trim() || !costoTotal || !enganche || !paymentFrequency || !installmentsCount) return;
+    this.errorValidacion = this.validar();
+    if (this.errorValidacion) return;
 
     const fd = new FormData();
     fd.append('nombreTratamiento', nombreTratamiento.trim());

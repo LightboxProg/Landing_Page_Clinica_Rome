@@ -92,4 +92,9 @@ export class PromocionesService {
   obtenerPromocionesActivas(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/promociones/activas`);
   }
+
+  // Activas que todavía no abren, la más cercana primero
+  obtenerPromocionesProximas(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/promociones/proximas`);
+  }
 }

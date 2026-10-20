@@ -182,6 +182,8 @@
 .brief__row--pay { border-bottom: 0; padding-top: 0.9rem; }
 .brief__row--pay dt { color: var(--ink); }
 .brief__row--pay dd { font-size: 1.3rem; color: var(--brass-ink); }
+.brief__was { margin-right: 0.35rem; font-size: 0.85em; color: var(--ink-mute); }
+.brief__row--promo dd { color: var(--brass-ink); }
 
 .brief--wide { margin-top: 0; border-top: 1px solid var(--rule); }
 
@@ -439,3 +441,35 @@
 
   .form-card__actions .btn { width: 100%; flex: 1 1 100%; }
 }
+
+/* ---- paquete de promoción ---- */
+.pack {
+  margin-bottom: 1.2rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--brass-haze);
+  border-radius: var(--r);
+}
+.pack__label {
+  margin: 0;
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--brass-ink);
+}
+.pack__name { margin: 0.4rem 0 0.3rem; font-family: var(--display); font-size: 1.3rem; color: var(--ink); }
+.pack__detail { margin: 0.2rem 0 0; font-size: 0.85rem; color: var(--ink-soft); }
+
+/* ---- sesiones a favor ---- */
+.favor {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1.2rem;
+  padding: 1rem 1.1rem;
+  background: var(--porcelain-sink);
+  border-left: 2px solid var(--brass);
+}
+.favor__title { margin: 0; font-weight: 500; color: var(--ink); }
+.favor__note { margin: 0.2rem 0 0; font-size: 0.85rem; color: var(--ink-soft); }

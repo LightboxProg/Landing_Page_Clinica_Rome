@@ -3,8 +3,8 @@
     <p class="u-eyebrow">Membresías</p>
     <h1 class="page-head__title">Tratamientos<br />a plazos fijos.</h1>
     <p class="u-lede">
-      Planes con enganche y pagos programados, para tratamientos que se realizan
-      en varias sesiones. El costo total se fija al contratar y no cambia.
+      Planes con enganche y pagos que se cargan solos a tu tarjeta, para tratamientos
+      que se realizan en varias sesiones. El costo total se fija al contratar y no cambia.
     </p>
   </div>
 </section>
@@ -25,7 +25,7 @@
 
         <div class="plan__body">
           <h2 class="plan__name">{{ m.nombreTratamiento }}</h2>
-          <p class="plan__desc">{{ m.descripcion }}</p>
+          <p class="plan__desc" *ngIf="m.descripcion">{{ m.descripcion }}</p>
 
           <!-- the payment schedule is data, so it is set as a table -->
           <dl class="plan__terms u-data">
@@ -34,12 +34,12 @@
               <dd>{{ formatearPrecio(m.enganche) }}</dd>
             </div>
             <div class="plan__term">
-              <dt>{{ m.installmentsCount }} pagos de</dt>
+              <dt>Después, {{ m.installmentsCount }} {{ m.installmentsCount === 1 ? 'pago' : 'pagos' }} de</dt>
               <dd>{{ formatearPrecio(calcularPagoPeriodico(m)) }}</dd>
             </div>
             <div class="plan__term">
-              <dt>Frecuencia</dt>
-              <dd>{{ m.paymentFrequency | titlecase }}</dd>
+              <dt>Cada</dt>
+              <dd>{{ getTextoFrecuencia(m.paymentFrequency) }}</dd>
             </div>
             <div class="plan__term plan__term--total">
               <dt>Costo total</dt>

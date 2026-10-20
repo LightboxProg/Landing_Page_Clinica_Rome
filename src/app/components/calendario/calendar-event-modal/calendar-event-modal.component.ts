@@ -36,6 +36,14 @@ import { PromocionesService } from '../../../services/promociones/promociones.se
               <dt>Tratamiento</dt>
               <dd>{{ event?.servicioNombre }}</dd>
             </div>
+            <div class="ficha__row" *ngIf="event?.paquete">
+              <dt>Paquete</dt>
+              <dd>{{ event.paquete.nombre }} · {{ event.paquete.modalidad === 'Sesiones' ? 'primera sesión' : 'una visita' }}</dd>
+            </div>
+            <div class="ficha__row" *ngIf="esSesionDePaquete">
+              <dt>Pago</dt>
+              <dd>Sesión de paquete, ya pagada</dd>
+            </div>
             <div class="ficha__row" *ngIf="event?.pacienteTelefono">
               <dt>Teléfono</dt>
               <dd class="num">{{ event?.pacienteTelefono }}</dd>
@@ -85,8 +93,12 @@ import { PromocionesService } from '../../../services/promociones/promociones.se
                 </div>
               </dl>
 
-              <button *ngIf="puedeVender" class="btn btn-cobrar" (click)="abrirPanelCobro()">
+              <button *ngIf="puedeVender && !esSesionDePaquete" class="btn btn-cobrar" (click)="abrirPanelCobro()">
                 <i class="fas fa-cash-register"></i> Cobrar
+              </button>
+              <!-- La sesión se pagó con el paquete: sólo se cierra, sin dinero -->
+              <button *ngIf="puedeVender && esSesionDePaquete" class="btn btn-cobrar" (click)="marcarSesionRealizada()" [disabled]="guardandoCobro">
+                <i class="fas fa-check"></i> {{ guardandoCobro ? 'Guardando…' : 'Marcar como realizada' }}
               </button>
             </div>
 
@@ -284,6 +296,32 @@ export class CalendarEventModalComponent implements OnChanges {
 
   closeModal() {
     this.close.emit();
+  }
+
+  // Cita que usa una sesión a favor (no la de compra del paquete): no se cobra
+  get esSesionDePaquete(): boolean {
+    return !!this.event?.paquetePacienteId && !this.event?.paquete;
+  }
+
+  marcarSesionRealizada(): void {
+    this.guardandoCobro = true;
+    this.citasService.registrarCobro(this.event.citaId, {
+      costoTotal: 0,
+      descuentoTipo: 'Ninguno',
+      descuentoValor: 0,
+      metodoPago: 'Ninguno'
+    }).subscribe({
+      next: () => {
+        this.guardandoCobro = false;
+        this.swal.success('Sesión registrada como realizada');
+        this.cobroRegistrado.emit();
+        this.closeModal();
+      },
+      error: (err) => {
+        this.guardandoCobro = false;
+        this.swal.error(err.error?.message || 'No se pudo registrar la sesión');
+      }
+    });
   }
 
   abrirPanelCobro() {

@@ -21,6 +21,7 @@ export class CorteDiarioComponent implements OnInit {
   totalesEstetica = { efectivo: 0, tarjeta: 0, transferencia: 0, stripe: 0, descuentos: 0, granTotal: 0 };
   citasDental: any[] = [];
   citasEstetica: any[] = [];
+  pagosMembresia: any[] = [];
 
   constructor(
     private citasService: CitasService,
@@ -38,6 +39,7 @@ export class CorteDiarioComponent implements OnInit {
       next: (data: any) => {
         this.corteData = data;
         this.procesarCortesSeparados(data.citas);
+        this.sumarMembresias(data.pagosMembresia || []);
         this.cargando = false;
       },
       error: (err: any) => {
@@ -58,11 +60,16 @@ export class CorteDiarioComponent implements OnInit {
 
     citas.forEach(cita => {
       const cobradoClinica = cita.cobradoClinicaHoy || 0;
+      // Anticipo recibido hoy en mostrador: el backend ya lo suma, aquí también tiene que contar
+      const anticipoClinica = cita.anticipoClinicaHoy || 0;
       if (cita.tipoCita === 'Dental') {
         this.citasDental.push(cita);
         if (cita.metodoPago === 'Efectivo') this.totalesDental.efectivo += cobradoClinica;
         else if (cita.metodoPago === 'Tarjeta') this.totalesDental.tarjeta += cobradoClinica;
         else if (cita.metodoPago === 'Transferencia') this.totalesDental.transferencia += cobradoClinica;
+        if (cita.anticipoMetodoPago === 'Efectivo') this.totalesDental.efectivo += anticipoClinica;
+        else if (cita.anticipoMetodoPago === 'Tarjeta') this.totalesDental.tarjeta += anticipoClinica;
+        else if (cita.anticipoMetodoPago === 'Transferencia') this.totalesDental.transferencia += anticipoClinica;
         
         this.totalesDental.stripe += cita.anticipoStripeHoy || 0;
         this.totalesDental.descuentos += cita.descuentoMonto || 0;
@@ -72,12 +79,28 @@ export class CorteDiarioComponent implements OnInit {
         if (cita.metodoPago === 'Efectivo') this.totalesEstetica.efectivo += cobradoClinica;
         else if (cita.metodoPago === 'Tarjeta') this.totalesEstetica.tarjeta += cobradoClinica;
         else if (cita.metodoPago === 'Transferencia') this.totalesEstetica.transferencia += cobradoClinica;
+        if (cita.anticipoMetodoPago === 'Efectivo') this.totalesEstetica.efectivo += anticipoClinica;
+        else if (cita.anticipoMetodoPago === 'Tarjeta') this.totalesEstetica.tarjeta += anticipoClinica;
+        else if (cita.anticipoMetodoPago === 'Transferencia') this.totalesEstetica.transferencia += anticipoClinica;
 
         this.totalesEstetica.stripe += cita.anticipoStripeHoy || 0;
         this.totalesEstetica.descuentos += cita.descuentoMonto || 0;
         this.totalesEstetica.granTotal = this.totalesEstetica.efectivo + this.totalesEstetica.tarjeta + this.totalesEstetica.transferencia + this.totalesEstetica.stripe;
       }
     });
+  }
+
+  // Enganches y parcialidades de membresías: son tratamientos estéticos
+  sumarMembresias(pagos: any[]): void {
+    this.pagosMembresia = pagos;
+    const t = this.totalesEstetica;
+    pagos.forEach(p => {
+      if (p.metodoPago === 'Efectivo') t.efectivo += p.monto;
+      else if (p.metodoPago === 'Tarjeta') t.tarjeta += p.monto;
+      else if (p.metodoPago === 'Transferencia') t.transferencia += p.monto;
+      else if (p.metodoPago === 'Stripe') t.stripe += p.monto;
+    });
+    t.granTotal = t.efectivo + t.tarjeta + t.transferencia + t.stripe;
   }
 
   // Abre el dialogo de impresion del navegador

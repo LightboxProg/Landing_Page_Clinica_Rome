@@ -1,0 +1,280 @@
+.state {
+  padding-block: 2rem;
+  font-size: var(--t-sm);
+  color: var(--ink-mute);
+}
+.state--error { color: var(--clay); }
+
+.section-head {
+  max-width: 46rem;
+  margin-bottom: clamp(2rem, 4vw, 3rem);
+}
+.section-head h2 { margin: 0; }
+
+/* ============================================================
+   CUENTA REGRESIVA
+   ============================================================ */
+
+
+.countdown { margin-top: clamp(2.5rem, 5vw, 4rem); }
+
+.countdown__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: clamp(2rem, 5vw, 4rem);
+}
+
+.countdown__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0 0 1.2rem;
+  font-size: var(--t-xs);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--brass);
+}
+
+.countdown__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--brass);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse { 50% { opacity: 0.25; } }
+
+.countdown__title {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  line-height: 1.05;
+}
+
+.countdown__title em {
+  font-style: italic;
+  color: var(--brass);
+}
+
+.countdown__when {
+  margin: 1.2rem 0 0;
+  font-size: var(--t-sm);
+  color: rgba(238, 241, 244, 0.72);
+}
+
+.countdown__clock {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(4.2rem, auto));
+  border: 1px solid rgba(238, 241, 244, 0.18);
+}
+
+.countdown__unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.1rem 1.1rem 0.9rem;
+  border-left: 1px solid rgba(238, 241, 244, 0.18);
+}
+.countdown__unit:first-child { border-left: 0; }
+
+.countdown__n {
+  font-size: clamp(2rem, 3.6vw, 3rem);
+  font-weight: 500;
+  line-height: 1;
+  color: var(--porcelain);
+}
+
+.countdown__label {
+  margin-top: 0.55rem;
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(238, 241, 244, 0.6);
+}
+
+@media (max-width: 860px) {
+  .countdown__inner { grid-template-columns: 1fr; align-items: start; }
+  .countdown__clock { grid-template-columns: repeat(4, 1fr); }
+  .countdown__unit { padding-inline: 0.4rem; }
+}
+
+/* ============================================================
+   TARJETAS
+   ============================================================ */
+
+.offers {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 440px), 1fr));
+  gap: clamp(1rem, 2vw, 1.5rem);
+  align-items: start;
+}
+
+.offer {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.offer__media {
+  aspect-ratio: 16 / 9;
+  background: var(--porcelain-sink);
+}
+.offer__media img { width: 100%; height: 100%; object-fit: cover; }
+
+.offer__head {
+  padding: clamp(1.35rem, 2.4vw, 1.9rem) clamp(1.35rem, 2.4vw, 1.9rem) 0;
+}
+
+.offer__clock {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0 0 1rem;
+  padding: 0.35rem 0.6rem;
+  background: var(--ink);
+  color: var(--porcelain);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+}
+
+.offer__clock-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--brass);
+}
+
+.offer__clock.is-urgent { background: var(--clay); }
+.offer__clock.is-urgent .offer__clock-dot { background: var(--porcelain); animation: pulse 1.6s ease-in-out infinite; }
+.offer__clock.is-soon { background: transparent; color: var(--brass-ink); border: 1px solid var(--brass-haze); }
+
+.offer__name { margin: 0 0 0.5rem; font-size: clamp(1.4rem, 2vw, 1.75rem); }
+
+.offer__desc {
+  margin: 0;
+  font-size: 0.92rem;
+  color: var(--ink-soft);
+}
+
+.offer__dates {
+  margin: 0.8rem 0 0;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+
+.offer__items {
+  list-style: none;
+  margin: 1.2rem 0 0;
+  padding: 0 clamp(1.35rem, 2.4vw, 1.9rem) 0.6rem;
+}
+
+.offer__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 0.95rem 0;
+  border-top: 1px solid var(--rule-soft);
+}
+
+.offer__item-main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.offer__item-name { color: var(--ink); font-size: 0.95rem; }
+
+.offer__item-tag {
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--brass-ink);
+}
+
+.offer__item-detail {
+  font-size: 0.8rem;
+  color: var(--ink-mute);
+}
+
+.offer__item-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.45rem;
+  flex: none;
+  text-align: right;
+}
+
+.offer__item-price {
+  white-space: nowrap;
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.offer__item-price s {
+  margin-right: 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--ink-mute);
+}
+
+.offer__book {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.75rem;
+  background: var(--ink);
+  color: var(--porcelain);
+  border-radius: var(--r);
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.3s var(--ease);
+}
+.offer__book:hover { background: var(--brass-ink); }
+.offer__book i { font-size: 0.6rem; }
+
+.offer__book--quiet {
+  background: transparent;
+  color: var(--ink-soft);
+  border: 1px solid var(--rule);
+}
+.offer__book--quiet:hover { background: transparent; color: var(--brass-ink); border-color: var(--brass); }
+
+.offer__book--off {
+  background: transparent;
+  color: var(--ink-mute);
+  border: 1px dashed var(--rule);
+}
+.offer__book--off:hover { background: transparent; }
+
+.offer--soon .offer__item-price { color: var(--ink-soft); }
+
+@media (max-width: 480px) {
+  .offer__item { flex-direction: column; }
+  .offer__item-side { flex-direction: row; align-items: center; justify-content: space-between; width: 100%; }
+}
+
+/* ============================================================
+   VACÍO
+   ============================================================ */
+
+.empty__ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-top: 1.8rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .countdown__dot,
+  .offer__clock.is-urgent .offer__clock-dot { animation: none; }
+}

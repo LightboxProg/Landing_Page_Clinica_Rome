@@ -3,7 +3,7 @@
   <div class="section-header">
     <div class="header-left">
       <h3><i class="fas fa-id-card"></i> Catálogo de Membresías</h3>
-      <span class="badge">{{ catalogos.length }} membresía{{ catalogos.length !== 1 ? 's' : '' }}</span>
+      <span class="badge">{{ activas }} activa{{ activas !== 1 ? 's' : '' }}</span>
     </div>
     <button class="btn-primary" (click)="abrirModalNuevo()">
       <i class="fas fa-plus"></i> Nueva Membresía
@@ -21,6 +21,7 @@
     [loading]="loading"
     (editar)="onEditar($event)"
     (eliminar)="onEliminar($event)"
+    (reactivar)="onReactivar($event)"
     (nuevo)="abrirModalNuevo()">
   </app-lista-membresias>
 

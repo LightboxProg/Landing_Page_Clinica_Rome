@@ -6,15 +6,19 @@
 
 <!-- Cards Grid -->
 <div class="membresias-grid" *ngIf="!loading && catalogos.length > 0">
-  <div class="membresia-card" *ngFor="let cat of catalogos">
+  <div class="membresia-card" *ngFor="let cat of catalogos" [class.inactiva]="!cat.activa">
+    <div class="inactiva-banda" *ngIf="!cat.activa">
+      <span><i class="fas fa-eye-slash"></i> Desactivada · no se muestra en la página</span>
+      <button type="button" (click)="reactivar.emit(cat)">Reactivar</button>
+    </div>
     <!-- Foto de la membresía -->
     <div class="card-image" *ngIf="cat.photoUrl" [style.backgroundImage]="'url(' + cat.photoUrl + ')'">
       <div class="card-acciones-overlay">
         <button class="btn-icon-overlay editar" (click)="onEditar(cat)" title="Editar">
           <i class="fas fa-pen"></i>
         </button>
-        <button class="btn-icon-overlay eliminar" (click)="onEliminar(cat)" title="Desactivar">
-          <i class="fas fa-trash"></i>
+        <button class="btn-icon-overlay eliminar" *ngIf="cat.activa" (click)="onEliminar(cat)" title="Desactivar">
+          <i class="fas fa-eye-slash"></i>
         </button>
       </div>
     </div>
@@ -27,8 +31,8 @@
         <button class="btn-icon editar" (click)="onEditar(cat)" title="Editar">
           <i class="fas fa-pen"></i>
         </button>
-        <button class="btn-icon eliminar" (click)="onEliminar(cat)" title="Desactivar">
-          <i class="fas fa-trash"></i>
+        <button class="btn-icon eliminar" *ngIf="cat.activa" (click)="onEliminar(cat)" title="Desactivar">
+          <i class="fas fa-eye-slash"></i>
         </button>
       </div>
     </div>
@@ -52,7 +56,7 @@
       <div class="card-info">
         <div class="info-chip">
           <i class="fas fa-calendar-alt"></i>
-          {{ cat.installmentsCount }} pagos
+          {{ cat.installmentsCount }} × {{ formatCosto(cuota(cat)) }}
         </div>
         <div class="info-chip">
           <i class="fas fa-clock"></i>

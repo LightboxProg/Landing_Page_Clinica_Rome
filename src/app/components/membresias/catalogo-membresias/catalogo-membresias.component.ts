@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
-import { MembresiasService } from '../../../services/membresias/membresias.service';
+import { Router, RouterLink } from '@angular/router';
+import { MembresiasService, calcularCuota } from '../../../services/membresias/membresias.service';
 import { HttpClientModule } from '@angular/common/http';
 import { RevealDirective } from '../../../directives/reveal.directive';
 
@@ -23,7 +23,7 @@ interface CatalogoMembresia {
 @Component({
   selector: 'app-catalogo-membresias',
   standalone: true,
-  imports: [CommonModule, HttpClientModule, RevealDirective],
+  imports: [CommonModule, HttpClientModule, RouterLink, RevealDirective],
   providers: [MembresiasService],
   templateUrl: './catalogo-membresias.component.html',
   styleUrl: './catalogo-membresias.component.css'
@@ -54,18 +54,19 @@ export class CatalogoMembresiasComponent implements OnInit {
     });
   }
 
+  // Centavos sólo cuando los hay, para no mostrar una cuota redondeada que no se cobra
   formatearPrecio(precio: number): string {
+    const conCentavos = Math.round(precio * 100) % 100 !== 0;
     return new Intl.NumberFormat('es-MX', {
       style: 'currency',
       currency: 'MXN',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
+      minimumFractionDigits: conCentavos ? 2 : 0,
+      maximumFractionDigits: 2
     }).format(precio);
   }
 
   calcularPagoPeriodico(membresia: CatalogoMembresia): number {
-    const saldo = membresia.costoTotal - membresia.enganche;
-    return Math.ceil(saldo / membresia.installmentsCount);
+    return calcularCuota(membresia.costoTotal, membresia.enganche, membresia.installmentsCount);
   }
 
   getTextoFrecuencia(frecuencia: string): string {

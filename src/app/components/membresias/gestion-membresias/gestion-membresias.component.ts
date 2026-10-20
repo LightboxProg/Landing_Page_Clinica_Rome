@@ -17,6 +17,10 @@ export class GestionMembresiasComponent implements OnInit {
   catalogos: any[] = [];
   loading = true;
 
+  get activas(): number {
+    return this.catalogos.filter(c => c.activa).length;
+  }
+
   mostrarModal = false;
   editandoId: string | null = null;
   guardando = false;
@@ -32,7 +36,7 @@ export class GestionMembresiasComponent implements OnInit {
 
   cargarCatalogos(): void {
     this.loading = true;
-    this.membresiasService.obtenerCatalogos().subscribe({
+    this.membresiasService.obtenerCatalogosAdmin().subscribe({
       next: (response) => { this.catalogos = response.catalogos || []; this.loading = false; },
       error: () => this.loading = false
     });
@@ -76,7 +80,7 @@ export class GestionMembresiasComponent implements OnInit {
     if (this.editandoId) {
       this.membresiasService.actualizarCatalogo(this.editandoId, fd).subscribe({
         next: () => {
-          this.mensajeExito = 'Membresía actualizada correctamente';
+          this.mostrarExito('Membresía actualizada. Las ya contratadas conservan sus montos.');
           this.guardando = false;
           this.onCerrarModal();
           this.cargarCatalogos();
@@ -89,7 +93,7 @@ export class GestionMembresiasComponent implements OnInit {
     } else {
       this.membresiasService.crearCatalogo(fd).subscribe({
         next: () => {
-          this.mensajeExito = 'Membresía creada correctamente';
+          this.mostrarExito('Membresía creada correctamente');
           this.guardando = false;
           this.onCerrarModal();
           this.cargarCatalogos();
@@ -104,8 +108,24 @@ export class GestionMembresiasComponent implements OnInit {
 
   onEliminar(cat: any): void {
     this.membresiasService.eliminarCatalogo(cat._id).subscribe({
-      next: () => { this.mensajeExito = 'Membresía desactivada'; this.cargarCatalogos(); },
+      next: () => { this.mostrarExito('Membresía desactivada: ya no aparece en la página pública'); this.cargarCatalogos(); },
       error: (err) => console.error('Error:', err)
     });
+  }
+
+  onReactivar(cat: any): void {
+    const fd = new FormData();
+    fd.append('activa', 'true');
+    this.membresiasService.actualizarCatalogo(cat._id, fd).subscribe({
+      next: () => { this.mostrarExito('Membresía reactivada'); this.cargarCatalogos(); },
+      error: (err) => console.error('Error:', err)
+    });
+  }
+
+  private temporizadorExito: any;
+  private mostrarExito(mensaje: string): void {
+    this.mensajeExito = mensaje;
+    clearTimeout(this.temporizadorExito);
+    this.temporizadorExito = setTimeout(() => this.mensajeExito = '', 4000);
   }
 }

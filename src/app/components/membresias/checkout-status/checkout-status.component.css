@@ -68,5 +68,5 @@
   overflow-wrap: anywhere;
 }
 
-.res__actions { margin-top: 2rem; }
+.res__actions { margin-top: 2rem; display: grid; gap: 0.6rem; }
 .res__actions .btn { width: 100%; }

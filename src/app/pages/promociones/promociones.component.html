@@ -1,0 +1,155 @@
+<!-- ============================================================
+     PROMOCIONES — campañas vigentes y las que vienen, con su reloj
+     ============================================================ -->
+<section class="page-head">
+  <div class="u-shell">
+    <p class="u-eyebrow">Promociones</p>
+    <h1 class="page-head__title">Precios de temporada,<br />con fecha de cierre.</h1>
+    <p class="u-lede">
+      Aparta en línea con anticipo y el precio de promoción queda fijo en tu cita.
+      El resto se liquida en clínica el día de tu visita.
+    </p>
+  </div>
+</section>
+
+<p *ngIf="cargando" class="u-shell state u-data">Cargando promociones…</p>
+<p *ngIf="error" class="u-shell state state--error u-data">{{ error }}</p>
+
+<!-- ============================================================
+     CUENTA REGRESIVA — siguiente apertura
+     ============================================================ -->
+<section class="band band--ink countdown" *ngIf="!cargando && aperturaSiguiente">
+  <div class="u-shell countdown__inner">
+    <div class="countdown__copy" appReveal>
+      <p class="countdown__eyebrow u-data">
+        <span class="countdown__dot" aria-hidden="true"></span>
+        {{ vigentes.length ? 'Lo que sigue' : 'Muy pronto' }}
+      </p>
+      <h2 class="countdown__title">
+        Siguientes promociones en<br />
+        <em>{{ cuentaEnPalabras }}</em>
+      </h2>
+      <p class="countdown__when u-data">
+        Abren el {{ aperturaTexto }}
+      </p>
+    </div>
+
+    <div class="countdown__clock u-data" role="timer" aria-live="off"
+         [attr.aria-label]="'Faltan ' + cuentaEnPalabras">
+      <div class="countdown__unit">
+        <span class="countdown__n">{{ cuenta.dias }}</span>
+        <span class="countdown__label">{{ cuenta.dias === 1 ? 'día' : 'días' }}</span>
+      </div>
+      <div class="countdown__unit">
+        <span class="countdown__n">{{ dosDigitos(cuenta.horas) }}</span>
+        <span class="countdown__label">horas</span>
+      </div>
+      <div class="countdown__unit">
+        <span class="countdown__n">{{ dosDigitos(cuenta.minutos) }}</span>
+        <span class="countdown__label">min</span>
+      </div>
+      <div class="countdown__unit">
+        <span class="countdown__n">{{ dosDigitos(cuenta.segundos) }}</span>
+        <span class="countdown__label">seg</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     VIGENTES — se pueden agendar ya
+     ============================================================ -->
+<section class="band band--tight" *ngIf="!cargando && vigentes.length > 0">
+  <div class="u-shell">
+    <header class="section-head" appReveal>
+      <p class="u-eyebrow">Vigentes</p>
+      <h2>Agenda hoy con precio de promoción.</h2>
+    </header>
+
+    <div class="offers">
+      <ng-container *ngTemplateOutlet="tarjetas; context: { $implicit: vigentes, abierta: true }"></ng-container>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     PRÓXIMAS — vista previa, todavía sin agendar
+     ============================================================ -->
+<section class="band band--tight band--sink" *ngIf="!cargando && proximas.length > 0">
+  <div class="u-shell">
+    <header class="section-head" appReveal>
+      <p class="u-eyebrow">Próximas</p>
+      <h2>Lo que abre {{ vigentes.length ? 'después' : 'pronto' }}.</h2>
+      <p class="u-lede">Precios ya confirmados. El botón para agendar se activa cuando la promoción abre.</p>
+    </header>
+
+    <div class="offers">
+      <ng-container *ngTemplateOutlet="tarjetas; context: { $implicit: proximas, abierta: false }"></ng-container>
+    </div>
+  </div>
+</section>
+
+<!-- Sin nada vigente ni anunciado -->
+<section class="band band--tight" *ngIf="!cargando && !error && vigentes.length === 0 && proximas.length === 0">
+  <div class="u-shell empty">
+    <p class="u-lede">Por ahora no hay promociones activas. Consulta el catálogo con precios de lista o agenda tu valoración sin costo.</p>
+    <div class="empty__ctas">
+      <a routerLink="/servicios" class="btn btn--line">Ver servicios</a>
+      <a routerLink="/agendar-cita" class="btn btn--solid">Agendar valoración</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     Tarjeta de promoción (vigente o próxima)
+     ============================================================ -->
+<ng-template #tarjetas let-promos let-abierta="abierta">
+  <article class="offer panel" *ngFor="let p of promos; let i = index; trackBy: trackById"
+           [class.offer--soon]="!abierta" [appReveal]="i">
+
+    <div class="offer__media" *ngIf="p.fotos?.length">
+      <img [src]="p.fotos[0].url" [alt]="p.nombre" loading="lazy" />
+    </div>
+
+    <header class="offer__head">
+      <p class="offer__clock u-data" [class.is-urgent]="p.urgente" [class.is-soon]="!abierta">
+        <span class="offer__clock-dot" aria-hidden="true"></span>
+        <ng-container *ngIf="abierta">Cierra en {{ p.cierre }}</ng-container>
+        <ng-container *ngIf="!abierta">Abre en {{ p.apertura }}</ng-container>
+      </p>
+      <h3 class="offer__name">{{ p.nombre }}</h3>
+      <p class="offer__desc" *ngIf="p.descripcion">{{ p.descripcion }}</p>
+      <p class="offer__dates u-data">
+        {{ p.rango }}
+      </p>
+    </header>
+
+    <ul class="offer__items">
+      <li class="offer__item" *ngFor="let item of p.items; trackBy: trackById">
+        <div class="offer__item-main">
+          <span class="offer__item-name">{{ nombreItem(item) }}</span>
+          <span class="offer__item-tag u-data">{{ item.etiqueta }}</span>
+          <span class="offer__item-detail" *ngIf="item.tipo === 'Paquete'">{{ detallePaquete(item) }}</span>
+        </div>
+
+        <div class="offer__item-side">
+          <span class="offer__item-price u-data" *ngIf="item.precioFinal != null">
+            <s *ngIf="item.precioLista > item.precioFinal">{{ item.precioLista | currency:'MXN':'symbol-narrow':'1.0-0' }}</s>
+            {{ item.precioFinal | currency:'MXN':'symbol-narrow':'1.0-0' }}
+          </span>
+
+          <ng-container *ngIf="abierta; else cerrada">
+            <a class="offer__book u-data" routerLink="/agendar-cita" [queryParams]="agendarParams(item, p)">
+              {{ item.tipo === 'Paquete' ? 'Comprar' : 'Agendar' }} <i class="fas fa-arrow-right" aria-hidden="true"></i>
+            </a>
+          </ng-container>
+          <ng-template #cerrada>
+            <span class="offer__book offer__book--off u-data">
+              Desde el {{ p.desde }}
+            </span>
+          </ng-template>
+        </div>
+      </li>
+    </ul>
+  </article>
+</ng-template>

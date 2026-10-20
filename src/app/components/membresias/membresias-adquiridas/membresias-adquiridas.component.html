@@ -1,6 +1,13 @@
 <div class="membresias-adquiridas-container">
-  <h3><i class="fas fa-users"></i> Membresías Contratadas</h3>
-  <p class="subtitle">Lista de pacientes con membresías activas o pendientes</p>
+  <div class="encabezado">
+    <div>
+      <h3><i class="fas fa-users"></i> Membresías contratadas</h3>
+      <p class="subtitle">Cobra parcialidades, revisa atrasos y registra ventas en recepción</p>
+    </div>
+    <button class="btn-primary" (click)="abrirVenta()" *ngIf="!accesoDenegado">
+      <i class="fas fa-plus"></i> Vender en mostrador
+    </button>
+  </div>
 
   <div *ngIf="loading" class="loading-state">
     <i class="fas fa-spinner fa-spin"></i> Cargando información...
@@ -10,59 +17,344 @@
     <i class="fas fa-exclamation-triangle"></i>
     <div class="error-copy">
       <p>{{ error }}</p>
-      <div class="error-actions" *ngIf="accesoDenegado">
-        <a routerLink="/login" class="error-btn primary">Ir a iniciar sesión</a>
+      <div class="error-actions">
+        <a routerLink="/login" class="error-btn primary" *ngIf="accesoDenegado">Ir a iniciar sesión</a>
         <button class="error-btn secondary" (click)="cargarMembresias()">Reintentar</button>
       </div>
     </div>
   </div>
 
-  <div class="table-responsive" *ngIf="!loading && !error && membresiasContratadas.length > 0">
-    <table class="membresias-table">
-      <thead>
-        <tr>
-          <th>Paciente</th>
-          <th>Tratamiento</th>
-          <th>Estado</th>
-          <th>Costo Total</th>
-          <th>Enganche</th>
-          <th>Restante</th>
-          <th>Progreso de Pagos</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let m of membresiasContratadas">
-          <td>
-            <div class="paciente-info">
-              <span class="nombre">{{ m.pacienteId?.nombre }} {{ m.pacienteId?.apeP }}</span>
-              <span class="telefono"><i class="fas fa-phone"></i> {{ m.pacienteId?.telefonoPaciente || 'Sin teléfono' }}</span>
-            </div>
-          </td>
-          <td>
-            <span class="tratamiento">{{ m.nombreTratamiento }}</span>
-            <span class="frecuencia"><i class="far fa-clock"></i> Pagos {{ m.paymentFrequency }}s</span>
-          </td>
-          <td>
-            <span class="status-badge" [ngClass]="m.status">{{ m.status | titlecase }}</span>
-          </td>
-          <td class="dinero">{{ formatearPrecio(m.costoTotal) }}</td>
-          <td class="dinero">{{ formatearPrecio(m.enganche) }}</td>
-          <td class="dinero">{{ formatearPrecio(m.costoTotal - m.enganche) }}</td>
-          <td>
-            <div class="progreso-pagos">
-              <span>{{ m.pagosRealizados || 0 }} / {{ m.installmentsCount }}</span>
-              <div class="progress-bar-container">
-                <div class="progress-bar" [style.width.%]="((m.pagosRealizados || 0) / m.installmentsCount) * 100"></div>
-              </div>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  <ng-container *ngIf="!loading && !error">
+    <!-- Resumen -->
+    <div class="kpis">
+      <div class="kpi">
+        <span class="kpi-label">Vigentes</span>
+        <span class="kpi-valor">{{ contar('vigentes') }}</span>
+      </div>
+      <div class="kpi" [class.kpi-alerta]="contar('atrasada') > 0">
+        <span class="kpi-label">Atrasadas</span>
+        <span class="kpi-valor">{{ contar('atrasada') }}</span>
+      </div>
+      <div class="kpi">
+        <span class="kpi-label">Saldo por cobrar</span>
+        <span class="kpi-valor">{{ formatearPrecio(saldoPorCobrar) }}</span>
+      </div>
+      <div class="kpi">
+        <span class="kpi-label">Cobrado este mes</span>
+        <span class="kpi-valor">{{ formatearPrecio(cobradoEsteMes) }}</span>
+      </div>
+    </div>
 
-  <div *ngIf="!loading && !error && membresiasContratadas.length === 0" class="empty-state">
-    <i class="fas fa-box-open"></i>
-    <p>Aún no hay membresías contratadas por los pacientes.</p>
+    <!-- Filtros -->
+    <div class="barra-filtros">
+      <div class="chips" role="tablist">
+        <button *ngFor="let f of filtros" type="button" class="chip" role="tab"
+                [class.activo]="filtro === f.valor" [attr.aria-selected]="filtro === f.valor"
+                (click)="filtro = f.valor">
+          {{ f.etiqueta }} <span class="chip-n">{{ contar(f.valor) }}</span>
+        </button>
+      </div>
+      <div class="buscador">
+        <i class="fas fa-search"></i>
+        <input type="search" [(ngModel)]="busqueda" placeholder="Paciente, teléfono o tratamiento" aria-label="Buscar membresía" />
+      </div>
+    </div>
+
+    <div class="table-responsive" *ngIf="visibles.length > 0">
+      <table class="membresias-table">
+        <thead>
+          <tr>
+            <th>Paciente</th>
+            <th>Tratamiento</th>
+            <th>Estado</th>
+            <th>Pagado</th>
+            <th>Saldo</th>
+            <th>Próximo pago</th>
+            <th class="th-acciones"><span class="sr-only">Acciones</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngFor="let m of visibles">
+            <tr [class.fila-atrasada]="m.estado === 'atrasada'" [class.fila-abierta]="expandida === m._id">
+              <td>
+                <div class="paciente-info">
+                  <span class="nombre">{{ nombrePaciente(m) }}</span>
+                  <span class="telefono" *ngIf="telefono(m)"><i class="fas fa-phone"></i> {{ telefono(m) }}</span>
+                </div>
+              </td>
+              <td>
+                <span class="tratamiento">{{ m.nombreTratamiento }}</span>
+                <span class="frecuencia">{{ m.installmentsCount }} pagos · {{ frecuencia(m) }}</span>
+              </td>
+              <td>
+                <span class="status-badge" [ngClass]="m.estado">{{ etiquetaEstado(m) }}</span>
+                <span class="cobro-badge" *ngIf="etiquetaCobro(m)" [ngClass]="'cobro-' + m.cobroAutomatico?.estado"
+                      [title]="m.cobroAutomatico?.ultimoError || ''">
+                  <i class="fas" [ngClass]="m.cobroAutomatico?.estado === 'activo' ? 'fa-credit-card' : m.cobroAutomatico?.estado === 'fallido' ? 'fa-triangle-exclamation' : m.cobroAutomatico?.estado === 'detenido' ? 'fa-store' : 'fa-hourglass-half'"></i>
+                  {{ etiquetaCobro(m) }}
+                </span>
+              </td>
+              <td>
+                <div class="progreso-pagos">
+                  <span class="dinero">{{ formatearPrecio(m.totalPagado) }} <small>de {{ formatearPrecio(m.costoTotal) }}</small></span>
+                  <div class="progress-bar-container" [attr.aria-label]="m.parcialidadesCubiertas + ' de ' + m.installmentsCount + ' parcialidades'">
+                    <div class="progress-bar" [style.width.%]="avance(m)"></div>
+                  </div>
+                  <small class="parcialidades">{{ m.parcialidadesCubiertas }} / {{ m.installmentsCount }} parcialidades</small>
+                </div>
+              </td>
+              <td class="dinero">{{ formatearPrecio(m.saldo) }}</td>
+              <td>
+                <ng-container *ngIf="m.proximoPago; else sinProximo">
+                  <span class="dinero">{{ formatearPrecio(m.proximoPago.monto) }}</span>
+                  <span class="fecha" [class.vencida]="m.diasAtraso > 0">
+                    {{ m.proximoPago.fecha | date:'d MMM y' }} · #{{ m.proximoPago.numero }}
+                  </span>
+                </ng-container>
+                <ng-template #sinProximo><span class="muted">—</span></ng-template>
+              </td>
+              <td class="acciones">
+                <button class="btn-link-pago" *ngIf="necesitaLink(m)" (click)="abrirLink(m)" title="Mandar link de pago">
+                  <i class="fas fa-link"></i> Link
+                </button>
+                <button class="btn-cobrar" *ngIf="m.status === 'active'" (click)="abrirCobro(m)" title="Registrar un pago en clínica">
+                  <i class="fas fa-cash-register"></i> Cobrar
+                </button>
+                <button class="btn-icon" (click)="toggleHistorial(m)" [attr.aria-expanded]="expandida === m._id"
+                        [title]="expandida === m._id ? 'Ocultar historial' : 'Ver historial'">
+                  <i class="fas" [ngClass]="expandida === m._id ? 'fa-chevron-up' : 'fa-receipt'"></i>
+                </button>
+                <button class="btn-icon peligro" *ngIf="m.status === 'active'" (click)="cancelar(m)" title="Cancelar membresía">
+                  <i class="fas fa-ban"></i>
+                </button>
+                <button class="btn-icon" *ngIf="m.status === 'cancelled' || m.status === 'pending'" (click)="archivar(m)" title="Archivar">
+                  <i class="fas fa-box-archive"></i>
+                </button>
+              </td>
+            </tr>
+            <tr class="fila-historial" *ngIf="expandida === m._id">
+              <td colspan="7">
+                <div class="historial">
+                  <p class="historial-meta">
+                    Contratada el {{ m.createdAt | date:'d MMM y' }}
+                    <ng-container *ngIf="m.fechaActivacion"> · activa desde {{ m.fechaActivacion | date:'d MMM y' }}</ng-container>
+                    · parcialidad de {{ formatearPrecio(m.installmentAmount) }}
+                    <ng-container *ngIf="m.motivoCancelacion"> · {{ m.motivoCancelacion }}</ng-container>
+                  </p>
+                  <div class="cobro-detalle" *ngIf="m.cobroAutomatico?.estado === 'activo' || m.cobroAutomatico?.estado === 'fallido'">
+                    <span>
+                      <i class="fas fa-credit-card"></i>
+                      <ng-container *ngIf="m.cobroAutomatico?.estado === 'activo'">Las parcialidades se cargan solas a la tarjeta del paciente.</ng-container>
+                      <ng-container *ngIf="m.cobroAutomatico?.estado === 'fallido'">{{ m.cobroAutomatico?.ultimoError }}. Puedes mandarle un link para cambiar de tarjeta.</ng-container>
+                    </span>
+                    <button type="button" class="btn-link" *ngIf="m.cobroAutomatico?.estado === 'fallido'" (click)="abrirLink(m)">Mandar link</button>
+                    <button type="button" class="btn-link peligro" (click)="detenerCobro(m)">Pasar a cobro en clínica</button>
+                  </div>
+                  <ul class="pagos" *ngIf="m.pagos.length > 0; else sinPagos">
+                    <li *ngFor="let p of m.pagos" class="pago">
+                      <span class="pago-fecha">{{ p.fecha | date:'d MMM y, HH:mm' }}</span>
+                      <span class="pago-tipo">{{ etiquetaPago(p) }}</span>
+                      <span class="pago-metodo">{{ p.metodoPago }}</span>
+                      <span class="pago-quien">{{ p.registradoPor || (p.metodoPago === 'Stripe' ? 'En línea' : '') }}<ng-container *ngIf="p.nota"> · {{ p.nota }}</ng-container></span>
+                      <span class="pago-monto">{{ formatearPrecio(p.monto) }}</span>
+                      <button class="btn-anular" *ngIf="p.tipo === 'parcialidad' && p._id" (click)="anularPago(m, p)" title="Anular pago">
+                        <i class="fas fa-rotate-left"></i>
+                      </button>
+                    </li>
+                  </ul>
+                  <ng-template #sinPagos><p class="muted">Sin pagos registrados.</p></ng-template>
+                </div>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+
+    <div *ngIf="visibles.length === 0" class="empty-state">
+      <i class="fas fa-box-open"></i>
+      <p *ngIf="membresiasContratadas.length === 0">Aún no hay membresías contratadas.</p>
+      <p *ngIf="membresiasContratadas.length > 0">No hay membresías con este filtro.</p>
+    </div>
+  </ng-container>
+</div>
+
+<!-- Modal: cobrar parcialidad -->
+<div class="modal-overlay" *ngIf="cobrando" (click)="cerrarCobro()">
+  <div class="modal-content" (click)="$event.stopPropagation()" role="dialog" aria-labelledby="tituloCobro">
+    <div class="modal-header">
+      <h3 id="tituloCobro">Cobrar parcialidad</h3>
+      <button class="btn-cerrar" (click)="cerrarCobro()" aria-label="Cerrar"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <p class="modal-contexto">
+        <strong>{{ nombrePaciente(cobrando) }}</strong> · {{ cobrando.nombreTratamiento }}<br />
+        Saldo pendiente: <strong>{{ formatearPrecio(cobrando.saldo) }}</strong>
+      </p>
+
+      <p class="aviso" *ngIf="cobrando.cobroAutomatico?.estado === 'activo'">
+        <i class="fas fa-triangle-exclamation"></i>
+        Esta membresía se carga sola a la tarjeta. Registrar un pago aquí no detiene el siguiente cargo, salvo que liquide el saldo.
+      </p>
+
+      <div class="atajos">
+        <button type="button" class="atajo" *ngIf="cobrando.proximoPago"
+                [class.activo]="cobro.monto === cobrando.proximoPago.monto"
+                (click)="cobro.monto = cobrando.proximoPago.monto">
+          Parcialidad #{{ cobrando.proximoPago.numero }} · {{ formatearPrecio(cobrando.proximoPago.monto) }}
+        </button>
+        <button type="button" class="atajo" [class.activo]="cobro.monto === cobrando.saldo" (click)="cobro.monto = cobrando.saldo">
+          Liquidar · {{ formatearPrecio(cobrando.saldo) }}
+        </button>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="cobroMonto">Monto (MXN)</label>
+          <input id="cobroMonto" type="number" min="0" step="0.01" [(ngModel)]="cobro.monto" />
+        </div>
+        <div class="form-group">
+          <label for="cobroMetodo">Método de pago</label>
+          <select id="cobroMetodo" [(ngModel)]="cobro.metodoPago">
+            <option *ngFor="let metodo of metodos" [value]="metodo">{{ metodo }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="cobroNota">Nota (opcional)</label>
+        <input id="cobroNota" type="text" [(ngModel)]="cobro.nota" placeholder="Ej. folio de terminal" maxlength="140" />
+      </div>
+
+      <div class="mensaje error" *ngIf="errorCobro"><i class="fas fa-exclamation-circle"></i> {{ errorCobro }}</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="cerrarCobro()">Cancelar</button>
+      <button class="btn-primary" (click)="confirmarCobro()" [disabled]="guardando">
+        <i class="fas fa-check"></i> {{ guardando ? 'Guardando…' : 'Registrar ' + formatearPrecio(cobro.monto) }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: venta en mostrador -->
+<div class="modal-overlay" *ngIf="vendiendo" (click)="cerrarVenta()">
+  <div class="modal-content" (click)="$event.stopPropagation()" role="dialog" aria-labelledby="tituloVenta">
+    <div class="modal-header">
+      <h3 id="tituloVenta">Vender membresía</h3>
+      <button class="btn-cerrar" (click)="cerrarVenta()" aria-label="Cerrar"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="ventaPaciente">Paciente</label>
+        <div class="paciente-elegido" *ngIf="pacienteVenta; else buscarPaciente">
+          <span><strong>{{ pacienteVenta.nombre }} {{ pacienteVenta.apeP }} {{ pacienteVenta.apeM }}</strong>
+            <small>{{ pacienteVenta.telefonoWhatsapp || pacienteVenta.telefonoPaciente }}</small></span>
+          <button type="button" class="btn-link" (click)="venta.pacienteId = ''">Cambiar</button>
+        </div>
+        <ng-template #buscarPaciente>
+          <input id="ventaPaciente" type="search" [(ngModel)]="busquedaPaciente" placeholder="Nombre o teléfono" autocomplete="off" />
+          <ul class="sugerencias" *ngIf="pacientesFiltrados.length > 0">
+            <li *ngFor="let p of pacientesFiltrados">
+              <button type="button" (click)="elegirPaciente(p)">
+                {{ p.nombre }} {{ p.apeP }} {{ p.apeM }} <small>{{ p.telefonoWhatsapp || p.telefonoPaciente }}</small>
+              </button>
+            </li>
+          </ul>
+          <small class="ayuda" *ngIf="busquedaPaciente.length >= 2 && pacientesFiltrados.length === 0">
+            Sin coincidencias. Si es nuevo, regístralo primero en Pacientes.
+          </small>
+        </ng-template>
+      </div>
+
+      <div class="form-group">
+        <label for="ventaPlan">Plan</label>
+        <select id="ventaPlan" [(ngModel)]="venta.catalogoId">
+          <option value="" disabled>Elige un plan</option>
+          <option *ngFor="let c of catalogos" [value]="c._id">{{ c.nombreTratamiento }} · {{ formatearPrecio(c.costoTotal) }}</option>
+        </select>
+      </div>
+
+      <div class="resumen-plan" *ngIf="catalogoVenta">
+        <div><span>Enganche hoy</span><strong>{{ formatearPrecio(catalogoVenta.enganche) }}</strong></div>
+        <div><span>Después</span><strong>{{ catalogoVenta.installmentsCount }} × {{ formatearPrecio(cuotaDe(catalogoVenta)) }}</strong></div>
+        <div><span>Frecuencia</span><strong class="capitalize">{{ catalogoVenta.paymentFrequency }}</strong></div>
+      </div>
+
+      <fieldset class="form-group opciones-enganche">
+        <legend>Enganche</legend>
+        <label class="opcion" [class.activa]="!venta.engancheCobrado">
+          <input type="radio" name="enganche" [value]="false" [(ngModel)]="venta.engancheCobrado" />
+          <span><strong>Lo paga en el link</strong><small>El paciente paga el enganche y deja su tarjeta para las parcialidades.</small></span>
+        </label>
+        <label class="opcion" [class.activa]="venta.engancheCobrado">
+          <input type="radio" name="enganche" [value]="true" [(ngModel)]="venta.engancheCobrado" />
+          <span><strong>Ya lo cobré en clínica</strong><small>El link sólo registra la tarjeta para las parcialidades.</small></span>
+        </label>
+      </fieldset>
+
+      <div class="form-group" *ngIf="venta.engancheCobrado">
+        <label for="ventaMetodo">¿Cómo pagó el enganche?</label>
+        <select id="ventaMetodo" [(ngModel)]="venta.metodoPago">
+          <option *ngFor="let metodo of metodos" [value]="metodo">{{ metodo }}</option>
+        </select>
+      </div>
+
+      <div class="mensaje error" *ngIf="errorVenta"><i class="fas fa-exclamation-circle"></i> {{ errorVenta }}</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="cerrarVenta()">Cancelar</button>
+      <button class="btn-primary" (click)="confirmarVenta()" [disabled]="guardando || !venta.pacienteId || !venta.catalogoId">
+        <i class="fas fa-link"></i> {{ guardando ? 'Generando…' : 'Generar link de pago' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: link de pago -->
+<div class="modal-overlay" *ngIf="linkModal" (click)="cerrarLink()">
+  <div class="modal-content" (click)="$event.stopPropagation()" role="dialog" aria-labelledby="tituloLink">
+    <div class="modal-header">
+      <h3 id="tituloLink">Link de pago</h3>
+      <button class="btn-cerrar" (click)="cerrarLink()" aria-label="Cerrar"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <p class="modal-contexto">
+        <strong>{{ nombrePaciente(linkModal.membresia) }}</strong> · {{ linkModal.membresia.nombreTratamiento }}<br />
+        <ng-container *ngIf="linkModal.membresia.status === 'pending'">
+          Paga hoy el enganche de <strong>{{ formatearPrecio(linkModal.membresia.enganche) }}</strong> y deja su tarjeta.
+        </ng-container>
+        <ng-container *ngIf="linkModal.membresia.status !== 'pending'">
+          El enganche ya está registrado; el link sólo guarda su tarjeta.
+        </ng-container>
+        Después se cargan solas {{ linkModal.membresia.installmentsCount - linkModal.membresia.parcialidadesCubiertas }}
+        parcialidades de <strong>{{ formatearPrecio(linkModal.membresia.installmentAmount) }}</strong>.
+      </p>
+
+      <p class="muted" *ngIf="linkModal.generando"><i class="fas fa-spinner fa-spin"></i> Generando link…</p>
+
+      <ng-container *ngIf="linkModal.link && !linkModal.generando">
+        <div class="link-caja">
+          <input type="text" readonly [value]="linkModal.link.url" aria-label="Link de pago" (focus)="$any($event.target).select()" />
+          <button type="button" class="btn-secondary" (click)="copiarLink()">
+            <i class="fas" [ngClass]="linkModal.copiado ? 'fa-check' : 'fa-copy'"></i> {{ linkModal.copiado ? 'Copiado' : 'Copiar' }}
+          </button>
+        </div>
+        <a class="btn-whatsapp" [href]="urlWhatsapp()" target="_blank" rel="noopener">
+          <i class="fab fa-whatsapp"></i> Enviar por WhatsApp
+        </a>
+        <p class="ayuda">
+          Vence el {{ linkModal.link.expira | date:'d MMM, HH:mm' }}.
+          <ng-container *ngIf="linkModal.link.primerCargo"> Primer cargo automático: {{ linkModal.link.primerCargo | date:'d MMM y' }}.</ng-container>
+        </p>
+      </ng-container>
+
+      <div class="mensaje error" *ngIf="linkModal.error"><i class="fas fa-exclamation-circle"></i> {{ linkModal.error }}</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="generarLink()" [disabled]="linkModal.generando">
+        <i class="fas fa-rotate"></i> Generar uno nuevo
+      </button>
+      <button class="btn-primary" (click)="cerrarLink()">Listo</button>
+    </div>
   </div>
 </div>

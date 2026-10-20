@@ -6,6 +6,7 @@ import { ActivatedRoute } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { ServiciosService } from '../../services/servicios/servicios.service';
 import { ServiciosDentalesService } from '../../services/servicios-dentales/servicios-dentales.service';
+import { PromocionesService, precioConDescuento } from '../../services/promociones/promociones.service';
 
 @Component({
   selector: 'app-agendar-cita',
@@ -45,6 +46,17 @@ export class AgendarCitaComponent implements OnInit, OnDestroy {
   selectedService: any = null;
   fechasDisponibles: string[] = [];
   showManualDate: boolean = false;
+  // ?servicio= desde la página de promociones: se preselecciona al cargar el catálogo
+  servicioUrl: string = '';
+  promocionesVigentes: any[] = [];
+  // ?promo=&paquete= desde la página de promociones: se compra ese paquete
+  paqueteUrl: { promocionId: string; itemId: string } | null = null;
+  paquete: any = null;
+  paqueteNoDisponible = false;
+  // Las sesiones a favor se agendan por WhatsApp, que sí prueba el número;
+  // la web no puede verificar que el teléfono sea de quien lo escribe
+  readonly whatsappSesiones = 'https://wa.me/524493664109?text=' +
+    encodeURIComponent('Hola, quiero agendar una sesión de mi paquete');
 
   timeLeft: number = 900; // 15 minutos en segundos
   timerInterval: any = null;
@@ -54,14 +66,30 @@ export class AgendarCitaComponent implements OnInit, OnDestroy {
     private bookingService: BookingService,
     private route: ActivatedRoute,
     private serviciosService: ServiciosService,
-    private serviciosDentalesService: ServiciosDentalesService
+    private serviciosDentalesService: ServiciosDentalesService,
+    private promosService: PromocionesService
   ) {}
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       this.hasUrlDoctor = !!params['doctor'] || !!params['config'];
+      this.servicioUrl = params['servicio'] || '';
+      this.paqueteUrl = params['promo'] && params['paquete']
+        ? { promocionId: params['promo'], itemId: params['paquete'] }
+        : null;
     });
-    this.cargarDoctores();
+    this.promosService.obtenerPromocionesActivas().subscribe({
+      next: (promos) => {
+        this.promocionesVigentes = promos || [];
+        this.resolverPaquete();
+        this.cargarDoctores();
+      },
+      error: () => {
+        this.promocionesVigentes = [];
+        this.resolverPaquete();
+        this.cargarDoctores();
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -73,15 +101,74 @@ export class AgendarCitaComponent implements OnInit, OnDestroy {
   // Importe que realmente se cobrará ahora. Refleja exactamente la lógica
   // del backend (checkout.controller): si la configuración de disponibilidad
   // define un anticipo, ese manda sobre el costo del servicio.
+  // Busca el paquete de la URL entre las promociones vigentes. Se agenda como
+  // su primer servicio; el backend vuelve a validar precio y cupo al cobrar.
+  private resolverPaquete(): void {
+    if (!this.paqueteUrl) return;
+    const promo = this.promocionesVigentes.find(p => String(p._id) === String(this.paqueteUrl!.promocionId));
+    const item = promo?.items?.find((i: any) => String(i._id) === String(this.paqueteUrl!.itemId) && i.tipo === 'Paquete');
+    if (!promo || !item || !item.servicios?.length) {
+      this.paqueteUrl = null;
+      this.paqueteNoDisponible = true;
+      return;
+    }
+    this.paquete = { ...item, promocionNombre: promo.nombre };
+    this.servicioUrl = String(item.servicios[0].servicioId);
+  }
+
+  get incluyePaquete(): string {
+    return (this.paquete?.servicios || [])
+      .map((s: any) => (s.cantidad > 1 ? `${s.cantidad} × ${s.nombre}` : s.nombre))
+      .join(' + ');
+  }
+
+  // Con promoción el anticipo no pasa del precio final, igual que el backend.
   get montoApartado(): number {
     const anticipo = this.activeConfig?.montoAnticipo;
-    if (anticipo !== undefined && anticipo !== null) return Number(anticipo);
-    return this.selectedService?.costo ?? 500;
+    const promo = this.promoDelServicio;
+    if (anticipo !== undefined && anticipo !== null) {
+      return promo ? Math.min(Number(anticipo), promo.precioFinal) : Number(anticipo);
+    }
+    return this.costoTratamiento ?? 500;
+  }
+
+  // Precio que se cobrará por el tratamiento (con promoción si aplica)
+  get costoTratamiento(): number | undefined {
+    if (this.paquete) return this.paquete.precioFinal;
+    return this.promoDelServicio?.precioFinal ?? this.selectedService?.costo;
+  }
+
+  // Precio de lista a mostrar tachado (paquete: suma de sus servicios)
+  get costoLista(): number | undefined {
+    return this.paquete ? this.paquete.precioLista : this.selectedService?.costo;
+  }
+
+  // Mejor promoción vigente para el servicio elegido (sólo estética), con la
+  // misma regla que promociones.service.mejorPrecio. El backend la vuelve a
+  // calcular al pagar; aquí sólo se muestra.
+  get promoDelServicio(): { nombre: string; precioFinal: number } | null {
+    if (this.paquete) return { nombre: this.paquete.promocionNombre, precioFinal: this.paquete.precioFinal };
+    const s = this.selectedService;
+    if (!s || this.selectedTipoCita === 'Dental' || !s.costo) return null;
+    const categoriaId = s.categoria ? String(s.categoria._id || s.categoria) : null;
+    let mejor: { nombre: string; precioFinal: number } | null = null;
+    for (const p of this.promocionesVigentes) {
+      for (const item of p.items || []) {
+        const aplica = (item.tipo === 'Servicio' && String(item.servicioId) === String(s._id))
+          || (item.tipo === 'Categoria' && categoriaId && String(item.categoriaId) === categoriaId);
+        if (!aplica) continue;
+        const precioFinal = precioConDescuento(s.costo, item.tipoDescuento, item.valor);
+        if (precioFinal < s.costo && (!mejor || precioFinal < mejor.precioFinal)) {
+          mejor = { nombre: p.nombre, precioFinal };
+        }
+      }
+    }
+    return mejor;
   }
 
   // ¿El apartado es menor que el tratamiento? Entonces sí es un anticipo.
   get apartadoEsParcial(): boolean {
-    return !!this.selectedService && this.montoApartado < this.selectedService.costo;
+    return !!this.selectedService && this.montoApartado < (this.costoTratamiento ?? 0);
   }
 
   formatearPrecio(valor: number): string {
@@ -128,6 +215,13 @@ export class AgendarCitaComponent implements OnInit, OnDestroy {
           } else if (docId && this.doctores.some(d => String(d._id) === String(docId))) {
             this.selectedDoctorId = String(docId);
             this.onDoctorOrFechaChange();
+          } else if (this.servicioUrl && !this.selectedDoctorId) {
+            // Las promociones son de estética: se propone al primer especialista de estética
+            const estetica = this.doctores.find(d => d.atencion === 'Estetica');
+            if (estetica) {
+              this.selectedDoctorId = String(estetica._id);
+              this.onDoctorOrFechaChange();
+            }
           }
         });
       },
@@ -199,9 +293,10 @@ export class AgendarCitaComponent implements OnInit, OnDestroy {
       this.step = 1;
       return;
     }
-    this.bookingService.apartarSlot(this.selectedSlotTemp._id, pacienteId).subscribe({
+    this.bookingService.apartarSlot(this.selectedSlotTemp._id, pacienteId, this.paquete?.minutos).subscribe({
       next: (res) => {
-        this.selectedSlot = this.selectedSlotTemp;
+        // Un combo toma varios horarios: el apartado dice dónde termina
+        this.selectedSlot = { ...this.selectedSlotTemp!, horaFin: res?.horaFin || this.selectedSlotTemp!.horaFin };
         this.loading = false;
         this.step = 4; // Ir a pago
         this.iniciarCronometro();
@@ -245,6 +340,10 @@ export class AgendarCitaComponent implements OnInit, OnDestroy {
             this.selectedServiceId = String(sId);
             this.onServiceChange();
           }
+        } else if (this.servicioUrl && this.servicios.some(s => String(s._id) === String(this.servicioUrl))) {
+          this.selectedServiceId = String(this.servicioUrl);
+          this.servicioUrl = '';
+          this.onServiceChange();
         } else if (this.servicios.length > 0 && !this.selectedServiceId) {
           this.selectedServiceId = String(this.servicios[0]._id);
           this.onServiceChange();
@@ -339,7 +438,7 @@ export class AgendarCitaComponent implements OnInit, OnDestroy {
     }
     if (this.selectedDoctorId && this.selectedFecha) {
       this.loading = true;
-      this.bookingService.obtenerSlots(this.selectedDoctorId, this.selectedFecha, this.selectedConfigId).subscribe({
+      this.bookingService.obtenerSlots(this.selectedDoctorId, this.selectedFecha, this.selectedConfigId, this.paquete?.minutos).subscribe({
         next: (res) => {
           this.slots = (res || []).filter(s => s.estado === 'Disponible' || s.estado === 'Libre');
           this.loading = false;
@@ -389,7 +488,8 @@ export class AgendarCitaComponent implements OnInit, OnDestroy {
       this.selectedSlot._id,
       this.paciente._id,
       this.selectedTipoCita,
-      this.selectedServiceId
+      this.selectedServiceId,
+      this.paqueteUrl || undefined
     ).subscribe({
       next: (res) => {
         window.location.href = res.url;
