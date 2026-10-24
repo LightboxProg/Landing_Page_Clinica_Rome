@@ -1,13 +1,13 @@
 .leads-page {
   padding: 2rem;
-  background: #f8f9fa;
+  background: var(--adm-superficie-2);
   min-height: calc(100vh - 70px);
 }
 
 .leads-header {
   margin-bottom: 2rem;
-  h1 { color: #1a2b3c; font-family: 'Playfair Display', serif; }
-  p { color: #6c757d; }
+  h1 { color: var(--adm-texto); font-family: var(--display); }
+  p { color: var(--adm-tenue); }
 }
 
 .leads-content {
@@ -25,7 +25,7 @@
 }
 
 .leads-main {
-  background: white;
+  background: var(--adm-superficie);
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
   overflow-y: auto;
@@ -38,12 +38,12 @@
   align-items: center;
   justify-content: center;
   height: 100%;
-  color: #adb5bd;
+  color: var(--adm-muy-tenue);
   text-align: center;
   padding: 2rem;
 
   i { font-size: 4rem; margin-bottom: 1.5rem; }
-  h3 { color: #6c757d; margin-bottom: 0.5rem; }
+  h3 { color: var(--adm-tenue); margin-bottom: 0.5rem; }
 }
 
 @media (max-width: 992px) {

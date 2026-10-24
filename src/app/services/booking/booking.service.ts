@@ -88,15 +88,20 @@ export class BookingService {
 
   // Crea una sesión de Stripe Checkout para pagar el anticipo de la cita
   // Con `paquete` se compra un paquete de promoción: el backend fija servicio y precio
+  // Con `embebido` el backend devuelve clientSecret para pagar dentro de la página
+  // (si tiene la clave pública); si no, la URL del checkout de Stripe.
   crearCheckoutSesionCita(slotId: string, pacienteId: string, tipoCita: string, servicioId?: string,
-                          paquete?: { promocionId: string; itemId: string }): Observable<any> {
+                          paquete?: { promocionId: string; itemId: string }, embebido = false,
+                          aceptaTerminos = false): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/reservas/checkout`, {
       slotId,
       pacienteId,
       tipoCita,
       servicioId,
       promocionId: paquete?.promocionId,
-      paqueteItemId: paquete?.itemId
+      paqueteItemId: paquete?.itemId,
+      embebido,
+      aceptaTerminos
     });
   }
 

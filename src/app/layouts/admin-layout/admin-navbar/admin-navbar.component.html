@@ -1,118 +1,74 @@
-<nav class="admin-navbar">
-  <div class="navbar-brand">
-    <div class="logo-icon">
-      <i class="fas fa-spa"></i>
-    </div>
-    <div class="brand-text">
-      <h2>Clínica Rome</h2>
-      <span>Panel Administrativo</span>
-    </div>
-  </div>
+<nav class="admin-navbar" aria-label="Panel administrativo">
+  <a class="navbar-brand" routerLink="/admin/gestion" aria-label="Ir a la agenda">
+    <img src="assets/images/rome-logo-blanco.webp" alt="ROME Harmony Clinic" class="brand-logo" width="73" height="38" />
+  </a>
 
-  <div class="nav-links">
-    <!-- Dropdown Usuarios -->
-    <div class="nav-group" [class.open]="openGroup === 'usuarios'" (click)="toggleGroup($event, 'usuarios')">
-      <div class="group-title">
-        <i class="fas fa-user-shield"></i> Usuarios
-        <i class="fas fa-chevron-down"></i>
-      </div>
-      <div class="dropdown-menu">
-        <a routerLink="/admin/usuarios" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-          <i class="fas fa-users"></i> Lista de usuarios
-        </a>
-        <a routerLink="/admin/usuarios/nuevo" routerLinkActive="active">
-          <i class="fas fa-user-plus"></i> Nuevo usuario
-        </a>
-      </div>
-    </div>
+  <!-- Navegación principal (escritorio) -->
+  <ul class="nav-links">
+    <li *ngFor="let s of secciones" class="nav-item" [class.desplegable]="s.items" [class.activa]="seccionActiva === s.id">
+      <a *ngIf="s.link" class="nav-btn" [routerLink]="s.link" [attr.aria-current]="seccionActiva === s.id ? 'page' : null" [title]="s.label">
+        <i [ngClass]="claseIcono(s.icon)" aria-hidden="true"></i>
+        <span>{{ s.label }}</span>
+      </a>
 
-    <!-- Dropdown Pacientes -->
-    <div class="nav-group" [class.open]="openGroup === 'pacientes'" (click)="toggleGroup($event, 'pacientes')">
-      <div class="group-title">
-        <i class="fas fa-notes-medical"></i> Pacientes
-        <i class="fas fa-chevron-down"></i>
-      </div>
-      <div class="dropdown-menu">
-        <a routerLink="/admin/pacientes" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-          <i class="fas fa-list"></i> Lista de pacientes
-        </a>
-        <a routerLink="/admin/pacientes/registro" routerLinkActive="active">
-          <i class="fas fa-user-plus"></i> Registrar paciente
-        </a>
-        <a routerLink="/admin/pacientes/lista-negra" routerLinkActive="active">
-          <i class="fas fa-ban"></i> Lista negra
-        </a>
-      </div>
-    </div>
-
-    <!-- Dropdown Gestión -->
-    <div class="nav-group" [class.open]="openGroup === 'gestion'" (click)="toggleGroup($event, 'gestion')">
-      <div class="group-title">
-        <i class="fas fa-calendar-alt"></i> Gestión
-        <i class="fas fa-chevron-down"></i>
-      </div>
-      <div class="dropdown-menu">
-        <a routerLink="/admin/gestion" routerLinkActive="active">
-          <i class="fas fa-calendar-check"></i> Calendario
-        </a>
-        <a routerLink="/admin/leads" routerLinkActive="active">
-          <i class="fas fa-address-book"></i> Prospectos (Leads)
-        </a>
-        <a routerLink="/admin/chats" routerLinkActive="active">
-          <i class="fas fa-comments"></i> Centro de Chats
-        </a>
-        <a routerLink="/admin/mensajeria" routerLinkActive="active">
-          <i class="fas fa-paper-plane"></i> Mensajería Masiva
-        </a>
-        <a routerLink="/admin/campanas" routerLinkActive="active">
-          <i class="fas fa-bullhorn"></i> Campañas WhatsApp / IG
-        </a>
-        <a routerLink="/admin/instagram" routerLinkActive="active">
-          <i class="fab fa-instagram"></i> Publicar en Instagram
-        </a>
-        <a routerLink="/admin/configuracion" routerLinkActive="active">
-          <i class="fas fa-tools"></i> Configuración de Servicios
-        </a>
-      </div>
-    </div>
-
-    <!-- Dropdown Disponibilidad (Solo para Especialistas) -->
-    <div class="nav-group" *ngIf="usuarioTipo === 'Especialista'" [class.open]="openGroup === 'disponibilidad'" (click)="toggleGroup($event, 'disponibilidad')">
-      <div class="group-title">
-        <i class="fas fa-clock"></i> Disponibilidad
-        <i class="fas fa-chevron-down"></i>
-      </div>
-      <div class="dropdown-menu">
-        <a routerLink="/admin/disponibilidad" routerLinkActive="active">
-          <i class="fas fa-calendar-alt"></i> Configurar Horarios
-        </a>
-        <a href="javascript:void(0)" (click)="copiarEnlaceCitas()">
-          <i class="fas fa-share-alt"></i> Copiar Enlace Citas
-        </a>
-      </div>
-    </div>
-  </div>
+      <ng-container *ngIf="s.items">
+        <button type="button" class="nav-btn" (click)="alternar(s.id, $event)" [title]="s.label"
+                [attr.aria-expanded]="abierto === s.id" [attr.aria-controls]="'menu-' + s.id">
+          <i [ngClass]="claseIcono(s.icon)" aria-hidden="true"></i>
+          <span>{{ s.label }}</span>
+          <span class="nav-alerta" *ngIf="tieneAlerta(s)" [title]="erroresNuevos + ' errores sin revisar'"></span>
+          <i class="fas fa-chevron-down chevron" aria-hidden="true"></i>
+        </button>
+        <div class="dropdown-menu" [id]="'menu-' + s.id" [class.visible]="abierto === s.id">
+          <ng-container *ngFor="let item of s.items">
+            <a *ngIf="item.link" [routerLink]="item.link" [queryParams]="queryParams(item)"
+               [class.active]="esActivo(item.link, item.tab)" [attr.aria-current]="esActivo(item.link, item.tab) ? 'page' : null">
+              <i [ngClass]="claseIcono(item.icon)" aria-hidden="true"></i> {{ item.label }}
+              <span class="nav-alerta-num" *ngIf="item.alerta === 'errores' && erroresNuevos">{{ erroresNuevos }}</span>
+            </a>
+            <button *ngIf="item.accion" type="button" (click)="ejecutar(item)">
+              <i [ngClass]="claseIcono(item.icon)" aria-hidden="true"></i> {{ item.label }}
+            </button>
+          </ng-container>
+        </div>
+      </ng-container>
+    </li>
+  </ul>
 
   <div class="navbar-actions">
-    <!-- Centro de Notificaciones -->
-    <div class="notification-center" [class.active]="showNotifications">
-      <button class="notification-btn" (click)="toggleNotifications($event)" title="Notificaciones">
-        <i class="fas fa-bell"></i>
-        <span class="notification-badge" *ngIf="notifications.length > 0">{{ notifications.length }}</span>
+    <button type="button" class="search-btn" (click)="abrirBusqueda()" aria-label="Buscar paciente o sección">
+      <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
+      <span class="search-text">Buscar paciente…</span>
+      <kbd>{{ atajo }}</kbd>
+    </button>
+
+    <button type="button" class="icon-btn" (click)="temaService.alternar()"
+            [attr.aria-label]="temaService.tema === 'oscuro' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
+            [title]="temaService.tema === 'oscuro' ? 'Modo claro' : 'Modo oscuro'">
+      <i class="fas" [ngClass]="temaService.tema === 'oscuro' ? 'fa-sun' : 'fa-moon'" aria-hidden="true"></i>
+    </button>
+
+    <!-- Notificaciones -->
+    <div class="desplegable notification-center">
+      <button type="button" class="icon-btn" (click)="alternar('notificaciones', $event)"
+              [attr.aria-expanded]="abierto === 'notificaciones'"
+              [attr.aria-label]="noLeidas ? noLeidas + ' notificaciones sin leer' : 'Notificaciones'">
+        <i class="fas fa-bell" aria-hidden="true"></i>
+        <span class="notification-badge" *ngIf="noLeidas > 0">{{ noLeidas > 99 ? '99+' : noLeidas }}</span>
       </button>
 
-      <div class="notification-dropdown" *ngIf="showNotifications">
+      <div class="notification-dropdown" *ngIf="abierto === 'notificaciones'">
         <div class="dropdown-header">
           <h3>Notificaciones</h3>
-          <button (click)="clearNotifications()" *ngIf="notifications.length > 0">Limpiar</button>
+          <button type="button" (click)="clearNotifications()" *ngIf="notifications.length > 0">Limpiar</button>
         </div>
         <div class="dropdown-body">
           <div *ngIf="notifications.length === 0" class="no-notifications">
-            <i class="fas fa-bell-slash"></i>
+            <i class="fas fa-bell-slash" aria-hidden="true"></i>
             <p>No hay notificaciones nuevas</p>
           </div>
-          <div class="notification-item" 
-               *ngFor="let note of notifications" 
+          <div class="notification-item"
+               *ngFor="let note of notifications"
                [class.unread]="!note.leida"
                (click)="marcarLeida(note)">
             <div class="note-icon" [ngClass]="note.tipo || 'sistema'">
@@ -125,7 +81,7 @@
               </div>
               <p>{{ note.notification?.body }}</p>
               <div class="note-event" *ngIf="note.data?.fechaHoraInicio">
-                <i class="fas fa-calendar-check"></i> 
+                <i class="fas fa-calendar-check"></i>
                 Evento {{ note.data.fechaHoraInicio | relativeTime }}
               </div>
             </div>
@@ -134,16 +90,68 @@
       </div>
     </div>
 
-    <app-auth-google *ngIf="usuarioTipo === 'Administrador'"></app-auth-google>
-    <div class="user-info" *ngIf="usuarioNombre">
-      <div class="avatar">
-        <i class="fas fa-user-circle"></i>
+    <!-- Usuario: Google Calendar, enlace de citas y salir -->
+    <div class="desplegable user-menu">
+      <button type="button" class="user-btn" (click)="alternar('usuario', $event)" [attr.aria-expanded]="abierto === 'usuario'"
+              aria-label="Menú de usuario">
+        <span class="avatar" aria-hidden="true">
+          {{ iniciales || '?' }}
+          <span class="avatar-alerta" *ngIf="googleDesconectado" title="Google Calendar desconectado"></span>
+        </span>
+        <span class="user-text">
+          <span class="user-name">{{ usuarioNombre }}</span>
+          <span class="user-role">{{ usuarioTipo }}</span>
+        </span>
+        <i class="fas fa-chevron-down chevron" aria-hidden="true"></i>
+      </button>
+
+      <!-- Siempre montado: el regreso de Google (?linked=) lo procesa este componente -->
+      <div class="dropdown-menu user-dropdown" [class.visible]="abierto === 'usuario'">
+        <div class="user-dropdown-head">
+          <strong>{{ usuarioNombre }}</strong>
+          <small>{{ usuarioTipo }}</small>
+        </div>
+        <app-auth-google *ngIf="usuarioTipo === 'Administrador'"></app-auth-google>
+        <button type="button" *ngIf="usuarioTipo === 'Especialista'" (click)="copiarEnlaceCitas()">
+          <i class="fas fa-share-nodes" aria-hidden="true"></i> Copiar mi enlace de citas
+        </button>
+        <button type="button" class="logout" (click)="logout()">
+          <i class="fas fa-arrow-right-from-bracket" aria-hidden="true"></i> Cerrar sesión
+        </button>
       </div>
-      <span class="user-name">{{ usuarioNombre }}</span>
     </div>
-    <button class="btn-logout" (click)="logout()" title="Cerrar sesión">
-      <i class="fas fa-sign-out-alt"></i>
-      <span>Salir</span>
-    </button>
   </div>
 </nav>
+
+<!-- Barra inferior (celular): lo diario a un toque y el resto en "Menú" -->
+<nav class="mobile-bar" aria-label="Accesos rápidos">
+  <a *ngFor="let s of seccionesBarraMovil" [routerLink]="s.link || s.items?.[0]?.link"
+     [class.activa]="seccionActiva === s.id && !menuMovil">
+    <i [ngClass]="claseIcono(s.icon)" aria-hidden="true"></i>
+    <span>{{ s.label }}</span>
+  </a>
+  <button type="button" (click)="alternarMenuMovil()" [class.activa]="menuMovil" [attr.aria-expanded]="menuMovil">
+    <i class="fas" [ngClass]="menuMovil ? 'fa-xmark' : 'fa-bars'" aria-hidden="true"></i>
+    <span>Menú</span>
+  </button>
+</nav>
+
+<div class="mobile-sheet-backdrop" *ngIf="menuMovil" (click)="menuMovil = false"></div>
+<div class="mobile-sheet" *ngIf="menuMovil" role="dialog" aria-label="Menú">
+  <section *ngFor="let s of secciones" class="sheet-section">
+    <h3>{{ s.label }}</h3>
+    <a *ngIf="s.link" [routerLink]="s.link" [class.active]="esActivo(s.link)">
+      <i [ngClass]="claseIcono(s.icon)" aria-hidden="true"></i> {{ s.label }}
+    </a>
+    <ng-container *ngFor="let item of s.items">
+      <a *ngIf="item.link" [routerLink]="item.link" [queryParams]="queryParams(item)" [class.active]="esActivo(item.link, item.tab)">
+        <i [ngClass]="claseIcono(item.icon)" aria-hidden="true"></i> {{ item.label }}
+      </a>
+      <button *ngIf="item.accion" type="button" (click)="ejecutar(item)">
+        <i [ngClass]="claseIcono(item.icon)" aria-hidden="true"></i> {{ item.label }}
+      </button>
+    </ng-container>
+  </section>
+</div>
+
+<app-busqueda-rapida *ngIf="buscando" [destinos]="destinos" (cerrar)="buscando = false"></app-busqueda-rapida>

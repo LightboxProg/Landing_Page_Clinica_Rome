@@ -6,8 +6,8 @@ $colorBeige: #f8f5f0;
 $colorCrema: #f5e6d3;
 $colorBlanco: #ffffff;
 
-$fuenteElegante: "Playfair Display", serif;
-$fuentePrincipal: "Work Sans", sans-serif;
+$fuenteElegante: var(--display);
+$fuentePrincipal: var(--body);
 
 $bordeRedondeado: 12px;
 $bordeRedondeadoGrande: 20px;
@@ -26,7 +26,7 @@ $sombraTarjeta: 0 10px 40px rgba(26, 43, 60, 0.15);
   margin-bottom: 1.5rem;
   text-align: center;
   h1 {
-    font-family: "Playfair Display", serif;
+    font-family: var(--display);
     color: white;
     margin: 0;
     font-size: 2rem;
@@ -51,8 +51,8 @@ $sombraTarjeta: 0 10px 40px rgba(26, 43, 60, 0.15);
 
   &.gravedad-1 { border-left: 8px solid #4caf50; }
   &.gravedad-2 { border-left: 8px solid #8bc34a; }
-  &.gravedad-3 { border-left: 8px solid #ffc107; }
-  &.gravedad-4 { border-left: 8px solid #ff9800; }
+  &.gravedad-3 { border-left: 8px solid var(--adm-aviso); }
+  &.gravedad-4 { border-left: 8px solid var(--adm-aviso); }
   &.gravedad-5 { border-left: 8px solid #f44336; }
 
   &:hover {
@@ -104,7 +104,7 @@ $sombraTarjeta: 0 10px 40px rgba(26, 43, 60, 0.15);
           color: #ddd;
           width: auto;
           &.active {
-            color: #ffc107;
+            color: var(--adm-aviso);
           }
         }
       }
@@ -112,7 +112,7 @@ $sombraTarjeta: 0 10px 40px rgba(26, 43, 60, 0.15);
 
     .user-info {
       font-style: italic;
-      color: #777;
+      color: var(--adm-tenue);
     }
   }
 

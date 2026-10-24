@@ -2,7 +2,7 @@
 .sp-cabecera { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
 .sp-titulo { font-size: .82rem; font-weight: 600; color: var(--ink); }
 .sp-link { border: 0; background: none; padding: 0; font: inherit; font-size: .78rem; font-weight: 600; color: var(--primary); cursor: pointer; }
-.sp-error { margin: 0 0 8px; font-size: .78rem; color: var(--danger, #b42318); }
+.sp-error { margin: 0 0 8px; font-size: .78rem; color: var(--danger, var(--adm-error)); }
 .sp-cargando { padding: 18px 0; font-size: .82rem; color: var(--muted); text-align: center; }
 
 .sp-manual input { width: 100%; height: 42px; padding: 0 12px; border: 1px solid var(--border); border-radius: 10px; font: inherit; font-size: .9rem; color: var(--ink); }
@@ -18,7 +18,7 @@
 .sp-tipo { position: absolute; top: 5px; right: 5px; color: #fff; font-size: .7rem; text-shadow: 0 1px 3px rgb(0 0 0 / .6); }
 .sp-check { position: absolute; inset: 0; display: grid; place-items: center; background: rgb(173 40 115 / .35); color: #fff; font-size: 1.1rem; }
 
-.sp-mas { width: 100%; margin-top: 8px; min-height: 34px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface, #fff); font: inherit; font-size: .8rem; font-weight: 600; color: var(--ink); cursor: pointer; }
+.sp-mas { width: 100%; margin-top: 8px; min-height: 34px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface, var(--adm-superficie)); font: inherit; font-size: .8rem; font-weight: 600; color: var(--ink); cursor: pointer; }
 .sp-mas:disabled { opacity: .6; cursor: default; }
 
 .sp-elegida { display: flex; gap: 10px; align-items: flex-start; margin-top: 10px; padding: 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg); }

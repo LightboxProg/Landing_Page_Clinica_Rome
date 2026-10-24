@@ -1,5 +1,5 @@
 .leads-filter-card {
-  background: white;
+  background: var(--adm-superficie);
   padding: 1rem;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
@@ -13,14 +13,14 @@
   display: flex;
   align-items: center;
 
-  i { position: absolute; left: 12px; color: #adb5bd; }
+  i { position: absolute; left: 12px; color: var(--adm-muy-tenue); }
   input {
     width: 100%;
     padding: 10px 10px 10px 35px;
-    border: 1px solid #dee2e6;
+    border: 1px solid var(--adm-input-borde);
     border-radius: 8px;
     font-size: 0.9rem;
-    &:focus { border-color: #1a2b3c; outline: none; }
+    &:focus { border-color: var(--adm-primario); outline: none; }
   }
 }
 
@@ -31,11 +31,11 @@
 
   select {
     padding: 8px;
-    border: 1px solid #dee2e6;
+    border: 1px solid var(--adm-input-borde);
     border-radius: 8px;
     font-size: 0.85rem;
-    color: #495057;
+    color: var(--adm-texto-2);
     cursor: pointer;
-    &:focus { border-color: #1a2b3c; outline: none; }
+    &:focus { border-color: var(--adm-primario); outline: none; }
   }
 }

@@ -1,3 +1,4 @@
+import { environment } from '../environments/environment';
 import { Routes } from '@angular/router';
 import { InicioComponent } from './pages/inicio/inicio.component';
 import { ServiciosComponent } from './pages/servicios/servicios.component';
@@ -20,7 +21,6 @@ import { PacienteRegistroComponent } from './components/pacientes/paciente-regis
 import { PerfilPacienteComponent } from './components/pacientes/perfil-paciente/perfil-paciente.component';
 import { PacientesListadosComponent } from './components/pacientes/pacientes-listados/pacientes-listados.component';
 import { LeadsComponent } from './pages/leads/leads.component';
-import { CalendarioAdminComponent } from './pages/Calendario/calendario.component';
 import { ChatsComponent } from './pages/chats/chats.component';
 import { DisponibilidadComponent } from './pages/disponibilidad/disponibilidad.component';
 
@@ -41,7 +41,10 @@ export const routes: Routes = [
         path: 'promociones',
         loadComponent: () => import('./pages/promociones/promociones.component').then(m => m.PromocionesComponent)
       },
-      { path: 'membresias', component: CatalogoMembresiasComponent },
+      // Ocultas en el arranque: la URL vieja lleva al inicio
+      environment.membresiasPublicas
+        ? { path: 'membresias', component: CatalogoMembresiasComponent }
+        : { path: 'membresias', redirectTo: '' },
       { path: 'nosotros', component: NosotrosComponent },
       { path: 'contacto', component: ContactoComponent },
       { path: 'aviso-privacidad', component: AvisoPrivacidadComponent },
@@ -57,7 +60,9 @@ export const routes: Routes = [
     component: CheckoutLayoutComponent,
     children: [
       { path: 'agendar-cita', component: AgendarCitaComponent },
-      { path: 'pasarela-membresias/:id', component: PasarelaMembresiasComponent },
+      environment.membresiasPublicas
+        ? { path: 'pasarela-membresias/:id', component: PasarelaMembresiasComponent }
+        : { path: 'pasarela-membresias/:id', redirectTo: '' },
       { path: 'checkout-status', component: CheckoutStatusComponent },
       { path: 'return', component: CheckoutStatusComponent },
       { path: 'cancel', component: CheckoutStatusComponent },
@@ -78,7 +83,11 @@ export const routes: Routes = [
     canActivate: [authGuard],   // Guard solo para rutas administrativas
     children: [
       // Gestión y Leads
-      { path: 'admin/gestion', component: CalendarioAdminComponent },
+      // Agenda en carga diferida: FullCalendar pesa y el bundle inicial roza el budget de 3 MB
+      {
+        path: 'admin/gestion',
+        loadComponent: () => import('./pages/Calendario/calendario.component').then(m => m.CalendarioAdminComponent)
+      },
       // Lazy por el budget de 3 MB del bundle inicial (promociones creció con los renglones)
       {
         path: 'admin/configuracion',
@@ -93,6 +102,18 @@ export const routes: Routes = [
       {
         path: 'admin/campanas',
         loadComponent: () => import('./pages/campanas/campanas.component').then(m => m.CampanasComponent)
+      },
+      {
+        path: 'admin/flujos',
+        loadComponent: () => import('./pages/flujos/flujos.component').then(m => m.FlujosComponent)
+      },
+      {
+        path: 'admin/uso-ia',
+        loadComponent: () => import('./pages/uso-ia/uso-ia.component').then(m => m.UsoIaComponent)
+      },
+      {
+        path: 'admin/sistema',
+        loadComponent: () => import('./pages/sistema/sistema.component').then(m => m.SistemaComponent)
       },
       {
         path: 'admin/instagram',

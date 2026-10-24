@@ -1,8 +1,34 @@
 <section class="book">
 
+  <!-- Antes de ver horarios: ¿dental o estética? Cada área tiene sus propios especialistas -->
+  <div class="selector-area" *ngIf="selectorArea" role="dialog" aria-modal="true" aria-labelledby="tituloArea">
+    <div class="selector-area__velo" (click)="salirSelector()"></div>
+    <div class="selector-area__caja">
+      <button type="button" class="selector-area__cerrar" (click)="salirSelector()" aria-label="Cerrar"><i class="fas fa-xmark" aria-hidden="true"></i></button>
+      <p class="u-eyebrow">Agendar</p>
+      <h2 id="tituloArea" class="selector-area__titulo">¿Qué tipo de valoración buscas?</h2>
+      <p class="selector-area__nota">Te mostramos sólo los especialistas y horarios de esa área.</p>
+
+      <div class="selector-area__opciones">
+        <button type="button" class="opcion-area" (click)="elegirArea('Dental')" [disabled]="doctores.length && !hayDoctoresDe('Dental')">
+          <span class="opcion-area__icono"><i class="fas fa-tooth" aria-hidden="true"></i></span>
+          <span class="opcion-area__nombre">Dental</span>
+          <span class="opcion-area__detalle">Limpieza, resinas, ortodoncia, endodoncia y revisión general.</span>
+          <span class="opcion-area__ir u-data">Ver horarios <i class="fas fa-arrow-right" aria-hidden="true"></i></span>
+        </button>
+        <button type="button" class="opcion-area" (click)="elegirArea('Estetica')" [disabled]="doctores.length && !hayDoctoresDe('Estetica')">
+          <span class="opcion-area__icono"><i class="fas fa-spa" aria-hidden="true"></i></span>
+          <span class="opcion-area__nombre">Estética</span>
+          <span class="opcion-area__detalle">Toxina botulínica, rellenos, armonización facial y tratamientos de piel.</span>
+          <span class="opcion-area__ir u-data">Ver horarios <i class="fas fa-arrow-right" aria-hidden="true"></i></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <header class="book__head">
     <p class="u-eyebrow">Agendar</p>
-    <h1 class="book__title">Reserva tu valoración</h1>
+    <h1 class="book__title">Agenda tu tratamiento</h1>
   </header>
 
   <!-- Four fixed steps. If you already have an expediente, "Tus datos" is
@@ -24,7 +50,12 @@
 
   <p class="alert" *ngIf="paqueteNoDisponible && step === 1" role="status">
     <i class="fas fa-circle-info" aria-hidden="true"></i>
-    <span>Ese paquete ya no está disponible (la promoción cerró o se agotó). Puedes agendar el tratamiento a precio vigente.</span>
+    <span>Ese paquete ya no está disponible (la promoción cerró o se agotó).<ng-container *ngIf="!soloPromos"> Puedes agendar el tratamiento a precio vigente.</ng-container></span>
+  </p>
+
+  <p class="alert" *ngIf="sinPromo && step === 1" role="status">
+    <i class="fas fa-circle-info" aria-hidden="true"></i>
+    <span>Por ahora en línea sólo se agendan las promociones vigentes, y este tratamiento no tiene una. <a routerLink="/promociones">Ver promociones</a> o escríbenos por WhatsApp.</span>
   </p>
 
   <p class="alert" *ngIf="errorMessage" role="alert">
@@ -40,13 +71,42 @@
     <aside class="pick__brief">
       <h2 class="pick__brief-title">Tu cita</h2>
 
-      <div class="field" *ngIf="!hasUrlDoctor">
+      <div class="area" *ngIf="area && !hasUrlDoctor">
+        <span class="area__label u-data">Área</span>
+        <span class="area__valor">
+          <i class="fas" [ngClass]="area === 'Dental' ? 'fa-tooth' : 'fa-spa'" aria-hidden="true"></i>
+          {{ area === 'Dental' ? 'Dental' : 'Estética' }}
+        </span>
+        <button type="button" class="area__cambiar" (click)="cambiarArea()" *ngIf="!vieneDePromo && !soloPromos">Cambiar</button>
+      </div>
+
+      <div class="field" *ngIf="!hasUrlDoctor && doctoresVisibles.length > 1">
         <label for="doctor">Especialista</label>
         <select id="doctor" [(ngModel)]="selectedDoctorId" (change)="onDoctorOrFechaChange()" [disabled]="loading">
           <option value="" disabled selected>Elige un especialista</option>
-          <option *ngFor="let doc of doctores" [value]="doc._id">
+          <option *ngFor="let doc of doctoresVisibles" [value]="doc._id">
             Dr(a). {{ doc.nombre }} {{ doc.apeP }} — {{ doc.especialidad }}
           </option>
+        </select>
+      </div>
+      <div class="field" *ngIf="!hasUrlDoctor && doctoresVisibles.length === 1">
+        <label>Te atiende</label>
+        <p class="unico">Dr(a). {{ doctoresVisibles[0].nombre }} {{ doctoresVisibles[0].apeP }} <span>— {{ doctoresVisibles[0].especialidad }}</span></p>
+      </div>
+
+      <div class="field" *ngIf="selectedDoctorId">
+        <label for="servicio">Tratamiento</label>
+        <select id="servicio" [ngModel]="ofertaElegida" (ngModelChange)="onOfertaChange($event)" [disabled]="loading">
+          <option value="" disabled>Elige un tratamiento</option>
+          <optgroup label="Tratamientos" *ngIf="paquetesElegibles.length; else soloServicios">
+            <option *ngFor="let serv of serviciosElegibles" [value]="'s:' + serv._id">{{ serv.nombre }}</option>
+          </optgroup>
+          <ng-template #soloServicios>
+            <option *ngFor="let serv of serviciosElegibles" [value]="'s:' + serv._id">{{ serv.nombre }}</option>
+          </ng-template>
+          <optgroup label="Paquetes" *ngIf="paquetesElegibles.length">
+            <option *ngFor="let pk of paquetesElegibles" [value]="pk.valor">{{ pk.nombre }}</option>
+          </optgroup>
         </select>
       </div>
 
@@ -62,17 +122,15 @@
         </p>
       </div>
 
-      <div class="field" *ngIf="selectedDoctorId && !paquete">
-        <label for="servicio">Tratamiento</label>
-        <select id="servicio" [(ngModel)]="selectedServiceId" (change)="onServiceChange()" [disabled]="loading">
-          <option value="" disabled selected>Elige un tratamiento</option>
-          <option *ngFor="let serv of servicios" [value]="serv._id">{{ serv.nombre }}</option>
-        </select>
-      </div>
-
       <!-- What you are booking, stated as a receipt -->
+      <p class="promo-tag" *ngIf="selectedService && promoDelServicio">
+        <i class="fas fa-tag" aria-hidden="true"></i>
+        <span>{{ promoDelServicio.nombre }}</span>
+        <span class="promo-tag__ahorro u-data" *ngIf="ahorro">Ahorras {{ formatearPrecio(ahorro) }}</span>
+      </p>
+
       <dl class="brief" *ngIf="selectedDoctorId && selectedService">
-        <div class="brief__row">
+        <div class="brief__row" *ngIf="hasUrlDoctor">
           <dt>Te atiende</dt>
           <dd>Dr(a). {{ getSelectedDoctor()?.nombre }} {{ getSelectedDoctor()?.apeP }}</dd>
         </div>
@@ -81,15 +139,11 @@
           <dd class="u-data">{{ selectedService.duracionMinutos || 60 }} min</dd>
         </div>
         <div class="brief__row">
-          <dt>{{ paquete ? 'Paquete' : 'Tratamiento' }}</dt>
+          <dt>{{ paquete ? 'Paquete' : 'Precio' }}</dt>
           <dd class="u-data">
             <s class="brief__was" *ngIf="promoDelServicio">{{ formatearPrecio(costoLista ?? 0) }}</s>
             {{ formatearPrecio(costoTratamiento ?? 0) }}
           </dd>
-        </div>
-        <div class="brief__row brief__row--promo" *ngIf="promoDelServicio">
-          <dt>Promoción</dt>
-          <dd>{{ promoDelServicio.nombre }}</dd>
         </div>
         <div class="brief__row brief__row--pay">
           <dt>Pagas ahora</dt>
@@ -111,17 +165,22 @@
 
       <div class="when" *ngIf="selectedDoctorId && selectedServiceId; else pickFirst">
         <div class="when__head">
-          <p class="when__label u-data">Próximas fechas</p>
-          <button type="button" class="when__toggle u-data" (click)="showManualDate = !showManualDate">
+          <p class="when__label u-data">{{ finPromo ? 'Fechas de la promoción' : 'Próximas fechas' }}</p>
+          <button type="button" class="when__toggle u-data" *ngIf="!finPromo" (click)="showManualDate = !showManualDate">
             {{ showManualDate ? 'Ocultar calendario' : 'Otra fecha' }}
           </button>
         </div>
 
-        <div class="days" *ngIf="fechasDisponibles.length > 0">
+        <p class="when__promo" *ngIf="finPromo">
+          <i class="fas fa-tag" aria-hidden="true"></i>
+          El precio de {{ promoDelServicio?.nombre }} vale para citas hasta el {{ fechaLarga(finPromo) }}.
+        </p>
+
+        <div class="days" *ngIf="fechasVisibles.length > 0">
           <button
             type="button"
             class="day"
-            *ngFor="let f of fechasDisponibles"
+            *ngFor="let f of fechasVisibles"
             [class.is-on]="selectedFecha === f"
             [attr.aria-pressed]="selectedFecha === f"
             (click)="seleccionarFechaRapida(f)">
@@ -131,11 +190,14 @@
           </button>
         </div>
 
-        <p class="when__empty" *ngIf="fechasDisponibles.length === 0">
+        <p class="when__empty" *ngIf="fechasVisibles.length === 0 && finPromo">
+          Ya no quedan horarios dentro de las fechas de la promoción.
+        </p>
+        <p class="when__empty" *ngIf="fechasDisponibles.length === 0 && !finPromo">
           No hay días con disponibilidad próxima. Elige una fecha en el calendario.
         </p>
 
-        <div class="field field--date" *ngIf="showManualDate || fechasDisponibles.length === 0">
+        <div class="field field--date" *ngIf="!finPromo && (showManualDate || fechasDisponibles.length === 0)">
           <label for="fecha">Fecha específica</label>
           <input type="date" id="fecha" [(ngModel)]="selectedFecha" [min]="getMinDate()"
                  (change)="onDoctorOrFechaChange()" [disabled]="loading" />
@@ -143,9 +205,12 @@
 
         <!-- horarios -->
         <div class="slots" *ngIf="selectedFecha">
-          <p class="when__label u-data">
-            Horas del {{ selectedFecha | date:'dd/MM/yyyy':'UTC' }}
-          </p>
+          <div class="slots__head">
+            <h3 class="slots__dia">{{ fechaLarga(selectedFecha) }}</h3>
+            <p class="when__label u-data" *ngIf="!loading && slots.length">
+              {{ slots.length }} {{ slots.length === 1 ? 'horario libre' : 'horarios libres' }}
+            </p>
+          </div>
 
           <p class="when__loading u-data" *ngIf="loading">Buscando horarios…</p>
 
@@ -153,11 +218,24 @@
             No quedan horarios este día. Prueba con otra fecha.
           </p>
 
-          <div class="slots__grid" *ngIf="!loading && slots.length > 0">
-            <button class="slot u-data" *ngFor="let slot of slots" (click)="seleccionarSlot(slot)" type="button">
-              {{ slot.horaInicio }}
-            </button>
-          </div>
+          <ng-container *ngIf="!loading && slots.length > 0">
+            <div class="slots__grupo" *ngIf="slotsManana.length">
+              <p class="slots__turno u-data"><i class="fas fa-sun" aria-hidden="true"></i> Mañana</p>
+              <div class="slots__grid">
+                <button class="slot u-data" *ngFor="let slot of slotsManana" (click)="seleccionarSlot(slot)" type="button">
+                  {{ slot.horaInicio }}
+                </button>
+              </div>
+            </div>
+            <div class="slots__grupo" *ngIf="slotsTarde.length">
+              <p class="slots__turno u-data"><i class="fas fa-cloud-sun" aria-hidden="true"></i> Tarde</p>
+              <div class="slots__grid">
+                <button class="slot u-data" *ngFor="let slot of slotsTarde" (click)="seleccionarSlot(slot)" type="button">
+                  {{ slot.horaInicio }}
+                </button>
+              </div>
+            </div>
+          </ng-container>
         </div>
       </div>
 
@@ -173,17 +251,34 @@
        PASO 2 — teléfono
        ============================================================ -->
   <div class="panel form-card" *ngIf="step === 2">
+    <!-- Lo que eligió, a la vista mientras escribe -->
+    <div class="eleccion">
+      <span class="eleccion__icono" aria-hidden="true"><i class="far fa-calendar-check"></i></span>
+      <div class="eleccion__texto">
+        <p class="eleccion__cuando">{{ fechaLarga(selectedSlotTemp?.fecha) }} · {{ selectedSlotTemp?.horaInicio }}</p>
+        <p class="eleccion__que">
+          {{ paquete?.nombre || selectedService?.nombre }}
+          <span *ngIf="getSelectedDoctor()"> con Dr(a). {{ getSelectedDoctor()?.nombre }} {{ getSelectedDoctor()?.apeP }}</span>
+        </p>
+      </div>
+      <button type="button" class="eleccion__cambiar" (click)="volverPaso(1)" [disabled]="loading">Cambiar</button>
+    </div>
+
     <h2 class="form-card__title">¿Cuál es tu teléfono?</h2>
     <p class="form-card__note">
-      Apartaste el <strong>{{ selectedSlotTemp?.fecha | date:'dd/MM/yyyy':'UTC' }}</strong>
-      a las <strong>{{ selectedSlotTemp?.horaInicio }}</strong>.
-      Lo usamos para buscar tu expediente.
+      Con él buscamos tu expediente. Si es tu primera visita, en el siguiente paso te pedimos tu nombre.
     </p>
 
     <div class="field">
-      <label for="telefono">Teléfono a 10 dígitos</label>
-      <input type="tel" id="telefono" [(ngModel)]="telefonoInput" placeholder="4491234567"
-             maxlength="10" inputmode="numeric" [disabled]="loading" (keyup.enter)="buscarTelefono()" />
+      <label for="telefono">Teléfono celular</label>
+      <div class="tel">
+        <span class="tel__lada u-data" aria-hidden="true">+52</span>
+        <input type="tel" id="telefono" [(ngModel)]="telefonoInput" (ngModelChange)="limpiarTelefono()"
+               placeholder="449 123 4567" inputmode="numeric" autocomplete="tel-national"
+               [disabled]="loading" (keyup.enter)="buscarTelefono()" />
+        <span class="tel__cuenta u-data" [class.is-ok]="telefonoInput.length === 10">{{ telefonoInput.length }}/10</span>
+      </div>
+      <p class="field__ayuda">Sólo lo usamos para tu cita y sus recordatorios.</p>
     </div>
 
     <div class="form-card__actions">
@@ -212,7 +307,7 @@
         <input type="text" id="apeP" [(ngModel)]="nuevoPaciente.apeP" [disabled]="loading" />
       </div>
       <div class="field">
-        <label for="apeM">Segundo apellido *</label>
+        <label for="apeM">Segundo apellido</label>
         <input type="text" id="apeM" [(ngModel)]="nuevoPaciente.apeM" [disabled]="loading" />
       </div>
       <div class="field">
@@ -237,7 +332,7 @@
     <div class="form-card__actions">
       <button class="btn btn--line" (click)="volverPaso(2)" [disabled]="loading" type="button">Atrás</button>
       <button class="btn btn--solid" (click)="registrarPaciente()" type="button"
-              [disabled]="loading || !nuevoPaciente.nombre || !nuevoPaciente.apeP || !nuevoPaciente.apeM">
+              [disabled]="loading || !nuevoPaciente.nombre || !nuevoPaciente.apeP">
         {{ loading ? 'Guardando…' : 'Continuar' }}
       </button>
     </div>
@@ -246,70 +341,106 @@
   <!-- ============================================================
        PASO 4 — el apartado corre. Éste es el momento del checkout.
        ============================================================ -->
-  <div class="panel form-card" *ngIf="step === 4">
+  <div class="pay" *ngIf="step === 4">
 
-    <div class="hold">
-      <p class="hold__label u-data">Tu horario está apartado</p>
-      <p class="hold__clock u-data">{{ formattedTime }}</p>
+    <!-- Izquierda: el pago, sin salir de la página -->
+    <div class="panel pay__form">
+      <div class="hold hold--line">
+        <p class="hold__label u-data">Tu horario está apartado por</p>
+        <p class="hold__clock u-data">{{ formattedTime }}</p>
+      </div>
       <div class="hold__bar" aria-hidden="true"><span></span></div>
-      <p class="hold__note">Si el tiempo se agota, el horario vuelve a quedar libre.</p>
+
+      <h2 class="pay__title">Pago del anticipo</h2>
+
+      <label class="terminos" [class.is-on]="aceptaTerminos">
+        <input type="checkbox" [(ngModel)]="aceptaTerminos" (ngModelChange)="alCambiarTerminos()" [disabled]="loading" />
+        <span class="terminos__caja" aria-hidden="true"><i class="fas fa-check"></i></span>
+        <span class="terminos__texto">
+          Acepto los <a href="/aviso-terminos" target="_blank" rel="noopener">términos y condiciones</a>
+          y el <a href="/aviso-privacidad" target="_blank" rel="noopener">aviso de privacidad</a>,
+          incluida la política del anticipo.
+        </span>
+      </label>
+      <p class="pay__aviso pay__aviso--terminos" *ngIf="!aceptaTerminos && !pagoListo && !urlPago">
+        Marca la casilla para mostrar el formulario de pago.
+      </p>
+
+      <div class="field" *ngIf="pedirCorreo">
+        <label for="correoPago">Correo para tu comprobante</label>
+        <input type="email" id="correoPago" [(ngModel)]="correoPago" placeholder="tucorreo@dominio.com"
+               autocomplete="email" [disabled]="loading" />
+      </div>
+
+      <!-- Stripe monta aquí su formulario (tarjeta, Link, etc.) -->
+      <div id="pago-stripe" class="pay__stripe" [hidden]="!!urlPago"></div>
+      <p class="when__loading u-data" *ngIf="pagoCargando">Cargando formulario de pago…</p>
+      <p class="pay__aviso" *ngIf="urlPago">
+        Al continuar se abre la página segura de Stripe para capturar tu tarjeta.
+      </p>
+
+      <p class="alert alert--pago" *ngIf="pagoError" role="alert">
+        <i class="fas fa-triangle-exclamation" aria-hidden="true"></i>
+        <span>{{ pagoError }}</span>
+      </p>
+
+      <div class="form-card__actions">
+        <button class="btn btn--solid" (click)="pagarAnticipo()" type="button"
+                [disabled]="loading || pagoCargando || !aceptaTerminos || (!pagoListo && !urlPago) || (pedirCorreo && !correoValido)">
+          {{ loading ? 'Procesando pago…' : 'Pagar ' + formatearPrecio(montoApartado) }}
+        </button>
+        <button class="btn btn--line" (click)="volverPaso(1)" [disabled]="loading" type="button">Cambiar horario</button>
+      </div>
+
+      <p class="form-card__secure u-data">
+        <i class="fas fa-lock" aria-hidden="true"></i> El cobro lo procesa Stripe. No guardamos tu tarjeta.
+      </p>
     </div>
 
-    <dl class="brief brief--wide">
-      <div class="brief__row">
-        <dt>Te atiende</dt>
-        <dd>Dr(a). {{ selectedSlot?.doctorId?.nombre }} {{ selectedSlot?.doctorId?.apeP }}</dd>
-      </div>
-      <div class="brief__row">
-        <dt>Día</dt>
-        <dd class="u-data">{{ selectedSlot?.fecha | date:'dd/MM/yyyy':'UTC' }}</dd>
-      </div>
-      <div class="brief__row">
-        <dt>Hora</dt>
-        <dd class="u-data">{{ selectedSlot?.horaInicio }} – {{ selectedSlot?.horaFin }}</dd>
-      </div>
-      <div class="brief__row">
-        <dt>{{ paquete ? 'Paquete' : 'Tratamiento' }}</dt>
-        <dd>{{ paquete?.nombre || selectedService?.nombre || selectedTipoCita }}</dd>
-      </div>
-      <div class="brief__row" *ngIf="selectedService">
-        <dt>{{ paquete ? 'Precio del paquete' : 'Costo del tratamiento' }}</dt>
-        <dd class="u-data">
-          <s class="brief__was" *ngIf="promoDelServicio">{{ formatearPrecio(costoLista ?? 0) }}</s>
-          {{ formatearPrecio(costoTratamiento ?? 0) }}
-        </dd>
-      </div>
-      <div class="brief__row brief__row--pay">
-        <dt>Pagas ahora</dt>
-        <dd class="u-data">{{ formatearPrecio(montoApartado) }}</dd>
-      </div>
-    </dl>
+    <!-- Derecha: lo que está pagando -->
+    <aside class="panel pay__resumen">
+      <p class="u-eyebrow">Resumen</p>
+      <h2 class="pay__servicio">{{ paquete?.nombre || selectedService?.nombre || selectedTipoCita }}</h2>
+      <p class="promo-tag" *ngIf="promoDelServicio">
+        <i class="fas fa-tag" aria-hidden="true"></i>
+        <span>{{ promoDelServicio.nombre }}</span>
+        <span class="promo-tag__ahorro u-data" *ngIf="ahorro">Ahorras {{ formatearPrecio(ahorro) }}</span>
+      </p>
 
-    <p class="form-card__note" *ngIf="apartadoEsParcial">
-      Este apartado se descuenta del total de tu tratamiento el día de tu visita.
-    </p>
+      <dl class="brief">
+        <div class="brief__row">
+          <dt>Día</dt>
+          <dd class="brief__dia">{{ fechaLarga(selectedSlot?.fecha) }}</dd>
+        </div>
+        <div class="brief__row">
+          <dt>Hora</dt>
+          <dd class="u-data">{{ selectedSlot?.horaInicio }} – {{ selectedSlot?.horaFin }}</dd>
+        </div>
+        <div class="brief__row">
+          <dt>Te atiende</dt>
+          <dd>Dr(a). {{ getSelectedDoctor()?.nombre }} {{ getSelectedDoctor()?.apeP }}</dd>
+        </div>
+        <div class="brief__row" *ngIf="selectedService">
+          <dt>{{ paquete ? 'Paquete' : 'Precio' }}</dt>
+          <dd class="u-data">
+            <s class="brief__was" *ngIf="promoDelServicio">{{ formatearPrecio(costoLista ?? 0) }}</s>
+            {{ formatearPrecio(costoTratamiento ?? 0) }}
+          </dd>
+        </div>
+        <div class="brief__row brief__row--pay">
+          <dt>Pagas ahora</dt>
+          <dd class="u-data">{{ formatearPrecio(montoApartado) }}</dd>
+        </div>
+        <div class="brief__row" *ngIf="apartadoEsParcial">
+          <dt>En clínica</dt>
+          <dd class="u-data">{{ formatearPrecio((costoTratamiento ?? 0) - montoApartado) }}</dd>
+        </div>
+      </dl>
 
-    <!-- Las sesiones de un paquete ya pagado se agendan por WhatsApp -->
-    <div class="favor" *ngIf="!paquete && selectedTipoCita !== 'Dental'">
-      <div>
-        <p class="favor__title">¿Ya pagaste un paquete con sesiones?</p>
-        <p class="favor__note">No pagues aquí: agenda tu sesión por WhatsApp y no lleva anticipo.</p>
-      </div>
-      <a class="btn btn--line" [href]="whatsappSesiones" target="_blank" rel="noopener">
-        <i class="fab fa-whatsapp" aria-hidden="true"></i> Agendar por WhatsApp
-      </a>
-    </div>
-
-    <div class="form-card__actions">
-      <button class="btn btn--line" (click)="volverPaso(1)" [disabled]="loading" type="button">Cambiar horario</button>
-      <button class="btn btn--solid" (click)="pagarAnticipo()" [disabled]="loading" type="button">
-        {{ loading ? 'Abriendo pago…' : 'Pagar ' + formatearPrecio(montoApartado) }}
-      </button>
-    </div>
-
-    <p class="form-card__secure u-data">
-      <i class="fas fa-lock" aria-hidden="true"></i> El cobro lo procesa Stripe. No guardamos tu tarjeta.
-    </p>
+      <p class="pick__note" *ngIf="apartadoEsParcial">
+        El anticipo se descuenta del total el día de tu visita.
+      </p>
+    </aside>
   </div>
 
 </section>

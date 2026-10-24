@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import Swal from 'sweetalert2';
-import { Campana, CampanasService, EstadoCampana, RegistroCampana } from '../../services/campanas/campanas.service';
+import { Campana, CampanasService, DisparadorCampana, EstadoCampana, RegistroCampana, disparadoresDe } from '../../services/campanas/campanas.service';
 import { AuthService } from '../../services/auth/auth.service';
 import { CampanaFormComponent } from '../../components/campanas/campana-form/campana-form.component';
 
@@ -29,7 +30,7 @@ const ACCIONES: Record<EstadoCampana, AccionEstado[]> = {
 @Component({
   selector: 'app-campanas',
   standalone: true,
-  imports: [CommonModule, FormsModule, CampanaFormComponent],
+  imports: [CommonModule, FormsModule, RouterModule, CampanaFormComponent],
   templateUrl: './campanas.component.html',
   styleUrl: './campanas.component.css'
 })
@@ -50,10 +51,12 @@ export class CampanasComponent implements OnInit {
 
   readonly estados: EstadoCampana[] = ['Borrador', 'Activa', 'Pausada', 'Finalizada'];
   readonly acciones = ACCIONES;
+  readonly disparadoresDe = disparadoresDe;
   readonly disparadores: Record<string, string> = {
     palabra_clave: 'Palabra clave',
     comentario: 'Comentario',
-    enlace: 'Enlace'
+    enlace: 'Enlace',
+    anuncio: 'Anuncio de Meta'
   };
 
   constructor(
@@ -142,27 +145,41 @@ export class CampanasComponent implements OnInit {
     });
   }
 
+  tiene(c: Campana, disparador: DisparadorCampana): boolean {
+    return disparadoresDe(c).includes(disparador);
+  }
+
+  nombresDisparadores(c: Campana): string {
+    return disparadoresDe(c).map(d => this.disparadores[d]).join(' + ');
+  }
+
   resumenDisparador(c: Campana): string {
-    if (c.disparador === 'enlace') return c.codigo || '';
-    const palabras = c.palabrasClave.join(', ');
-    if (c.disparador === 'comentario') {
-      return `${palabras} · ${c.publicacionId ? 'una publicación' : 'cualquier publicación'}`;
-    }
-    return palabras;
+    const partes: string[] = [];
+    if (this.usaPalabras(c)) partes.push(c.palabrasClave.join(', '));
+    if (this.tiene(c, 'comentario')) partes.push(c.publicacionId ? 'una publicación' : 'cualquier publicación');
+    if (this.tiene(c, 'enlace')) partes.push(c.codigo || '');
+    if (this.tiene(c, 'anuncio')) partes.push(`${(c.anuncioIds || []).length} anuncio(s)`);
+    return partes.filter(Boolean).join(' · ');
+  }
+
+  usaPalabras(c: Campana): boolean {
+    return this.tiene(c, 'palabra_clave') || this.tiene(c, 'comentario');
   }
 
   fraseDisparo(c: Campana): string {
-    const accion = c.disparador === 'comentario' ? 'comente' : 'escriba';
+    const accion = this.tiene(c, 'palabra_clave') && this.tiene(c, 'comentario') ? 'escriba o comente'
+      : this.tiene(c, 'comentario') ? 'comente' : 'escriba';
     return c.coincidencia === 'exacta'
       ? `Cuando alguien ${accion} exactamente:`
       : `Cuando alguien ${accion} algo que incluya:`;
   }
 
   mensajeEntrada(c: Campana): string {
-    if (c.disparador === 'enlace') {
+    if (this.usaPalabras(c)) return c.palabrasClave[0] || '';
+    if (this.tiene(c, 'enlace')) {
       return c.canal === 'WhatsApp' ? `${c.mensajeEnlace} ${c.codigo}` : 'Entra desde el enlace';
     }
-    return c.palabrasClave[0] || '';
+    return 'Hola';
   }
 
   vistaPrevia(texto: string): string {

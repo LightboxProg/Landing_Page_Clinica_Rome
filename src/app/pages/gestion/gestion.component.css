@@ -1,200 +1,95 @@
-:host {
-  --coffee-dark: #1a2b3c;
-  --coffee-medium: #2a6b7c;
-  --coffee-light: #64748b;
-  --coffee-soft: #e8e4dc;
-  --coffee-cream: #f8f5f0;
-  --gold-primary: #8b7d4f;
-  --gold-light: #c5a028;
-  --gold-dark: #9a7d0a;
-  --white-pure: #ffffff;
-  --text-dark: #1a2b3c;
-  --text-light: #64748b;
-}
+:host { display: block; }
 
 .gestion-page {
-  background: var(--coffee-cream);
   min-height: 100vh;
-  font-family: "Lato", "Roboto", sans-serif;
-  padding-bottom: 60px;
+  background: var(--adm-superficie-2);
+  padding-bottom: 48px;
 }
 
-.container {
-  max-width: 100%;
-  width: 95%;
+/* El tema viejo fuerza `.container { width: 260px !important }` en pantallas
+   angostas; por eso aquí no se usa la clase .container. */
+.contenedor {
+  width: 100%;
+  max-width: 1440px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 32px;
+  box-sizing: border-box;
 }
 
-/* Page Header */
-.page-header {
-  background: linear-gradient(135deg, var(--coffee-dark) 0%, var(--coffee-medium) 100%);
-  padding: 48px 0 40px;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
+/* ---------- encabezado ---------- */
+.encabezado {
+  background: var(--adm-superficie);
+  border-bottom: 1px solid var(--adm-borde);
+  padding-top: 28px;
 }
-
-.page-header::before {
-  content: "";
-  position: absolute;
-  top: -50%;
-  right: -10%;
-  width: 300px;
-  height: 300px;
-  background: radial-gradient(
-    circle,
-    rgba(197, 160, 40, 0.15) 0%,
-    transparent 70%
-  );
-  border-radius: 50%;
-}
-
-.page-header::after {
-  content: "";
-  position: absolute;
-  bottom: -30%;
-  left: -5%;
-  width: 200px;
-  height: 200px;
-  background: radial-gradient(
-    circle,
-    rgba(244, 208, 63, 0.1) 0%,
-    transparent 70%
-  );
-  border-radius: 50%;
-}
-
-.page-title {
-  font-size: 36px;
+.grupo {
+  margin: 0 0 6px;
+  font-size: 0.72rem;
   font-weight: 700;
-  color: var(--white-pure);
-  margin: 0 0 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  position: relative;
-  z-index: 1;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--adm-acento);
 }
-
-.page-title i {
-  color: var(--gold-light);
-  font-size: 30px;
-}
-
-.page-subtitle {
-  font-size: 16px;
-  color: var(--coffee-soft);
+.titulo {
   margin: 0;
-  position: relative;
-  z-index: 1;
+  font-size: clamp(1.6rem, 2.4vw, 2.1rem);
+  line-height: 1.15;
+  color: var(--adm-texto);
+}
+.descripcion {
+  margin: 8px 0 0;
+  max-width: 640px;
+  font-size: 0.95rem;
+  color: var(--adm-tenue);
 }
 
-/* Tabs */
-.tabs-container {
+/* Pestañas subrayadas; los botones parten de cero porque el tema viejo
+   les pone margen, relleno de 32px, negritas espaciadas y fondo rosa. */
+.pestanas {
   display: flex;
-  position: relative;
-  background: var(--white-pure);
-  border-radius: 14px;
-  padding: 6px;
-  margin-top: -24px;
-  box-shadow: 0 4px 24px rgba(62, 39, 35, 0.1);
-  z-index: 2;
-  max-width: 100%;
-  margin-left: auto;
-  margin-right: auto;
+  gap: 4px;
+  margin-top: 20px;
+  overflow-x: auto;
+  scrollbar-width: none;
 }
-
-.tab-btn {
-  flex: 1;
-  display: flex;
+.pestanas::-webkit-scrollbar { display: none; }
+.pestana {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 14px 8px;
+  gap: 8px;
+  margin: 0;
+  padding: 12px 14px;
+  border: 0;
+  border-radius: 0;
+  border-bottom: 2px solid transparent;
   background: transparent;
-  border: none;
-  border-radius: 10px;
-  font-size: 13.5px;
-  font-weight: 600;
-  color: var(--coffee-light);
-  cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
-  z-index: 1;
+  box-shadow: none;
+  overflow: visible;
+  color: var(--adm-tenue);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: normal;
   white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.pestana::after { content: none; }
+.pestana i { font-size: 0.85rem; color: var(--adm-muy-tenue); }
+.pestana:hover { background: transparent; box-shadow: none; color: var(--adm-texto); }
+.pestana:focus-visible { outline: 2px solid #c2a85a; outline-offset: -2px; }
+.pestana.activa { color: var(--adm-texto); font-weight: 600; border-bottom-color: var(--adm-laton); }
+.pestana.activa i { color: var(--adm-acento); }
+
+/* ---------- contenido ---------- */
+.tab-content { margin-top: 28px; }
+.tab-panel { animation: aparecer 0.25s ease; }
+@keyframes aparecer {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
 }
 
-.tab-btn:hover {
-  color: var(--coffee-dark);
-}
-
-.tab-btn.active {
-  color: var(--white-pure);
-}
-
-.tab-btn.active i {
-  color: var(--gold-light);
-}
-
-.tab-btn i {
-  font-size: 15px;
-}
-
-.tab-indicator {
-  position: absolute;
-  top: 6px;
-  left: 6px;
-  width: calc(16.66% - 10px);
-  height: calc(100% - 12px);
-  background: linear-gradient(135deg, var(--coffee-dark), var(--coffee-medium));
-  border-radius: 10px;
-  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 0;
-}
-
-.tab-indicator.tab-1 {
-  transform: translateX(calc(100% + 10px));
-}
-
-.tab-indicator.tab-2 {
-  transform: translateX(calc(200% + 20px));
-}
-
-.tab-indicator.tab-3 {
-  transform: translateX(calc(300% + 30px));
-}
-
-.tab-indicator.tab-4 {
-  transform: translateX(calc(400% + 40px));
-}
-
-.tab-indicator.tab-5 {
-  transform: translateX(calc(500% + 50px));
-}
-
-/* Tab Content */
-.tab-content {
-  margin-top: 32px;
-}
-
-.tab-panel {
-  animation: fadeInTab 0.4s ease;
-}
-
-@keyframes fadeInTab {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Panel Layout (servicios + categorías side by side) */
+/* Servicios + categorías lado a lado */
 .panel-layout {
   display: grid;
   grid-template-columns: 1fr 360px;
@@ -202,52 +97,16 @@
   align-items: start;
 }
 
-/* Responsive */
 @media (max-width: 1024px) {
-  .panel-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .panel-side {
-    order: -1;
-  }
+  .panel-layout { grid-template-columns: 1fr; }
+  .panel-side { order: -1; }
 }
-
 @media (max-width: 768px) {
-  .page-title {
-    font-size: 28px;
-  }
-
-  .page-header {
-    padding: 36px 0 32px;
-  }
-
-  .tabs-container {
-    max-width: 100%;
-  }
-
-  .tab-btn span {
-    font-size: 13px;
-  }
+  .contenedor { padding: 0 16px; }
+  .encabezado { padding-top: 20px; }
+  .descripcion { font-size: 0.88rem; }
+  .tab-content { margin-top: 20px; }
 }
-
-@media (max-width: 480px) {
-  .page-title {
-    font-size: 22px;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .container {
-    padding: 0 16px;
-  }
-}
-
-/* structure.css (tema viejo) fuerza `.container { width: 260px !important }` en
-   pantallas angostas y dejaba la página en una columna de 260px centrada.
-   El selector del componente lleva atributo, así que este !important gana. */
-@media (max-width: 767px) {
-  .container {
-    width: 100% !important;
-  }
+@media (prefers-reduced-motion: reduce) {
+  .tab-panel { animation: none; }
 }

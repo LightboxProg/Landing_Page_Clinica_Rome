@@ -22,7 +22,8 @@ export class HorarioAtencionComponent implements OnInit {
     { id: 3, nombre: 'Miercoles', abrev: 'MIE' },
     { id: 4, nombre: 'Jueves', abrev: 'JUE' },
     { id: 5, nombre: 'Viernes', abrev: 'VIE' },
-    { id: 6, nombre: 'Sabado', abrev: 'SAB' }
+    { id: 6, nombre: 'Sabado', abrev: 'SAB' },
+    { id: 0, nombre: 'Domingo', abrev: 'DOM' }
   ];
 
   // Modo de seleccion de fechas
@@ -330,7 +331,7 @@ export class HorarioAtencionComponent implements OnInit {
   }
 
   seleccionarDia(dia: any) {
-    if (dia.esDomingo || dia.esPasado) return;
+    if (dia.esPasado) return;
     
     const fechaStr = dia.fechaFormateada;
     
@@ -351,9 +352,27 @@ export class HorarioAtencionComponent implements OnInit {
         this.fechasSeleccionadas.splice(index, 1);
       } else {
         this.fechasSeleccionadas.push(fechaStr);
+        this.activarDiaDeLaFecha(fechaStr);
       }
       this.fechasSeleccionadas.sort();
     }
+  }
+
+  // Los horarios de una fecha salen del día de la semana: si ese día está
+  // apagado, la fecha elegida se quedaría sin horarios sin que nadie lo note
+  private activarDiaDeLaFecha(fechaStr: string): void {
+    const diaSemana = new Date(fechaStr + 'T12:00:00').getDay();
+    const config = this.diasConfig.find(d => d.diaSemana === diaSemana);
+    if (!config || config.activo) return;
+    config.activo = true;
+    if (!config.intervalos || config.intervalos.length === 0) {
+      config.intervalos = [{ horaInicio: '09:00', horaFin: '18:00' }];
+    }
+    const nombre = this.dias.find(d => d.id === diaSemana)?.nombre || '';
+    Swal.fire({
+      toast: true, position: 'top-end', icon: 'info', timer: 3500, showConfirmButton: false,
+      title: `Activé ${nombre}`, text: 'Revisa su horario abajo: de ahí salen las citas de esa fecha.'
+    });
   }
 
   esDiaSeleccionado(dia: any): boolean {
@@ -373,6 +392,10 @@ export class HorarioAtencionComponent implements OnInit {
   formatearFecha(fecha: string): string {
     const d = new Date(fecha + 'T12:00:00');
     return d.toLocaleDateString('es-MX', { weekday: 'short', day: 'numeric', month: 'short' });
+  }
+
+  get domingoActivo(): boolean {
+    return !!this.diasConfig.find(d => d.diaSemana === 0)?.activo;
   }
 
   get diasActivosCount(): number {

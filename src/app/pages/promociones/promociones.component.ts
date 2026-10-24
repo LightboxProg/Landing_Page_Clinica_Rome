@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { PromocionesService } from '../../services/promociones/promociones.service';
 import { RevealDirective } from '../../directives/reveal.directive';
+import { PromoPortadaComponent } from '../../components/promo-portada/promo-portada.component';
 
 // Las promociones abren y cierran por día en la zona de la clínica
 const ZONA = 'America/Mexico_City';
@@ -18,13 +19,16 @@ interface Cuenta {
 @Component({
   selector: 'app-promociones',
   standalone: true,
-  imports: [CommonModule, RouterModule, RevealDirective],
+  imports: [CommonModule, RouterModule, RevealDirective, PromoPortadaComponent],
   templateUrl: './promociones.component.html',
   styleUrl: './promociones.component.css'
 })
 export class PromocionesComponent implements OnInit, OnDestroy {
   vigentes: any[] = [];
   proximas: any[] = [];
+  // La vigente que cierra primero va de portada; las demás, en tarjetas
+  destacada: any = null;
+  otrasVigentes: any[] = [];
   cargando = true;
   error = '';
 
@@ -52,6 +56,9 @@ export class PromocionesComponent implements OnInit, OnDestroy {
     }).subscribe({
       next: ({ vigentes, proximas }) => {
         this.vigentes = (vigentes || []).map(p => this.conFechas(p));
+        this.vigentes.sort((x, y) => new Date(x.fechaFin).getTime() - new Date(y.fechaFin).getTime());
+        this.destacada = this.vigentes[0] || null;
+        this.otrasVigentes = this.vigentes.slice(1);
         this.proximas = (proximas || []).map(p => this.conFechas(p));
         this.aperturaSiguiente = this.proximas.length ? new Date(this.proximas[0].fechaInicio) : null;
         this.aperturaTexto = this.aperturaSiguiente ? this.formatoApertura(this.aperturaSiguiente) : '';

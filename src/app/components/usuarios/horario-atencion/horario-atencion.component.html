@@ -79,7 +79,7 @@
       </button>
     </div>
 
-    <!-- Calendario de Selección de Fechas (Domingos Deshabilitados) -->
+    <!-- Calendario de selección de fechas -->
     <div class="visual-calendar">
       <div class="calendar-nav-bar">
         <button type="button" class="btn-nav-cal" (click)="cambiarMes(-1)">
@@ -98,7 +98,7 @@
         <span>Jue</span>
         <span>Vie</span>
         <span>Sáb</span>
-        <span class="domingo-lbl">Dom</span>
+        <span>Dom</span>
       </div>
 
       <div class="calendar-grid">
@@ -110,7 +110,7 @@
                 [class.past]="cell.esPasado"
                 [class.selected]="esDiaSeleccionado(cell)"
                 [class.in-range]="esDiaEnRango(cell)"
-                [disabled]="cell.esDomingo || cell.esPasado"
+                [disabled]="cell.esPasado"
                 (click)="seleccionarDia(cell)">
           {{ cell.diaNum }}
         </button>
@@ -132,7 +132,7 @@
     <!-- Badge de estado -->
     <div *ngIf="configActiva && modoFechas === 'rango' && configFechaInicio && configFechaFin" class="status-badge active-range">
       <i class="fas fa-check-circle"></i>
-      <span>Enlace activo del <strong>{{ configFechaInicio | date:'dd/MM/yyyy':'UTC' }}</strong> al <strong>{{ configFechaFin | date:'dd/MM/yyyy':'UTC' }}</strong> (domingos excluidos)</span>
+      <span>Enlace activo del <strong>{{ configFechaInicio | date:'dd/MM/yyyy':'UTC' }}</strong> al <strong>{{ configFechaFin | date:'dd/MM/yyyy':'UTC' }}</strong>{{ domingoActivo ? '' : ' (domingos excluidos)' }}</span>
     </div>
     <div *ngIf="configActiva && modoFechas === 'individual' && configFechasIndividuales.length > 0" class="status-badge active-range">
       <i class="fas fa-check-circle"></i>

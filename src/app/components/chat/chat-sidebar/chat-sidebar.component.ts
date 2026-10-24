@@ -18,12 +18,6 @@ export class ChatSidebarComponent {
   @Output() tipoCambiado = new EventEmitter<any>();
   @Output() conversacionSeleccionada = new EventEmitter<any>();
   @Output() filtroCambiado = new EventEmitter<string>();
-  @Output() themeToggled = new EventEmitter<void>();
-
-  toggleTheme() {
-    this.themeToggled.emit();
-  }
-
   onFiltroChange(val: string) {
     this.filtroCambiado.emit(val);
   }

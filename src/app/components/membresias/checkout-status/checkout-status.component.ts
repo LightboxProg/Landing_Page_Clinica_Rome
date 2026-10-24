@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { BookingService } from '../../../services/booking/booking.service';
 import { MembresiasService } from '../../../services/membresias/membresias.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-checkout-status',
@@ -15,6 +16,8 @@ export class CheckoutStatusComponent implements OnInit {
   status: 'success' | 'canceled' | 'loading' = 'loading';
   sessionId: string | null = null;
   type: string | null = null;
+  // Arranque: las sesiones de membresía se agendan con recepción, no en línea
+  readonly soloPromos = environment.agendaSoloPromos;
 
   // Membresía: no se dice "activa" hasta que el backend confirma el pago con Stripe
   membresia: any = null;
@@ -23,6 +26,10 @@ export class CheckoutStatusComponent implements OnInit {
   // Link de recepción sin enganche: sólo se registró la tarjeta
   soloTarjeta = false;
   private intentos = 0;
+
+  // Cita pagada en la web: día, hora y montos que confirma el backend
+  cita: any = null;
+  verificandoCita = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -41,9 +48,16 @@ export class CheckoutStatusComponent implements OnInit {
       this.status = 'success';
       this.sessionId = this.route.snapshot.queryParamMap.get('session_id');
       if (this.type === 'cita' && this.sessionId) {
+        this.verificandoCita = true;
         this.bookingService.verificarCitaCheckoutSession(this.sessionId).subscribe({
-          next: () => console.log('Cita verificada y sincronizada'),
-          error: (err) => console.error('Error al verificar cita tras pago', err)
+          next: (res: any) => {
+            this.cita = res?.cita || null;
+            this.verificandoCita = false;
+          },
+          error: (err) => {
+            console.error('Error al verificar cita tras pago', err);
+            this.verificandoCita = false;
+          }
         });
       } else if (this.type !== 'cita' && this.sessionId) {
         this.verificarMembresia();
@@ -54,6 +68,16 @@ export class CheckoutStatusComponent implements OnInit {
       const defaultRedirect = this.type === 'cita' ? '/agendar-cita' : '/membresias';
       this.router.navigate([defaultRedirect]);
     }
+  }
+
+  // La clínica está en Ciudad de México; se muestra su hora, no la del navegador
+  fechaCita(fecha: string): string {
+    const texto = new Date(fecha).toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'America/Mexico_City' });
+    return texto.charAt(0).toUpperCase() + texto.slice(1);
+  }
+
+  horaCita(fecha: string): string {
+    return new Date(fecha).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'America/Mexico_City' });
   }
 
   verificarMembresia(): void {

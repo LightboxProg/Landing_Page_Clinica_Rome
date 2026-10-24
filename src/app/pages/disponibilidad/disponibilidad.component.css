@@ -3,7 +3,7 @@
   max-width: 1440px;
   margin: 0 auto;
   min-height: calc(100vh - 70px);
-  background-color: #f8fafc;
+  background-color: var(--adm-superficie-2);
 }
 
 @media (max-width: 768px) {

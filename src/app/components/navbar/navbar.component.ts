@@ -1,14 +1,17 @@
 import { Component, HostListener } from '@angular/core';
+import { NgIf } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterModule],
+  imports: [NgIf, RouterModule],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css'
 })
 export class NavbarComponent {
+  readonly membresiasPublicas = environment.membresiasPublicas;
   menuOpen = false;
   condensed = false;
 

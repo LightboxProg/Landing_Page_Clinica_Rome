@@ -26,12 +26,30 @@
     </div>
   </div>
 
-  <div class="loading-box" *ngIf="!plantillas.length">
+  <div class="loading-box" *ngIf="estado === 'cargando'">
     <div class="spinner-border text-primary spinner-border-sm flex-shrink-0"></div>
     <div>
       <div class="loading-text">Sincronizando con Meta Business</div>
       <div class="loading-sub">Esto puede tardar unos segundos...</div>
     </div>
+  </div>
+
+  <div class="loading-box estado-error" *ngIf="estado === 'error'" role="alert">
+    <i class="fas fa-triangle-exclamation flex-shrink-0" aria-hidden="true"></i>
+    <div>
+      <div class="loading-text">No se pudieron traer las plantillas de Meta</div>
+      <div class="loading-sub">{{ error }}</div>
+    </div>
+    <button type="button" class="btn-reintentar" (click)="reintentar.emit()">Reintentar</button>
+  </div>
+
+  <div class="loading-box" *ngIf="estado === 'listo' && !plantillas.length">
+    <i class="fas fa-circle-info flex-shrink-0" aria-hidden="true"></i>
+    <div>
+      <div class="loading-text">No hay plantillas aprobadas</div>
+      <div class="loading-sub">Crea o espera la aprobación de una plantilla en Meta Business y vuelve a intentar.</div>
+    </div>
+    <button type="button" class="btn-reintentar" (click)="reintentar.emit()">Actualizar</button>
   </div>
 
 </div>

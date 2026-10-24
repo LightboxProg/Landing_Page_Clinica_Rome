@@ -1,6 +1,10 @@
 export const environment = {
     production: false,
     apiUrl: 'http://localhost:7002/landingRome',
+    // Arranque: en línea sólo se agendan promociones (el backend lo exige con AGENDA_WEB_SOLO_PROMOS)
+    agendaSoloPromos: true,
+    // Arranque: el catálogo y la compra de membresías en línea no se muestran (recepción las sigue vendiendo)
+    membresiasPublicas: false,
     firebase: {
         apiKey: "AIzaSyDmB8QenfIzGCVqvKt02rWi3y3omirHSTU",
         authDomain: "crm-rome.firebaseapp.com",

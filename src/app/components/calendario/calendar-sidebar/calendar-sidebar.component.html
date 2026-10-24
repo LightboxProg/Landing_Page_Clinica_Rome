@@ -1,26 +1,72 @@
-<aside class="calendar-sidebar">
-  <header class="sidebar-header">
-    <i class="fas fa-sliders-h"></i>
-    <h3>Panel de Control</h3>
-  </header>
-  
-  <section class="filter-group">
-    <label>Especialista</label>
-    <div class="select-wrapper">
-      <select [ngModel]="doctorIdSeleccionado" (ngModelChange)="onDoctorChange($event)" class="doctor-select">
-        <option value="">Todos los especialistas</option>
-        <option *ngFor="let doc of doctores" [value]="doc._id">
-          Dr. {{ doc.nombre }} {{ doc.apeP }}
-        </option>
-      </select>
+<aside class="lateral">
+  <section class="hoy">
+    <p class="hoy-etiqueta">Hoy</p>
+    <h2 class="hoy-fecha">{{ diaHoy }} <span>de {{ mesHoy }}</span></h2>
+
+    <p class="hoy-resumen" *ngIf="!cargando">
+      <span><strong>{{ citasHoy.length }}</strong> {{ citasHoy.length === 1 ? 'cita' : 'citas' }}</span>
+      <span *ngIf="porCobrar > 0" class="por-cobrar"><strong>{{ porCobrar }}</strong> por cobrar</span>
+    </p>
+
+    <!-- La siguiente cita, para que recepción no tenga que buscarla -->
+    <button type="button" class="siguiente" *ngIf="siguiente as s" (click)="citaSeleccionada.emit(s.datos)"
+            [style.--color]="s.color">
+      <span class="siguiente-cuando">{{ cuando(s) }}</span>
+      <span class="siguiente-paciente">{{ s.paciente }}</span>
+      <span class="siguiente-detalle">{{ s.inicio | date:'H:mm' }} · {{ s.servicio }}</span>
+    </button>
+
+    <p class="vacio" *ngIf="!cargando && citasHoy.length === 0">No hay citas hoy.</p>
+    <p class="vacio" *ngIf="cargando"><i class="fas fa-circle-notch fa-spin" aria-hidden="true"></i> Cargando…</p>
+
+    <ol class="citas" *ngIf="citasHoy.length > 0">
+      <li *ngFor="let c of citasHoy">
+        <button type="button" class="cita" [class.pasada]="yaPaso(c)" [style.--color]="c.color"
+                (click)="citaSeleccionada.emit(c.datos)">
+          <span class="cita-hora">{{ c.inicio | date:'H:mm' }}</span>
+          <span class="cita-texto">
+            <span class="cita-paciente">{{ c.paciente }}</span>
+            <span class="cita-servicio">{{ c.servicio }}<ng-container *ngIf="variosMedicos && c.medico"> · {{ c.medico }}</ng-container></span>
+          </span>
+          <i class="fas fa-circle-check cita-cobrada" *ngIf="c.cobrado" title="Cobrada" aria-label="Cobrada"></i>
+        </button>
+      </li>
+    </ol>
+  </section>
+
+  <section class="mini" aria-label="Ir a una fecha">
+    <div class="mini-cabeza">
+      <span class="mini-titulo">{{ tituloMes }}</span>
+      <button type="button" class="mini-flecha" (click)="moverMes(-1)" aria-label="Mes anterior"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
+      <button type="button" class="mini-flecha" (click)="moverMes(1)" aria-label="Mes siguiente"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
+    </div>
+    <div class="mini-grid" role="grid">
+      <span *ngFor="let d of diasSemana" class="mini-dsem" aria-hidden="true">{{ d }}</span>
+      <ng-container *ngFor="let semana of semanas">
+        <button *ngFor="let d of semana" type="button" class="mini-dia"
+                [class.fuera]="fueraDeMes(d)" [class.hoy]="esHoy(d)" [class.rango]="enRango(d)"
+                [attr.aria-label]="d.toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long' })"
+                (click)="irAFecha.emit(d)">{{ d.getDate() }}</button>
+      </ng-container>
     </div>
   </section>
 
-  <section class="legend">
-    <h4>Codificación Visual</h4>
-    <div *ngFor="let doc of doctores" class="legend-item">
-      <span class="color-dot" [style.background-color]="doc.colorCalendario"></span>
-      <span class="doc-name">{{ doc.nombre }} {{ doc.apeP }}</span>
+  <section class="especialistas" *ngIf="especialistas.length > 0">
+    <h3>{{ mostrarFiltro ? 'Ver agenda de' : 'Especialista' }}</h3>
+    <div class="lista-esp" [attr.role]="mostrarFiltro ? 'radiogroup' : null">
+      <button *ngIf="mostrarFiltro" type="button" class="esp" role="radio"
+              [class.activo]="doctorIdSeleccionado === ''" [attr.aria-checked]="doctorIdSeleccionado === ''"
+              (click)="elegir('')">
+        <span class="esp-punto todos" aria-hidden="true"></span>
+        Todos
+      </button>
+      <button *ngFor="let e of especialistas" type="button" class="esp" [attr.role]="mostrarFiltro ? 'radio' : null"
+              [class.activo]="doctorIdSeleccionado === e.id" [attr.aria-checked]="mostrarFiltro ? doctorIdSeleccionado === e.id : null"
+              [disabled]="!mostrarFiltro" (click)="elegir(e.id)">
+        <span class="esp-punto" [style.background]="e.color" aria-hidden="true"></span>
+        <span class="esp-nombre">{{ e.nombre }}</span>
+        <small *ngIf="e.tipo" class="esp-tipo">{{ e.tipo === 'Doctor' ? 'Dental' : 'Estética' }}</small>
+      </button>
     </div>
   </section>
 </aside>

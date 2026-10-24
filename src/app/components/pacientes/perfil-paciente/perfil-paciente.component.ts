@@ -378,6 +378,10 @@ export class PerfilPacienteComponent implements OnInit {
       ...(modo === 'Sesion' ? { paquetePacienteId: this.citaForm.paquetePacienteId } : {})
     };
 
+    this.enviarCita(payload);
+  }
+
+  private enviarCita(payload: CitaPayload) {
     this.guardandoCita = true;
     this.citasService.agendarCita(payload).subscribe({
       next: () => {
@@ -389,8 +393,14 @@ export class PerfilPacienteComponent implements OnInit {
           this.cargarPaquetes(this.paciente._id);
         }
       },
-      error: (err) => {
+      error: async (err) => {
         this.guardandoCita = false;
+        // El médico ya tiene algo a esa hora: se avisa y se puede agendar igual
+        if (err?.status === 409 && err.error?.conflictos && !payload.forzar) {
+          const r = await this.swal.confirm(`${err.error.message} ¿Agendar de todos modos?`, 'Horario ocupado');
+          if (r.isConfirmed) this.enviarCita({ ...payload, forzar: true });
+          return;
+        }
         this.swal.error(err?.error?.message || 'No se pudo registrar la cita.');
       }
     });
@@ -559,7 +569,8 @@ export class PerfilPacienteComponent implements OnInit {
       pacienteId: this.paciente._id,
       montoPagadoClinica: cita.montoPagadoClinica || 0,
       metodoPago: cita.metodoPago || 'Ninguno',
-      cobrado: !!cita.cobrado
+      cobrado: !!cita.cobrado,
+      disputa: cita.stripe?.disputa?.estado || null
     };
     this.isModalOpen = true;
   }

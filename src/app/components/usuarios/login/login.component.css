@@ -13,8 +13,8 @@
   --radius-md: 16px;
   --radius-lg: 24px;
   --transicion: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-  --font: 'Work Sans', -apple-system, sans-serif;
-  --font-display: 'Playfair Display', Georgia, serif;
+  --font: var(--body);
+  --font-display: var(--display);
 }
 
 .login-wrapper {

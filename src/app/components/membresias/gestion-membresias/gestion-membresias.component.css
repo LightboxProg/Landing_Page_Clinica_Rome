@@ -1,5 +1,5 @@
 .membresias-gestion {
-  background: #fff;
+  background: var(--adm-superficie);
   border-radius: 12px;
   padding: 28px;
   box-shadow: 0 2px 16px rgba(62, 39, 35, 0.08);
@@ -14,20 +14,20 @@
 .header-left { display: flex; align-items: center; gap: 12px; }
 
 .header-left h3 {
-  font-size: 22px; color: #1a2b3c; margin: 0;
+  font-size: 22px; color: var(--adm-texto); margin: 0;
   display: flex; align-items: center; gap: 10px;
 }
 
-.header-left h3 i { color: #8b7d4f; }
+.header-left h3 i { color: var(--adm-acento); }
 
 .badge {
-  background: rgba(197, 160, 40, 0.15); color: #9A7D0A;
+  background: rgba(197, 160, 40, 0.15); color: var(--adm-acento);
   padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
 }
 
 .btn-primary {
   display: flex; align-items: center; gap: 8px; padding: 10px 22px;
-  background: linear-gradient(135deg, #1a2b3c, #2a6b7c); color: #8b7d4f;
+  background: var(--adm-primario); color: var(--adm-sobre-primario);
   border: none; border-radius: 10px; font-weight: 600; font-size: 14px;
   cursor: pointer; transition: all 0.3s ease;
 }
@@ -39,7 +39,7 @@
   display: flex; align-items: center; gap: 8px; animation: slideDown 0.3s ease;
 }
 
-.mensaje.exito { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+.mensaje.exito { background: var(--adm-ok-fondo); color: var(--adm-ok); border: 1px solid var(--adm-ok-borde); }
 
 @keyframes slideDown {
   from { opacity: 0; transform: translateY(-10px); }

@@ -7,7 +7,7 @@
         Armonización facial y odontología estética. Valoración médica sin costo,
         de lunes a sábado.
       </p>
-      <a routerLink="/agendar-cita" class="btn btn--onink foot__cta">Agendar valoración</a>
+      <a routerLink="/promociones" class="btn btn--onink foot__cta">Ver promociones</a>
     </div>
 
     <div class="foot__cols">
@@ -16,7 +16,7 @@
         <ul>
           <li><a routerLink="/servicios">Servicios</a></li>
           <li><a routerLink="/promociones">Promociones</a></li>
-          <li><a routerLink="/membresias">Membresías</a></li>
+          <li *ngIf="membresiasPublicas"><a routerLink="/membresias">Membresías</a></li>
           <li><a routerLink="/nosotros">Nosotros</a></li>
           <li><a routerLink="/contacto">Contacto</a></li>
         </ul>

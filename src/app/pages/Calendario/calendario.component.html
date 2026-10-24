@@ -1,18 +1,65 @@
-<div class="calendar-admin-container">
+<div class="agenda">
   <app-calendar-sidebar
-    [doctores]="doctores"
-    [(doctorIdSeleccionado)]="doctorIdSeleccionado"
-    (filterChanged)="onDoctorChange()">
+    [especialistas]="especialistas"
+    [doctorIdSeleccionado]="doctorIdSeleccionado"
+    [mostrarFiltro]="!isDoctorOrSpecialist && especialistas.length > 1"
+    [citasHoy]="citasHoy"
+    [cargando]="cargandoHoy"
+    [rangoVisible]="rangoVisible"
+    (irAFecha)="irAFecha($event)"
+    (doctorIdSeleccionadoChange)="onDoctorChange($event)"
+    (citaSeleccionada)="abrirCita($event)">
   </app-calendar-sidebar>
 
-  <main class="calendar-main">
-    <full-calendar #calendar [options]="calendarOptions"></full-calendar>
+  <main class="agenda-main">
+    <header class="agenda-barra">
+      <div class="barra-izq">
+        <button type="button" class="btn-hoy" (click)="hoy()" title="Hoy (T)">Hoy</button>
+        <div class="flechas">
+          <button type="button" class="btn-flecha" (click)="anterior()" aria-label="Anterior" title="Anterior (←)"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
+          <button type="button" class="btn-flecha" (click)="siguiente()" aria-label="Siguiente" title="Siguiente (→)"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
+        </div>
+        <h1 class="agenda-titulo">{{ titulo }}</h1>
+        <span class="cargando" *ngIf="cargando" aria-live="polite"><i class="fas fa-circle-notch fa-spin" aria-hidden="true"></i></span>
+      </div>
+
+      <div class="barra-der">
+      <div class="vistas" role="tablist" aria-label="Vista">
+        <button *ngFor="let v of vistas" type="button" role="tab" class="vista"
+                [class.activa]="vista === v.valor" [attr.aria-selected]="vista === v.valor"
+                [title]="v.etiqueta + ' (' + v.etiqueta[0] + ')'" (click)="cambiarVista(v.valor)">
+          {{ v.etiqueta }}
+        </button>
+      </div>
+      <button type="button" class="btn-nueva" (click)="nuevaCita()" title="Nueva cita (N)">
+        <i class="fas fa-plus" aria-hidden="true"></i> Nueva cita
+      </button>
+      </div>
+    </header>
+
+    <div class="agenda-calendario">
+      <full-calendar #calendar [options]="calendarOptions"></full-calendar>
+      <p class="periodo-vacio" *ngIf="periodoVacio" aria-live="polite">
+        <i class="fas fa-calendar-check" aria-hidden="true"></i> {{ periodoVacio }}
+      </p>
+    </div>
   </main>
+
+  <app-nueva-cita
+    [abierto]="nuevaAbierta"
+    [inicio]="nuevaInicio"
+    [fin]="nuevaFin"
+    [especialistas]="especialistas"
+    [doctorFijo]="doctorFijo"
+    [doctorSugerido]="doctorIdSeleccionado"
+    (cerrar)="cerrarNueva()"
+    (creada)="citaCreada()">
+  </app-nueva-cita>
 
   <app-calendar-event-modal
     [isOpen]="isModalOpen"
     [event]="selectedEvent"
     (close)="closeModal()"
-    (cobroRegistrado)="onDoctorChange()">
+    (cobroRegistrado)="despuesDeCobrar()">
   </app-calendar-event-modal>
 </div>

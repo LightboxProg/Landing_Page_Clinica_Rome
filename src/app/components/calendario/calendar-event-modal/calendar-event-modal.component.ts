@@ -86,6 +86,14 @@ import { PromocionesService } from '../../../services/promociones/promociones.se
             <div class="cobro__estado" *ngIf="!event?.cobrado && !mostrarPanelCobro">
               <p class="sello is-pendiente"><i class="fas fa-clock"></i> Pendiente de cobro</p>
 
+              <!-- El paciente desconoció el anticipo con su banco (Stripe) -->
+              <p class="aviso-disputa" *ngIf="event.disputa">
+                <i class="fas fa-triangle-exclamation"></i>
+                <span *ngIf="event.disputa === 'lost'">El banco le devolvió el anticipo al paciente. Se cobra el tratamiento completo.</span>
+                <span *ngIf="event.disputa === 'won'">El paciente disputó el anticipo y la clínica ganó: el anticipo sigue contando.</span>
+                <span *ngIf="event.disputa !== 'lost' && event.disputa !== 'won'">El paciente desconoció el anticipo con su banco y la disputa sigue abierta. Revísalo en Stripe antes de atenderlo.</span>
+              </p>
+
               <dl class="cuenta" *ngIf="event.montoAnticipo > 0">
                 <div class="cuenta__row cuenta__row--menos">
                   <dt>Anticipo recibido<em *ngIf="event.anticipoMetodoPago && event.anticipoMetodoPago !== 'Ninguno'">{{ event.anticipoMetodoPago }}</em></dt>
@@ -193,9 +201,9 @@ import { PromocionesService } from '../../../services/promociones/promociones.se
                   <dt>Subtotal</dt>
                   <dd>{{ costoTotal - obtenerDescuentoCalculado() | currency:'MXN':'symbol-narrow':'1.0-0' }}</dd>
                 </div>
-                <div class="cuenta__row cuenta__row--menos" *ngIf="event.montoAnticipo > 0">
+                <div class="cuenta__row cuenta__row--menos" *ngIf="anticipoVigente > 0">
                   <dt>Anticipo<em *ngIf="event.anticipoMetodoPago && event.anticipoMetodoPago !== 'Ninguno'">{{ event.anticipoMetodoPago }}</em></dt>
-                  <dd>−{{ event.montoAnticipo | currency:'MXN':'symbol-narrow':'1.0-0' }}</dd>
+                  <dd>−{{ anticipoVigente | currency:'MXN':'symbol-narrow':'1.0-0' }}</dd>
                 </div>
               </dl>
 
@@ -405,9 +413,15 @@ export class CalendarEventModalComponent implements OnChanges {
     return null;
   }
 
+  // Igual que el backend (stripeLiquidacion.anticipoVigente): un anticipo que el banco
+  // le devolvió al paciente ya no se resta
+  get anticipoVigente(): number {
+    return this.event?.disputa === 'lost' ? 0 : (this.event?.montoAnticipo || 0);
+  }
+
   obtenerTotalNetoACobrar(): number {
     const desc = this.obtenerDescuentoCalculado();
-    const anti = this.event?.montoAnticipo || 0;
+    const anti = this.anticipoVigente;
     const neto = this.costoTotal - desc - anti;
     return neto < 0 ? 0 : neto;
   }

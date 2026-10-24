@@ -67,6 +67,7 @@ export class WhatsappService {
     contactos: { id: string; tipo: 'paciente' | 'lead' }[];
     mapeo: any;
     multimedia?: { type: 'IMAGE' | 'VIDEO' | 'DOCUMENT', url: string };
+    campana?: string;
   }): Observable<{ mensaje: string; envioId: string; total: number; omitidos: number }> {
     return this.http.post<{ mensaje: string; envioId: string; total: number; omitidos: number }>(`${this.apiUrl}/enviar-masivo`, payload);
   }

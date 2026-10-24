@@ -1,17 +1,18 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BookingService, DoctorPublic, SlotPublic } from '../../services/booking/booking.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { ServiciosService } from '../../services/servicios/servicios.service';
 import { ServiciosDentalesService } from '../../services/servicios-dentales/servicios-dentales.service';
 import { PromocionesService, precioConDescuento } from '../../services/promociones/promociones.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-agendar-cita',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './agendar-cita.component.html',
   styleUrl: './agendar-cita.component.css'
 })
@@ -53,10 +54,28 @@ export class AgendarCitaComponent implements OnInit, OnDestroy {
   paqueteUrl: { promocionId: string; itemId: string } | null = null;
   paquete: any = null;
   paqueteNoDisponible = false;
-  // Las sesiones a favor se agendan por WhatsApp, que sí prueba el número;
-  // la web no puede verificar que el teléfono sea de quien lo escribe
-  readonly whatsappSesiones = 'https://wa.me/524493664109?text=' +
-    encodeURIComponent('Hola, quiero agendar una sesión de mi paquete');
+  readonly soloPromos = environment.agendaSoloPromos;
+  // Llegó desde una promoción (?servicio o ?paquete). No se borra al preseleccionar el
+  // tratamiento, a diferencia de servicioUrl: decide si se puede cambiar de área.
+  vieneDePromo = false;
+
+  // Área elegida en el modal de entrada (?area=dental|estetica). Sólo se
+  // muestran los especialistas y horarios de esa área.
+  area: 'Dental' | 'Estetica' | null = null;
+  selectorArea = false;
+
+  // Pago dentro de la página (Stripe Checkout en modo elements). Sin clave pública en el
+  // backend llega `urlPago` y el botón abre el checkout de Stripe como antes.
+  pagoListo = false;
+  pagoCargando = false;
+  pagoError = '';
+  urlPago = '';
+  pedirCorreo = false;
+  correoPago = '';
+  // Sin esta casilla el backend no crea el cobro; se guarda en la cita cuándo se aceptó
+  aceptaTerminos = false;
+  private checkoutStripe: any = null;
+  private accionesPago: any = null;
 
   timeLeft: number = 900; // 15 minutos en segundos
   timerInterval: any = null;
@@ -67,16 +86,29 @@ export class AgendarCitaComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private serviciosService: ServiciosService,
     private serviciosDentalesService: ServiciosDentalesService,
-    private promosService: PromocionesService
+    private promosService: PromocionesService,
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       this.hasUrlDoctor = !!params['doctor'] || !!params['config'];
       this.servicioUrl = params['servicio'] || '';
+      this.vieneDePromo = !!params['servicio'] || !!(params['promo'] && params['paquete']);
       this.paqueteUrl = params['promo'] && params['paquete']
         ? { promocionId: params['promo'], itemId: params['paquete'] }
         : null;
+      const area = String(params['area'] || '').toLowerCase();
+      this.area = area === 'dental' ? 'Dental' : area === 'estetica' ? 'Estetica' : null;
+      // Promociones y paquetes son de estética
+      if (!this.area && (this.servicioUrl || this.paqueteUrl)) this.area = 'Estetica';
+      // Con médico o configuración en el link el área ya está decidida
+      this.selectorArea = !this.area && !this.hasUrlDoctor;
+      // Arranque: sólo se agenda desde una promoción; sin una, a la página de promociones
+      if (environment.agendaSoloPromos && !this.servicioUrl && !this.paqueteUrl) {
+        this.router.navigate(['/promociones'], { replaceUrl: true });
+      }
     });
     this.promosService.obtenerPromocionesActivas().subscribe({
       next: (promos) => {
@@ -96,6 +128,7 @@ export class AgendarCitaComponent implements OnInit, OnDestroy {
     if (this.timerInterval) {
       clearInterval(this.timerInterval);
     }
+    this.cerrarPago();
   }
 
   // Importe que realmente se cobrará ahora. Refleja exactamente la lógica
@@ -112,7 +145,7 @@ export class AgendarCitaComponent implements OnInit, OnDestroy {
       this.paqueteNoDisponible = true;
       return;
     }
-    this.paquete = { ...item, promocionNombre: promo.nombre };
+    this.paquete = { ...item, promocionNombre: promo.nombre, fechaFin: promo.fechaFin };
     this.servicioUrl = String(item.servicios[0].servicioId);
   }
 
@@ -146,12 +179,52 @@ export class AgendarCitaComponent implements OnInit, OnDestroy {
   // Mejor promoción vigente para el servicio elegido (sólo estética), con la
   // misma regla que promociones.service.mejorPrecio. El backend la vuelve a
   // calcular al pagar; aquí sólo se muestra.
-  get promoDelServicio(): { nombre: string; precioFinal: number } | null {
-    if (this.paquete) return { nombre: this.paquete.promocionNombre, precioFinal: this.paquete.precioFinal };
-    const s = this.selectedService;
+  get promoDelServicio(): { nombre: string; precioFinal: number; fechaFin?: string } | null {
+    if (this.paquete) return { nombre: this.paquete.promocionNombre, precioFinal: this.paquete.precioFinal, fechaFin: this.paquete.fechaFin };
+    return this.promoPara(this.selectedService);
+  }
+
+  // Tratamientos del selector: en el arranque sólo los que tienen promoción vigente
+  get serviciosElegibles(): any[] {
+    return this.soloPromos ? this.servicios.filter(s => this.promoPara(s)) : this.servicios;
+  }
+
+  // Paquetes de las promociones vigentes: van en el mismo selector que los tratamientos
+  // (sólo estética; los paquetes son de esa área)
+  get paquetesElegibles(): { valor: string; nombre: string }[] {
+    if (this.selectedTipoCita === 'Dental' || this.area === 'Dental') return [];
+    return this.promocionesVigentes.flatMap(p => (p.items || [])
+      .filter((i: any) => i.tipo === 'Paquete' && i.servicios?.length)
+      .map((i: any) => ({ valor: `p:${p._id}:${i._id}`, nombre: i.nombre })));
+  }
+
+  // Lo elegido en el selector: "s:<servicio>" o "p:<promo>:<paquete>"
+  get ofertaElegida(): string {
+    if (this.paqueteUrl) return `p:${this.paqueteUrl.promocionId}:${this.paqueteUrl.itemId}`;
+    return this.selectedServiceId ? `s:${this.selectedServiceId}` : '';
+  }
+
+  // Cambiar entre tratamiento y paquete: el paquete fija precio, duración y servicio con que se agenda
+  onOfertaChange(valor: string): void {
+    const [tipo, a, b] = String(valor || '').split(':');
+    this.paquete = null;
+    this.paqueteUrl = null;
+    this.paqueteNoDisponible = false;
+    if (tipo === 'p') {
+      this.paqueteUrl = { promocionId: a, itemId: b };
+      this.resolverPaquete();
+      this.selectedServiceId = this.servicioUrl;
+      this.servicioUrl = '';
+    } else {
+      this.selectedServiceId = a || '';
+    }
+    this.onServiceChange();
+  }
+
+  private promoPara(s: any): { nombre: string; precioFinal: number; fechaFin?: string } | null {
     if (!s || this.selectedTipoCita === 'Dental' || !s.costo) return null;
     const categoriaId = s.categoria ? String(s.categoria._id || s.categoria) : null;
-    let mejor: { nombre: string; precioFinal: number } | null = null;
+    let mejor: { nombre: string; precioFinal: number; fechaFin?: string } | null = null;
     for (const p of this.promocionesVigentes) {
       for (const item of p.items || []) {
         const aplica = (item.tipo === 'Servicio' && String(item.servicioId) === String(s._id))
@@ -159,11 +232,16 @@ export class AgendarCitaComponent implements OnInit, OnDestroy {
         if (!aplica) continue;
         const precioFinal = precioConDescuento(s.costo, item.tipoDescuento, item.valor);
         if (precioFinal < s.costo && (!mejor || precioFinal < mejor.precioFinal)) {
-          mejor = { nombre: p.nombre, precioFinal };
+          mejor = { nombre: p.nombre, precioFinal, fechaFin: p.fechaFin };
         }
       }
     }
     return mejor;
+  }
+
+  // Lo que se ahorra con la promoción, para decirlo en el resumen
+  get ahorro(): number {
+    return this.promoDelServicio ? Math.max(0, (this.costoLista ?? 0) - (this.costoTratamiento ?? 0)) : 0;
   }
 
   // ¿El apartado es menor que el tratamiento? Entonces sí es un anticipo.
@@ -178,6 +256,53 @@ export class AgendarCitaComponent implements OnInit, OnDestroy {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
     }).format(valor ?? 0);
+  }
+
+  // ===== Área (dental / estética) =====
+
+  get doctoresVisibles(): DoctorPublic[] {
+    return this.area ? this.doctores.filter(d => d.atencion === this.area) : this.doctores;
+  }
+
+  hayDoctoresDe(area: 'Dental' | 'Estetica'): boolean {
+    return this.doctores.some(d => d.atencion === area);
+  }
+
+  elegirArea(area: 'Dental' | 'Estetica'): void {
+    const cambio = this.area !== area;
+    this.area = area;
+    this.selectorArea = false;
+    // En la URL, para que recargar o regresar no vuelva a preguntar
+    this.router.navigate([], { relativeTo: this.route, queryParams: { area: area === 'Dental' ? 'dental' : 'estetica' }, queryParamsHandling: 'merge', replaceUrl: true });
+    if (cambio) {
+      this.selectedDoctorId = '';
+      this.selectedServiceId = '';
+      this.selectedService = null;
+      this.slots = [];
+      this.selectedSlotTemp = null;
+      this.fechasDisponibles = [];
+    }
+    this.autoelegirDoctor();
+  }
+
+  cambiarArea(): void {
+    this.selectorArea = true;
+  }
+
+  salirSelector(): void {
+    // Sin área no hay qué mostrar: cerrar el modal regresa al inicio
+    if (!this.area) { this.router.navigate(['/']); return; }
+    this.selectorArea = false;
+  }
+
+  // Si el área tiene un solo especialista se elige solo: van directo a los horarios
+  private autoelegirDoctor(): void {
+    if (this.selectedDoctorId || this.hasUrlDoctor) return;
+    const visibles = this.doctoresVisibles;
+    if (visibles.length === 1) {
+      this.selectedDoctorId = String(visibles[0]._id);
+      this.onDoctorOrFechaChange();
+    }
   }
 
   // Obtiene el objeto doctor seleccionado
@@ -222,6 +347,8 @@ export class AgendarCitaComponent implements OnInit, OnDestroy {
               this.selectedDoctorId = String(estetica._id);
               this.onDoctorOrFechaChange();
             }
+          } else if (this.area) {
+            this.autoelegirDoctor();
           }
         });
       },
@@ -259,8 +386,8 @@ export class AgendarCitaComponent implements OnInit, OnDestroy {
 
   // Registra un nuevo paciente y aparta el slot
   registrarPaciente(): void {
-    if (!this.nuevoPaciente.nombre || !this.nuevoPaciente.apeP || !this.nuevoPaciente.apeM) {
-      this.errorMessage = 'Los campos nombre, primer y segundo apellido son obligatorios.';
+    if (!this.nuevoPaciente.nombre || !this.nuevoPaciente.apeP) {
+      this.errorMessage = 'El nombre y el primer apellido son obligatorios.';
       return;
     }
     this.loading = true;
@@ -300,6 +427,7 @@ export class AgendarCitaComponent implements OnInit, OnDestroy {
         this.loading = false;
         this.step = 4; // Ir a pago
         this.iniciarCronometro();
+        this.aceptaTerminos = false;
       },
       error: (err) => {
         this.errorMessage = err.error?.message || 'El horario ya no está disponible. Elige otro espacio.';
@@ -362,17 +490,36 @@ export class AgendarCitaComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Último día de la promoción ("YYYY-MM-DD", hora de la clínica). Con promo sólo se
+  // agenda dentro de sus fechas: el backend cobra precio de lista fuera de ellas.
+  get finPromo(): string | null {
+    const fin = this.promoDelServicio?.fechaFin;
+    if (!fin) return null;
+    return new Date(fin).toLocaleDateString('en-CA', { timeZone: 'America/Mexico_City' });
+  }
+
+  get fechasVisibles(): string[] {
+    const fin = this.finPromo;
+    return fin ? this.fechasDisponibles.filter(f => f.slice(0, 10) <= fin) : this.fechasDisponibles;
+  }
+
   cargarFechasDisponibles(): void {
     if (!this.selectedDoctorId) return;
     this.bookingService.obtenerFechasDisponibles(this.selectedDoctorId, this.selectedConfigId).subscribe({
       next: (fechas) => {
         this.fechasDisponibles = fechas || [];
-        if (this.fechasDisponibles.length > 0) {
-          if (!this.selectedFecha || !this.fechasDisponibles.includes(this.selectedFecha)) {
-            this.selectedFecha = this.fechasDisponibles[0];
+        const visibles = this.fechasVisibles;
+        if (visibles.length > 0) {
+          if (!this.selectedFecha || !visibles.includes(this.selectedFecha)) {
+            this.selectedFecha = visibles[0];
             this.onDoctorOrFechaChange();
           }
+        } else if (this.finPromo) {
+          // La promo ya no tiene días libres: no se muestran horarios de otras fechas
+          this.selectedFecha = '';
+          this.slots = [];
         }
+        if (this.finPromo) this.showManualDate = false;
       }
     });
   }
@@ -397,6 +544,28 @@ export class AgendarCitaComponent implements OnInit, OnDestroy {
       diaNumero: date.getUTCDate().toString(),
       mes: meses[date.getUTCMonth()]
     };
+  }
+
+  // "sábado 24 de octubre" a partir de "2026-10-24"
+  fechaLarga(fechaStr: string | Date | undefined | null): string {
+    if (!fechaStr) return '';
+    const fecha = typeof fechaStr === 'string' ? new Date(`${fechaStr.slice(0, 10)}T00:00:00Z`) : fechaStr;
+    return fecha.toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' });
+  }
+
+  get slotsManana(): SlotPublic[] {
+    return this.slots.filter(s => s.horaInicio < '12:00');
+  }
+
+  get slotsTarde(): SlotPublic[] {
+    return this.slots.filter(s => s.horaInicio >= '12:00');
+  }
+
+  // El teléfono sólo admite dígitos, aunque lo peguen con espacios o guiones
+  limpiarTelefono(): void {
+    let digitos = (this.telefonoInput || '').replace(/\D/g, '');
+    if (digitos.length > 10 && digitos.startsWith('52')) digitos = digitos.replace(/^521?/, '');
+    this.telefonoInput = digitos.slice(0, 10);
   }
 
   // Carga los slots disponibles cuando cambian doctor o fecha
@@ -451,8 +620,14 @@ export class AgendarCitaComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Arranque: el tratamiento elegido ya no tiene promoción (cerró o no aplica)
+  get sinPromo(): boolean {
+    return environment.agendaSoloPromos && !!this.selectedService && !this.promoDelServicio;
+  }
+
   // Guarda la selección temporal del slot y avanza al login/teléfono
   seleccionarSlot(slot: SlotPublic): void {
+    if (this.sinPromo) return;
     this.selectedSlotTemp = slot;
     this.step = 2; // Ir a ingreso de teléfono
   }
@@ -471,6 +646,7 @@ export class AgendarCitaComponent implements OnInit, OnDestroy {
 
       if (this.timeLeft <= 0) {
         clearInterval(this.timerInterval);
+        this.cerrarPago();
         this.selectedSlot = null;
         this.selectedSlotTemp = null;
         this.step = 1;
@@ -480,25 +656,106 @@ export class AgendarCitaComponent implements OnInit, OnDestroy {
   }
 
   // Redirecciona a Stripe Checkout para pagar el anticipo
-  pagarAnticipo(): void {
+  // Crea la sesión de pago y monta el formulario de Stripe en #pago-stripe
+  prepararPago(): void {
     if (!this.selectedSlot || !this.paciente || !this.selectedServiceId) return;
-    this.loading = true;
-    this.errorMessage = '';
+    this.cerrarPago();
+    this.pagoCargando = true;
     this.bookingService.crearCheckoutSesionCita(
       this.selectedSlot._id,
       this.paciente._id,
       this.selectedTipoCita,
       this.selectedServiceId,
-      this.paqueteUrl || undefined
+      this.paqueteUrl || undefined,
+      true,
+      this.aceptaTerminos
     ).subscribe({
-      next: (res) => {
-        window.location.href = res.url;
+      next: async (res) => {
+        if (!res.clientSecret) {
+          this.urlPago = res.url;
+          this.pagoCargando = false;
+          return;
+        }
+        try {
+          await this.montarPago(res.publishableKey, res.clientSecret);
+          this.pedirCorreo = !res.correo;
+          this.pagoListo = true;
+        } catch (e) {
+          console.error('No se pudo cargar el formulario de pago', e);
+          this.pagoError = 'No se pudo cargar el formulario de pago. Recarga la página o intenta más tarde.';
+        }
+        this.pagoCargando = false;
       },
-      error: (err) => {
-        this.errorMessage = 'Ocurrió un error al iniciar la pasarela de pago.';
-        this.loading = false;
+      error: () => {
+        this.pagoCargando = false;
+        this.pagoError = 'Ocurrió un error al iniciar el pago. Intenta de nuevo.';
       }
     });
+  }
+
+  private async montarPago(publishableKey: string, clientSecret: string): Promise<void> {
+    // Se carga aparte para no sumar Stripe al bundle inicial
+    const { loadStripe } = await import('@stripe/stripe-js');
+    const stripe = await loadStripe(publishableKey, { locale: 'es-419' });
+    if (!stripe) throw new Error('Stripe.js no cargó');
+
+    this.checkoutStripe = stripe.initCheckoutElementsSdk({
+      clientSecret,
+      elementsOptions: {
+        fonts: [{ cssSrc: 'https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap' }],
+        appearance: APARIENCIA_PAGO
+      }
+    });
+    const resultado = await this.checkoutStripe.loadActions();
+    if (resultado.type !== 'success') throw new Error(resultado.error?.message || 'loadActions');
+    this.accionesPago = resultado.actions;
+
+    // El contenedor existe en cuanto Angular pinta el paso 4
+    this.cdr.detectChanges();
+    const elemento = this.checkoutStripe.createPaymentElement({ layout: 'tabs' });
+    elemento.mount('#pago-stripe');
+  }
+
+  private cerrarPago(): void {
+    try { this.checkoutStripe?.getPaymentElement()?.destroy(); } catch { /* ya se había desmontado */ }
+    this.checkoutStripe = null;
+    this.accionesPago = null;
+    this.pagoListo = false;
+    this.pagoError = '';
+    this.urlPago = '';
+  }
+
+  get correoValido(): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.correoPago.trim());
+  }
+
+  // Al marcar la casilla por primera vez se crea el cobro y aparece el formulario de tarjeta
+  alCambiarTerminos(): void {
+    if (this.aceptaTerminos && !this.pagoListo && !this.urlPago && !this.pagoCargando) this.prepararPago();
+  }
+
+  async pagarAnticipo(): Promise<void> {
+    if (!this.aceptaTerminos) {
+      this.pagoError = 'Para pagar acepta los términos y condiciones.';
+      return;
+    }
+    if (this.urlPago) {
+      window.location.href = this.urlPago;
+      return;
+    }
+    if (!this.accionesPago) return;
+    if (this.pedirCorreo && !this.correoValido) {
+      this.pagoError = 'Escribe un correo válido para enviarte el comprobante.';
+      return;
+    }
+    this.loading = true;
+    this.pagoError = '';
+    // Si sale bien, Stripe lleva a la página de confirmación (la misma del checkout de siempre)
+    const resultado = await this.accionesPago.confirm(this.pedirCorreo ? { email: this.correoPago.trim() } : {});
+    if (resultado.type === 'error') {
+      this.pagoError = resultado.error?.message || 'No se pudo completar el pago. Revisa los datos de tu tarjeta.';
+      this.loading = false;
+    }
   }
 
   // Retorna la fecha mínima para el datepicker
@@ -513,6 +770,7 @@ export class AgendarCitaComponent implements OnInit, OnDestroy {
   // Regresa a un paso anterior en el flujo
   volverPaso(paso: number): void {
     this.step = paso;
+    this.cerrarPago();
     if (paso === 1 && this.timerInterval) {
       clearInterval(this.timerInterval);
       this.selectedSlot = null;
@@ -520,3 +778,28 @@ export class AgendarCitaComponent implements OnInit, OnDestroy {
     }
   }
 }
+
+// Colores de la landing (styles.css): porcelana, tinta, latón y arcilla para errores
+const APARIENCIA_PAGO = {
+  theme: 'stripe' as const,
+  variables: {
+    colorPrimary: '#101A2C',
+    colorBackground: '#F8FAFB',
+    colorText: '#101A2C',
+    colorTextSecondary: '#55606E',
+    colorTextPlaceholder: '#8A93A0',
+    colorDanger: '#B0553C',
+    fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
+    fontSizeBase: '15px',
+    borderRadius: '2px',
+    spacingUnit: '4px'
+  },
+  rules: {
+    '.Input': { border: '1px solid rgba(16, 26, 44, 0.14)', boxShadow: 'none' },
+    '.Input:hover': { borderColor: '#626C7A' },
+    '.Input:focus': { borderColor: '#B1994C', boxShadow: '0 0 0 1px #B1994C' },
+    '.Label': { fontSize: '12px', fontWeight: '500', letterSpacing: '0.16em', textTransform: 'uppercase', color: '#55606E' },
+    '.Tab': { border: '1px solid rgba(16, 26, 44, 0.14)', boxShadow: 'none' },
+    '.Tab--selected': { borderColor: '#101A2C', boxShadow: '0 0 0 1px #101A2C' }
+  }
+};

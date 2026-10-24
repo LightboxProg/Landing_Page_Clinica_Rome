@@ -1,195 +1,271 @@
-:root {
-  --primary-gold: #C5A028;
-  --bg-main: #ffffff;
-  --bg-surface: #fafafa;
-  --text-main: #111111;
-  --text-muted: #737373;
-  --border-color: #eaeaea;
-}
+:host { display: block; }
 
-.calendar-admin-container {
+/* El tema viejo estiliza todos los <button>: aquí parten de cero */
+button {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  overflow: visible;
+  font: inherit;
+  font-weight: 500;
+  letter-spacing: normal;
+  line-height: 1.2;
+  text-transform: none;
+  color: inherit;
+  cursor: pointer;
+}
+button::after { content: none; }
+button:hover { background: none; box-shadow: none; }
+
+.agenda {
   display: flex;
-  background: var(--bg-main);
-  min-height: calc(100vh - 70px);
-  font-family: 'Inter', -apple-system, sans-serif;
-  color: var(--text-main);
+  min-height: calc(100vh - 64px);
+  background: var(--adm-fondo);
+  color: var(--adm-texto);
 }
-
-.calendar-main {
+.agenda-main {
   flex: 1;
-  background: var(--bg-main);
-  padding: 40px 48px;
-  overflow-y: auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 24px 24px;
 }
 
-/* FullCalendar Customization: Premium & Elegant */
-::ng-deep .fc {
-  border: none !important;
-  font-family: inherit !important;
-  color: var(--text-main) !important;
-}
-
-::ng-deep .fc .fc-toolbar {
-  margin-bottom: 40px !important;
+/* ---------- barra ---------- */
+.agenda-barra {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
 }
-
-::ng-deep .fc .fc-toolbar-title { 
-  font-size: 24px !important; 
-  font-weight: 800 !important;
-  color: #0f172a !important;
-  letter-spacing: -0.02em;
-  font-family: 'Outfit', 'Work Sans', sans-serif !important;
+.barra-izq { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.btn-hoy {
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 8px;
+  background: var(--adm-superficie);
+  box-shadow: inset 0 0 0 1px var(--adm-borde);
+  color: var(--adm-texto);
+  font-size: 0.875rem;
+  font-weight: 600;
 }
+.btn-hoy:hover { background: var(--adm-hover); box-shadow: inset 0 0 0 1px var(--adm-borde); }
+.flechas { display: flex; gap: 2px; }
+.btn-flecha {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  color: var(--adm-texto-2);
+  font-size: 0.8rem;
+}
+.btn-flecha:hover { background: var(--adm-hover); color: var(--adm-texto); }
+.btn-hoy:focus-visible, .btn-flecha:focus-visible, .vista:focus-visible { outline: 2px solid var(--adm-laton); outline-offset: 2px; }
+.agenda-titulo {
+  margin: 0 0 0 4px;
+  font-size: 1.35rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--adm-texto);
+  white-space: nowrap;
+  text-transform: capitalize;
+}
+.cargando { color: var(--adm-muy-tenue); font-size: 0.85rem; }
 
-/* Minimalist Buttons */
-::ng-deep .fc .fc-button-group {
+.barra-der { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.btn-nueva {
+  display: inline-flex; align-items: center; gap: 8px;
+  height: 36px; padding: 0 16px; border-radius: 8px;
+  background: var(--adm-primario); color: var(--adm-sobre-primario);
+  font-size: 0.875rem; font-weight: 600; white-space: nowrap;
+}
+.btn-nueva:hover { background: var(--adm-primario-hover); }
+.btn-nueva:focus-visible { outline: 2px solid var(--adm-laton); outline-offset: 2px; }
+
+/* Lo que se va seleccionando al arrastrar sobre la agenda */
+:host ::ng-deep .fc .fc-highlight { background: var(--adm-acento-fondo); }
+:host ::ng-deep .fc .fc-timegrid-col:hover { cursor: cell; }
+
+.vistas {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 10px;
+  background: var(--adm-superficie);
+  box-shadow: inset 0 0 0 1px var(--adm-borde);
+}
+.vista {
+  height: 30px;
+  padding: 0 14px;
+  border-radius: 7px;
+  color: var(--adm-tenue);
+  font-size: 0.85rem;
+  transition: background 0.15s, color 0.15s;
+}
+.vista:hover { color: var(--adm-texto); }
+.vista.activa { background: var(--adm-primario); color: var(--adm-sobre-primario); font-weight: 600; }
+.vista.activa:hover { background: var(--adm-primario); }
+
+/* ---------- calendario ---------- */
+.periodo-vacio {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
   display: flex;
+  align-items: center;
   gap: 8px;
+  margin: 0;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--adm-superficie);
+  box-shadow: var(--adm-sombra-suave), 0 0 0 1px var(--adm-borde);
+  color: var(--adm-tenue);
+  font-size: 0.85rem;
+  pointer-events: none;
 }
+.periodo-vacio i { color: var(--adm-muy-tenue); }
 
-::ng-deep .fc .fc-button {
-  background: #ffffff !important;
-  border: 1px solid rgba(0, 0, 0, 0.08) !important;
-  color: #475569 !important; /* Slate 600 */
-  font-size: 13px !important;
-  font-weight: 600 !important;
-  padding: 8px 18px !important;
-  text-transform: capitalize !important;
-  border-radius: 8px !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
-  transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+.agenda-calendario {
+  position: relative;
+  height: calc(100vh - 64px - 20px - 52px - 24px);
+  min-height: 520px;
+  background: var(--adm-superficie);
+  border: 1px solid var(--adm-borde);
+  border-radius: 12px;
+  overflow: hidden;
 }
-
-::ng-deep .fc .fc-button:hover:not(:disabled) {
-  background: #f8fafc !important;
-  color: #000000 !important;
-  border-color: rgba(0, 0, 0, 0.15) !important;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+:host ::ng-deep .fc {
+  --fc-border-color: var(--adm-borde-suave);
+  --fc-page-bg-color: var(--adm-superficie);
+  --fc-neutral-bg-color: var(--adm-superficie-2);
+  --fc-today-bg-color: transparent;
+  --fc-now-indicator-color: #e5484d;
+  --fc-list-event-hover-bg-color: var(--adm-hover);
+  font-family: inherit;
+  color: var(--adm-texto);
 }
+:host ::ng-deep .fc .fc-scrollgrid { border: 0; }
+:host ::ng-deep .fc td, :host ::ng-deep .fc th { border-color: var(--adm-borde-suave); }
 
-::ng-deep .fc .fc-button.fc-button-active {
-  background: #0f172a !important;
-  border-color: #0f172a !important;
-  color: white !important;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15) !important;
+/* Encabezado de días: nombre corto arriba, número grande; hoy en latón */
+:host ::ng-deep .fc .fc-col-header-cell { padding: 10px 0 8px; background: var(--adm-superficie); }
+:host ::ng-deep .fc .fc-col-header-cell-cushion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 0;
+  color: var(--adm-tenue);
+  text-decoration: none;
 }
-
-::ng-deep .fc .fc-today-button {
-  background: #ffffff !important;
-  border: 1px solid rgba(0, 0, 0, 0.08) !important;
-  color: #0f172a !important;
-  margin-right: 24px !important;
-  border-radius: 8px !important;
-  font-weight: 700 !important;
-  padding: 8px 20px !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
-}
-
-::ng-deep .fc .fc-today-button:hover:not(:disabled) {
-  background: #f8fafc !important;
-  border-color: rgba(0, 0, 0, 0.15) !important;
-  transform: translateY(-1px);
-}
-
-/* Grid & Header Styling */
-::ng-deep .fc td, ::ng-deep .fc th {
-  border-color: rgba(0, 0, 0, 0.05) !important;
-}
-
-::ng-deep .fc-timegrid-slot {
-  height: 4.5rem !important;
-}
-
-::ng-deep .fc .fc-timegrid-axis-cushion, 
-::ng-deep .fc .fc-timegrid-slot-label-cushion {
-  font-size: 11px !important;
+:host ::ng-deep .fc .dia-nombre { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+:host ::ng-deep .fc .dia-numero {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  font-size: 1.05rem;
   font-weight: 600;
-  color: #64748b; /* Slate 500 */
-  font-family: 'JetBrains Mono', monospace;
+  color: var(--adm-texto);
 }
+:host ::ng-deep .fc .fc-day-today .dia-numero { background: var(--adm-primario); color: var(--adm-sobre-primario); }
+:host ::ng-deep .fc .fc-day-today .dia-nombre { color: var(--adm-acento); }
+:host ::ng-deep .fc .fc-timegrid-col.fc-day-today { background: var(--adm-acento-fondo); }
 
-::ng-deep .fc .fc-col-header-cell {
-  background: #f8fafc !important;
-  padding: 16px 0 !important;
-  border-bottom: 2px solid rgba(0, 0, 0, 0.06) !important;
+/* Horas */
+:host ::ng-deep .fc .fc-timegrid-slot { height: 1.9rem; }
+/* Sólo se ven las líneas de cada hora; la media hora sigue existiendo para ubicar las citas */
+:host ::ng-deep .fc .fc-timegrid-slot-minor { border-top-color: transparent; }
+:host ::ng-deep .fc .fc-timegrid-slot-label-cushion {
+  padding-right: 10px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--adm-muy-tenue);
+  font-variant-numeric: tabular-nums;
 }
+:host ::ng-deep .fc .fc-timegrid-now-indicator-line { border-width: 2px 0 0; }
 
-::ng-deep .fc .fc-col-header-cell-cushion {
-  font-size: 13px !important;
-  font-weight: 700 !important;
-  color: #334155 !important; /* Slate 700 */
-  text-decoration: none !important;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-/* Highlight today column */
-::ng-deep .fc .fc-day-today {
-  background: rgba(197, 160, 40, 0.04) !important;
-}
-
-/* Event Styling: Clean & Modern Blocks */
-::ng-deep .fc .fc-event {
-  border: none !important;
-  border-radius: 6px !important;
-  padding: 6px 10px !important;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04) !important;
+/* Citas: tinte del color del especialista con barra a la izquierda */
+:host ::ng-deep .fc .fc-timegrid-event {
+  border: 0;
+  border-radius: 6px;
+  box-shadow: none;
+  background: transparent !important;
   cursor: pointer;
-  background-image: none !important;
-  border-left: 4px solid rgba(0, 0, 0, 0.2) !important;
-  transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
 }
+:host ::ng-deep .fc .fc-timegrid-event .fc-event-main {
+  padding: 0;
+  color: var(--adm-texto);
+}
+:host ::ng-deep .fc .fc-timegrid-event .cita {
+  position: relative;
+  height: 100%;
+  padding: 4px 8px 4px 10px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--c, #3b82f6) 18%, var(--adm-superficie));
+  box-shadow: inset 3px 0 0 var(--c, #3b82f6);
+  transition: background 0.15s;
+}
+:host ::ng-deep .fc .fc-timegrid-event:hover .cita {
+  background: color-mix(in srgb, var(--c, #3b82f6) 28%, var(--adm-superficie));
+}
+:host ::ng-deep .fc .fc-timegrid-event.cita-cobrada .cita { opacity: 0.75; }
+:host ::ng-deep .fc .cita-hora { display: flex; align-items: center; gap: 4px; font-size: 0.7rem; font-weight: 600; color: var(--adm-tenue); font-variant-numeric: tabular-nums; }
+:host ::ng-deep .fc .cita-paciente { font-size: 0.8rem; font-weight: 600; line-height: 1.25; color: var(--adm-texto); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+:host ::ng-deep .fc .cita-servicio { font-size: 0.72rem; color: var(--adm-tenue); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+:host ::ng-deep .fc .cita-medico-sm { font-size: 0.68rem; color: var(--adm-muy-tenue); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+:host ::ng-deep .fc .cita-check { color: var(--adm-ok); font-size: 0.7rem; }
 
-::ng-deep .fc .fc-event:hover {
-  opacity: 0.95;
-  transform: translateY(-1px) scale(1.02);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08) !important;
-  z-index: 100;
-}
+/* Mes */
+:host ::ng-deep .fc .fc-daygrid-day-number { padding: 6px 8px; font-size: 0.8rem; color: var(--adm-texto-2); text-decoration: none; }
+:host ::ng-deep .fc .fc-day-today .fc-daygrid-day-number { color: var(--adm-acento); font-weight: 700; }
+:host ::ng-deep .fc .fc-daygrid-day.fc-day-today { background: var(--adm-acento-fondo); }
+:host ::ng-deep .fc .fc-daygrid-event { display: flex; align-items: center; gap: 6px; padding: 1px 6px; border: 0; background: transparent; cursor: pointer; }
+:host ::ng-deep .fc .fc-daygrid-event:hover { background: var(--adm-hover); }
+:host ::ng-deep .fc .cita-punto { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+:host ::ng-deep .fc .cita-mes { font-size: 0.75rem; color: var(--adm-texto); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+:host ::ng-deep .fc .fc-daygrid-more-link { font-size: 0.72rem; color: var(--adm-acento); }
+:host ::ng-deep .fc .fc-popover { background: var(--adm-superficie); border-color: var(--adm-borde); }
+:host ::ng-deep .fc .fc-popover-header { background: var(--adm-superficie-2); color: var(--adm-texto); }
 
-::ng-deep .fc .fc-event-main {
-  padding: 2px 0 !important;
-}
+/* Lista */
+:host ::ng-deep .fc .fc-list { border: 0; }
+:host ::ng-deep .fc .fc-list-day-cushion { background: var(--adm-superficie-2); }
+:host ::ng-deep .fc .fc-list-day-text, :host ::ng-deep .fc .fc-list-day-side-text { color: var(--adm-texto); text-decoration: none; font-weight: 600; text-transform: capitalize; }
+:host ::ng-deep .fc .fc-list-event { cursor: pointer; }
+:host ::ng-deep .fc .fc-list-event td { background: var(--adm-superficie); color: var(--adm-texto); }
+:host ::ng-deep .fc .fc-list-event:hover td { background: var(--adm-hover); }
+:host ::ng-deep .fc .fc-list-event-time { color: var(--adm-tenue); font-variant-numeric: tabular-nums; }
+:host ::ng-deep .fc .cita-lista strong { color: var(--adm-texto); }
+:host ::ng-deep .fc .cita-lista { color: var(--adm-tenue); }
+:host ::ng-deep .fc .fc-list-empty { background: var(--adm-superficie); color: var(--adm-tenue); }
 
-::ng-deep .fc .fc-event-title {
-  font-size: 11px !important;
-  font-weight: 700 !important;
-  color: white !important;
-  text-shadow: none !important;
-  line-height: 1.3;
-}
+/* Barras de desplazamiento del calendario, del color del tema */
+:host ::ng-deep .fc .fc-scroller { scrollbar-width: thin; scrollbar-color: var(--adm-borde) transparent; }
+:host ::ng-deep .fc .fc-scroller::-webkit-scrollbar { width: 8px; height: 8px; }
+:host ::ng-deep .fc .fc-scroller::-webkit-scrollbar-track { background: transparent; }
+:host ::ng-deep .fc .fc-scroller::-webkit-scrollbar-thumb { background: var(--adm-borde); border-radius: 4px; }
 
-::ng-deep .fc .fc-event-time {
-  font-size: 10px !important;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.9) !important;
-  margin-bottom: 3px;
-  font-family: 'JetBrains Mono', monospace;
+@media (max-width: 900px) {
+  .agenda { flex-direction: column; min-height: 0; }
+  .agenda-main { padding: 16px; }
+  .agenda-titulo { font-size: 1.1rem; }
+  .agenda-calendario { height: 72vh; min-height: 440px; }
 }
-
-/* Scrollbar Customization */
-.calendar-main::-webkit-scrollbar {
-  width: 8px;
-}
-.calendar-main::-webkit-scrollbar-track {
-  background: #f8fafc;
-}
-.calendar-main::-webkit-scrollbar-thumb {
-  background: rgba(197, 160, 40, 0.3);
-  border-radius: 4px;
-}
-.calendar-main::-webkit-scrollbar-thumb:hover {
-  background: var(--primary-gold);
-}
-
-@media (max-width: 850px) {
-  .calendar-admin-container {
-    flex-direction: column;
-  }
-  .calendar-main {
-    padding: 24px;
-  }
+@media (max-width: 560px) {
+  .barra-der { width: 100%; }
+  .btn-nueva { flex: 1; justify-content: center; }
+  .barra-izq { width: 100%; }
+  .agenda-titulo { margin-left: auto; }
+  .vistas { width: 100%; }
+  .vista { flex: 1; padding: 0 6px; }
 }

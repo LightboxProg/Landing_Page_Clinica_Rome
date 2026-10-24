@@ -1,0 +1,62 @@
+<section class="feature" *ngIf="promo as p">
+  <div class="u-shell feature__grid">
+
+    <div class="feature__type">
+      <p class="feature__clock u-data" [class.is-urgent]="urgente">
+        <span class="feature__dot" aria-hidden="true"></span>
+        Promoción vigente · cierra en {{ cierre }}
+      </p>
+
+      <h1 class="feature__title">{{ p.nombre }}</h1>
+      <p class="feature__desc" *ngIf="p.descripcion">{{ p.descripcion }}</p>
+      <p class="feature__dates u-data">{{ rangoDe(p) }}</p>
+
+      <p class="feature__save" *ngIf="mayorAhorro(p) as pct">
+        Hasta <strong>{{ pct }}% menos</strong> en {{ p.items.length }} {{ p.items.length === 1 ? 'tratamiento' : 'tratamientos' }}
+      </p>
+
+      <div class="feature__actions">
+        <button type="button" class="btn btn--brass" (click)="irAPrecios(precios)">Ver precios y agendar</button>
+        <a routerLink="/servicios" class="btn btn--onink">Ver tratamientos</a>
+      </div>
+      <p class="feature__note u-data">Apartas en línea con anticipo; el resto se liquida en clínica.</p>
+    </div>
+
+    <figure class="feature__media" [class.is-empty]="!portadaDe(p)">
+      <img *ngIf="portadaDe(p) as foto" [src]="foto" [alt]="p.nombre" width="800" height="1000" />
+      <!-- Sin banner todavía: el descuento más grande de la promo hace de portada -->
+      <div *ngIf="!portadaDe(p)" class="feature__plate">
+        <img src="assets/images/Manual_Rome-10-removebg.png" alt="" class="feature__mark" width="66" height="54" />
+        <p class="feature__plate-big" *ngIf="mayorAhorro(p) as pct">Hasta <em>{{ pct }}%</em> menos</p>
+        <p class="feature__plate-small u-data">ROME Harmony Clinic · {{ rangoDe(p) }}</p>
+      </div>
+    </figure>
+
+  </div>
+
+  <!-- Los tratamientos de la promo, con su foto: son la lista de precios -->
+  <div class="u-shell feature__cures" #precios>
+    <ul class="pcards">
+      <li class="pcard" *ngFor="let item of p.items.slice(0, maxItems)">
+        <div class="pcard__plate" [class.is-empty]="!item.foto">
+          <img *ngIf="item.foto" [src]="item.foto" [alt]="item.nombre" loading="lazy" width="400" height="300" />
+          <span class="pcard__tag u-data" *ngIf="item.etiqueta">{{ item.etiqueta }}</span>
+        </div>
+        <h3 class="pcard__name">{{ item.tipo === 'Categoria' ? 'Todo ' + item.nombre : item.nombre }}</h3>
+        <p class="pcard__detail" *ngIf="item.tipo === 'Paquete' && detallePaquete(item) as detalle">{{ detalle }}</p>
+        <p class="pcard__price u-data" *ngIf="item.precioFinal != null">
+          <s *ngIf="item.precioLista > item.precioFinal">{{ item.precioLista | currency:'MXN':'symbol-narrow':'1.0-0' }}</s>
+          {{ item.precioFinal | currency:'MXN':'symbol-narrow':'1.0-0' }}
+        </p>
+        <a *ngIf="agendarParams(item, p) as params" class="pcard__book u-data"
+           routerLink="/agendar-cita" [queryParams]="params"
+           [attr.aria-label]="(item.tipo === 'Paquete' ? 'Comprar ' : 'Agendar ') + item.nombre">
+          {{ item.tipo === 'Paquete' ? 'Comprar' : 'Agendar' }} <i class="fas fa-arrow-right" aria-hidden="true"></i>
+        </a>
+      </li>
+    </ul>
+    <a *ngIf="enlacePromociones && p.items.length > maxItems" routerLink="/promociones" class="feature__more u-data">
+      Ver los {{ p.items.length }} precios de la promoción <i class="fas fa-arrow-right" aria-hidden="true"></i>
+    </a>
+  </div>
+</section>

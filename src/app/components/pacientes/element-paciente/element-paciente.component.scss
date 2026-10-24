@@ -6,8 +6,8 @@ $colorBeige: #f8f5f0;
 $colorCrema: #f5e6d3;
 $colorBlanco: #ffffff;
 
-$fuenteElegante: 'Playfair Display', serif;
-$fuentePrincipal: 'Work Sans', sans-serif;
+$fuenteElegante: var(--display);
+$fuentePrincipal: var(--body);
 
 $bordeRedondeado: 12px;
 $bordeRedondeadoGrande: 20px;
@@ -86,7 +86,7 @@ $sombraTarjeta: 0 10px 40px rgba(26, 43, 60, 0.15);
     font-weight: 700;
     color: $colorDorado;
     letter-spacing: -0.02em;
-    font-family: 'Work Sans', sans-serif;
+    font-family: var(--body);
   }
   &:hover .avatar-circulo {
     transform: scale(1.05);
@@ -98,7 +98,7 @@ $sombraTarjeta: 0 10px 40px rgba(26, 43, 60, 0.15);
 .info-paciente {
   flex: 1;
   .nombre-paciente {
-    font-family: 'Playfair Display', serif;
+    font-family: var(--display);
     font-size: 1.4rem;
     margin: 0 0 0.75rem;
     color: $colorAzulOscuro;
@@ -153,11 +153,11 @@ $sombraTarjeta: 0 10px 40px rgba(26, 43, 60, 0.15);
   }
 
   .boton-asignar {
-    background: #0f172a;
-    color: white;
+    background: var(--adm-primario);
+    color: var(--adm-sobre-primario);
     box-shadow: 0 4px 10px rgba(15, 23, 42, 0.1);
     &:hover {
-      background: #000;
+      background: var(--adm-primario);
       transform: translateY(-1.5px);
       box-shadow: 0 6px 14px rgba(15, 23, 42, 0.2);
     }
@@ -166,10 +166,10 @@ $sombraTarjeta: 0 10px 40px rgba(26, 43, 60, 0.15);
   .boton-lista-negra {
     background: transparent;
     border: 1px solid rgba(239, 68, 68, 0.4);
-    color: #ef4444;
+    color: var(--adm-error);
     &:hover {
       background: rgba(239, 68, 68, 0.08);
-      border-color: #ef4444;
+      border-color: var(--adm-error);
       transform: translateY(-1.5px);
     }
   }

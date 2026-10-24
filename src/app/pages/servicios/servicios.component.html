@@ -98,6 +98,7 @@
                      column holds one edge down the whole tariff. -->
                 <div class="item__plate" [class.is-empty]="!fila.foto">
                   <img *ngIf="fila.foto" [src]="fila.foto" [alt]="fila.nombre" loading="lazy" />
+                  <span class="item__tag u-data" *ngIf="fila.promo">Promoción</span>
                 </div>
 
                 <div class="item__main">
@@ -109,8 +110,14 @@
                 </div>
 
                 <div class="item__meta">
-                  <p class="item__price u-data">{{ fila.precio }}</p>
+                  <p class="item__price u-data" *ngIf="!fila.promo">{{ fila.precio }}</p>
+                  <p class="item__price item__price--promo u-data" *ngIf="fila.promo">
+                    <s>{{ fila.precio }}</s> {{ fila.promo }}
+                  </p>
                   <p class="item__dur u-data" *ngIf="fila.duracion">{{ fila.duracion }}</p>
+                  <a *ngIf="fila.promo" class="item__book u-data" routerLink="/agendar-cita" [queryParams]="{ servicio: fila.id }">
+                    Agendar con promoción <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                  </a>
                 </div>
               </li>
             </ul>
@@ -130,7 +137,7 @@
       sin costo, con un plan por escrito al final.
     </p>
     <div class="page-close__actions">
-      <a routerLink="/agendar-cita" class="btn btn--onink">Agendar valoración</a>
+      <a routerLink="/promociones" class="btn btn--onink">Ver promociones</a>
     </div>
   </div>
 </section>

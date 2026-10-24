@@ -19,6 +19,8 @@ export interface CitaPayload {
   estado?: 'Pendiente' | 'Confirmada' | 'Cancelada' | 'Completada';
   notas?: string;
   origen?: string;
+  // Agendar aunque el médico ya tenga algo a esa hora (el backend responde 409 si no)
+  forzar?: boolean;
   googleEventId?: string;
   googleEventLink?: string;
 
@@ -56,6 +58,11 @@ export class CitasService {
 
   agendarCita(cita: CitaPayload): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/citas/agendar`, cita);
+  }
+
+  // Cambiar la hora desde la agenda. Responde 409 con `conflictos` si el horario está ocupado.
+  moverCita(id: string, cambio: { fechaHoraInicio: Date; fechaHoraFin: Date; forzar?: boolean; notificar?: boolean }): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/citas/${id}/horario`, cambio);
   }
 
   crearCitaEstetica(cita: CitaPayload): Observable<any> {

@@ -1,14 +1,4 @@
 <div class="membresias-adquiridas-container">
-  <div class="encabezado">
-    <div>
-      <h3><i class="fas fa-users"></i> Membresías contratadas</h3>
-      <p class="subtitle">Cobra parcialidades, revisa atrasos y registra ventas en recepción</p>
-    </div>
-    <button class="btn-primary" (click)="abrirVenta()" *ngIf="!accesoDenegado">
-      <i class="fas fa-plus"></i> Vender en mostrador
-    </button>
-  </div>
-
   <div *ngIf="loading" class="loading-state">
     <i class="fas fa-spinner fa-spin"></i> Cargando información...
   </div>
@@ -25,38 +15,48 @@
   </div>
 
   <ng-container *ngIf="!loading && !error">
-    <!-- Resumen -->
+    <!-- Resumen: cada cifra filtra la tabla -->
     <div class="kpis">
-      <div class="kpi">
+      <button type="button" class="kpi" (click)="filtro = 'vigentes'" [class.kpi-sel]="filtro === 'vigentes'">
         <span class="kpi-label">Vigentes</span>
         <span class="kpi-valor">{{ contar('vigentes') }}</span>
-      </div>
-      <div class="kpi" [class.kpi-alerta]="contar('atrasada') > 0">
+        <span class="kpi-nota">{{ contar('vigentes') === 1 ? 'membresía pagándose' : 'membresías pagándose' }}</span>
+      </button>
+      <button type="button" class="kpi" (click)="filtro = 'atrasada'" [class.kpi-sel]="filtro === 'atrasada'" [class.kpi-alerta]="contar('atrasada') > 0">
         <span class="kpi-label">Atrasadas</span>
         <span class="kpi-valor">{{ contar('atrasada') }}</span>
-      </div>
+        <span class="kpi-nota">{{ contar('atrasada') > 0 ? 'requieren seguimiento' : 'todo al corriente' }}</span>
+      </button>
       <div class="kpi">
         <span class="kpi-label">Saldo por cobrar</span>
         <span class="kpi-valor">{{ formatearPrecio(saldoPorCobrar) }}</span>
+        <span class="kpi-nota">en membresías vigentes</span>
       </div>
       <div class="kpi">
         <span class="kpi-label">Cobrado este mes</span>
         <span class="kpi-valor">{{ formatearPrecio(cobradoEsteMes) }}</span>
+        <span class="kpi-nota">enganches y parcialidades</span>
       </div>
     </div>
 
-    <!-- Filtros -->
+    <div class="tarjeta">
+    <!-- Filtros, búsqueda y venta en una sola barra -->
     <div class="barra-filtros">
-      <div class="chips" role="tablist">
+      <div class="chips" role="tablist" aria-label="Filtrar por estado">
         <button *ngFor="let f of filtros" type="button" class="chip" role="tab"
                 [class.activo]="filtro === f.valor" [attr.aria-selected]="filtro === f.valor"
                 (click)="filtro = f.valor">
           {{ f.etiqueta }} <span class="chip-n">{{ contar(f.valor) }}</span>
         </button>
       </div>
-      <div class="buscador">
-        <i class="fas fa-search"></i>
-        <input type="search" [(ngModel)]="busqueda" placeholder="Paciente, teléfono o tratamiento" aria-label="Buscar membresía" />
+      <div class="barra-derecha">
+        <label class="buscador">
+          <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
+          <input type="search" [(ngModel)]="busqueda" placeholder="Buscar paciente o tratamiento" aria-label="Buscar membresía" />
+        </label>
+        <button class="btn-primary" (click)="abrirVenta()" *ngIf="!accesoDenegado">
+          <i class="fas fa-plus" aria-hidden="true"></i> Vender membresía
+        </button>
       </div>
     </div>
 
@@ -172,9 +172,17 @@
     </div>
 
     <div *ngIf="visibles.length === 0" class="empty-state">
-      <i class="fas fa-box-open"></i>
-      <p *ngIf="membresiasContratadas.length === 0">Aún no hay membresías contratadas.</p>
-      <p *ngIf="membresiasContratadas.length > 0">No hay membresías con este filtro.</p>
+      <span class="empty-icono"><i class="fas fa-id-card" aria-hidden="true"></i></span>
+      <ng-container *ngIf="membresiasContratadas.length === 0">
+        <p class="empty-titulo">Aún no hay membresías contratadas</p>
+        <p class="empty-texto">Cuando un paciente contrate en línea o le vendas una en recepción, aparecerá aquí.</p>
+        <button class="btn-primary" (click)="abrirVenta()"><i class="fas fa-plus" aria-hidden="true"></i> Vender membresía</button>
+      </ng-container>
+      <ng-container *ngIf="membresiasContratadas.length > 0">
+        <p class="empty-titulo">{{ busqueda ? 'Sin resultados para “' + busqueda + '”' : 'Nada en “' + etiquetaFiltro + '”' }}</p>
+        <button class="btn-secondary" (click)="filtro = 'todas'; busqueda = ''">Ver todas ({{ membresiasContratadas.length }})</button>
+      </ng-container>
+    </div>
     </div>
   </ng-container>
 </div>

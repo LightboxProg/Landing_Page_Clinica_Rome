@@ -24,7 +24,6 @@ export class ChatsComponent implements OnInit, OnDestroy {
   mensajes: any[] = [];
   nuevoMensaje = '';
   filtro = '';
-  isDarkMode = false;
   private refresco?: ReturnType<typeof setInterval>;
 
   constructor(
@@ -34,10 +33,6 @@ export class ChatsComponent implements OnInit, OnDestroy {
     private leadsService: LeadsService,
     private router: Router
   ) {}
-
-  toggleTheme() {
-    this.isDarkMode = !this.isDarkMode;
-  }
 
   ngOnInit() {
     this.cargarConversaciones();

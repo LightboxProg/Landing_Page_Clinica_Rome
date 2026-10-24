@@ -82,7 +82,7 @@
 .arms__tab.is-on .arms__label { color: var(--ink); }
 
 .arms__sub {
-  font-size: 0.63rem;
+  font-size: 0.75rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--ink-mute);
@@ -132,7 +132,7 @@
 .scale__label {
   margin: 0 0 0.9rem;
   padding-left: 1rem;
-  font-size: 0.63rem;
+  font-size: 0.75rem;
   font-weight: 500;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -194,7 +194,7 @@
 
 .scale__n {
   flex: none;
-  font-size: 0.66rem;
+  font-size: 0.75rem;
   color: var(--ink-mute);
   transition: color 0.3s var(--ease);
 }
@@ -229,7 +229,7 @@
   align-items: baseline;
   gap: 1rem;
   margin: 0;
-  font-size: 0.63rem;
+  font-size: 0.75rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--ink-mute);
@@ -344,7 +344,7 @@
   padding: 0.2rem 0.5rem;
   border: 1px solid rgba(199, 151, 78, 0.4);
   border-radius: 20px;
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -476,3 +476,41 @@
 
   .cat__head { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
 }
+
+/* Tratamiento con promoción vigente: precio tachado, el de promo y el acceso a agendar */
+.item .item__meta { flex-wrap: wrap; row-gap: 10px; }
+.item__price--promo s {
+  margin-right: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  opacity: 0.6;
+}
+
+.item__tag {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: #101A2C;
+  color: #EEF1F4;
+  border-radius: 30px;
+}
+
+a.item__book,
+a.item__book:visited {
+  flex-basis: 100%;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #101A2C;
+}
+a.item__book:hover { color: #C7974E; }

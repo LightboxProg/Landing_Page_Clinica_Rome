@@ -4,6 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { CitasService } from '../../services/citas/citas.service';
 import { SwalService } from '../../services/swal/swal.service';
 
+// stripeComision / stripeNeto: lo que Stripe se queda y lo que deposita de los anticipos en línea.
+// stripeSinDato: pagos de Stripe cuya comisión todavía no se conoce (membresías, pagos viejos).
+// stripeDisputas: anticipos que Stripe retiró porque el paciente los desconoció con su banco.
+// descuentos: los que dio caja; promociones: lo que se dejó de cobrar por precio de promo.
+// Los dos cuentan el día en que se cobra la cita, no el día del anticipo.
+const TOTALES_VACIOS = { efectivo: 0, tarjeta: 0, transferencia: 0, stripe: 0, stripeComision: 0, stripeNeto: 0, stripeSinDato: 0, stripeDisputas: 0, descuentos: 0, promociones: 0, granTotal: 0 };
+
 @Component({
   selector: 'app-corte-diario',
   standalone: true,
@@ -12,13 +19,14 @@ import { SwalService } from '../../services/swal/swal.service';
   styleUrl: './corte-diario.component.css'
 })
 export class CorteDiarioComponent implements OnInit {
-  fechaSeleccionada: string = new Date().toISOString().split('T')[0];
+  // Día de la clínica, no el de UTC: con toISOString después de las 6 p.m. se abría el corte de mañana
+  fechaSeleccionada: string = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Mexico_City' });
   corteActivo: 'dental' | 'estetica' = 'dental';
   corteData: any = null;
   cargando = false;
 
-  totalesDental = { efectivo: 0, tarjeta: 0, transferencia: 0, stripe: 0, descuentos: 0, granTotal: 0 };
-  totalesEstetica = { efectivo: 0, tarjeta: 0, transferencia: 0, stripe: 0, descuentos: 0, granTotal: 0 };
+  totalesDental = { ...TOTALES_VACIOS };
+  totalesEstetica = { ...TOTALES_VACIOS };
   citasDental: any[] = [];
   citasEstetica: any[] = [];
   pagosMembresia: any[] = [];
@@ -55,8 +63,8 @@ export class CorteDiarioComponent implements OnInit {
     this.citasDental = [];
     this.citasEstetica = [];
     
-    this.totalesDental = { efectivo: 0, tarjeta: 0, transferencia: 0, stripe: 0, descuentos: 0, granTotal: 0 };
-    this.totalesEstetica = { efectivo: 0, tarjeta: 0, transferencia: 0, stripe: 0, descuentos: 0, granTotal: 0 };
+    this.totalesDental = { ...TOTALES_VACIOS };
+    this.totalesEstetica = { ...TOTALES_VACIOS };
 
     citas.forEach(cita => {
       const cobradoClinica = cita.cobradoClinicaHoy || 0;
@@ -71,8 +79,9 @@ export class CorteDiarioComponent implements OnInit {
         else if (cita.anticipoMetodoPago === 'Tarjeta') this.totalesDental.tarjeta += anticipoClinica;
         else if (cita.anticipoMetodoPago === 'Transferencia') this.totalesDental.transferencia += anticipoClinica;
         
-        this.totalesDental.stripe += cita.anticipoStripeHoy || 0;
-        this.totalesDental.descuentos += cita.descuentoMonto || 0;
+        this.sumarStripe(this.totalesDental, cita);
+        this.totalesDental.descuentos += cita.descuentoHoy || 0;
+        this.totalesDental.promociones += cita.promocionHoy || 0;
         this.totalesDental.granTotal = this.totalesDental.efectivo + this.totalesDental.tarjeta + this.totalesDental.transferencia + this.totalesDental.stripe;
       } else {
         this.citasEstetica.push(cita);
@@ -83,11 +92,37 @@ export class CorteDiarioComponent implements OnInit {
         else if (cita.anticipoMetodoPago === 'Tarjeta') this.totalesEstetica.tarjeta += anticipoClinica;
         else if (cita.anticipoMetodoPago === 'Transferencia') this.totalesEstetica.transferencia += anticipoClinica;
 
-        this.totalesEstetica.stripe += cita.anticipoStripeHoy || 0;
-        this.totalesEstetica.descuentos += cita.descuentoMonto || 0;
+        this.sumarStripe(this.totalesEstetica, cita);
+        this.totalesEstetica.descuentos += cita.descuentoHoy || 0;
+        this.totalesEstetica.promociones += cita.promocionHoy || 0;
         this.totalesEstetica.granTotal = this.totalesEstetica.efectivo + this.totalesEstetica.tarjeta + this.totalesEstetica.transferencia + this.totalesEstetica.stripe;
       }
     });
+  }
+
+  private sumarStripe(t: typeof TOTALES_VACIOS, cita: any): void {
+    t.stripeDisputas += cita.stripeDisputaHoy || 0;
+    const anticipo = cita.anticipoStripeHoy || 0;
+    if (!anticipo) return;
+    t.stripe += anticipo;
+    if (cita.stripeNeto != null) {
+      t.stripeComision += cita.stripeComision || 0;
+      t.stripeNeto += cita.stripeNeto;
+    } else {
+      t.stripeSinDato += 1;
+    }
+  }
+
+  // Estado de la disputa en palabras de recepción
+  textoDisputa(estado: string): string {
+    if (estado === 'won') return 'Disputa ganada';
+    if (estado === 'lost') return 'Disputa perdida: anticipo devuelto al paciente';
+    return 'En disputa con el banco';
+  }
+
+  // Fecha corta para el depósito: "31 oct"
+  diaCorto(fecha: string | null): string {
+    return fecha ? new Date(fecha).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', timeZone: 'UTC' }) : '';
   }
 
   // Enganches y parcialidades de membresías: son tratamientos estéticos
@@ -98,7 +133,7 @@ export class CorteDiarioComponent implements OnInit {
       if (p.metodoPago === 'Efectivo') t.efectivo += p.monto;
       else if (p.metodoPago === 'Tarjeta') t.tarjeta += p.monto;
       else if (p.metodoPago === 'Transferencia') t.transferencia += p.monto;
-      else if (p.metodoPago === 'Stripe') t.stripe += p.monto;
+      else if (p.metodoPago === 'Stripe') { t.stripe += p.monto; t.stripeSinDato += 1; }
     });
     t.granTotal = t.efectivo + t.tarjeta + t.transferencia + t.stripe;
   }

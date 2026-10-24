@@ -73,7 +73,7 @@
         </span>
         <span class="cp-row__main">
           <span class="cp-row__name">{{ c.nombre }}</span>
-          <span class="cp-row__meta">{{ disparadores[c.disparador] }} · {{ resumenDisparador(c) }}</span>
+          <span class="cp-row__meta">{{ nombresDisparadores(c) }} · {{ resumenDisparador(c) }}</span>
         </span>
         <span class="cp-row__side">
           <span class="cp-status" [attr.data-estado]="c.estado">{{ c.estado }}</span>
@@ -132,8 +132,8 @@
       </div>
 
       <section class="cp-section">
-        <h3>Disparador</h3>
-        <ng-container *ngIf="c.disparador === 'enlace'; else porPalabra">
+        <h3>{{ disparadoresDe(c).length > 1 ? 'Disparadores' : 'Disparador' }}</h3>
+        <ng-container *ngIf="tiene(c, 'enlace')">
           <p class="cp-muted">Comparte este enlace en anuncios, tu bio o un QR. Quien entre por él quedará registrado.</p>
           <div class="cp-link" *ngIf="c.enlace; else sinEnlace">
             <code>{{ c.enlace }}</code>
@@ -149,15 +149,21 @@
             </p>
           </ng-template>
         </ng-container>
-        <ng-template #porPalabra>
+        <ng-container *ngIf="usaPalabras(c)">
           <p class="cp-muted">{{ fraseDisparo(c) }}</p>
           <div class="cp-chips">
             <span class="cp-chip" *ngFor="let p of c.palabrasClave">{{ p }}</span>
           </div>
-          <p class="cp-muted" *ngIf="c.disparador === 'comentario'">
-            En {{ c.publicacionId ? 'la publicación ' + c.publicacionId : 'cualquier publicación' }}
+          <p class="cp-muted" *ngIf="tiene(c, 'comentario')">
+            Comentarios en {{ c.publicacionId ? 'la publicación ' + c.publicacionId : 'cualquier publicación' }}
           </p>
-        </ng-template>
+        </ng-container>
+        <ng-container *ngIf="tiene(c, 'anuncio')">
+          <p class="cp-muted">Cuando alguien escribe desde estos anuncios de Meta (aunque sólo diga “Hola”):</p>
+          <div class="cp-chips">
+            <span class="cp-chip" *ngFor="let p of c.anuncioIds">{{ p }}</span>
+          </div>
+        </ng-container>
         <p class="cp-muted cp-small">
           Código <code>{{ c.codigo }}</code> ·
           <ng-container *ngIf="!c.fechaInicio && !c.fechaFin">sin fecha límite</ng-container>
@@ -169,6 +175,11 @@
 
       <section class="cp-section">
         <h3>Respuesta del bot</h3>
+        <p class="cp-muted" *ngIf="c.flujoId">
+          <i class="fas fa-project-diagram" aria-hidden="true"></i>
+          Conversa con un flujo del constructor.
+          <a [routerLink]="['/admin/flujos']" [queryParams]="{ flujo: c.flujoId }">Abrir el flujo</a>
+        </p>
         <div class="cp-chat">
           <div class="cp-bubble cp-bubble--in">{{ mensajeEntrada(c) }}</div>
           <div class="cp-bubble cp-bubble--out" *ngIf="c.respuesta.mensaje || c.respuesta.mediaUrl">

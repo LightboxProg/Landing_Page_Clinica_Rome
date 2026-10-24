@@ -1,59 +1,23 @@
-<div class="gestion-page">
-  <!-- Page Header -->
-  <section class="page-header">
-    <div class="container">
-      <h1 class="page-title">
-        <i class="fas fa-cogs"></i>
-        Panel de Gestión
-      </h1>
-      <p class="page-subtitle">Administra los servicios estéticos y membresías de Clínica Rome</p>
-    </div>
-  </section>
+<div class="gestion-page tema-adm">
+  <header class="encabezado">
+    <div class="contenedor">
+      <p class="grupo">{{ actual.grupo }}</p>
+      <h1 class="titulo">{{ actual.titulo }}</h1>
+      <p class="descripcion">{{ actual.descripcion }}</p>
 
-  <!-- Tabs -->
-  <div class="container">
-    <div class="tabs-container">
-      <button class="tab-btn" [class.active]="tabActivo === 'servicios'" (click)="cambiarTab('servicios')"
-        id="tab-servicios">
-        <i class="fas fa-spa"></i>
-        <span>Servicios Estéticos</span>
-      </button>
-      <button class="tab-btn" [class.active]="tabActivo === 'serviciosDentales'" (click)="cambiarTab('serviciosDentales')"
-        id="tab-servicios-dentales">
-        <i class="fas fa-tooth"></i>
-        <span>Servicios Dentales</span>
-      </button>
-      <button class="tab-btn" [class.active]="tabActivo === 'membresias'" (click)="cambiarTab('membresias')"
-        id="tab-membresias">
-        <i class="fas fa-id-card"></i>
-        <span>Planes de membresía</span>
-      </button>
-      <button class="tab-btn" [class.active]="tabActivo === 'suscripciones'" (click)="cambiarTab('suscripciones')"
-        id="tab-suscripciones">
-        <i class="fas fa-users"></i>
-        <span>Membresías contratadas</span>
-      </button>
-      <button class="tab-btn" [class.active]="tabActivo === 'corteDiario'" (click)="cambiarTab('corteDiario')"
-        id="tab-corte-diario">
-        <i class="fas fa-cash-register"></i>
-        <span>Corte Diario</span>
-      </button>
-      <button class="tab-btn" [class.active]="tabActivo === 'promociones'" (click)="cambiarTab('promociones')"
-        id="tab-promociones">
-        <i class="fas fa-percent"></i>
-        <span>Promociones</span>
-      </button>
-      <div class="tab-indicator" 
-           [class.tab-1]="tabActivo === 'serviciosDentales'"
-           [class.tab-2]="tabActivo === 'membresias'" 
-           [class.tab-3]="tabActivo === 'suscripciones'"
-           [class.tab-4]="tabActivo === 'corteDiario'"
-           [class.tab-5]="tabActivo === 'promociones'"></div>
+      <nav class="pestanas" role="tablist" [attr.aria-label]="actual.grupo" *ngIf="tabsDelGrupo.length > 1">
+        <button *ngFor="let t of tabsDelGrupo" type="button" role="tab" class="pestana"
+                [class.activa]="tabActivo === t" [attr.aria-selected]="tabActivo === t"
+                (click)="cambiarTab(t)">
+          <i class="fas" [ngClass]="info[t].icono" aria-hidden="true"></i>
+          {{ info[t].corto }}
+        </button>
+      </nav>
     </div>
-  </div>
+  </header>
 
   <!-- Tab Content -->
-  <div class="container tab-content">
+  <div class="contenedor tab-content">
     <!-- Tab: Servicios -->
     <div class="tab-panel" *ngIf="tabActivo === 'servicios'">
       <div class="panel-layout">

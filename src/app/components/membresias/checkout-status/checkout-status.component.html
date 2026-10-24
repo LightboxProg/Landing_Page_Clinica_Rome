@@ -10,6 +10,19 @@
         Recibimos tu pago y el horario quedó reservado a tu nombre. Te enviaremos
         la confirmación con los datos de tu cita.
       </p>
+      <p class="res__next u-data" *ngIf="verificandoCita">Cargando los datos de tu cita…</p>
+
+      <div class="res__cita" *ngIf="cita">
+        <p class="res__cuando">{{ fechaCita(cita.fechaHoraInicio) }}</p>
+        <p class="res__hora u-data">{{ horaCita(cita.fechaHoraInicio) }} – {{ horaCita(cita.fechaHoraFin) }}</p>
+        <dl class="res__datos">
+          <div><dt>Tratamiento</dt><dd>{{ cita.titulo }}</dd></div>
+          <div *ngIf="cita.doctor"><dt>Te atiende</dt><dd>Dr(a). {{ cita.doctor }}</dd></div>
+          <div><dt>Pagaste</dt><dd class="u-data">{{ cita.montoAnticipo | currency:'MXN':'symbol-narrow':'1.0-0' }}</dd></div>
+          <div *ngIf="cita.restante > 0"><dt>En clínica</dt><dd class="u-data">{{ cita.restante | currency:'MXN':'symbol-narrow':'1.0-0' }}</dd></div>
+        </dl>
+      </div>
+
       <p class="res__next u-data">Llega 10 minutos antes · Trae identificación</p>
     </ng-container>
 
@@ -52,7 +65,7 @@
       <button class="btn btn--solid" (click)="volver()" type="button">
         {{ type === 'cita' ? 'Volver a citas' : 'Ver membresías' }}
       </button>
-      <a *ngIf="type !== 'cita' && membresia" routerLink="/agendar-cita" class="btn btn--line">Agendar sesión</a>
+      <a *ngIf="type !== 'cita' && membresia && !soloPromos" routerLink="/agendar-cita" class="btn btn--line">Agendar sesión</a>
     </div>
   </div>
 

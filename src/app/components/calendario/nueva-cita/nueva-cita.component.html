@@ -1,0 +1,166 @@
+<div class="velo" *ngIf="abierto" (click)="cerrar.emit()"></div>
+
+<aside class="panel" *ngIf="abierto" role="dialog" aria-modal="true" aria-labelledby="tituloNuevaCita">
+  <header class="panel-cabeza">
+    <div>
+      <p class="eyebrow">Agenda</p>
+      <h2 id="tituloNuevaCita">Nueva cita</h2>
+    </div>
+    <button type="button" class="cerrar" (click)="cerrar.emit()" aria-label="Cerrar"><i class="fas fa-times" aria-hidden="true"></i></button>
+  </header>
+
+  <form class="panel-cuerpo" (ngSubmit)="guardar()" novalidate>
+    <!-- ¿Con quién? -->
+    <section class="bloque">
+      <label class="etiqueta">Con quién</label>
+      <div class="fijo" *ngIf="doctorFijo; else elegirDoctor">
+        <span class="punto" [style.background]="especialista?.color"></span>
+        {{ especialista?.nombre || 'Tu agenda' }}
+        <small>Se agenda en tu calendario</small>
+      </div>
+      <ng-template #elegirDoctor>
+        <div class="medicos" role="radiogroup" aria-label="Con quién">
+          <button *ngFor="let e of especialistas" type="button" class="medico" role="radio"
+                  [class.activo]="doctorId === e.id" [attr.aria-checked]="doctorId === e.id"
+                  (click)="doctorId = e.id; alCambiarDoctor()">
+            <span class="punto" [style.background]="e.color"></span>
+            <span class="medico-texto">
+              <span class="medico-nombre">{{ e.nombre }}</span>
+              <small>{{ e.atencion === 'Dental' ? 'Dental' : 'Estética' }}</small>
+            </span>
+          </button>
+        </div>
+      </ng-template>
+    </section>
+
+    <!-- ¿Cuándo? -->
+    <section class="bloque">
+      <label class="etiqueta">Cuándo</label>
+      <div class="fila-3">
+        <div class="campo">
+          <label for="ncFecha">Fecha</label>
+          <input id="ncFecha" type="date" name="fecha" [(ngModel)]="fecha" (ngModelChange)="conflictos = []" />
+        </div>
+        <div class="campo">
+          <label for="ncHora">Hora</label>
+          <input id="ncHora" type="time" name="hora" step="900" [(ngModel)]="hora" (ngModelChange)="conflictos = []" />
+        </div>
+        <div class="campo">
+          <label for="ncDuracion">Duración</label>
+          <select id="ncDuracion" name="duracion" [(ngModel)]="duracion" (ngModelChange)="conflictos = []">
+            <option *ngFor="let m of duraciones" [ngValue]="m">{{ etiquetaDuracion(m) }}</option>
+          </select>
+        </div>
+      </div>
+      <p class="ayuda" *ngIf="inicioCita && finCita">
+        <span class="capital">{{ fechaLegible }}</span> · {{ inicioCita | date:'H:mm' }}–{{ finCita | date:'H:mm' }}
+        <span class="aviso-pasado" *ngIf="enElPasado">· ya pasó: quedará registrada como cita anterior</span>
+      </p>
+    </section>
+
+    <!-- ¿Quién? -->
+    <section class="bloque">
+      <div class="etiqueta-fila">
+        <label class="etiqueta">Paciente</label>
+        <button type="button" class="enlace" *ngIf="modoPersona === 'existente'" (click)="modoPersona = 'nueva'">Persona nueva</button>
+        <button type="button" class="enlace" *ngIf="modoPersona === 'nueva'" (click)="modoPersona = 'existente'">Buscar paciente</button>
+      </div>
+
+      <ng-container *ngIf="modoPersona === 'existente'">
+        <div class="elegido" *ngIf="paciente; else buscar">
+          <span class="avatar">{{ paciente.nombre?.[0] }}{{ paciente.apeP?.[0] }}</span>
+          <span class="elegido-texto">
+            <strong>{{ nombreDe(paciente) }}</strong>
+            <small>{{ telefonoDe(paciente) || 'Sin teléfono' }}</small>
+          </span>
+          <button type="button" class="enlace" (click)="paciente = null">Cambiar</button>
+        </div>
+        <ng-template #buscar>
+          <div class="buscador">
+            <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
+            <input type="search" name="busqueda" [(ngModel)]="busqueda" placeholder="Nombre o teléfono" autocomplete="off" aria-label="Buscar paciente" />
+          </div>
+          <ul class="sugerencias" *ngIf="sugerencias.length > 0">
+            <li *ngFor="let p of sugerencias">
+              <button type="button" (click)="elegirPaciente(p)">
+                <span class="avatar">{{ p.nombre?.[0] }}{{ p.apeP?.[0] }}</span>
+                <span class="elegido-texto"><strong>{{ nombreDe(p) }}</strong><small>{{ telefonoDe(p) }}</small></span>
+              </button>
+            </li>
+          </ul>
+          <button type="button" class="sin-resultado" *ngIf="busqueda.length >= 2 && sugerencias.length === 0" (click)="usarComoNueva()">
+            <i class="fas fa-user-plus" aria-hidden="true"></i> No está registrado: agendar a “{{ busqueda }}” como persona nueva
+          </button>
+        </ng-template>
+      </ng-container>
+
+      <div class="fila-2" *ngIf="modoPersona === 'nueva'">
+        <div class="campo">
+          <label for="ncNombre">Nombre</label>
+          <input id="ncNombre" type="text" name="nombre" [(ngModel)]="nuevaPersona.nombre" placeholder="Nombre y apellido" />
+        </div>
+        <div class="campo">
+          <label for="ncTel">Teléfono (10 dígitos)</label>
+          <input id="ncTel" type="tel" name="telefono" inputmode="numeric" maxlength="10" [(ngModel)]="nuevaPersona.telefono" placeholder="4491234567" />
+        </div>
+        <p class="ayuda doble">Queda como prospecto; se vuelve paciente cuando se le abre expediente.</p>
+      </div>
+    </section>
+
+    <!-- ¿Qué? -->
+    <section class="bloque">
+      <label class="etiqueta" for="ncServicio">Tratamiento</label>
+      <select id="ncServicio" name="servicio" [(ngModel)]="servicioId" (ngModelChange)="alCambiarServicio()" [disabled]="!doctorId">
+        <option value="" disabled>{{ doctorId ? 'Elige el tratamiento' : 'Primero elige con quién va' }}</option>
+        <option *ngFor="let s of servicios" [value]="s._id">{{ s.nombre }}{{ s.costo != null ? ' · $' + (s.costo | number:'1.0-0') : '' }}</option>
+      </select>
+
+      <div class="fila-2 cobro">
+        <div class="campo">
+          <label for="ncCosto">Costo (MXN)</label>
+          <input id="ncCosto" type="number" name="costo" min="0" step="1" [(ngModel)]="costo" />
+        </div>
+        <label class="casilla">
+          <input type="checkbox" name="conAnticipo" [(ngModel)]="conAnticipo" />
+          Registrar anticipo
+        </label>
+      </div>
+      <div class="fila-2" *ngIf="conAnticipo">
+        <div class="campo">
+          <label for="ncAnticipo">Anticipo (MXN)</label>
+          <input id="ncAnticipo" type="number" name="anticipo" min="0" step="1" [(ngModel)]="anticipo" />
+        </div>
+        <div class="campo">
+          <label for="ncMetodo">Se recibió en</label>
+          <select id="ncMetodo" name="metodo" [(ngModel)]="metodoAnticipo">
+            <option *ngFor="let m of metodos" [value]="m">{{ m }}</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <section class="bloque">
+      <label class="etiqueta" for="ncNotas">Notas <small>(opcional)</small></label>
+      <textarea id="ncNotas" name="notas" rows="2" [(ngModel)]="notas" placeholder="Algo que deba saber quien atiende"></textarea>
+    </section>
+
+    <!-- Choque de horario: se avisa y se puede agendar de todos modos -->
+    <div class="conflicto" *ngIf="conflictos.length > 0" role="alert">
+      <p><i class="fas fa-triangle-exclamation" aria-hidden="true"></i> <strong>{{ especialista?.nombre || 'El especialista' }} ya tiene algo a esa hora:</strong></p>
+      <ul><li *ngFor="let c of conflictos">{{ descripcionConflicto(c) }}</li></ul>
+      <div class="conflicto-acciones">
+        <button type="button" class="btn-sec" (click)="conflictos = []">Cambiar la hora</button>
+        <button type="button" class="btn-alerta" (click)="guardar(true)" [disabled]="guardando">Agendar de todos modos</button>
+      </div>
+    </div>
+
+    <p class="error" *ngIf="error" role="alert"><i class="fas fa-circle-exclamation" aria-hidden="true"></i> {{ error }}</p>
+
+    <footer class="panel-pie">
+      <button type="button" class="btn-sec" (click)="cerrar.emit()">Cancelar</button>
+      <button type="submit" class="btn-pri" [disabled]="guardando || conflictos.length > 0">
+        {{ guardando ? 'Agendando…' : 'Agendar cita' }}
+      </button>
+    </footer>
+  </form>
+</aside>

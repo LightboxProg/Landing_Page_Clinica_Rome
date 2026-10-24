@@ -9,12 +9,25 @@
     --success: oklch(0.62 0.15 145);
     --success-soft: oklch(0.96 0.04 145);
 }
+/* Tema oscuro del panel: mismas variables, valores oscuros */
+:host-context(html[data-tema="oscuro"]) {
+  --navy: var(--adm-texto);
+  --primary: oklch(0.66 0.14 250);
+  --primary-soft: oklch(0.32 0.06 250);
+  --bg-app: var(--adm-fondo);
+  --surface: var(--adm-superficie);
+  --border: var(--adm-borde);
+  --text-muted: var(--adm-tenue);
+  --success: var(--adm-ok);
+  --success-soft: var(--adm-ok-fondo);
+}
+
 
 .app-shell {
     display: flex;
     height: 100vh;
     background-color: var(--bg-app);
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: var(--body);
     overflow: hidden;
     position: relative;
 }
@@ -89,7 +102,7 @@
 }
 
 .nav-step:hover:not(.disabled) {
-    background: rgba(0,0,0,0.03);
+    background: var(--adm-hover);
 }
 
 .nav-step.active {
@@ -166,7 +179,7 @@
     top: 0;
     z-index: 5;
     backdrop-filter: blur(12px);
-    background: rgba(255, 255, 255, 0.85);
+    background: var(--adm-superficie);
     border-bottom: 1px solid var(--border);
     padding: 20px 48px;
 }
@@ -196,7 +209,7 @@
     left: 20px;
     right: 20px;
     height: 1px;
-    background: oklch(0.92 0.01 250);
+    background: var(--adm-hover);
 }
 
 .nav-step-historial:focus-visible {
@@ -322,7 +335,7 @@
     color: var(--primary);
     padding: 6px 12px;
     border-radius: 6px;
-    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-family: var(--data);
     font-weight: 700;
     font-size: 0.8rem;
     border: 1px solid oklch(0.55 0.18 250 / 0.2);
@@ -332,7 +345,8 @@
 .device-preview-area {
     width: 420px;
     flex-shrink: 0;
-    background: linear-gradient(180deg, oklch(0.97 0.015 250) 0%, oklch(0.99 0.005 250) 100%);
+    /* Fondo del panel según el tema; el teléfono de adentro siempre se ve como WhatsApp */
+    background: var(--adm-superficie-2);
     border-left: 1px solid var(--border);
     display: flex;
     align-items: center;
@@ -412,7 +426,7 @@
 
 /* Base para botones personalizados */
 .custom-nav-btn {
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: var(--body);
     font-size: 0.95rem;
     font-weight: 600;
     padding: 12px 28px;
@@ -441,12 +455,12 @@
 
 /* Boton principal corporativo (Continuar) */
 .btn-primary-solid {
-    background-color: var(--navy);
-    color: #FFFFFF;
+    background-color: var(--adm-primario);
+    color: var(--adm-sobre-primario);
 }
 
 .btn-primary-solid:hover:not(:disabled) {
-    background-color: #0F172A;
+    background-color: var(--adm-primario);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(26, 43, 60, 0.15);
 }
@@ -505,18 +519,18 @@
 }
 
 .metric-recipients .metric-icon-wrap {
-    background: oklch(0.93 0.06 145);
-    color: oklch(0.5 0.18 145);
+    background: var(--adm-ok-fondo);
+    color: var(--adm-ok);
 }
 
 .metric-template .metric-icon-wrap {
-    background: oklch(0.93 0.06 250);
+    background: var(--adm-info-fondo);
     color: var(--primary);
 }
 
 .metric-media .metric-icon-wrap {
-    background: oklch(0.93 0.06 300);
-    color: oklch(0.5 0.18 300);
+    background: var(--adm-info-fondo);
+    color: var(--adm-info);
 }
 
 .metric-value {
@@ -571,10 +585,10 @@
     flex-shrink: 0;
 }
 
-.review-icon-camp { background: oklch(0.96 0.04 30);  color: oklch(0.55 0.18 30); }
-.review-icon-tpl  { background: oklch(0.94 0.05 250); color: var(--primary); }
-.review-icon-aud  { background: oklch(0.93 0.05 145); color: oklch(0.5 0.18 145); }
-.review-icon-med  { background: oklch(0.94 0.05 300); color: oklch(0.5 0.18 300); }
+.review-icon-camp { background: var(--adm-error-fondo);  color: var(--adm-error); }
+.review-icon-tpl  { background: var(--adm-info-fondo); color: var(--primary); }
+.review-icon-aud  { background: var(--adm-ok-fondo); color: var(--adm-ok); }
+.review-icon-med  { background: var(--adm-info-fondo); color: var(--adm-info); }
 
 .review-row-body { flex: 1; min-width: 0; }
 
@@ -607,7 +621,7 @@
     border-radius: 20px;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--data);
 }
 
 /* Indicadores de estado ok / warn */
@@ -623,8 +637,8 @@
     font-weight: 700;
 }
 
-.status-ok   { background: oklch(0.93 0.06 145); color: oklch(0.48 0.18 145); }
-.status-warn { background: oklch(0.96 0.08 60);  color: oklch(0.6 0.18 60); }
+.status-ok   { background: var(--adm-ok-fondo); color: var(--adm-ok); }
+.status-warn { background: var(--adm-aviso-fondo);  color: var(--adm-aviso); }
 
 /* Chips de audiencia */
 .review-meta-chips {
@@ -641,8 +655,8 @@
     text-transform: capitalize;
 }
 
-.chip-pac  { background: oklch(0.93 0.05 250); color: var(--primary); }
-.chip-lead { background: oklch(0.94 0.05 300); color: oklch(0.5 0.18 300); }
+.chip-pac  { background: var(--adm-info-fondo); color: var(--primary); }
+.chip-lead { background: var(--adm-info-fondo); color: var(--adm-info); }
 
 /* Badge de tipo de contenido */
 .review-content-badge {
@@ -660,9 +674,9 @@
 }
 
 .review-content-badge.badge-media {
-    background: oklch(0.94 0.05 300 / 0.5);
-    border-color: oklch(0.8 0.08 300);
-    color: oklch(0.45 0.18 300);
+    background: var(--adm-info-fondo);
+    border-color: var(--adm-info-borde);
+    color: var(--adm-info);
 }
 
 /* Aviso de lanzamiento */

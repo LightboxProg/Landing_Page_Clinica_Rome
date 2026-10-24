@@ -37,9 +37,11 @@
   --rule-soft: rgba(16, 26, 44, 0.08);
 
   /* --- type --- */
-  --display: 'Bodoni Moda', 'Didot', Georgia, serif;
+  /* Títulos en serif de trazo parejo (Bodoni se leía mal en pantalla);
+     etiquetas, botones y cifras en la misma sans del texto, con números tabulares */
+  --display: 'Source Serif 4', Georgia, 'Times New Roman', serif;
   --body:    'IBM Plex Sans', system-ui, -apple-system, sans-serif;
-  --data:    'IBM Plex Mono', ui-monospace, 'SF Mono', monospace;
+  --data:    'IBM Plex Sans', system-ui, -apple-system, sans-serif;
 
   /* --- fluid type scale --- */
   --t-hero: clamp(2.55rem, 4.7vw, 4.7rem);
@@ -80,17 +82,22 @@ body {
 
 img { max-width: 100%; display: block; border: 0; }
 
-/* ---- display type: Bodoni, used large and with restraint ---- */
+/* ---- display type: serif, used large and with restraint ---- */
 h1, h2, h3, h4, .u-display {
   font-family: var(--display);
   font-optical-sizing: auto;
   color: var(--ink);
-  font-weight: 500;
-  line-height: 1.06;
-  letter-spacing: -0.015em;
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  /* el tema viejo les pone una sombra dorada que difumina las letras */
+  text-shadow: none;
   margin-top: 0;
   text-wrap: balance;
 }
+
+/* El tema viejo pone Patua One / Roboto en h5, h6 y otros títulos chicos */
+h5, h6 { font-family: var(--body); font-weight: 600; color: inherit; letter-spacing: normal; text-shadow: none; }
 
 h1 { font-size: var(--t-h1); }
 h2 { font-size: var(--t-h2); }
@@ -130,9 +137,9 @@ a { color: inherit; }
   align-items: center;
   gap: 0.7rem;
   font-family: var(--data);
-  font-size: var(--t-xs);
-  font-weight: 500;
-  letter-spacing: 0.2em;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--brass-ink);
   margin: 0 0 1.4rem;
@@ -160,7 +167,7 @@ a { color: inherit; }
 .u-data {
   font-family: var(--data);
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
 }
 
 /* ============================================================
@@ -195,9 +202,9 @@ a { color: inherit; }
   border: 1px solid transparent;
   border-radius: var(--r);
   font-family: var(--data);
-  font-size: var(--t-xs);
-  font-weight: 500;
-  letter-spacing: 0.14em;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   text-decoration: none;
   cursor: pointer;
@@ -224,6 +231,14 @@ a { color: inherit; }
   border-color: rgba(238, 241, 244, 0.3);
 }
 .btn--onink:hover { background: var(--porcelain); color: var(--ink); border-color: var(--porcelain); }
+
+/* El tema viejo pinta de rosa `a:visited` (0,1,1), que gana a `.btn--solid`
+   (0,1,0): un botón ya visitado salía con texto rosa. Mismo color, más peso. */
+a.btn--solid, a.btn--solid:visited { color: var(--porcelain); }
+a.btn--line, a.btn--line:visited { color: var(--ink); }
+a.btn--onink, a.btn--onink:visited { color: var(--porcelain); }
+a.btn--line:hover { color: var(--brass-ink); }
+a.btn--onink:hover { color: var(--ink); }
 
 /* ============================================================
    Shared page furniture — used by every interior page
@@ -418,3 +433,156 @@ html body {
 
 /* …and colours every link pink */
 .co a { color: inherit; }
+
+/* …and gives every <button> a pink glow (custom.css) */
+.co button, .co button:hover { box-shadow: none; }
+
+/* ============================================================
+   Panel administrativo: tema claro / oscuro
+   ------------------------------------------------------------
+   Los componentes del panel usan estas variables en lugar de
+   colores fijos. El oscuro se activa con html[data-tema="oscuro"],
+   que sólo pone el layout del admin (la página pública no cambia).
+   Las páginas que todavía no usan variables se quedan claras.
+   ============================================================ */
+:root {
+  --adm-fondo: #f6f4ef;
+  --adm-superficie: #ffffff;
+  --adm-superficie-2: #faf9f6;
+  --adm-hover: #f4f2ec;
+  --adm-borde: #e7e3d8;
+  --adm-borde-suave: #efece4;
+  --adm-texto: #16263a;
+  --adm-texto-2: #475467;
+  --adm-tenue: #64748b;
+  --adm-muy-tenue: #94a3b8;
+
+  --adm-acento: #a08a3e;
+  --adm-acento-fuerte: #6b5a24;
+  --adm-acento-fondo: rgba(194, 168, 90, 0.14);
+  --adm-laton: #c2a85a;
+  --adm-teal: #2a6b7c;
+
+  --adm-primario: #16263a;
+  --adm-primario-hover: #22384f;
+  --adm-sobre-primario: #ffffff;
+  /* Encabezados de página en banda navy: siguen navy en ambos temas */
+  --adm-banda: linear-gradient(135deg, #1a2b3c 0%, #2a6b7c 100%);
+
+  --adm-input-fondo: #ffffff;
+  --adm-input-borde: #ddd8cc;
+
+  --adm-ok: #067647;
+  --adm-ok-fondo: #ecfdf3;
+  --adm-ok-borde: #abefc6;
+  --adm-aviso: #b54708;
+  --adm-aviso-fondo: #fff6ed;
+  --adm-aviso-borde: #f9d4ae;
+  --adm-error: #b42318;
+  --adm-error-fondo: #fef3f2;
+  --adm-error-borde: #fecdca;
+  --adm-info: #3538cd;
+  --adm-info-fondo: #eef4ff;
+  --adm-info-borde: #c7d7fe;
+  --adm-neutro: #475467;
+  --adm-neutro-fondo: #f8fafc;
+  --adm-neutro-borde: #e4e7ec;
+
+  --adm-sombra: 0 16px 40px rgba(10, 18, 28, 0.18);
+  --adm-sombra-suave: 0 2px 8px rgba(10, 18, 28, 0.05);
+  --adm-velo: rgba(10, 18, 28, 0.45);
+}
+
+html[data-tema="oscuro"] {
+  color-scheme: dark;
+
+  --adm-fondo: #0e1621;
+  --adm-superficie: #152130;
+  --adm-superficie-2: #1a2738;
+  --adm-hover: #1f2e41;
+  --adm-borde: #263649;
+  --adm-borde-suave: #213044;
+  --adm-texto: #e6ebf1;
+  --adm-texto-2: #b9c4d0;
+  --adm-tenue: #8c9aab;
+  --adm-muy-tenue: #687789;
+
+  --adm-acento: #d6bd72;
+  --adm-acento-fuerte: #e6cf8c;
+  --adm-acento-fondo: rgba(214, 189, 114, 0.14);
+  --adm-laton: #d6bd72;
+  --adm-teal: #7cc0d0;
+
+  /* En oscuro el botón principal pasa a latón: un navy no se distinguiría */
+  --adm-primario: #d6bd72;
+  --adm-primario-hover: #e3cb85;
+  --adm-sobre-primario: #111a26;
+  --adm-banda: linear-gradient(135deg, #1a2a3d 0%, #1d4350 100%);
+
+  --adm-input-fondo: #101a27;
+  --adm-input-borde: #2c3d52;
+
+  --adm-ok: #5fd08a;
+  --adm-ok-fondo: rgba(34, 197, 94, 0.12);
+  --adm-ok-borde: rgba(34, 197, 94, 0.3);
+  --adm-aviso: #f5b54a;
+  --adm-aviso-fondo: rgba(245, 158, 11, 0.12);
+  --adm-aviso-borde: rgba(245, 158, 11, 0.32);
+  --adm-error: #f58b85;
+  --adm-error-fondo: rgba(239, 68, 68, 0.12);
+  --adm-error-borde: rgba(239, 68, 68, 0.32);
+  --adm-info: #a9b6ff;
+  --adm-info-fondo: rgba(99, 102, 241, 0.14);
+  --adm-info-borde: rgba(99, 102, 241, 0.34);
+  --adm-neutro: #b9c4d0;
+  --adm-neutro-fondo: #1a2738;
+  --adm-neutro-borde: #2c3d52;
+
+  --adm-sombra: 0 16px 40px rgba(0, 0, 0, 0.5);
+  --adm-sombra-suave: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --adm-velo: rgba(0, 0, 0, 0.6);
+}
+
+/* La agenda (FullCalendar) lee sus propias variables */
+html[data-tema="oscuro"] .fc {
+  --fc-page-bg-color: var(--adm-superficie);
+  --fc-neutral-bg-color: var(--adm-superficie-2);
+  --fc-neutral-text-color: var(--adm-tenue);
+  --fc-border-color: var(--adm-borde);
+  --fc-today-bg-color: rgba(214, 189, 114, 0.1);
+  --fc-list-event-hover-bg-color: var(--adm-hover);
+  --fc-non-business-color: rgba(0, 0, 0, 0.18);
+  --fc-highlight-color: rgba(214, 189, 114, 0.18);
+  color: var(--adm-texto);
+}
+html[data-tema="oscuro"] .fc a { color: inherit; }
+
+/* Las alertas de SweetAlert también siguen el tema dentro del panel */
+html[data-tema="oscuro"] .swal2-popup {
+  background: var(--adm-superficie);
+  color: var(--adm-texto);
+}
+html[data-tema="oscuro"] .swal2-title,
+html[data-tema="oscuro"] .swal2-html-container { color: var(--adm-texto); }
+
+/* Páginas del panel ya migradas a variables: llevan la clase .tema-adm.
+   El tema viejo pone colores fijos en títulos, párrafos, tablas e inputs;
+   aquí se heredan del tema. Especificidad baja (0,1,1) a propósito: gana
+   al tema viejo por orden, pero pierde ante las reglas de cada componente. */
+.tema-adm {
+  color: var(--adm-texto);
+}
+.tema-adm :is(h1, h2, h3, h4, h5, h6, p, label, legend, td, th, li, dt, dd) {
+  color: inherit;
+}
+.tema-adm :is(td, th) {
+  border-color: var(--adm-borde-suave);
+}
+.tema-adm :is(input, select, textarea) {
+  background-color: var(--adm-input-fondo);
+  color: var(--adm-texto);
+  border-color: var(--adm-input-borde);
+}
+.tema-adm :is(input, textarea)::placeholder {
+  color: var(--adm-muy-tenue);
+}

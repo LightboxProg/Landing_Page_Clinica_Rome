@@ -1,0 +1,278 @@
+/* ============================================================
+   PORTADA DE PROMOCIÓN — tinta, con el banner de la promo
+   ============================================================ */
+
+.feature {
+  background: var(--ink);
+  color: var(--porcelain);
+  padding-block: clamp(3rem, 6vw, 5.5rem);
+}
+
+.feature__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: clamp(2.5rem, 6vw, 5rem);
+  align-items: center;
+}
+
+.feature__clock {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0 0 1.4rem;
+  font-size: var(--t-xs);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--brass);
+}
+.feature__clock.is-urgent { color: #E39A84; }
+
+.feature__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+.feature .feature__title {
+  margin: 0;
+  font-size: var(--t-hero);
+  line-height: 1.02;
+  color: var(--porcelain);
+  text-wrap: balance;
+}
+
+.feature__desc {
+  max-width: 46ch;
+  margin: 1.3rem 0 0;
+  font-size: var(--t-body);
+  line-height: 1.6;
+  color: rgba(238, 241, 244, 0.78);
+}
+
+.feature__dates {
+  margin: 0.9rem 0 0;
+  font-size: var(--t-sm);
+  color: rgba(238, 241, 244, 0.6);
+}
+
+.feature__save {
+  margin: 1.8rem 0 0;
+  font-size: 1.05rem;
+  color: rgba(238, 241, 244, 0.85);
+}
+.feature__save strong { font-weight: 600; color: var(--brass); }
+
+.feature__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-top: 2.2rem;
+}
+
+
+.feature__note {
+  margin: 1.1rem 0 0;
+  font-size: var(--t-xs);
+  color: rgba(238, 241, 244, 0.55);
+}
+
+.feature__media {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 4 / 5;
+  max-height: 640px;
+  width: 100%;
+  overflow: hidden;
+  background: #17233A;
+  border: 1px solid rgba(238, 241, 244, 0.14);
+  border-radius: var(--r);
+}
+.feature__media img:not(.feature__mark) {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.feature__media.is-empty {
+  display: grid;
+  place-items: center;
+}
+.feature__plate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 2rem;
+  text-align: center;
+}
+.feature__mark { width: 66px; height: auto; opacity: 0.6; }
+.feature .feature__plate-big {
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(2.4rem, 5vw, 4.2rem);
+  line-height: 1;
+  color: var(--porcelain);
+}
+.feature__plate-big em { font-style: italic; color: var(--brass); }
+.feature__plate-small {
+  margin: 0;
+  font-size: var(--t-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(238, 241, 244, 0.55);
+}
+
+/* Botón principal sobre tinta: latón. Dos clases por el orden de styles.css; sin la
+   sombra rosa que el tema viejo le pone a todo <button> */
+button.btn.btn--brass {
+  background: var(--brass);
+  color: var(--ink);
+  border-color: var(--brass);
+  box-shadow: none;
+  height: auto;
+  margin: 0;
+  line-height: inherit;
+}
+button.btn.btn--brass:hover { background: var(--porcelain); border-color: var(--porcelain); }
+
+/* ============================================================
+   TARJETAS DE LA PROMO — debajo de la portada, sobre la tinta
+   ============================================================ */
+
+.feature__cures {
+  margin-top: clamp(3rem, 6vw, 4.5rem);
+  padding-top: clamp(2rem, 4vw, 3rem);
+  border-top: 1px solid rgba(238, 241, 244, 0.16);
+  scroll-margin-top: 6rem;
+}
+
+.pcards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr));
+  gap: clamp(1.5rem, 3vw, 2.25rem) clamp(1rem, 2vw, 1.5rem);
+}
+
+.pcard { display: flex; flex-direction: column; }
+
+.pcard__plate {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: #17233A;
+  border: 1px solid rgba(238, 241, 244, 0.14);
+  border-radius: var(--r);
+}
+.pcard__plate img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s var(--ease);
+}
+.pcard:hover .pcard__plate img { transform: scale(1.04); }
+.pcard__plate.is-empty::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('../../../assets/images/Manual_Rome-10-removebg.png') center / 28% no-repeat;
+  opacity: 0.45;
+}
+
+.pcard__tag {
+  position: absolute;
+  top: 0.7rem;
+  left: 0.7rem;
+  padding: 0.3rem 0.55rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--brass);
+  color: var(--ink);
+  border-radius: var(--r);
+}
+
+.feature .pcard__name {
+  margin: 1rem 0 0;
+  font-size: 1.15rem;
+  line-height: 1.3;
+  color: var(--porcelain);
+}
+
+.pcard__detail {
+  margin: 0.35rem 0 0;
+  font-size: var(--t-sm);
+  line-height: 1.45;
+  color: rgba(238, 241, 244, 0.6);
+}
+
+.pcard__price {
+  margin: 0.6rem 0 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--porcelain);
+}
+.pcard__price s {
+  margin-right: 0.45rem;
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: rgba(238, 241, 244, 0.5);
+}
+
+a.pcard__book,
+a.pcard__book:visited {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+  padding: 0.7rem 1.1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--porcelain);
+  border: 1px solid rgba(238, 241, 244, 0.3);
+  border-radius: var(--r);
+  transition: background-color 0.3s var(--ease), color 0.3s var(--ease), border-color 0.3s var(--ease);
+}
+a.pcard__book:hover { background: var(--brass); border-color: var(--brass); color: var(--ink); }
+
+a.feature__more,
+a.feature__more:visited {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--brass);
+}
+a.feature__more:hover { color: var(--porcelain); }
+
+@keyframes pulse { 50% { opacity: 0.25; } }
+
+@media (max-width: 900px) {
+  .feature__grid { grid-template-columns: 1fr; }
+  /* En teléfono el banner va primero: es lo que se ve sin desplazarse */
+  .feature__media { order: -1; aspect-ratio: 4 / 3; }
+  .feature__media.is-empty { aspect-ratio: auto; }
+}
+
+@media (max-width: 560px) {
+  .pcards { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feature__dot { animation: none; }
+  .pcard__plate img { transition: none; }
+}

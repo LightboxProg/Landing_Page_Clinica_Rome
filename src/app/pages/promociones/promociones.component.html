@@ -1,7 +1,10 @@
 <!-- ============================================================
      PROMOCIONES — campañas vigentes y las que vienen, con su reloj
      ============================================================ -->
-<section class="page-head">
+<!-- Con una promo vigente, ella es la portada: banner, reloj y todos sus precios -->
+<app-promo-portada *ngIf="!cargando && destacada" [promo]="destacada" [enlacePromociones]="false" [maxItems]="destacada.items.length"></app-promo-portada>
+
+<section class="page-head" *ngIf="cargando || !destacada">
   <div class="u-shell">
     <p class="u-eyebrow">Promociones</p>
     <h1 class="page-head__title">Precios de temporada,<br />con fecha de cierre.</h1>
@@ -15,62 +18,29 @@
 <p *ngIf="cargando" class="u-shell state u-data">Cargando promociones…</p>
 <p *ngIf="error" class="u-shell state state--error u-data">{{ error }}</p>
 
-<!-- ============================================================
-     CUENTA REGRESIVA — siguiente apertura
-     ============================================================ -->
-<section class="band band--ink countdown" *ngIf="!cargando && aperturaSiguiente">
-  <div class="u-shell countdown__inner">
-    <div class="countdown__copy" appReveal>
-      <p class="countdown__eyebrow u-data">
-        <span class="countdown__dot" aria-hidden="true"></span>
-        {{ vigentes.length ? 'Lo que sigue' : 'Muy pronto' }}
-      </p>
-      <h2 class="countdown__title">
-        Siguientes promociones en<br />
-        <em>{{ cuentaEnPalabras }}</em>
-      </h2>
-      <p class="countdown__when u-data">
-        Abren el {{ aperturaTexto }}
-      </p>
-    </div>
-
-    <div class="countdown__clock u-data" role="timer" aria-live="off"
-         [attr.aria-label]="'Faltan ' + cuentaEnPalabras">
-      <div class="countdown__unit">
-        <span class="countdown__n">{{ cuenta.dias }}</span>
-        <span class="countdown__label">{{ cuenta.dias === 1 ? 'día' : 'días' }}</span>
-      </div>
-      <div class="countdown__unit">
-        <span class="countdown__n">{{ dosDigitos(cuenta.horas) }}</span>
-        <span class="countdown__label">horas</span>
-      </div>
-      <div class="countdown__unit">
-        <span class="countdown__n">{{ dosDigitos(cuenta.minutos) }}</span>
-        <span class="countdown__label">min</span>
-      </div>
-      <div class="countdown__unit">
-        <span class="countdown__n">{{ dosDigitos(cuenta.segundos) }}</span>
-        <span class="countdown__label">seg</span>
-      </div>
-    </div>
-  </div>
-</section>
+<ng-container *ngIf="!destacada">
+  <ng-container *ngTemplateOutlet="cuentaRegresiva"></ng-container>
+</ng-container>
 
 <!-- ============================================================
      VIGENTES — se pueden agendar ya
      ============================================================ -->
-<section class="band band--tight" *ngIf="!cargando && vigentes.length > 0">
+<section class="band band--tight" *ngIf="!cargando && otrasVigentes.length > 0">
   <div class="u-shell">
     <header class="section-head" appReveal>
-      <p class="u-eyebrow">Vigentes</p>
+      <p class="u-eyebrow">También vigentes</p>
       <h2>Agenda hoy con precio de promoción.</h2>
     </header>
 
     <div class="offers">
-      <ng-container *ngTemplateOutlet="tarjetas; context: { $implicit: vigentes, abierta: true }"></ng-container>
+      <ng-container *ngTemplateOutlet="tarjetas; context: { $implicit: otrasVigentes, abierta: true }"></ng-container>
     </div>
   </div>
 </section>
+
+<ng-container *ngIf="destacada">
+  <ng-container *ngTemplateOutlet="cuentaRegresiva"></ng-container>
+</ng-container>
 
 <!-- ============================================================
      PRÓXIMAS — vista previa, todavía sin agendar
@@ -95,7 +65,6 @@
     <p class="u-lede">Por ahora no hay promociones activas. Consulta el catálogo con precios de lista o agenda tu valoración sin costo.</p>
     <div class="empty__ctas">
       <a routerLink="/servicios" class="btn btn--line">Ver servicios</a>
-      <a routerLink="/agendar-cita" class="btn btn--solid">Agendar valoración</a>
     </div>
   </div>
 </section>
@@ -152,4 +121,47 @@
       </li>
     </ul>
   </article>
+</ng-template>
+
+<!-- ============================================================
+     CUENTA REGRESIVA — siguiente apertura
+     ============================================================ -->
+<ng-template #cuentaRegresiva>
+<section class="band band--ink countdown" *ngIf="!cargando && aperturaSiguiente">
+  <div class="u-shell countdown__inner">
+    <div class="countdown__copy" appReveal>
+      <p class="countdown__eyebrow u-data">
+        <span class="countdown__dot" aria-hidden="true"></span>
+        {{ vigentes.length ? 'Lo que sigue' : 'Muy pronto' }}
+      </p>
+      <h2 class="countdown__title">
+        Siguientes promociones en<br />
+        <em>{{ cuentaEnPalabras }}</em>
+      </h2>
+      <p class="countdown__when u-data">
+        Abren el {{ aperturaTexto }}
+      </p>
+    </div>
+
+    <div class="countdown__clock u-data" role="timer" aria-live="off"
+         [attr.aria-label]="'Faltan ' + cuentaEnPalabras">
+      <div class="countdown__unit">
+        <span class="countdown__n">{{ cuenta.dias }}</span>
+        <span class="countdown__label">{{ cuenta.dias === 1 ? 'día' : 'días' }}</span>
+      </div>
+      <div class="countdown__unit">
+        <span class="countdown__n">{{ dosDigitos(cuenta.horas) }}</span>
+        <span class="countdown__label">horas</span>
+      </div>
+      <div class="countdown__unit">
+        <span class="countdown__n">{{ dosDigitos(cuenta.minutos) }}</span>
+        <span class="countdown__label">min</span>
+      </div>
+      <div class="countdown__unit">
+        <span class="countdown__n">{{ dosDigitos(cuenta.segundos) }}</span>
+        <span class="countdown__label">seg</span>
+      </div>
+    </div>
+  </div>
+</section>
 </ng-template>

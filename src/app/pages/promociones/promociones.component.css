@@ -87,7 +87,7 @@
 
 .countdown__label {
   margin-top: 0.55rem;
-  font-size: 0.62rem;
+  font-size: 0.75rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: rgba(238, 241, 244, 0.6);
@@ -134,7 +134,7 @@
   padding: 0.35rem 0.6rem;
   background: var(--ink);
   color: var(--porcelain);
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   letter-spacing: 0.06em;
 }
 
@@ -190,7 +190,7 @@
 .offer__item-name { color: var(--ink); font-size: 0.95rem; }
 
 .offer__item-tag {
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--brass-ink);
@@ -232,7 +232,7 @@
   background: var(--ink);
   color: var(--porcelain);
   border-radius: var(--r);
-  font-size: 0.66rem;
+  font-size: 0.75rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   text-decoration: none;

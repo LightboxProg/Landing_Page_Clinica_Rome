@@ -1,15 +1,16 @@
 /* Contenedor principal de promociones */
 :host {
-  --coffee-dark: #1a2b3c;
-  --coffee-medium: #2a6b7c;
-  --coffee-light: #64748b;
-  --coffee-soft: #e8e4dc;
-  --coffee-cream: #f8f5f0;
-  --gold-primary: #8b7d4f;
-  --ok: #1a7a4a;
-  --danger: #dc3545;
-  --line: #e8e4dc;
-  --field: #d5cbd0;
+  /* Colores del tema del panel (claro / oscuro) */
+  --coffee-dark: var(--adm-texto);
+  --coffee-medium: var(--adm-teal);
+  --coffee-light: var(--adm-tenue);
+  --coffee-soft: var(--adm-borde);
+  --coffee-cream: var(--adm-superficie-2);
+  --gold-primary: var(--adm-acento);
+  --ok: var(--adm-ok);
+  --danger: var(--adm-error);
+  --line: var(--adm-borde);
+  --field: var(--adm-input-borde);
 }
 
 .promociones-wrapper {
@@ -17,7 +18,7 @@
 }
 
 .promo-card {
-  background: #ffffff;
+  background: var(--adm-superficie);
   border-radius: 16px;
   border: 1px solid var(--line);
   padding: 1.75rem;
@@ -36,7 +37,7 @@
 }
 
 .panel-subtitle {
-  font-family: 'Playfair Display', serif;
+  font-family: var(--display);
   font-size: 1.25rem;
   font-weight: 700;
   color: var(--coffee-dark);
@@ -115,7 +116,7 @@
   font-family: inherit;
   font-size: 13px;
   outline: none;
-  background: white;
+  background: var(--adm-input-fondo);
   color: var(--coffee-dark);
   box-sizing: border-box;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -145,8 +146,8 @@
 
 /* ---------- Botones ---------- */
 .btn-submit-promo {
-  background: linear-gradient(135deg, var(--coffee-dark) 0%, var(--coffee-medium) 100%);
-  color: white;
+  background: var(--adm-primario);
+  color: var(--adm-sobre-primario);
   border: none;
   border-radius: 40px;
   padding: 12px 22px;
@@ -304,7 +305,7 @@
   border: 1px solid var(--line);
   border-left: 3px solid var(--coffee-medium);
   border-radius: 10px;
-  background: #fff;
+  background: var(--adm-superficie);
 }
 
 .item--Categoria {
@@ -332,8 +333,8 @@
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: var(--coffee-dark);
-  color: #fff;
+  background: var(--adm-primario);
+  color: var(--adm-sobre-primario);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -662,7 +663,7 @@
   border-radius: 4px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  font-family: monospace;
+  font-family: var(--data);
 }
 
 .countdown-badge.proxima { background: rgba(99, 91, 255, 0.1); color: #635bff; }

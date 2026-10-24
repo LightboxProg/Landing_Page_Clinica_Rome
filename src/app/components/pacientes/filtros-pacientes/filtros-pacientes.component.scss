@@ -6,8 +6,8 @@ $colorBeige: #f8f5f0;
 $colorCrema: #f5e6d3;
 $colorBlanco: #ffffff;
 
-$fuenteElegante: "Playfair Display", serif;
-$fuentePrincipal: "Work Sans", sans-serif;
+$fuenteElegante: var(--display);
+$fuentePrincipal: var(--body);
 
 $bordeRedondeado: 12px;
 $bordeRedondeadoGrande: 20px;
@@ -22,10 +22,10 @@ $sombraTarjeta: 0 10px 40px rgba(26, 43, 60, 0.15);
   border-radius: 16px;
   box-shadow: 0 10px 30px rgba(26, 43, 60, 0.05);
   overflow: hidden;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--adm-borde);
 }
 .encabezado-filtros {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  background: var(--adm-primario);
   padding: 1.25rem 1.5rem;
   display: flex;
   align-items: center;
@@ -35,7 +35,7 @@ $sombraTarjeta: 0 10px 40px rgba(26, 43, 60, 0.15);
     color: white;
   }
   h3 {
-    font-family: "Work Sans", sans-serif;
+    font-family: var(--body);
     font-weight: 700;
     color: white;
     margin: 0;
@@ -57,27 +57,27 @@ $sombraTarjeta: 0 10px 40px rgba(26, 43, 60, 0.15);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: #475569; /* Slate 600 */
+    color: var(--adm-texto-2); /* Slate 600 */
   }
   input {
     padding: 10px 14px;
     border: 1px solid rgba(42, 107, 124, 0.25);
     border-radius: 8px;
-    background: #f8fafc;
+    background: var(--adm-superficie-2);
     font-family: inherit;
     font-size: 13px;
     transition: all 0.2s ease;
     &:focus {
       outline: none;
       border-color: $colorTeal;
-      background: white;
+      background: var(--adm-superficie);
       box-shadow: 0 0 0 3px rgba(42, 107, 124, 0.1);
     }
   }
 }
 .boton-aplicar {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-  color: white;
+  background: var(--adm-primario);
+  color: var(--adm-sobre-primario);
   padding: 12px;
   border: none;
   border-radius: 8px;
@@ -87,7 +87,7 @@ $sombraTarjeta: 0 10px 40px rgba(26, 43, 60, 0.15);
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
   &:hover {
-    background: linear-gradient(135deg, #000 0%, #0f172a 100%);
+    background: var(--adm-primario);
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(15, 23, 42, 0.2);
   }

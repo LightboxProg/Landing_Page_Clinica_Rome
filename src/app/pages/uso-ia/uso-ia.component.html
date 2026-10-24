@@ -1,0 +1,147 @@
+<div class="ui-page">
+  <header class="ui-header">
+    <div>
+      <span class="ui-eyebrow">Marketing</span>
+      <h1>Uso de IA</h1>
+      <p>Lo que lleva gastado la inteligencia artificial del bot. Sólo se usa cuando las reglas no entienden un mensaje o una respuesta de un flujo.</p>
+    </div>
+    <label class="ui-mes">
+      <span>Mes</span>
+      <select [(ngModel)]="mes" (ngModelChange)="cargar()">
+        <option *ngFor="let m of meses" [value]="m.valor">{{ m.etiqueta }}</option>
+      </select>
+    </label>
+  </header>
+
+  <div class="ui-aviso" *ngIf="uso && !uso.activa" role="status">
+    <i class="fas fa-info-circle" aria-hidden="true"></i>
+    La IA está apagada: falta <code>ANTHROPIC_API_KEY</code> o <code>IA_INTENCIONES=on</code> en el <code>.env</code> del backend. El bot funciona sólo con reglas y no gasta nada.
+  </div>
+
+  <div class="ui-aviso ui-aviso--error" *ngIf="error" role="alert">{{ error }}</div>
+
+  <div class="ui-contenido" *ngIf="uso" [class.is-cargando]="cargando">
+    <!-- Tarjetas -->
+    <section class="ui-kpis" aria-label="Resumen">
+      <div class="ui-kpi ui-kpi--principal">
+        <span class="ui-kpi__label">Gasto del mes</span>
+        <span class="ui-kpi__valor">{{ usdTexto(uso.totales.costoUSD) }} <small>USD</small></span>
+        <span class="ui-kpi__sub">≈ {{ mxnTexto(uso.totales.costoUSD) }} MXN · tipo de cambio {{ uso.tipoCambio }}</span>
+      </div>
+
+      <div class="ui-kpi" *ngIf="esMesActual">
+        <span class="ui-kpi__label">Hoy</span>
+        <span class="ui-kpi__valor">{{ usdTexto(uso.hoy.costoUSD) }} <small>USD</small></span>
+        <div class="ui-meter" role="meter" [attr.aria-valuenow]="uso.hoy.llamadas" aria-valuemin="0" [attr.aria-valuemax]="uso.topes.diario"
+             [attr.aria-label]="'Llamadas de hoy contra el tope diario'">
+          <span [class]="'ui-meter__barra ui-meter__barra--' + nivelTopeHoy" [style.width.%]="porcentajeTopeHoy"></span>
+        </div>
+        <span class="ui-kpi__sub">
+          <i class="fas" [class.fa-check-circle]="nivelTopeHoy === 'ok'" [class.fa-exclamation-triangle]="nivelTopeHoy !== 'ok'" aria-hidden="true"></i>
+          {{ uso.hoy.llamadas }} de {{ uso.topes.diario }} llamadas del tope diario{{ nivelTopeHoy === 'lleno' ? ' — alcanzado, sólo reglas hasta mañana' : '' }}
+        </span>
+      </div>
+
+      <div class="ui-kpi">
+        <span class="ui-kpi__label">Llamadas a la IA</span>
+        <span class="ui-kpi__valor">{{ uso.totales.llamadas | number }}</span>
+        <span class="ui-kpi__sub">≈ {{ usdTexto(promedioLlamada) }} USD cada una<ng-container *ngIf="uso.totales.errores"> · {{ uso.totales.errores }} sin respuesta</ng-container></span>
+      </div>
+
+      <div class="ui-kpi">
+        <span class="ui-kpi__label">Frenadas por los topes</span>
+        <span class="ui-kpi__valor">{{ uso.totales.bloqueadas | number }}</span>
+        <span class="ui-kpi__sub">Máx. {{ uso.topes.porContactoHora }} por contacto cada hora; contestaron las reglas, sin costo</span>
+      </div>
+    </section>
+
+    <!-- Gasto por día -->
+    <section class="ui-card" aria-labelledby="ui-dias">
+      <div class="ui-card__head">
+        <h2 id="ui-dias">Gasto por día <small>USD</small></h2>
+        <button type="button" class="ui-btn" (click)="verTabla = !verTabla" [attr.aria-pressed]="verTabla">
+          <i class="fas" [class.fa-table]="!verTabla" [class.fa-chart-bar]="verTabla" aria-hidden="true"></i>
+          {{ verTabla ? 'Ver gráfica' : 'Ver como tabla' }}
+        </button>
+      </div>
+
+      <p class="ui-vacio" *ngIf="diasConUso.length === 0">Sin uso de IA en este mes.</p>
+
+      <ng-container *ngIf="diasConUso.length > 0">
+        <div class="ui-grafica" *ngIf="!verTabla" (mouseleave)="mostrarDia(null)">
+          <div class="ui-grafica__eje" aria-hidden="true">
+            <span>{{ usdTexto(maximoDiario) }}</span>
+            <span>$0</span>
+          </div>
+          <div class="ui-grafica__area">
+            <div class="ui-grafica__guia" aria-hidden="true"></div>
+            <div class="ui-barras">
+              <button type="button" class="ui-barra" *ngFor="let b of barras"
+                      [class.is-activa]="diaActivo?.fecha === b.fecha"
+                      (pointerenter)="mostrarDia(b)" (focus)="mostrarDia(b)" (blur)="mostrarDia(null)"
+                      [attr.aria-label]="etiquetaDia(b.fecha) + ': ' + usdTexto(b.costoUSD) + ' dólares, ' + b.llamadas + ' llamadas'">
+                <span class="ui-barra__relleno" [style.height.%]="b.alto" *ngIf="b.costoUSD > 0"></span>
+              </button>
+            </div>
+            <div class="ui-dias" aria-hidden="true">
+              <span *ngFor="let b of barras">{{ b.dia === 1 || b.dia % 5 === 0 ? b.dia : '' }}</span>
+            </div>
+          </div>
+          <div class="ui-tooltip" *ngIf="diaActivo" role="status">
+            <strong>{{ usdTexto(diaActivo.costoUSD) }} USD</strong>
+            <span>≈ {{ mxnTexto(diaActivo.costoUSD) }} MXN · {{ diaActivo.llamadas }} llamadas</span>
+            <span class="ui-tooltip__fecha">{{ etiquetaDia(diaActivo.fecha) }}</span>
+          </div>
+        </div>
+
+        <table class="ui-tabla" *ngIf="verTabla">
+          <thead>
+            <tr><th scope="col">Día</th><th scope="col" class="num">Llamadas</th><th scope="col" class="num">USD</th><th scope="col" class="num">MXN</th></tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let d of diasConUso">
+              <td>{{ etiquetaDia(d.fecha) }}</td>
+              <td class="num">{{ d.llamadas | number }}</td>
+              <td class="num">{{ usdTexto(d.costoUSD) }}</td>
+              <td class="num">{{ mxnTexto(d.costoUSD) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </ng-container>
+    </section>
+
+    <!-- Por origen -->
+    <section class="ui-card" aria-labelledby="ui-origen">
+      <div class="ui-card__head">
+        <h2 id="ui-origen">En qué se usó</h2>
+      </div>
+      <p class="ui-vacio" *ngIf="uso.porOrigen.length === 0">Sin uso de IA en este mes.</p>
+      <table class="ui-tabla" *ngIf="uso.porOrigen.length > 0">
+        <thead>
+          <tr><th scope="col">Origen</th><th scope="col" class="num">Llamadas</th><th scope="col" class="num">Frenadas</th><th scope="col" class="num">USD</th><th scope="col" class="num">MXN</th></tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let o of uso.porOrigen">
+            <td>
+              <strong>{{ origenes[o.origen].nombre || o.origen }}</strong>
+              <small>{{ origenes[o.origen].ayuda }}</small>
+            </td>
+            <td class="num">{{ o.llamadas | number }}</td>
+            <td class="num">{{ o.bloqueadas | number }}</td>
+            <td class="num">{{ usdTexto(o.costoUSD) }}</td>
+            <td class="num">{{ mxnTexto(o.costoUSD) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <p class="ui-nota">
+      Modelo: <code>{{ uso.modelo }}</code>. A la IA sólo se le manda el texto del mensaje, nunca el teléfono ni el nombre.
+      Tokens del mes: {{ uso.totales.tokensEntrada | number }} de entrada y {{ uso.totales.tokensSalida | number }} de salida.
+      Los topes y el tipo de cambio se cambian en el <code>.env</code> del backend (<code>IA_MAX_DIARIO</code>, <code>IA_MAX_POR_CONTACTO_HORA</code>, <code>TIPO_CAMBIO_MXN</code>).
+      El monto es un estimado con los precios públicos; el cobro real aparece en la consola de Anthropic.
+    </p>
+  </div>
+
+  <p class="ui-vacio" *ngIf="!uso && cargando">Cargando…</p>
+</div>

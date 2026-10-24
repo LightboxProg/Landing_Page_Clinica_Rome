@@ -1,0 +1,151 @@
+:host { display: contents; }
+
+/* El tema viejo estiliza todos los <button> e inputs: aquí parten de cero */
+button {
+  margin: 0; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none;
+  overflow: visible; font: inherit; font-weight: 500; letter-spacing: normal; line-height: 1.2;
+  text-transform: none; text-align: left; color: inherit; cursor: pointer;
+}
+button::after { content: none; }
+button:hover { background: none; box-shadow: none; }
+input, select, textarea {
+  display: block; width: 100%; max-width: none; margin: 0; box-sizing: border-box;
+  height: 38px; padding: 0 12px; border: 1px solid var(--adm-input-borde); border-radius: 8px;
+  background: var(--adm-input-fondo); color: var(--adm-texto); font: inherit; font-size: 0.9rem;
+  box-shadow: none; -webkit-appearance: auto; appearance: auto;
+}
+textarea { height: auto; padding: 8px 12px; resize: vertical; }
+input:focus, select:focus, textarea:focus {
+  outline: none; border-color: var(--adm-laton); box-shadow: 0 0 0 3px var(--adm-acento-fondo);
+}
+input[type="checkbox"] { width: 16px; height: 16px; padding: 0; accent-color: var(--adm-laton); }
+
+/* ---------- panel lateral ---------- */
+.velo {
+  position: fixed; inset: 0; z-index: 1500;
+  background: var(--adm-velo);
+  animation: aparecer 0.15s ease-out;
+}
+.panel {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 1501;
+  width: min(480px, 100%);
+  display: flex; flex-direction: column;
+  background: var(--adm-superficie);
+  box-shadow: var(--adm-sombra);
+  animation: entrar 0.2s ease-out;
+}
+.panel-cabeza {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+  padding: 20px 24px 14px;
+  border-bottom: 1px solid var(--adm-borde-suave);
+}
+.eyebrow { margin: 0; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--adm-acento); }
+.panel-cabeza h2 { margin: 2px 0 0; font-size: 1.35rem; color: var(--adm-texto); }
+.cerrar { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 8px; color: var(--adm-tenue); }
+.cerrar:hover { background: var(--adm-hover); color: var(--adm-texto); }
+
+.panel-cuerpo { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 4px 24px 0; }
+.bloque { padding: 16px 0; border-bottom: 1px solid var(--adm-borde-suave); }
+.bloque:last-of-type { border-bottom: 0; }
+.etiqueta { display: block; margin-bottom: 8px; font-size: 0.78rem; font-weight: 700; color: var(--adm-texto); }
+.etiqueta small { font-weight: 400; color: var(--adm-muy-tenue); }
+.etiqueta-fila { display: flex; align-items: baseline; justify-content: space-between; }
+.campo label { display: block; margin-bottom: 4px; font-size: 0.74rem; color: var(--adm-tenue); }
+.fila-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.fila-3 { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 10px; }
+.ayuda { margin: 8px 0 0; font-size: 0.78rem; color: var(--adm-tenue); }
+.ayuda.doble { grid-column: 1 / -1; margin-top: 0; }
+.capital { text-transform: capitalize; }
+.aviso-pasado { color: var(--adm-aviso); }
+.enlace { color: var(--adm-acento); font-size: 0.8rem; font-weight: 600; }
+.enlace:hover { text-decoration: underline; }
+
+/* Médicos */
+.medicos { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 6px; }
+.medico {
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+  border-radius: 10px; box-shadow: inset 0 0 0 1px var(--adm-borde);
+  transition: box-shadow 0.15s, background 0.15s;
+}
+.medico:hover { background: var(--adm-hover); box-shadow: inset 0 0 0 1px var(--adm-borde); }
+.medico.activo { background: var(--adm-acento-fondo); box-shadow: inset 0 0 0 2px var(--adm-laton); }
+.medico:focus-visible { outline: 2px solid var(--adm-laton); outline-offset: 2px; }
+.medico-texto { display: flex; flex-direction: column; min-width: 0; }
+.medico-nombre { font-size: 0.88rem; font-weight: 600; color: var(--adm-texto); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.medico small, .fijo small { font-size: 0.72rem; color: var(--adm-tenue); }
+.punto { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.fijo { display: flex; align-items: center; gap: 10px; font-weight: 600; color: var(--adm-texto); }
+.fijo small { margin-left: auto; font-weight: 400; }
+
+/* Paciente */
+.buscador { position: relative; }
+.buscador i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--adm-muy-tenue); font-size: 0.85rem; pointer-events: none; }
+.buscador input { padding-left: 34px; }
+.sugerencias { list-style: none; margin: 6px 0 0; padding: 4px; border-radius: 10px; box-shadow: 0 0 0 1px var(--adm-borde); }
+.sugerencias button { display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px; border-radius: 8px; }
+.sugerencias button:hover, .sugerencias button:focus-visible { background: var(--adm-hover); outline: none; }
+.elegido { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; background: var(--adm-superficie-2); box-shadow: inset 0 0 0 1px var(--adm-borde); }
+.elegido-texto { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.elegido-texto strong { font-size: 0.9rem; color: var(--adm-texto); font-weight: 600; }
+.elegido-texto small { font-size: 0.76rem; color: var(--adm-tenue); }
+.avatar {
+  display: grid; place-items: center; width: 32px; height: 32px; flex-shrink: 0; border-radius: 50%;
+  background: var(--adm-acento-fondo); color: var(--adm-acento-fuerte); font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+}
+.sin-resultado {
+  display: flex; align-items: center; gap: 8px; width: 100%; margin-top: 6px; padding: 10px 12px;
+  border-radius: 10px; border: 1px dashed var(--adm-borde);
+  color: var(--adm-texto-2); font-size: 0.85rem;
+}
+.sin-resultado:hover { background: var(--adm-hover); }
+
+/* Cobro */
+.cobro { margin-top: 10px; align-items: end; }
+.casilla { display: flex; align-items: center; gap: 8px; height: 38px; font-size: 0.85rem; color: var(--adm-texto-2); cursor: pointer; }
+.fila-2 + .fila-2 { margin-top: 10px; }
+
+/* Conflicto y error */
+.conflicto {
+  margin: 12px 0 0; padding: 12px 14px; border-radius: 10px;
+  background: var(--adm-aviso-fondo); box-shadow: inset 0 0 0 1px var(--adm-aviso-borde); color: var(--adm-texto);
+  font-size: 0.85rem;
+}
+.conflicto p { margin: 0; }
+.conflicto i { color: var(--adm-aviso); }
+.conflicto ul { margin: 6px 0 10px; padding-left: 20px; color: var(--adm-texto-2); }
+.conflicto-acciones { display: flex; gap: 8px; justify-content: flex-end; }
+.error {
+  margin: 12px 0 0; padding: 10px 12px; border-radius: 8px;
+  background: var(--adm-error-fondo); color: var(--adm-error); font-size: 0.85rem;
+}
+
+/* Pie */
+.panel-pie {
+  position: sticky; bottom: 0;
+  display: flex; justify-content: flex-end; gap: 8px;
+  margin: 16px -24px 0; padding: 14px 24px;
+  background: var(--adm-superficie); border-top: 1px solid var(--adm-borde-suave);
+}
+.btn-pri, .btn-sec, .btn-alerta {
+  display: inline-flex; align-items: center; justify-content: center; height: 38px; padding: 0 18px;
+  border-radius: 8px; font-size: 0.88rem; font-weight: 600; white-space: nowrap;
+}
+.btn-pri { background: var(--adm-primario); color: var(--adm-sobre-primario); }
+.btn-pri:hover { background: var(--adm-primario-hover); }
+.btn-pri:disabled, .btn-alerta:disabled { opacity: 0.55; cursor: not-allowed; }
+.btn-sec { background: var(--adm-superficie); color: var(--adm-texto); box-shadow: inset 0 0 0 1px var(--adm-borde); }
+.btn-sec:hover { background: var(--adm-hover); box-shadow: inset 0 0 0 1px var(--adm-borde); }
+.btn-alerta { background: var(--adm-aviso); color: #fff; }
+.btn-alerta:hover { background: var(--adm-aviso); filter: brightness(1.05); }
+.btn-pri:focus-visible, .btn-sec:focus-visible, .btn-alerta:focus-visible, .enlace:focus-visible { outline: 2px solid var(--adm-laton); outline-offset: 2px; }
+
+@keyframes entrar { from { transform: translateX(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes aparecer { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .panel, .velo { animation: none; } }
+
+@media (max-width: 560px) {
+  .panel-cabeza, .panel-cuerpo { padding-left: 16px; padding-right: 16px; }
+  .panel-pie { margin: 16px -16px 0; padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); }
+  .fila-3 { grid-template-columns: 1fr 1fr; }
+  .fila-3 .campo:first-child { grid-column: 1 / -1; }
+}

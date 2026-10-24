@@ -74,6 +74,10 @@ export class MembresiasAdquiridasComponent implements OnInit {
     this.membresiasService.obtenerMembresias().subscribe({
       next: (data) => {
         this.membresiasContratadas = data;
+        // Abrir en un filtro vacío esconde lo que sí hay
+        if (this.filtro === 'vigentes' && this.contar('vigentes') === 0 && data.length > 0) {
+          this.filtro = this.contar('pendiente_pago') > 0 ? 'pendiente_pago' : 'todas';
+        }
         this.loading = false;
       },
       error: (err) => {
@@ -102,6 +106,10 @@ export class MembresiasAdquiridasComponent implements OnInit {
       .filter(m => !q || this.normalizar(`${this.nombrePaciente(m)} ${this.telefono(m)} ${m.nombreTratamiento}`).includes(q))
       // Lo atrasado primero, y dentro de eso lo más atrasado
       .sort((a, b) => (b.diasAtraso || 0) - (a.diasAtraso || 0));
+  }
+
+  get etiquetaFiltro(): string {
+    return this.filtros.find(f => f.valor === this.filtro)?.etiqueta || '';
   }
 
   contar(filtro: Filtro): number {

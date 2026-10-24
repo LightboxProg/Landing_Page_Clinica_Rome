@@ -84,6 +84,15 @@
           <div class="kpi-info">
             <span class="kpi-label">Stripe (Online Dental)</span>
             <h3 class="kpi-val">{{ totalesDental.stripe | currency:'MXN':'symbol':'1.2-2' }}</h3>
+            <span class="kpi-sub" *ngIf="totalesDental.stripeNeto > 0">
+              Comisión −{{ totalesDental.stripeComision | currency:'MXN':'symbol':'1.2-2' }} · Recibes <strong>{{ totalesDental.stripeNeto | currency:'MXN':'symbol':'1.2-2' }}</strong>
+            </span>
+            <span class="kpi-sub kpi-sub--alerta" *ngIf="totalesDental.stripeDisputas > 0">
+              Retirado por disputas −{{ totalesDental.stripeDisputas | currency:'MXN':'symbol':'1.2-2' }}
+            </span>
+            <span class="kpi-sub" *ngIf="totalesDental.stripeSinDato > 0">
+              {{ totalesDental.stripeSinDato }} pago(s) sin comisión todavía
+            </span>
           </div>
         </div>
 
@@ -92,6 +101,9 @@
           <div class="kpi-info">
             <span class="kpi-label">Descuentos Dental</span>
             <h3 class="kpi-val">{{ totalesDental.descuentos | currency:'MXN':'symbol':'1.2-2' }}</h3>
+            <span class="kpi-sub" *ngIf="totalesDental.promociones > 0">
+              Aparte, precio de promoción: −{{ totalesDental.promociones | currency:'MXN':'symbol':'1.2-2' }}
+            </span>
           </div>
         </div>
 
@@ -131,9 +143,15 @@
                 <td class="td-price">{{ cita.costoTotal | currency:'MXN':'symbol':'1.2-2' }}</td>
                 <td class="td-price text-stripe" [class.has-stripe]="cita.montoAnticipo > 0">
                   {{ cita.montoAnticipo | currency:'MXN':'symbol':'1.2-2' }}
+                  <span class="td-stripe-neto" *ngIf="cita.stripeNeto != null">
+                    Recibes {{ cita.stripeNeto | currency:'MXN':'symbol':'1.2-2' }}
+                    · {{ cita.stripeDepositadoEl ? 'depositado el ' + diaCorto(cita.stripeDepositadoEl) : 'disponible el ' + diaCorto(cita.stripeDisponibleEl) }}
+                  </span>
+                  <span class="td-disputa" *ngIf="cita.stripeDisputa" [class.td-disputa--ganada]="cita.stripeDisputa === 'won'">{{ textoDisputa(cita.stripeDisputa) }}</span>
                 </td>
-                <td class="td-price text-discount" [class.has-discount]="cita.descuentoMonto > 0">
+                <td class="td-price text-discount" [class.has-discount]="cita.descuentoMonto > 0 && !cita.esPromocion">
                   {{ cita.descuentoMonto | currency:'MXN':'symbol':'1.2-2' }}
+                  <span class="td-stripe-neto" *ngIf="cita.esPromocion && cita.descuentoMonto > 0">Precio de promoción</span>
                 </td>
                 <td class="td-price td-bold text-success">
                   {{ cita.montoPagadoClinica | currency:'MXN':'symbol':'1.2-2' }}
@@ -213,6 +231,15 @@
           <div class="kpi-info">
             <span class="kpi-label">Stripe (Online Estética)</span>
             <h3 class="kpi-val">{{ totalesEstetica.stripe | currency:'MXN':'symbol':'1.2-2' }}</h3>
+            <span class="kpi-sub" *ngIf="totalesEstetica.stripeNeto > 0">
+              Comisión −{{ totalesEstetica.stripeComision | currency:'MXN':'symbol':'1.2-2' }} · Recibes <strong>{{ totalesEstetica.stripeNeto | currency:'MXN':'symbol':'1.2-2' }}</strong>
+            </span>
+            <span class="kpi-sub kpi-sub--alerta" *ngIf="totalesEstetica.stripeDisputas > 0">
+              Retirado por disputas −{{ totalesEstetica.stripeDisputas | currency:'MXN':'symbol':'1.2-2' }}
+            </span>
+            <span class="kpi-sub" *ngIf="totalesEstetica.stripeSinDato > 0">
+              {{ totalesEstetica.stripeSinDato }} pago(s) sin comisión todavía
+            </span>
           </div>
         </div>
 
@@ -221,6 +248,9 @@
           <div class="kpi-info">
             <span class="kpi-label">Descuentos Estética</span>
             <h3 class="kpi-val">{{ totalesEstetica.descuentos | currency:'MXN':'symbol':'1.2-2' }}</h3>
+            <span class="kpi-sub" *ngIf="totalesEstetica.promociones > 0">
+              Aparte, precio de promoción: −{{ totalesEstetica.promociones | currency:'MXN':'symbol':'1.2-2' }}
+            </span>
           </div>
         </div>
 
@@ -260,9 +290,15 @@
                 <td class="td-price">{{ cita.costoTotal | currency:'MXN':'symbol':'1.2-2' }}</td>
                 <td class="td-price text-stripe" [class.has-stripe]="cita.montoAnticipo > 0">
                   {{ cita.montoAnticipo | currency:'MXN':'symbol':'1.2-2' }}
+                  <span class="td-stripe-neto" *ngIf="cita.stripeNeto != null">
+                    Recibes {{ cita.stripeNeto | currency:'MXN':'symbol':'1.2-2' }}
+                    · {{ cita.stripeDepositadoEl ? 'depositado el ' + diaCorto(cita.stripeDepositadoEl) : 'disponible el ' + diaCorto(cita.stripeDisponibleEl) }}
+                  </span>
+                  <span class="td-disputa" *ngIf="cita.stripeDisputa" [class.td-disputa--ganada]="cita.stripeDisputa === 'won'">{{ textoDisputa(cita.stripeDisputa) }}</span>
                 </td>
-                <td class="td-price text-discount" [class.has-discount]="cita.descuentoMonto > 0">
+                <td class="td-price text-discount" [class.has-discount]="cita.descuentoMonto > 0 && !cita.esPromocion">
                   {{ cita.descuentoMonto | currency:'MXN':'symbol':'1.2-2' }}
+                  <span class="td-stripe-neto" *ngIf="cita.esPromocion && cita.descuentoMonto > 0">Precio de promoción</span>
                 </td>
                 <td class="td-price td-bold text-success">
                   {{ cita.montoPagadoClinica | currency:'MXN':'symbol':'1.2-2' }}

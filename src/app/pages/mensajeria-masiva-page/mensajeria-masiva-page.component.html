@@ -80,10 +80,19 @@
           <div class="card-bento mb-4">
             <label class="form-label text-navy fw-bold">Nombre de la Campaña</label>
             <input type="text" class="form-control-minimal" placeholder="Ej: Campaña Botox Verano" [(ngModel)]="nombreCampania">
+            <label class="form-label text-navy fw-bold mt-3" for="mm-campana">Campaña del bot <span class="fw-normal">(opcional)</span></label>
+            <select id="mm-campana" class="form-control-minimal" [(ngModel)]="campanaId">
+              <option [ngValue]="null">Ninguna</option>
+              <option *ngFor="let c of campanas" [ngValue]="c._id">{{ c.nombre }}</option>
+            </select>
+            <small class="d-block mt-1">Si alguien contesta este envío en los siguientes 3 días, aunque sólo escriba “Hola”, el bot le responde con esta campaña.</small>
           </div>
 
           <app-template-config 
             [plantillas]="plantillas"
+            [estado]="estadoPlantillas"
+            [error]="errorPlantillas"
+            (reintentar)="cargarPlantillas()"
             [plantillaSeleccionada]="plantillaSeleccionada"
             [mapeo]="mapeo"
             (onTemplateChange)="handleTemplateChange($event)">

@@ -6,8 +6,8 @@ $colorBeige: #f8f5f0;
 $colorCrema: #f5e6d3;
 $colorBlanco: #ffffff;
 
-$fuenteElegante: 'Playfair Display', serif;
-$fuentePrincipal: 'Work Sans', sans-serif;
+$fuenteElegante: var(--display);
+$fuentePrincipal: var(--body);
 
 $bordeRedondeado: 12px;
 $bordeRedondeadoGrande: 20px;
@@ -24,7 +24,7 @@ $sombraTarjeta: 0 10px 40px rgba(26, 43, 60, 0.15);
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(26, 43, 60, 0.05);
   overflow: hidden;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--adm-borde);
 }
 
 .encabezado-lista {

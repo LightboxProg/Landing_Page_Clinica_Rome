@@ -4,6 +4,8 @@ import { ServiciosService } from '../../services/servicios/servicios.service';
 import { CategoriasDentalesService } from '../../services/categorias-dentales/categorias-dentales.service';
 import { ServiciosDentalesService } from '../../services/servicios-dentales/servicios-dentales.service';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { PromocionesService, precioConDescuento } from '../../services/promociones/promociones.service';
 import { RevealDirective } from '../../directives/reveal.directive';
 
 interface Categoria {
@@ -38,6 +40,8 @@ interface FilaTarifa {
   precio: string;
   duracion?: string;
   foto?: string;
+  // Precio de promoción vigente, ya formateado; sólo estética
+  promo?: string;
 }
 
 interface BloqueTarifa {
@@ -52,7 +56,7 @@ interface BloqueTarifa {
 @Component({
   selector: 'app-servicios',
   standalone: true,
-  imports: [CommonModule, RevealDirective],
+  imports: [CommonModule, RevealDirective, RouterLink],
   templateUrl: './servicios.component.html',
   styleUrl: './servicios.component.css'
 })
@@ -77,6 +81,8 @@ export class ServiciosComponent implements OnInit, OnDestroy {
   // Tarifario ya construido para la rama activa, y la categoría que el índice
   // marca como "en pantalla".
   tarifario: BloqueTarifa[] = [];
+  // Promociones vigentes: el catálogo marca con su precio los tratamientos que entran
+  private promociones: any[] = [];
   anclaActiva: string | null = null;
 
   private observador?: IntersectionObserver;
@@ -122,6 +128,7 @@ export class ServiciosComponent implements OnInit, OnDestroy {
     private categoriasService: CategoriasService,
     private serviciosDentalesService: ServiciosDentalesService,
     private categoriasDentalesService: CategoriasDentalesService,
+    private promosService: PromocionesService,
     private zone: NgZone
   ) { }
 
@@ -142,10 +149,13 @@ export class ServiciosComponent implements OnInit, OnDestroy {
   async cargarDatos(): Promise<void> {
     try {
       // 1. Obtener datos Estéticos
-      const [categoriasEst, serviciosEst] = await Promise.all([
+      const [categoriasEst, serviciosEst, promos] = await Promise.all([
         this.categoriasService.obtenerCategorias().toPromise(),
-        this.serviciosService.obtenerServicios().toPromise()
+        this.serviciosService.obtenerServicios().toPromise(),
+        // Sin promociones el catálogo sale igual, a precio de lista
+        this.promosService.obtenerPromocionesActivas().toPromise().catch(() => [])
       ]);
+      this.promociones = promos || [];
       this.categoriasEsteticas = categoriasEst || [];
       this.serviciosEsteticos = serviciosEst || [];
       this.agruparServiciosEsteticos();
@@ -293,7 +303,10 @@ export class ServiciosComponent implements OnInit, OnDestroy {
         nombre: cat.nombre,
         descripcion: cat.descripcion,
         desde: this.formatearPrecio(Math.min(...servicios.map(s => s.costo))),
-        filas: servicios.map(s => this.aFila(s._id, s.nombre, s.descripcion, s.costo, s.duracion, this.fotoDe(s)))
+        filas: servicios.map(s => ({
+          ...this.aFila(s._id, s.nombre, s.descripcion, s.costo, s.duracion, this.fotoDe(s)),
+          promo: this.precioPromo(s)
+        }))
       });
     }
 
@@ -310,6 +323,24 @@ export class ServiciosComponent implements OnInit, OnDestroy {
       duracion,
       foto
     };
+  }
+
+  // Mejor precio de promoción vigente (misma regla que la página de agendar). Los dentales
+  // no tienen promociones: sus ids nunca coinciden con los de estética.
+  private precioPromo(servicio: Servicio): string | undefined {
+    const cat = servicio.categoria;
+    const categoriaId = cat ? String(typeof cat === 'object' ? cat._id : cat) : null;
+    let mejor: number | null = null;
+    for (const p of this.promociones) {
+      for (const item of p.items || []) {
+        const aplica = (item.tipo === 'Servicio' && String(item.servicioId) === String(servicio._id))
+          || (item.tipo === 'Categoria' && categoriaId && String(item.categoriaId) === categoriaId);
+        if (!aplica || !servicio.costo) continue;
+        const precio = precioConDescuento(servicio.costo, item.tipoDescuento, item.valor);
+        if (precio < servicio.costo && (mejor === null || precio < mejor)) mejor = precio;
+      }
+    }
+    return mejor === null ? undefined : this.formatearPrecio(mejor);
   }
 
   // La foto del tratamiento, si el servicio trae una que sirva. El catálogo

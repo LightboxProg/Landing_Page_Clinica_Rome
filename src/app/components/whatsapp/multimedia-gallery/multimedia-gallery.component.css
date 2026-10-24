@@ -1,8 +1,8 @@
 /* Shell principal */
 .gallery-shell {
   border-radius: 20px;
-  border: 1.5px solid var(--border, #e2e8f0);
-  background: #fff;
+  border: 1.5px solid var(--border, var(--adm-borde));
+  background: var(--adm-superficie);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -15,8 +15,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 18px 22px;
-  border-bottom: 1.5px solid var(--border, #e2e8f0);
-  background: linear-gradient(135deg, #fafbff 0%, #fff 100%);
+  border-bottom: 1.5px solid var(--border, var(--adm-borde));
+  background: var(--adm-superficie);
   gap: 12px;
 }
 
@@ -36,7 +36,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--primary, #3b82f6);
+  color: var(--primary, var(--adm-info));
   font-size: 0.95rem;
   flex-shrink: 0;
   border: 1px solid oklch(0.55 0.18 250 / 0.15);
@@ -45,13 +45,13 @@
 .gallery-title {
   font-size: 0.9rem;
   font-weight: 700;
-  color: var(--navy, #1e293b);
+  color: var(--navy, var(--adm-texto));
   line-height: 1.2;
 }
 
 .gallery-subtitle {
   font-size: 0.7rem;
-  color: var(--text-muted, #64748b);
+  color: var(--text-muted, var(--adm-tenue));
   margin-top: 1px;
 }
 
@@ -59,8 +59,8 @@
   display: flex;
   align-items: center;
   gap: 7px;
-  background: var(--navy, #1e293b);
-  color: #fff;
+  background: var(--adm-primario);
+  color: var(--adm-sobre-primario);
   border: none;
   border-radius: 10px;
   padding: 9px 16px;
@@ -73,7 +73,7 @@
 }
 
 .btn-upload-main:hover {
-  background: #0f172a;
+  background: var(--adm-primario);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(15,23,42,0.2);
 }
@@ -96,14 +96,14 @@
 .gallery-grid::-webkit-scrollbar { width: 5px; }
 .gallery-grid::-webkit-scrollbar-track { background: transparent; }
 .gallery-grid::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--adm-borde);
   border-radius: 10px;
 }
 
 /* Tile de subida */
 .upload-tile {
   aspect-ratio: 1;
-  border: 2px dashed var(--border, #e2e8f0);
+  border: 2px dashed var(--border, var(--adm-borde));
   border-radius: 12px;
   display: flex;
   flex-direction: column;
@@ -111,24 +111,24 @@
   justify-content: center;
   gap: 4px;
   cursor: pointer;
-  background: var(--bg-app, #f8fafc);
+  background: var(--bg-app, var(--adm-superficie-2));
   transition: all 0.2s;
 }
 
 .upload-tile:hover {
-  border-color: var(--primary, #3b82f6);
+  border-color: var(--primary, var(--adm-info));
   background: oklch(0.55 0.18 250 / 0.04);
 }
 
 .upload-tile-icon {
   font-size: 1rem;
-  color: var(--text-muted, #94a3b8);
+  color: var(--text-muted, var(--adm-muy-tenue));
 }
 
 .upload-tile-label {
   font-size: 0.6rem;
   font-weight: 700;
-  color: var(--text-muted, #94a3b8);
+  color: var(--text-muted, var(--adm-muy-tenue));
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -142,7 +142,7 @@
   position: relative;
   border: 2px solid transparent;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  background: var(--bg-app, #f8fafc);
+  background: var(--bg-app, var(--adm-superficie-2));
 }
 
 .gallery-tile img {
@@ -182,7 +182,7 @@
 }
 
 .gallery-tile.active {
-  border-color: var(--primary, #3b82f6);
+  border-color: var(--primary, var(--adm-info));
   box-shadow: 0 0 0 3px oklch(0.55 0.18 250 / 0.2);
 }
 
@@ -193,7 +193,7 @@
   align-items: center;
   gap: 8px;
   padding: 16px;
-  color: var(--text-muted, #94a3b8);
+  color: var(--text-muted, var(--adm-muy-tenue));
   font-size: 0.75rem;
   font-weight: 500;
 }
@@ -209,21 +209,21 @@
   align-items: center;
   justify-content: space-between;
   padding: 12px 22px;
-  border-top: 1.5px solid var(--border, #e2e8f0);
-  background: linear-gradient(135deg, oklch(0.97 0.04 145 / 0.5), #fff);
+  border-top: 1.5px solid var(--border, var(--adm-borde));
+  background: var(--adm-superficie);
   animation: slideUpFade 0.2s ease-out;
 }
 
 .gallery-footer-selected {
   font-size: 0.78rem;
   font-weight: 600;
-  color: oklch(0.4 0.12 145);
+  color: var(--adm-ok);
 }
 
 .btn-deselect {
   background: transparent;
-  border: 1px solid #fca5a5;
-  color: #ef4444;
+  border: 1px solid var(--adm-error-borde);
+  color: var(--adm-error);
   font-size: 0.75rem;
   font-weight: 600;
   padding: 5px 12px;
@@ -233,8 +233,8 @@
 }
 
 .btn-deselect:hover {
-  background: #fef2f2;
-  border-color: #ef4444;
+  background: var(--adm-error-fondo);
+  border-color: var(--adm-error);
 }
 
 @keyframes slideUpFade {

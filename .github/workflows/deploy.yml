@@ -1,21 +1,16 @@
-name: Deploy Angular a GitHub Pages
+name: Deploy a corazon.lightbox.mx (FTP Neubox)
 
 on:
   push:
     branches: [ "main" ]
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
 concurrency:
-  group: "pages"
+  group: "deploy-ftp"
   cancel-in-progress: true
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: 📥 Checkout
@@ -24,33 +19,29 @@ jobs:
       - name: ⚙️ Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: 'npm'
 
       - name: 📦 Instalar dependencias
         run: npm ci
 
+      - name: 🔗 URL del backend
+        if: ${{ vars.API_URL != '' }}
+        run: |
+          sed -i "s|apiUrl: '.*'|apiUrl: '${{ vars.API_URL }}'|" src/environments/environment.ts
+          grep -n "apiUrl" src/environments/environment.ts
+
       - name: 🏗️ Build Angular
         run: npx ng build --configuration production
 
-      - name: 📄 .nojekyll
-        run: echo "" > ./dist/landing-page-clinica-rome/browser/.nojekyll
-
-      - name: 📄 404 fallback (para Router de Angular)
-        run: cp ./dist/landing-page-clinica-rome/browser/index.html ./dist/landing-page-clinica-rome/browser/404.html
-
-      - name: ⬆️ Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      # La cuenta FTP ya entra directo a /home/lightbo2/corazon.lightbox.mx, por eso server-dir es ./
+      # El certificado FTPS de Neubox es del servidor (svgp189), no de ftp.lightbox.mx
+      - name: 🚀 Subir por FTPS
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          path: ./dist/landing-page-clinica-rome/browser
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: 🚀 Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          server: ${{ vars.FTP_SERVER || 'svgp189.serverneubox.com.mx' }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          local-dir: ./dist/landing-page-clinica-rome/browser/
+          server-dir: ./

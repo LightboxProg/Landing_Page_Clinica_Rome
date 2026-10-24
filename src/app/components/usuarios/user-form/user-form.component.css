@@ -6,14 +6,13 @@
   --primary: #1a2b3c;
   --teal: #2a6b7c;
   --gold: #8b7d4f;
-  --cream: #f5e6d3;
   --beige: #f8f5f0;
   --white: #ffffff;
   --danger: #dc3545;
   --border: #e8e4dc;
   --muted: #64748b;
-  --font: 'Work Sans', sans-serif;
-  --font-display: 'Playfair Display', serif;
+  --font: var(--body);
+  --font-display: var(--display);
   --shadow-card: 0 2px 12px rgba(26,43,60,0.06), 0 12px 40px rgba(26,43,60,0.06);
   --radius: 20px;
   --radius-sm: 10px;
@@ -26,13 +25,13 @@
   align-items: flex-start;
   justify-content: center;
   padding: 2rem 1rem;
-  background: var(--beige);
+  background: var(--adm-superficie-2);
 }
 
 .uf-container {
   width: 100%;
   max-width: 860px;
-  background: var(--white);
+  background: var(--adm-superficie);
   border-radius: var(--radius);
   box-shadow: var(--shadow-card);
   overflow: hidden;
@@ -48,7 +47,7 @@
 .uf-header-bg {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, var(--primary) 0%, var(--teal) 100%);
+  background: var(--adm-banda);
 }
 
 .uf-header-bg::after {
@@ -81,7 +80,7 @@
   align-items: center;
   justify-content: center;
   font-size: 1.5rem;
-  color: var(--cream);
+  color: #f5e6d3;
   backdrop-filter: blur(4px);
   flex-shrink: 0;
 }
@@ -90,7 +89,7 @@
   font-family: var(--font-display);
   font-size: 1.8rem;
   font-weight: 700;
-  color: var(--white);
+  color: #ffffff;
   margin: 0 0 4px;
   letter-spacing: -0.3px;
 }
@@ -110,7 +109,7 @@
 /* Secciones */
 .uf-section {
   padding: 1.5rem 0 0.5rem;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--adm-borde);
   margin-bottom: 0.5rem;
 }
 
@@ -124,14 +123,14 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 1.2px;
-  color: var(--gold);
+  color: var(--adm-acento);
   margin-bottom: 1.1rem;
 }
 
 .uf-section-dot {
   width: 8px;
   height: 8px;
-  background: var(--gold);
+  background: #8b7d4f;
   border-radius: 50%;
   flex-shrink: 0;
 }
@@ -159,7 +158,7 @@
 .uf-label {
   font-size: 0.76rem;
   font-weight: 600;
-  color: var(--primary);
+  color: var(--adm-texto);
   text-transform: uppercase;
   letter-spacing: 0.4px;
   display: flex;
@@ -168,7 +167,7 @@
 }
 
 .uf-req {
-  color: var(--danger);
+  color: var(--adm-error);
   font-weight: 700;
 }
 
@@ -176,7 +175,7 @@
   font-weight: 400;
   text-transform: none;
   font-size: 0.72rem;
-  color: var(--muted);
+  color: var(--adm-tenue);
   letter-spacing: 0;
 }
 
@@ -189,7 +188,7 @@
 .uf-icon {
   position: absolute;
   left: 14px;
-  color: var(--gold);
+  color: var(--adm-acento);
   font-size: 0.85rem;
   pointer-events: none;
   transition: color 0.2s var(--ease);
@@ -198,29 +197,29 @@
 .uf-input {
   width: 100%;
   padding: 0.75rem 1rem 0.75rem 2.5rem;
-  border: 1.5px solid var(--border);
+  border: 1.5px solid var(--adm-input-borde);
   border-radius: var(--radius-sm);
   font-family: var(--font);
   font-size: 0.9rem;
-  color: var(--primary);
-  background: var(--beige);
+  color: var(--adm-texto);
+  background: var(--adm-superficie-2);
   transition: all 0.22s var(--ease);
   box-sizing: border-box;
   min-height: 46px;
 }
 
-.uf-input::placeholder { color: #b0aaa0; }
+.uf-input::placeholder { color: var(--adm-muy-tenue); }
 
 .uf-input:focus {
   outline: none;
-  border-color: var(--teal);
-  background: var(--white);
+  border-color: var(--adm-primario);
+  background: var(--adm-input-fondo);
   box-shadow: 0 0 0 3px rgba(42, 107, 124, 0.1);
 }
 
 .uf-input:focus ~ .uf-icon,
 .uf-input-wrap:focus-within .uf-icon {
-  color: var(--teal);
+  color: var(--adm-teal);
 }
 
 .uf-select {
@@ -228,7 +227,7 @@
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238b7d4f' stroke-width='2'><polyline points='6 9 12 15 18 9'/></svg>");
   background-repeat: no-repeat;
   background-position: right 14px center;
-  background-color: var(--beige);
+  background-color: var(--adm-superficie-2);
   padding-right: 2.5rem;
   cursor: pointer;
 }
@@ -251,10 +250,10 @@
   transition: all 0.25s var(--ease);
 }
 
-.uf-role-badge.role-admin        { background: rgba(139,125,79,0.1); color: var(--gold); }
-.uf-role-badge.role-doctor       { background: rgba(42,107,124,0.1); color: var(--teal); }
-.uf-role-badge.role-especialista { background: rgba(74,124,107,0.1); color: #2d6b56; }
-.uf-role-badge.role-recepcionista{ background: rgba(90,110,138,0.1); color: #3a5270; }
+.uf-role-badge.role-admin        { background: rgba(139,125,79,0.1); color: var(--adm-acento); }
+.uf-role-badge.role-doctor       { background: rgba(42,107,124,0.1); color: var(--adm-teal); }
+.uf-role-badge.role-especialista { background: rgba(74,124,107,0.1); color: var(--adm-texto-2); }
+.uf-role-badge.role-recepcionista{ background: rgba(90,110,138,0.1); color: var(--adm-texto-2); }
 
 .uf-atencion {
   opacity: 0.7;
@@ -268,7 +267,7 @@
   gap: 0.75rem;
   margin-top: 2rem;
   padding-top: 1.5rem;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--adm-borde);
 }
 
 .uf-btn-cancel,
@@ -289,19 +288,19 @@
 
 .uf-btn-cancel {
   background: transparent;
-  border: 1.5px solid var(--border);
-  color: var(--muted);
+  border: 1.5px solid var(--adm-borde);
+  color: var(--adm-tenue);
 }
 
 .uf-btn-cancel:hover {
-  border-color: var(--primary);
-  color: var(--primary);
-  background: rgba(26, 43, 60, 0.03);
+  border-color: var(--adm-primario);
+  color: var(--adm-texto);
+  background: var(--adm-hover);
 }
 
 .uf-btn-submit {
-  background: linear-gradient(135deg, var(--primary), var(--teal));
-  color: var(--white);
+  background: var(--adm-primario);
+  color: var(--adm-sobre-primario);
   box-shadow: 0 4px 14px rgba(42, 107, 124, 0.2);
 }
 

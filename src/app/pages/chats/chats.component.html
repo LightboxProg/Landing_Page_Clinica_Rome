@@ -1,4 +1,4 @@
-<div class="chat-container" [class.chat-open]="conversacionActiva" [class.dark-mode]="isDarkMode">
+<div class="chat-container" [class.chat-open]="conversacionActiva">
   
   <app-chat-sidebar
     [conversaciones]="filtradas"
@@ -7,8 +7,7 @@
     [filtro]="filtro"
     (tipoCambiado)="cambiarTipo($event)"
     (conversacionSeleccionada)="seleccionarConversacion($event)"
-    (filtroCambiado)="filtro = $event"
-    (themeToggled)="toggleTheme()">
+    (filtroCambiado)="filtro = $event">
   </app-chat-sidebar>
 
   <app-chat-window

@@ -228,14 +228,23 @@ export class ChatWindowComponent implements OnInit {
       origen: 'Panel'
     };
 
-    this.citasService.agendarCita(citaData).subscribe({
+    this.enviarCita(citaData);
+  }
 
+  private enviarCita(citaData: any) {
+    this.citasService.agendarCita(citaData).subscribe({
       next: () => {
         Swal.fire('Exito', 'Cita agendada correctamente', 'success');
         this.cancelScheduling();
       },
-      error: (err: any) => {
-        Swal.fire('Error', 'No se pudo agendar la cita', 'error');
+      error: async (err: any) => {
+        // El médico ya tiene algo a esa hora: se avisa y se puede agendar igual
+        if (err?.status === 409 && err.error?.conflictos && !citaData.forzar) {
+          const r = await Swal.fire({ title: 'Horario ocupado', text: `${err.error.message} ¿Agendar de todos modos?`, icon: 'warning', showCancelButton: true, confirmButtonText: 'Sí, agendar', cancelButtonText: 'Cambiar hora' });
+          if (r.isConfirmed) this.enviarCita({ ...citaData, forzar: true });
+          return;
+        }
+        Swal.fire('Error', err?.error?.message || 'No se pudo agendar la cita', 'error');
         console.error(err);
       }
     });

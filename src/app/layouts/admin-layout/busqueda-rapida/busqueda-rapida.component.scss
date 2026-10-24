@@ -1,0 +1,148 @@
+$tinta: var(--adm-texto);
+$suave: var(--adm-tenue);
+$linea: var(--adm-borde);
+
+:host {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 12vh 16px 16px;
+}
+
+.fondo {
+  position: absolute;
+  inset: 0;
+  background: var(--adm-velo);
+  backdrop-filter: blur(3px);
+}
+
+.paleta {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--adm-superficie);
+  border-radius: 14px;
+  box-shadow: var(--adm-sombra), 0 0 0 1px var(--adm-borde);
+  overflow: hidden;
+  animation: entrar 0.14s ease-out;
+}
+
+.campo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+  border-bottom: 1px solid $linea;
+
+  > i { color: $suave; }
+  input {
+    flex: 1;
+    min-width: 0;
+    height: 56px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: none;
+    background: transparent;
+    box-shadow: none;
+    color: $tinta;
+    font: inherit;
+    font-size: 1rem;
+    &::-webkit-search-cancel-button { display: none; }
+  }
+}
+
+kbd {
+  display: inline-block;
+  min-width: 22px;
+  padding: 2px 6px;
+  border: 1px solid $linea;
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background: var(--adm-superficie-2);
+  color: $suave;
+  font-family: inherit;
+  font-size: 0.7rem;
+  text-align: center;
+}
+
+.resultados {
+  list-style: none;
+  margin: 0;
+  padding: 6px;
+  overflow-y: auto;
+}
+.grupo {
+  padding: 10px 10px 4px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $suave;
+}
+.resultado {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+
+  &.activo { background: var(--adm-hover); }
+}
+.icono {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  background: var(--adm-acento-fondo);
+  color: var(--adm-acento);
+  font-size: 0.85rem;
+
+  &.paciente { background: var(--adm-hover); color: var(--adm-texto); }
+}
+.texto { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.titulo { color: $tinta; font-size: 0.92rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.detalle { color: $suave; font-size: 0.76rem; }
+.enter { color: $suave; font-size: 0.75rem; }
+
+.vacio {
+  margin: 0;
+  padding: 18px 16px;
+  color: $suave;
+  font-size: 0.88rem;
+  text-align: center;
+}
+
+.pie {
+  display: flex;
+  gap: 16px;
+  padding: 10px 16px;
+  border-top: 1px solid $linea;
+  background: var(--adm-superficie-2);
+  color: $suave;
+  font-size: 0.72rem;
+  kbd { margin-right: 3px; }
+}
+
+@media (max-width: 768px) {
+  :host { padding: 8px; }
+  .paleta { max-height: calc(100vh - 16px - 60px); }
+  .pie { display: none; }
+}
+
+@keyframes entrar {
+  from { opacity: 0; transform: translateY(-6px) scale(0.99); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .paleta { animation: none; }
+}

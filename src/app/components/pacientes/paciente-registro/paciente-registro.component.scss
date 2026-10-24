@@ -6,8 +6,8 @@ $colorBeige: #f8f5f0;
 $colorCrema: #f5e6d3;
 $colorBlanco: #ffffff;
 
-$fuenteElegante: 'Playfair Display', serif;
-$fuentePrincipal: 'Work Sans', sans-serif;
+$fuenteElegante: var(--display);
+$fuentePrincipal: var(--body);
 
 $bordeRedondeado: 12px;
 $bordeRedondeadoGrande: 20px;
@@ -175,7 +175,7 @@ input, select, textarea {
     box-shadow: 0 0 0 4px rgba(42, 107, 124, 0.1);
   }
   &::placeholder {
-    color: rgba(61, 58, 47, 0.4);
+    color: var(--adm-muy-tenue);
   }
 }
 

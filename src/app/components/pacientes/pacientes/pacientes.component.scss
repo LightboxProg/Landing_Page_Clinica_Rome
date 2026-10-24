@@ -6,8 +6,8 @@ $colorBeige: #f8f5f0;
 $colorCrema: #f5e6d3;
 $colorBlanco: #ffffff;
 
-$fuenteElegante: "Playfair Display", serif;
-$fuentePrincipal: "Work Sans", sans-serif;
+$fuenteElegante: var(--display);
+$fuentePrincipal: var(--body);
 
 $bordeRedondeado: 12px;
 $bordeRedondeadoGrande: 20px;
@@ -16,16 +16,11 @@ $sombraTarjeta: 0 10px 40px rgba(26, 43, 60, 0.15);
 
 .contenedor-pacientes {
   min-height: 100vh;
-  background: linear-gradient(
-    135deg,
-    $colorBeige 0%,
-    #fff 50%,
-    $colorCrema 100%
-  );
+  background: var(--adm-superficie);
   padding: 1.5rem;
 }
 .encabezado-pagina {
-  background: radial-gradient(circle at top right, rgba(197, 160, 40, 0.08) 0%, transparent 60%), linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  background: var(--adm-primario);
   border-radius: 16px;
   padding: 2.5rem 2rem;
   margin-bottom: 2rem;
@@ -53,7 +48,7 @@ $sombraTarjeta: 0 10px 40px rgba(26, 43, 60, 0.15);
       }
     }
     h1 {
-      font-family: "Work Sans", sans-serif;
+      font-family: var(--body);
       font-weight: 800;
       color: white;
       margin: 0;

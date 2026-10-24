@@ -4,8 +4,11 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 export type CanalCampana = 'WhatsApp' | 'Instagram';
-export type DisparadorCampana = 'palabra_clave' | 'comentario' | 'enlace';
+export type DisparadorCampana = 'palabra_clave' | 'comentario' | 'enlace' | 'anuncio';
 export type EstadoCampana = 'Borrador' | 'Activa' | 'Pausada' | 'Finalizada';
+
+export const disparadoresDe = (c: Pick<Campana, 'disparador' | 'disparadores'>): DisparadorCampana[] =>
+  c.disparadores?.length ? c.disparadores : (c.disparador ? [c.disparador] : []);
 
 export interface MetricasCampana {
   inscritos: number;
@@ -20,6 +23,8 @@ export interface Campana {
   descripcion: string;
   canal: CanalCampana;
   disparador: DisparadorCampana;
+  // Puede tener varios; las campañas viejas sólo traen `disparador`
+  disparadores?: DisparadorCampana[];
   palabrasClave: string[];
   coincidencia: 'contiene' | 'exacta';
   publicacionId: string;
@@ -32,6 +37,10 @@ export interface Campana {
   idDoctor?: string | null;
   // Promoción que vende la campaña; al agendar el bot ofrece sólo sus servicios
   promocionId?: string | null;
+  // IDs de anuncios de Meta que abren la campaña aunque el contacto sólo diga "Hola"
+  anuncioIds: string[];
+  // Flujo del constructor: si existe, conversa él en lugar de la respuesta fija
+  flujoId?: string | null;
   estado: EstadoCampana;
   fechaInicio?: string | null;
   fechaFin?: string | null;

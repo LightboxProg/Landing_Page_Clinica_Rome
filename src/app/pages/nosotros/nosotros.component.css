@@ -12,7 +12,7 @@
 
 .emblem__note {
   margin: 1rem 0 0;
-  font-size: 0.63rem;
+  font-size: 0.75rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--ink-mute);
@@ -40,7 +40,7 @@
 
 .arm-card__k {
   margin: 0 0 0.9rem;
-  font-size: 0.63rem;
+  font-size: 0.75rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--brass-ink);
@@ -135,7 +135,7 @@
 
 .place__cap {
   margin-top: 0.8rem;
-  font-size: 0.63rem;
+  font-size: 0.75rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--ink-mute);

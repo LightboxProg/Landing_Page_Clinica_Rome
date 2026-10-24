@@ -11,6 +11,9 @@ import { FormsModule } from '@angular/forms';
 })
 export class TemplateConfigComponent {
   @Input() plantillas: any[] = [];
+  @Input() estado: 'cargando' | 'listo' | 'error' = 'cargando';
+  @Input() error = '';
+  @Output() reintentar = new EventEmitter<void>();
   @Input() plantillaSeleccionada: any = null;
   @Input() mapeo: any = { header: [], body: [], footer: [] };
   

@@ -118,12 +118,6 @@
 .mast-nav ul a.is-current { color: var(--ink); }
 .mast-nav ul a.is-current::after { width: 100%; }
 
-/* styles.css now loads after component styles, so .btn would win a
-   single-class fight. These display toggles are deliberately 2 classes. */
-.mast-nav .mast-nav__cta { display: none; }
-
-.mast-bar .mast-cta { display: inline-flex; flex: none; padding: 0.8rem 1.4rem; }
-
 /* ---- mobile toggle ---- */
 .mast-toggle {
   display: none;
@@ -157,7 +151,6 @@
 /* ---- responsive ---- */
 @media (max-width: 980px) {
   .mast-strip__reach { display: none; }
-  .mast-bar .mast-cta { display: none; }
   .mast-toggle { display: block; }
 
   .mast-bar__inner { justify-content: space-between; }
@@ -192,10 +185,8 @@
     font-size: 0.95rem;
     letter-spacing: 0.2em;
   }
-
-  .mast-nav .mast-nav__cta { display: inline-flex; }
 }
 
 @media (max-width: 520px) {
-  .mast-strip__inner { justify-content: center; font-size: 0.62rem; }
+  .mast-strip__inner { justify-content: center; font-size: 0.75rem; }
 }

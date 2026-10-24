@@ -15,9 +15,27 @@
   --danger: oklch(0.5 0.19 25);
   --danger-soft: oklch(0.96 0.03 25);
   display: block;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: var(--body);
   color: var(--ink);
 }
+/* Tema oscuro del panel: mismas variables, valores oscuros */
+:host-context(html[data-tema="oscuro"]) {
+  --ink: var(--adm-texto);
+  --primary: oklch(0.66 0.14 250);
+  --primary-soft: oklch(0.32 0.06 250);
+  --bg: var(--adm-fondo);
+  --surface: var(--adm-superficie);
+  --border: var(--adm-borde);
+  --muted: var(--adm-tenue);
+  --ig: #f08cc4;
+  --ig-soft: rgba(173, 40, 115, 0.22);
+  --ok: var(--adm-ok);
+  --ok-soft: var(--adm-ok-fondo);
+  --warn: var(--adm-aviso);
+  --warn-soft: var(--adm-aviso-fondo);
+  --danger: var(--adm-error);
+}
+
 
 .ig-page { padding: 32px clamp(16px, 4vw, 48px) 48px; background: var(--bg); min-height: calc(100vh - 70px); }
 
@@ -26,7 +44,7 @@
 .ig-header h1 { font-family: inherit; font-size: 2rem; font-weight: 700; letter-spacing: -.03em; color: var(--ink); margin: 4px 0 6px; }
 .ig-header p { margin: 0; color: var(--muted); max-width: 62ch; }
 
-.ig-cuenta { display: flex; align-items: center; gap: 12px; padding: 10px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; }
+.ig-cuenta { display: flex; align-items: center; gap: 12px; padding: 10px 16px; background: var(--adm-superficie); border: 1px solid var(--border); border-radius: 14px; }
 .ig-cuenta__foto { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
 .ig-cuenta strong { display: block; font-size: .95rem; }
 .ig-cuenta span { font-size: .8rem; color: var(--muted); font-variant-numeric: tabular-nums; }
@@ -34,12 +52,12 @@
 .ig-alerta { display: flex; gap: 10px; align-items: flex-start; padding: 12px 16px; margin-bottom: 20px; border-radius: 12px; background: var(--warn-soft); color: var(--warn); font-size: .9rem; }
 
 .ig-layout { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
-.ig-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 22px; min-width: 0; }
+.ig-card { background: var(--adm-superficie); border: 1px solid var(--border); border-radius: 16px; padding: 22px; min-width: 0; }
 .ig-card h2 { font-family: inherit; font-size: 1.05rem; font-weight: 700; margin: 0 0 16px; color: var(--ink); }
 
 .ig-tipos { display: flex; flex-wrap: wrap; gap: 4px; padding: 4px; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; }
 .ig-tipos button { flex: 1 1 auto; display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 36px; padding: 0 12px; border: 0; border-radius: 9px; background: transparent; color: var(--muted); font: inherit; font-size: .85rem; font-weight: 600; cursor: pointer; }
-.ig-tipos button.is-active { background: var(--surface); color: var(--ig); box-shadow: 0 1px 2px oklch(0.25 0.05 250 / .12); }
+.ig-tipos button.is-active { background: var(--adm-superficie); color: #ad2873; box-shadow: 0 1px 2px oklch(0.25 0.05 250 / .12); }
 .ig-ayuda, .ig-nota { margin: 10px 0 0; font-size: .82rem; color: var(--muted); }
 
 .ig-medios { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; margin-top: 16px; }
@@ -48,10 +66,10 @@
 .ig-medio img, .ig-medio video { width: 100%; height: 100%; object-fit: cover; display: block; }
 .ig-medio__num { position: absolute; top: 6px; left: 6px; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; background: oklch(0.25 0.05 250 / .75); color: #fff; font-size: .75rem; font-weight: 700; display: grid; place-items: center; }
 .ig-medio__acciones { position: absolute; right: 6px; bottom: 6px; display: flex; gap: 4px; }
-.ig-medio__acciones button { width: 28px; height: 28px; border: 0; border-radius: 8px; background: oklch(1 0 0 / .92); color: var(--ink); cursor: pointer; font-size: .75rem; }
+.ig-medio__acciones button { width: 28px; height: 28px; border: 0; border-radius: 8px; background: var(--adm-superficie); color: var(--ink); cursor: pointer; font-size: .75rem; }
 .ig-medio__acciones button:disabled { opacity: .4; cursor: default; }
 .ig-agregar { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; border: 1.5px dashed var(--border); color: var(--muted); font-size: .85rem; font-weight: 600; cursor: pointer; }
-.ig-agregar:hover, .ig-agregar:focus-within { border-color: var(--ig); color: var(--ig); background: var(--ig-soft); }
+.ig-agregar:hover, .ig-agregar:focus-within { border-color: #ad2873; color: #ad2873; background: #fbe9f3; }
 .ig-agregar input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
 
 .ig-campo { display: flex; flex-direction: column; gap: 6px; margin-top: 18px; }
@@ -63,10 +81,10 @@
 .ig-pie { display: flex; justify-content: flex-end; align-items: center; gap: 14px; margin-top: 18px; flex-wrap: wrap; }
 .ig-faltante { font-size: .82rem; color: var(--muted); }
 
-.ig-btn { display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--ink); font: inherit; font-size: .85rem; font-weight: 600; cursor: pointer; text-decoration: none; white-space: nowrap; }
+.ig-btn { display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--adm-superficie); color: var(--ink); font: inherit; font-size: .85rem; font-weight: 600; cursor: pointer; text-decoration: none; white-space: nowrap; }
 .ig-btn:hover { background: var(--primary-soft); color: var(--ink); }
-.ig-btn--primary { min-height: 42px; padding: 0 20px; background: var(--ink); border-color: var(--ink); color: #fff; }
-.ig-btn--primary:hover { background: oklch(0.33 0.06 250); color: #fff; }
+.ig-btn--primary { min-height: 42px; padding: 0 20px; background: var(--adm-primario); border-color: var(--adm-primario); color: var(--adm-sobre-primario); }
+.ig-btn--primary:hover { background: var(--adm-primario-hover); color: var(--adm-sobre-primario); }
 .ig-btn:disabled { opacity: .45; cursor: not-allowed; }
 
 .ig-tipos button:focus-visible, .ig-btn:focus-visible, .ig-medio__acciones button:focus-visible, .ig-campo textarea:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }

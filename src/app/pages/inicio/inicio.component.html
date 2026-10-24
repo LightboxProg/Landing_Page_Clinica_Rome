@@ -1,4 +1,10 @@
 <!-- ============================================================
+     PORTADA DE PROMOCIÓN — sólo cuando hay una vigente. La que cierra
+     primero manda: su banner, su reloj y sus precios, con Agendar a la mano.
+     ============================================================ -->
+<app-promo-portada *ngIf="destacada" [promo]="destacada"></app-promo-portada>
+
+<!-- ============================================================
      HERO — the thesis: measurement precedes treatment.
      The overlay draws the facial-thirds analysis over the real
      consultation photograph, the way it is marked in clinic.
@@ -9,9 +15,12 @@
     <div class="hero__type">
       <p class="u-eyebrow hero__eyebrow">Armonización facial · Aguascalientes</p>
 
-      <h1 class="hero__title">
+      <h1 class="hero__title" *ngIf="!destacada">
         La proporción<br />se mide antes<br /><em>de tratarse.</em>
       </h1>
+      <h2 class="hero__title" *ngIf="destacada">
+        La proporción<br />se mide antes<br /><em>de tratarse.</em>
+      </h2>
 
       <p class="u-lede hero__lede">
         Cada plan empieza con una valoración médica: leemos los tercios de tu
@@ -20,7 +29,7 @@
       </p>
 
       <div class="hero__actions">
-        <a routerLink="/agendar-cita" class="btn btn--solid">Agendar valoración</a>
+        <a routerLink="/promociones" class="btn btn--solid">Ver promociones</a>
         <a routerLink="/servicios" class="btn btn--line">Ver tratamientos</a>
       </div>
 
@@ -71,18 +80,32 @@
   </div>
 </section>
 
+
 <!-- ============================================================
-     CAMPAÑAS VIGENTES — live, so the countdown is real data
+     PRÓXIMAMENTE — sin promo vigente, la siguiente que abre
      ============================================================ -->
-<section class="band band--sink" *ngIf="promocionesActivas.length > 0">
+<section class="soon" *ngIf="proxima && faltaParaProxima">
+  <a routerLink="/promociones" class="u-shell soon__inner">
+    <span class="soon__dot" aria-hidden="true"></span>
+    <span class="soon__text">
+      <strong>{{ proxima.nombre }}</strong> abre en <span class="u-data">{{ faltaParaProxima }}</span>
+    </span>
+    <span class="soon__cta u-data">Ver precios <i class="fas fa-arrow-right" aria-hidden="true"></i></span>
+  </a>
+</section>
+
+<!-- ============================================================
+     MÁS PROMOCIONES — las vigentes que no van en la portada
+     ============================================================ -->
+<section class="band band--sink" *ngIf="otrasPromos.length > 0">
   <div class="u-shell">
     <header class="section-head" appReveal>
-      <p class="u-eyebrow">Campañas vigentes</p>
-      <h2>Precios de temporada,<br />con fecha de cierre.</h2>
+      <p class="u-eyebrow">También vigentes</p>
+      <h2>Más precios de temporada,<br />con fecha de cierre.</h2>
     </header>
 
     <div class="promos">
-      <article class="promo panel" *ngFor="let p of promocionesActivas; let i = index" [appReveal]="i">
+      <article class="promo panel" *ngFor="let p of otrasPromos; let i = index" [appReveal]="i">
         <div class="promo__media">
           <ng-container *ngIf="p.fotos && p.fotos.length > 0; else unaFoto">
             <img [src]="p.fotos[p.fotoActivaIndex].url" [alt]="p.nombre" loading="lazy" />
@@ -151,10 +174,46 @@
             <p class="promo__more u-data" *ngIf="p.items.length > 4">y {{ p.items.length - 4 }} más en clínica</p>
           </ng-template>
 
-          <a routerLink="/agendar-cita" class="btn btn--line promo__cta">Agendar</a>
+          <a routerLink="/promociones" class="btn btn--line promo__cta">Ver promoción</a>
         </div>
       </article>
     </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TRATAMIENTOS — el catálogo con sus fotos; los de promo, primero
+     ============================================================ -->
+<section class="band" *ngIf="tratamientos.length > 0">
+  <div class="u-shell">
+    <header class="section-head section-head--split" appReveal>
+      <div>
+        <p class="u-eyebrow">Tratamientos</p>
+        <h2>Armonización facial,<br />sin cirugía.</h2>
+      </div>
+      <a routerLink="/servicios" class="btn btn--line">Ver catálogo completo</a>
+    </header>
+
+    <ul class="cures">
+      <li class="cure" *ngFor="let t of tratamientos; let i = index" [appReveal]="i">
+        <div class="cure__plate" [class.is-empty]="!t.foto">
+          <img *ngIf="t.foto" [src]="t.foto" [alt]="t.nombre" loading="lazy" width="400" height="300" />
+          <span class="cure__tag u-data" *ngIf="t.promo">Promoción</span>
+        </div>
+        <p class="cure__cat u-data" *ngIf="t.categoria">{{ t.categoria }}</p>
+        <h3 class="cure__name">{{ t.nombre }}</h3>
+        <p class="cure__price u-data">
+          <ng-container *ngIf="t.promo; else lista">
+            <s>{{ t.costo | currency:'MXN':'symbol-narrow':'1.0-0' }}</s>
+            {{ t.promo.precioFinal | currency:'MXN':'symbol-narrow':'1.0-0' }}
+          </ng-container>
+          <ng-template #lista>{{ t.costo | currency:'MXN':'symbol-narrow':'1.0-0' }}</ng-template>
+        </p>
+        <a *ngIf="t.promo" class="cure__book u-data" routerLink="/agendar-cita" [queryParams]="{ servicio: t._id }">
+          Agendar con precio de promoción <i class="fas fa-arrow-right" aria-hidden="true"></i>
+        </a>
+      </li>
+    </ul>
   </div>
 </section>
 
@@ -320,8 +379,9 @@
       plan por escrito. Sin compromiso de tratamiento.
     </p>
     <div class="page-close__actions">
-      <a routerLink="/agendar-cita" class="btn btn--onink">Agendar valoración</a>
-      <a routerLink="/membresias" class="btn btn--onink">Ver membresías</a>
+      <a routerLink="/promociones" class="btn btn--onink">Ver promociones</a>
+      <a *ngIf="membresiasPublicas; else verServicios" routerLink="/membresias" class="btn btn--onink">Ver membresías</a>
+      <ng-template #verServicios><a routerLink="/servicios" class="btn btn--onink">Ver tratamientos</a></ng-template>
     </div>
   </div>
 </section>

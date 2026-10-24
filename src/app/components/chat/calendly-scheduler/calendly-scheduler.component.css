@@ -2,14 +2,14 @@
   max-width: 600px;
   margin: 0 auto;
   padding: 20px;
-  font-family: 'Inter', sans-serif;
+  font-family: var(--body);
 }
 
 h3 {
   font-size: 16px;
   font-weight: 700;
   margin-bottom: 20px;
-  color: #1a1c1e;
+  color: var(--adm-texto);
   text-transform: uppercase;
   letter-spacing: 1px;
 }
@@ -24,8 +24,8 @@ h3 {
 .date-pill {
   flex: 0 0 70px;
   padding: 12px;
-  background: #f8fafc;
-  border: 1px solid #eaeaea;
+  background: var(--adm-superficie-2);
+  border: 1px solid var(--adm-borde);
   border-radius: 12px;
   display: flex;
   flex-direction: column;
@@ -34,11 +34,11 @@ h3 {
   transition: all 0.2s;
 }
 
-.date-pill .day { font-size: 11px; text-transform: uppercase; color: #94a3b8; font-weight: 700; }
-.date-pill .num { font-size: 18px; font-weight: 800; color: #1e293b; }
+.date-pill .day { font-size: 11px; text-transform: uppercase; color: var(--adm-muy-tenue); font-weight: 700; }
+.date-pill .num { font-size: 18px; font-weight: 800; color: var(--adm-texto); }
 
-.date-pill:hover { background: #f1f5f9; }
-.date-pill.active { background: #C5A028; border-color: #C5A028; }
+.date-pill:hover { background: var(--adm-hover); }
+.date-pill.active { background: #C5A028; border-color: var(--adm-laton); }
 .date-pill.active .day, .date-pill.active .num { color: white; }
 
 .slots-grid {
@@ -50,9 +50,9 @@ h3 {
 
 .time-btn {
   padding: 12px;
-  background: white;
-  border: 1px solid #C5A028;
-  color: #C5A028;
+  background: var(--adm-superficie);
+  border: 1px solid var(--adm-laton);
+  color: var(--adm-acento);
   border-radius: 8px;
   font-weight: 700;
   cursor: pointer;
@@ -62,9 +62,9 @@ h3 {
 .time-btn:hover { background: #C5A028; color: white; }
 
 .timer-banner {
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #ef4444;
+  background: var(--adm-error-fondo);
+  border: 1px solid var(--adm-error-borde);
+  color: var(--adm-error);
   padding: 12px;
   border-radius: 12px;
   text-align: center;
@@ -73,28 +73,28 @@ h3 {
 }
 
 .summary-card {
-  background: white;
-  border: 1px solid #eaeaea;
+  background: var(--adm-superficie);
+  border: 1px solid var(--adm-borde);
   border-radius: 20px;
   padding: 24px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.05);
 }
 
 .summary-card h4 { margin: 0 0 16px 0; font-size: 18px; font-weight: 800; }
-.summary-card p { margin: 8px 0; color: #64748b; font-weight: 500; }
-.summary-card i { width: 24px; color: #C5A028; }
+.summary-card p { margin: 8px 0; color: var(--adm-tenue); font-weight: 500; }
+.summary-card i { width: 24px; color: var(--adm-acento); }
 
 .payment-box {
   margin: 20px 0;
   padding: 16px;
-  background: #f8fafc;
+  background: var(--adm-superficie-2);
   border-radius: 12px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.payment-box .price { font-size: 20px; font-weight: 800; color: #1e293b; }
+.payment-box .price { font-size: 20px; font-weight: 800; color: var(--adm-texto); }
 
 .pay-btn {
   width: 100%;
@@ -116,7 +116,7 @@ h3 {
   margin-top: 12px;
   background: none;
   border: none;
-  color: #94a3b8;
+  color: var(--adm-muy-tenue);
   font-weight: 600;
   cursor: pointer;
 }

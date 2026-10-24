@@ -8,7 +8,7 @@
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--text-muted, #64748b);
+  color: var(--text-muted, var(--adm-tenue));
   margin-bottom: 8px;
   display: block;
 }
@@ -26,7 +26,7 @@
   transform: translateY(-50%);
   font-size: 0.95rem;
   pointer-events: none;
-  color: var(--primary, #3b82f6);
+  color: var(--primary, var(--adm-info));
   z-index: 2;
 }
 
@@ -37,7 +37,7 @@
   transform: translateY(-50%);
   pointer-events: none;
   font-size: 0.75rem;
-  color: var(--text-muted, #64748b);
+  color: var(--text-muted, var(--adm-tenue));
   z-index: 2;
   transition: transform 0.2s;
 }
@@ -45,16 +45,16 @@
 .form-select-corporate {
   width: 100%;
   appearance: none;
-  background-color: #fff;
-  border: 1.5px solid var(--border, #e2e8f0);
+  background-color: var(--adm-input-fondo);
+  border: 1.5px solid var(--border, var(--adm-input-borde));
   border-radius: 14px;
   padding: 14px 44px 14px 46px;
   font-size: 0.95rem;
   font-weight: 600;
-  color: var(--navy, #1e293b);
+  color: var(--navy, var(--adm-texto));
   cursor: pointer;
   transition: all 0.2s ease;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--body);
   box-shadow: 0 1px 3px rgba(0,0,0,0.04);
   outline: none;
 }
@@ -65,15 +65,15 @@
 }
 
 .form-select-corporate:focus {
-  border-color: var(--primary, #3b82f6);
-  background-color: #fff;
+  border-color: var(--primary, var(--adm-info));
+  background-color: var(--adm-input-fondo);
   box-shadow: 0 0 0 4px oklch(0.55 0.18 250 / 0.1);
 }
 
 /* Estado de plantilla seleccionada */
 .template-success-box {
-  background: linear-gradient(135deg, oklch(0.97 0.04 145) 0%, oklch(0.99 0.01 145) 100%);
-  border: 1.5px solid oklch(0.62 0.15 145 / 0.4);
+  background: var(--adm-ok-fondo);
+  border: 1.5px solid var(--adm-ok-borde);
   border-radius: 14px;
   padding: 14px 18px;
   display: flex;
@@ -99,14 +99,14 @@
 .success-title {
   font-size: 0.85rem;
   font-weight: 700;
-  color: oklch(0.3 0.1 145);
+  color: var(--adm-texto);
   margin-bottom: 2px;
 }
 
 .success-meta {
   font-size: 0.72rem;
-  color: oklch(0.5 0.08 145);
-  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  color: var(--adm-ok);
+  font-family: var(--data);
 }
 
 /* Estado cargando */
@@ -115,21 +115,21 @@
   align-items: center;
   gap: 14px;
   padding: 18px 20px;
-  background: var(--bg-app, #f8fafc);
-  border: 1.5px dashed var(--border, #e2e8f0);
+  background: var(--bg-app, var(--adm-superficie-2));
+  border: 1.5px dashed var(--border, var(--adm-borde));
   border-radius: 14px;
   margin-top: 12px;
 }
 
 .loading-text {
   font-size: 0.82rem;
-  color: var(--text-muted, #64748b);
+  color: var(--text-muted, var(--adm-tenue));
   font-weight: 500;
 }
 
 .loading-sub {
   font-size: 0.7rem;
-  color: var(--text-muted, #64748b);
+  color: var(--text-muted, var(--adm-tenue));
   opacity: 0.7;
 }
 
@@ -137,3 +137,13 @@
   from { opacity: 0; transform: scale(0.95) translateY(4px); }
   to   { opacity: 1; transform: scale(1) translateY(0); }
 }
+/* Error al traer plantillas: se dice por qué y se puede reintentar */
+.estado-error { border-color: var(--adm-error-borde); background: var(--adm-error-fondo); }
+.estado-error > i { color: var(--adm-error); }
+.btn-reintentar {
+  margin: 0 0 0 auto; padding: 0 14px; height: 32px; border: 1px solid var(--adm-borde); border-radius: 8px;
+  background: var(--adm-superficie); box-shadow: none; color: var(--adm-texto);
+  font: inherit; font-size: 0.82rem; font-weight: 600; letter-spacing: normal; cursor: pointer; white-space: nowrap;
+}
+.btn-reintentar::after { content: none; }
+.btn-reintentar:hover { background: var(--adm-hover); box-shadow: none; }

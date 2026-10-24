@@ -13,9 +13,7 @@
 
 :host {
   --caja-borde: rgba(16, 26, 44, 0.14);
-  --caja-borde-suave: rgba(16, 26, 44, 0.08);
-  --caja-menos: #4F7A52;   /* lo que resta de la cuenta */
-  --caja-alerta: #B0553C;
+  --caja-borde-suave: rgba(16, 26, 44, 0.08);   /* lo que resta de la cuenta */
 }
 
 /* ---------- envoltura ---------- */
@@ -41,7 +39,7 @@
   max-height: 90vh;
   display: flex;
   flex-direction: column;
-  background: #ffffff;
+  background: var(--adm-superficie);
   border: 1px solid var(--caja-borde);
   border-radius: 12px;
   box-shadow: 0 24px 60px rgba(16, 26, 44, 0.18);
@@ -74,7 +72,7 @@
   font-weight: 600;
   line-height: 1.25;
   letter-spacing: -0.01em;
-  color: var(--ink, #101A2C);
+  color: var(--ink, var(--adm-texto));
 }
 
 .badge-tipo {
@@ -89,7 +87,7 @@
 }
 
 .badge-tipo.estetica { background: rgba(177, 153, 76, 0.16); color: #77642F; }
-.badge-tipo.dental   { background: rgba(16, 26, 44, 0.08);  color: #3C4757; }
+.badge-tipo.dental   { background: var(--adm-hover);  color: var(--adm-texto-2); }
 
 .modal-header .close-btn {
   flex: none;
@@ -100,15 +98,15 @@
   background: transparent;
   border: 1px solid transparent;
   border-radius: 6px;
-  color: #6E7887;
+  color: var(--adm-tenue);
   font-size: 15px;
   cursor: pointer;
   transition: color 0.2s ease, background-color 0.2s ease;
 }
 
 .modal-header .close-btn:hover {
-  background: rgba(16, 26, 44, 0.05);
-  color: var(--ink, #101A2C);
+  background: var(--adm-hover);
+  color: var(--ink, var(--adm-texto));
 }
 
 /* ---------- cuerpo ---------- */
@@ -139,7 +137,7 @@
   font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #6E7887;
+  color: var(--adm-tenue);
   padding-top: 2px;
 }
 
@@ -147,7 +145,7 @@
   margin: 0;
   font-size: 14px;
   font-weight: 500;
-  color: var(--ink, #101A2C);
+  color: var(--ink, var(--adm-texto));
   overflow-wrap: anywhere;
 }
 
@@ -156,8 +154,8 @@
 /* ---------- notas ---------- */
 .notas {
   padding: 12px 14px;
-  background: #F6F7F9;
-  border-left: 2px solid var(--brass, #B1994C);
+  background: var(--adm-superficie-2);
+  border-left: 2px solid var(--brass, var(--adm-laton));
   border-radius: 0 6px 6px 0;
 }
 
@@ -176,7 +174,7 @@
   margin: 0;
   font-size: 13px;
   line-height: 1.55;
-  color: #3C4757;
+  color: var(--adm-texto-2);
   white-space: pre-line;
 }
 
@@ -190,11 +188,11 @@
   padding: 16px;
   border: 1px solid var(--caja-borde);
   border-radius: 8px;
-  background: #FBFBFC;
+  background: var(--adm-superficie-2);
 }
 
 .cobro__estado.is-pagada {
-  background: #F4F8F4;
+  background: var(--adm-superficie-2);
   border-color: rgba(79, 122, 82, 0.3);
 }
 
@@ -206,7 +204,7 @@
   margin: 0 0 12px;
   padding: 4px 10px;
   border-radius: 3px;
-  background: var(--caja-menos);
+  background: #4F7A52;
   color: #fff;
   font-family: var(--data, monospace);
   font-size: 10px;
@@ -238,7 +236,7 @@
   align-items: baseline;
   gap: 6px;
   font-size: 12.5px;
-  color: #4A5563;
+  color: var(--adm-texto-2);
 }
 
 /* el método de pago, como apostilla del renglón */
@@ -249,7 +247,7 @@
   font-style: normal;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #6E7887;
+  color: var(--adm-tenue);
   padding: 1px 5px;
   border: 1px solid var(--caja-borde);
   border-radius: 3px;
@@ -262,25 +260,25 @@
   font-variant-numeric: tabular-nums;
   font-size: 13.5px;
   font-weight: 500;
-  color: var(--ink, #101A2C);
+  color: var(--ink, var(--adm-texto));
   white-space: nowrap;
 }
 
 /* lo que resta de la cuenta se ve restando */
-.cuenta__row--menos dd { color: var(--caja-menos); }
+.cuenta__row--menos dd { color: #4F7A52; }
 
 .cuenta__row--sub {
   border-top: 1px dashed var(--caja-borde);
   margin-top: 2px;
   padding-top: 8px;
 }
-.cuenta__row--sub dt { font-weight: 600; color: var(--ink, #101A2C); }
+.cuenta__row--sub dt { font-weight: 600; color: var(--ink, var(--adm-texto)); }
 
 /* el total: lo único grande de la pantalla */
 .cuenta__hero {
   margin-top: 8px;
   padding-top: 12px;
-  border-top: 1.5px solid var(--ink, #101A2C);
+  border-top: 1.5px solid var(--ink, var(--adm-primario));
 }
 
 .cuenta__hero dt {
@@ -292,7 +290,7 @@
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #4A5563;
+  color: var(--adm-texto-2);
 }
 
 .cuenta__hero dd { font-size: 20px; font-weight: 600; }
@@ -317,7 +315,7 @@
   flex-direction: column;
   gap: 14px;
   padding: 16px;
-  background: #FBFBFC;
+  background: var(--adm-superficie-2);
   border: 1px solid var(--caja-borde);
   border-radius: 8px;
 }
@@ -330,7 +328,7 @@
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--ink, #101A2C);
+  color: var(--ink, var(--adm-texto));
 }
 
 .form-group { display: flex; flex-direction: column; gap: 6px; }
@@ -347,19 +345,19 @@
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #4A5563;
+  color: var(--adm-texto-2);
 }
 
 .form-control {
   width: 100%;
   padding: 10px 12px;
   box-sizing: border-box;
-  background: #fff;
+  background: var(--adm-input-fondo);
   border: 1px solid var(--caja-borde);
   border-radius: 6px;
   font-family: inherit;
   font-size: 14px;
-  color: var(--ink, #101A2C);
+  color: var(--ink, var(--adm-texto));
   outline: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
@@ -371,10 +369,10 @@ input.form-control[type='number'] {
   font-weight: 500;
 }
 
-.form-control:hover { border-color: #9AA3AE; }
+.form-control:hover { border-color: var(--adm-input-borde); }
 
 .form-control:focus {
-  border-color: var(--brass, #B1994C);
+  border-color: var(--brass, var(--adm-laton));
   box-shadow: 0 0 0 3px rgba(177, 153, 76, 0.18);
 }
 
@@ -385,9 +383,9 @@ input.form-control[type='number'] {
   margin: 2px 0 0;
   font-size: 11.5px;
   line-height: 1.45;
-  color: #6E7887;
+  color: var(--adm-tenue);
 }
-.hint-precio--warn { color: var(--caja-alerta); font-weight: 600; }
+.hint-precio--warn { color: #B0553C; font-weight: 600; }
 .hint-precio--promo { color: #77642F; font-weight: 600; }
 
 /* ---------- método de pago: se toca, no se despliega ---------- */
@@ -403,7 +401,7 @@ input.form-control[type='number'] {
   align-items: center;
   gap: 5px;
   padding: 11px 6px;
-  background: #fff;
+  background: var(--adm-superficie);
   border: 1px solid var(--caja-borde);
   border-radius: 6px;
   font-family: var(--data, monospace);
@@ -411,21 +409,21 @@ input.form-control[type='number'] {
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #4A5563;
+  color: var(--adm-texto-2);
   cursor: pointer;
   transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
 }
 
-.metodo i { font-size: 15px; color: #6E7887; transition: color 0.2s ease; }
+.metodo i { font-size: 15px; color: var(--adm-tenue); transition: color 0.2s ease; }
 
-.metodo:hover { border-color: #9AA3AE; }
+.metodo:hover { border-color: var(--adm-borde); }
 
 .metodo.is-on {
-  background: var(--ink, #101A2C);
-  border-color: var(--ink, #101A2C);
-  color: #fff;
+  background: var(--ink, var(--adm-primario));
+  border-color: var(--ink, var(--adm-primario));
+  color: var(--adm-sobre-primario);
 }
-.metodo.is-on i { color: var(--brass, #B1994C); }
+.metodo.is-on i { color: var(--brass, var(--adm-acento)); }
 
 .metodo:focus-visible {
   outline: 2px solid var(--brass, #B1994C);
@@ -456,10 +454,10 @@ input.form-control[type='number'] {
 .btn-cobrar {
   width: 100%;
   margin-top: 4px;
-  background: var(--ink, #101A2C);
-  color: #fff;
+  background: var(--ink, var(--adm-primario));
+  color: var(--adm-sobre-primario);
 }
-.btn-cobrar:hover { background: #1D2B44; }
+.btn-cobrar:hover { background: var(--adm-primario); }
 
 /* En pantallas de portátil el panel no cabe y el modal scrollea. Ni el
    importe ni el botón pueden quedar fuera de vista: van juntos, anclados
@@ -470,8 +468,8 @@ input.form-control[type='number'] {
   z-index: 2;
   margin: 4px -16px -16px;
   padding: 12px 16px 14px;
-  background: #fff;
-  border-top: 1.5px solid var(--ink, #101A2C);
+  background: var(--adm-superficie);
+  border-top: 1.5px solid var(--ink, var(--adm-primario));
   box-shadow: 0 -8px 20px rgba(16, 26, 44, 0.06);
 }
 
@@ -489,7 +487,7 @@ input.form-control[type='number'] {
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #4A5563;
+  color: var(--adm-texto-2);
 }
 
 .cierre__total strong {
@@ -499,7 +497,7 @@ input.form-control[type='number'] {
   font-weight: 600;
   line-height: 1.05;
   letter-spacing: -0.02em;
-  color: var(--ink, #101A2C);
+  color: var(--ink, var(--adm-texto));
 }
 
 .cierre__acciones {
@@ -511,19 +509,19 @@ input.form-control[type='number'] {
 .btn-cancelar {
   background: transparent;
   border-color: var(--caja-borde);
-  color: #4A5563;
+  color: var(--adm-texto-2);
 }
-.btn-cancelar:hover { border-color: #9AA3AE; color: var(--ink, #101A2C); }
+.btn-cancelar:hover { border-color: var(--adm-borde); color: var(--ink, var(--adm-texto)); }
 
 .btn-confirmar {
-  background: var(--ink, #101A2C);
-  color: #fff;
+  background: var(--ink, var(--adm-primario));
+  color: var(--adm-sobre-primario);
   font-variant-numeric: tabular-nums;
 }
-.btn-confirmar:hover:not(:disabled) { background: #1D2B44; }
+.btn-confirmar:hover:not(:disabled) { background: var(--adm-primario); }
 
 .btn-confirmar:disabled {
-  background: #C7CCD3;
+  background: var(--adm-borde);
   color: #fff;
   cursor: not-allowed;
 }
@@ -534,7 +532,7 @@ input.form-control[type='number'] {
   gap: 8px;
   padding: 14px 24px;
   border-top: 1px solid var(--caja-borde);
-  background: #FBFBFC;
+  background: var(--adm-superficie-2);
 }
 
 .modal-footer .action-btn {
@@ -544,18 +542,18 @@ input.form-control[type='number'] {
   justify-content: center;
   gap: 7px;
   padding: 10px 12px;
-  background: #fff;
+  background: var(--adm-superficie);
   border: 1px solid var(--caja-borde);
   border-radius: 6px;
   font-family: inherit;
   font-size: 12.5px;
   font-weight: 600;
-  color: #4A5563;
+  color: var(--adm-texto-2);
   cursor: pointer;
   transition: border-color 0.2s ease, color 0.2s ease;
 }
 
-.modal-footer .action-btn:hover { border-color: #9AA3AE; color: var(--ink, #101A2C); }
+.modal-footer .action-btn:hover { border-color: var(--adm-borde); color: var(--ink, var(--adm-texto)); }
 .modal-footer .wapp-btn:hover { border-color: #25D366; color: #128C4A; }
 .modal-footer .calendar-btn:hover { border-color: #4285F4; color: #1A62D6; }
 
@@ -582,3 +580,19 @@ input.form-control[type='number'] {
   .cierre__total strong { font-size: 24px; }
   .cierre__acciones { grid-template-columns: 1fr 1.6fr; }
 }
+
+/* Anticipo en disputa con el banco */
+.aviso-disputa {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: var(--adm-error);
+  background: var(--adm-error-fondo);
+  border: 1px solid var(--adm-error-borde);
+  border-radius: 8px;
+}
+.aviso-disputa i { margin-top: 2px; }

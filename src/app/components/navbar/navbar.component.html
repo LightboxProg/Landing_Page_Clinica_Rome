@@ -24,19 +24,13 @@
           <li><a routerLink="/" routerLinkActive="is-current" [routerLinkActiveOptions]="{exact: true}" (click)="closeMenu()">Inicio</a></li>
           <li><a routerLink="/servicios" routerLinkActive="is-current" (click)="closeMenu()">Servicios</a></li>
           <li><a routerLink="/promociones" routerLinkActive="is-current" (click)="closeMenu()">Promociones</a></li>
-          <li><a routerLink="/membresias" routerLinkActive="is-current" (click)="closeMenu()">Membresías</a></li>
+          <li *ngIf="membresiasPublicas"><a routerLink="/membresias" routerLinkActive="is-current" (click)="closeMenu()">Membresías</a></li>
           <li><a routerLink="/nosotros" routerLinkActive="is-current" (click)="closeMenu()">Nosotros</a></li>
           <li><a routerLink="/contacto" routerLinkActive="is-current" (click)="closeMenu()">Contacto</a></li>
         </ul>
 
-        <a routerLink="/agendar-cita" class="btn btn--solid mast-nav__cta" (click)="closeMenu()">
-          Agendar valoración
-        </a>
       </nav>
 
-      <a routerLink="/agendar-cita" class="btn btn--solid mast-cta" (click)="closeMenu()">
-        Agendar valoración
-      </a>
 
       <button
         class="mast-toggle"

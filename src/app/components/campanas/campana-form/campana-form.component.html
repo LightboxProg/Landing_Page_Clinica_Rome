@@ -42,19 +42,43 @@
       <!-- 2. Disparador -->
       <section class="cf-section">
         <h3><span class="cf-step">2</span> ¿Qué activa al bot?</h3>
-        <div class="cf-options" role="radiogroup" aria-label="Disparador">
-          <button type="button" class="cf-option" role="radio" *ngFor="let o of opcionesDisparador"
-                  [attr.aria-checked]="modelo.disparador === o.valor"
-                  [class.is-active]="modelo.disparador === o.valor"
+        <p class="cf-note">Puedes elegir varios: la campaña responde por todos los que marques.</p>
+        <div class="cf-options" role="group" aria-label="Disparadores">
+          <button type="button" class="cf-option" role="checkbox" *ngFor="let o of opcionesDisparador"
+                  [attr.aria-checked]="tiene(o.valor)"
+                  [class.is-active]="tiene(o.valor)"
                   [disabled]="o.valor === 'comentario' && modelo.canal !== 'Instagram'"
-                  (click)="modelo.disparador = o.valor">
+                  (click)="alternar(o.valor)">
             <i [class]="o.icono" aria-hidden="true"></i>
             <strong>{{ o.titulo }}</strong>
             <span>{{ o.valor === 'comentario' && modelo.canal !== 'Instagram' ? 'Sólo en Instagram.' : o.descripcion }}</span>
           </button>
         </div>
 
-        <ng-container *ngIf="modelo.disparador !== 'enlace'">
+        <ng-container *ngIf="tiene('anuncio')">
+          <div class="cf-field">
+            <label class="cf-label" for="cf-anuncio">IDs de anuncio</label>
+            <div class="cf-chip-input">
+              <span class="cf-chip" *ngFor="let a of modelo.anuncioIds; let i = index">
+                {{ a }}
+                <button type="button" (click)="quitar(modelo.anuncioIds, i)" [attr.aria-label]="'Quitar ' + a">
+                  <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
+              </span>
+              <input id="cf-anuncio" [(ngModel)]="nuevoAnuncio" inputmode="numeric"
+                     (keydown.enter)="agregar(modelo.anuncioIds, 'nuevoAnuncio', $event)"
+                     (blur)="agregar(modelo.anuncioIds, 'nuevoAnuncio')"
+                     placeholder="Ej. 120212345678900123">
+            </div>
+            <small>
+              Cópialo del Administrador de anuncios de Meta (columna “Identificador del anuncio”).
+              Sirve para anuncios con destino a WhatsApp (Click-to-WhatsApp) o a mensajes de Instagram.
+              Meta avisa de qué anuncio viene la persona en su primer mensaje, aunque sólo escriba “Hola”.
+            </small>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="usaPalabras">
           <div class="cf-field">
             <label class="cf-label" for="cf-palabra">Palabras clave</label>
             <div class="cf-chip-input">
@@ -80,7 +104,7 @@
           </label>
         </ng-container>
 
-        <ng-container *ngIf="modelo.disparador === 'comentario'">
+        <ng-container *ngIf="tiene('comentario')">
           <app-selector-publicacion [(publicacionId)]="modelo.publicacionId"></app-selector-publicacion>
           <label class="cf-field">
             <span class="cf-label">Respuesta pública al comentario <em>opcional</em></span>
@@ -88,7 +112,7 @@
           </label>
         </ng-container>
 
-        <ng-container *ngIf="modelo.disparador === 'enlace'">
+        <ng-container *ngIf="tiene('enlace')">
           <label class="cf-field" *ngIf="modelo.canal === 'WhatsApp'">
             <span class="cf-label">Mensaje prellenado</span>
             <input [(ngModel)]="modelo.mensajeEnlace">
@@ -109,7 +133,21 @@
       <section class="cf-section">
         <h3><span class="cf-step">3</span> Respuesta del bot</h3>
         <label class="cf-field">
-          <span class="cf-label">Mensaje</span>
+          <span class="cf-label">Flujo <em>opcional</em></span>
+          <select [(ngModel)]="modelo.flujoId">
+            <option [ngValue]="null">Ninguno: responder con el mensaje de abajo</option>
+            <option *ngFor="let f of flujos" [ngValue]="f._id">{{ f.nombre }}{{ f.activo ? '' : ' (borrador)' }}</option>
+          </select>
+          <small>
+            Un flujo conversa paso a paso: pregunta, entiende lo que le contestan y puede llevar a agendar y pagar.
+            <a routerLink="/admin/flujos" target="_blank" rel="noopener">Crear o editar flujos</a>
+          </small>
+          <small class="cf-warn" *ngIf="flujoElegido && !flujoElegido.activo">
+            Este flujo está en borrador: mientras no lo actives, la campaña responde con el mensaje de abajo.
+          </small>
+        </label>
+        <label class="cf-field">
+          <span class="cf-label">Mensaje {{ modelo.flujoId ? '(si el flujo no está activo)' : '' }}</span>
           <textarea rows="4" [(ngModel)]="modelo.respuesta.mensaje" [placeholder]="placeholderMensaje"></textarea>
           <small>Escribe <code>{{ variableNombre }}</code> para usar el nombre del contacto.</small>
         </label>
@@ -187,14 +225,14 @@
           Clínica Rome
         </div>
         <div class="cf-phone__chat">
-          <ng-container *ngIf="modelo.disparador === 'comentario'">
+          <ng-container *ngIf="tiene('comentario')">
             <div class="cf-comment"><strong>maria.lopez</strong> {{ mensajeEntrada }}</div>
             <div class="cf-comment cf-comment--reply" *ngIf="modelo.respuestaComentario">
               <strong>clinicarome</strong> {{ vistaPrevia(modelo.respuestaComentario) }}
             </div>
             <div class="cf-divider">Mensaje directo</div>
           </ng-container>
-          <div class="cf-msg cf-msg--in" *ngIf="modelo.disparador !== 'comentario'">{{ mensajeEntrada }}</div>
+          <div class="cf-msg cf-msg--in" *ngIf="!tiene('comentario')">{{ mensajeEntrada }}</div>
           <div class="cf-msg cf-msg--out" *ngIf="modelo.respuesta.mensaje || modelo.respuesta.mediaUrl">
             <img *ngIf="modelo.respuesta.mediaUrl" [src]="modelo.respuesta.mediaUrl" alt="">
             {{ vistaPrevia(modelo.respuesta.mensaje) }}

@@ -1,0 +1,41 @@
+<div class="fondo" (click)="cerrar.emit()"></div>
+
+<div class="paleta" role="dialog" aria-modal="true" aria-label="Buscar en el panel">
+  <div class="campo">
+    <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
+    <input #campo type="search" [(ngModel)]="consulta" (ngModelChange)="alEscribir()" (keydown)="teclado($event)"
+           placeholder="Buscar paciente por nombre o teléfono, o ir a una sección…"
+           autocomplete="off" spellcheck="false" role="combobox" aria-expanded="true"
+           aria-controls="resultados-busqueda" [attr.aria-activedescendant]="resultados.length ? 'resultado-' + seleccion : null" />
+    <kbd>Esc</kbd>
+  </div>
+
+  <ul class="resultados" id="resultados-busqueda" role="listbox">
+    <ng-container *ngFor="let r of resultados; let i = index">
+      <li class="grupo" *ngIf="i === 0 || resultados[i - 1].tipo !== r.tipo" role="presentation">
+        {{ r.tipo === 'paciente' ? 'Pacientes' : (consulta ? 'Secciones' : 'Ir a') }}
+      </li>
+      <li [id]="'resultado-' + i" role="option" class="resultado" [class.activo]="i === seleccion"
+          [attr.aria-selected]="i === seleccion" (mouseenter)="seleccion = i" (click)="ir(r)">
+        <span class="icono" [class.paciente]="r.tipo === 'paciente'"><i [ngClass]="claseIcono(r.icon)" aria-hidden="true"></i></span>
+        <span class="texto">
+          <span class="titulo">{{ r.titulo }}</span>
+          <span class="detalle" *ngIf="r.detalle">{{ r.detalle }}</span>
+        </span>
+        <i class="fas fa-arrow-turn-down fa-rotate-90 enter" aria-hidden="true" *ngIf="i === seleccion"></i>
+      </li>
+    </ng-container>
+  </ul>
+
+  <p class="vacio" *ngIf="consulta.length >= 2 && resultados.length === 0">
+    <ng-container *ngIf="cargandoPacientes">Cargando pacientes…</ng-container>
+    <ng-container *ngIf="!cargandoPacientes">Sin resultados para “{{ consulta }}”.</ng-container>
+  </p>
+  <p class="vacio" *ngIf="errorPacientes">No se pudo cargar la lista de pacientes; sólo se buscan secciones.</p>
+
+  <footer class="pie">
+    <span><kbd>↑</kbd><kbd>↓</kbd> moverse</span>
+    <span><kbd>Enter</kbd> abrir</span>
+    <span><kbd>Esc</kbd> cerrar</span>
+  </footer>
+</div>

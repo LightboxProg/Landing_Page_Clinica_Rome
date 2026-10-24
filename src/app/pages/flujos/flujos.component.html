@@ -1,0 +1,415 @@
+<!-- ── Lista de flujos ── -->
+<div class="fl-page" *ngIf="vista === 'lista'">
+  <header class="fl-header">
+    <div>
+      <span class="fl-eyebrow">Marketing</span>
+      <h1>Flujos del bot</h1>
+      <p>Arma la conversación que sigue el bot cuando alguien entra por una campaña: qué le dice, qué le pregunta y cuándo lo lleva a agendar y pagar.</p>
+    </div>
+    <button type="button" class="fl-btn fl-btn--primary" (click)="nuevo()">
+      <i class="fas fa-plus" aria-hidden="true"></i> Nuevo flujo
+    </button>
+  </header>
+
+  <div class="fl-empty" *ngIf="cargando">Cargando flujos…</div>
+
+  <div class="fl-empty" *ngIf="!cargando && flujos.length === 0">
+    <i class="fas fa-project-diagram" aria-hidden="true"></i>
+    <h3>Aún no hay flujos</h3>
+    <p>Empieza con la plantilla: un mensaje de la promo, la pregunta “¿te aparto un lugar?” y el agendamiento con pago.</p>
+    <button type="button" class="fl-btn fl-btn--primary" (click)="nuevo()">Crear el primero</button>
+  </div>
+
+  <div class="fl-grid" *ngIf="!cargando && flujos.length > 0">
+    <article class="fl-card" *ngFor="let f of flujos">
+      <div class="fl-card__top">
+        <span class="fl-badge" [class.fl-badge--ok]="f.estado === 'Activo'">{{ f.estado }}</span>
+        <span class="fl-card__canales">
+          <i class="fab fa-whatsapp" *ngIf="!f.canales.length || f.canales.includes('WhatsApp')" aria-label="WhatsApp"></i>
+          <i class="fab fa-instagram" *ngIf="!f.canales.length || f.canales.includes('Instagram')" aria-label="Instagram"></i>
+        </span>
+      </div>
+      <h3>{{ f.nombre }}</h3>
+      <p class="fl-card__desc" *ngIf="f.descripcion">{{ f.descripcion }}</p>
+      <p class="fl-card__meta">{{ contarBloques(f) }} bloques</p>
+      <p class="fl-card__meta" *ngIf="f.campanas?.length; else sinCampana">
+        Lo usa: {{ nombresCampanas(f) }}
+      </p>
+      <ng-template #sinCampana>
+        <p class="fl-card__meta fl-card__meta--aviso">Ninguna campaña lo usa todavía. Elígelo en Campañas → Respuesta del bot.</p>
+      </ng-template>
+      <div class="fl-card__acciones">
+        <button type="button" class="fl-btn" (click)="editar(f)"><i class="fas fa-pen" aria-hidden="true"></i> Editar</button>
+        <button type="button" class="fl-btn fl-btn--danger" (click)="eliminar(f)" [attr.aria-label]="'Eliminar ' + f.nombre">
+          <i class="fas fa-trash" aria-hidden="true"></i>
+        </button>
+      </div>
+    </article>
+  </div>
+</div>
+
+<!-- ── Editor ── -->
+<div class="fl-editor" *ngIf="vista === 'editor'">
+  <header class="fl-toolbar">
+    <button type="button" class="fl-btn fl-btn--ghost" (click)="volver()" aria-label="Volver a la lista">
+      <i class="fas fa-arrow-left" aria-hidden="true"></i>
+    </button>
+    <input class="fl-toolbar__nombre" [(ngModel)]="modelo.nombre" (ngModelChange)="marcarCambio()" maxlength="120" aria-label="Nombre del flujo">
+
+    <div class="fl-segmented" role="group" aria-label="Canales">
+      <button type="button" [class.is-active]="modelo.canales.includes('WhatsApp')" [attr.aria-pressed]="modelo.canales.includes('WhatsApp')" (click)="alternarCanal('WhatsApp')">
+        <i class="fab fa-whatsapp" aria-hidden="true"></i> WhatsApp
+      </button>
+      <button type="button" [class.is-active]="modelo.canales.includes('Instagram')" [attr.aria-pressed]="modelo.canales.includes('Instagram')" (click)="alternarCanal('Instagram')">
+        <i class="fab fa-instagram" aria-hidden="true"></i> Instagram
+      </button>
+    </div>
+
+    <label class="fl-switch">
+      <input type="checkbox" [checked]="modelo.estado === 'Activo'"
+             (change)="modelo.estado = $any($event.target).checked ? 'Activo' : 'Borrador'; marcarCambio()">
+      <span>{{ modelo.estado === 'Activo' ? 'Activo' : 'Borrador' }}</span>
+    </label>
+
+    <span class="fl-toolbar__espacio"></span>
+    <span class="fl-toolbar__estado" *ngIf="sucio">Cambios sin guardar</span>
+    <button type="button" class="fl-btn" (click)="abrirSimulador()"><i class="fas fa-play" aria-hidden="true"></i> Probar</button>
+    <button type="button" class="fl-btn fl-btn--primary" (click)="guardar()" [disabled]="guardando">
+      <i class="fas fa-save" aria-hidden="true"></i> {{ guardando ? 'Guardando…' : 'Guardar' }}
+    </button>
+  </header>
+
+  <p class="fl-hint" *ngIf="!modelo.canales.length">Sin canal marcado, el flujo sirve en WhatsApp e Instagram.</p>
+
+  <div class="fl-workspace">
+    <!-- Paleta -->
+    <aside class="fl-palette" aria-label="Bloques">
+      <span class="fl-eyebrow">Agregar bloque</span>
+      <button type="button" class="fl-palette__item" *ngFor="let t of tipos" (click)="agregar(t.tipo)">
+        <i [class]="t.icono" aria-hidden="true"></i>
+        <span><strong>{{ t.titulo }}</strong><small>{{ t.ayuda }}</small></span>
+      </button>
+      <p class="fl-palette__ayuda">
+        Conecta pulsando una salida <span class="fl-dot" aria-hidden="true"></span> y luego el bloque siguiente.
+        Pulsa una línea para quitarla. Una salida sin conectar termina el flujo.
+      </p>
+    </aside>
+
+    <!-- Lienzo -->
+    <div class="fl-lienzo" #lienzo (click)="clicLienzo()" [class.is-conectando]="conectando" [class.is-archivo]="archivoEncima"
+         (dragover)="sobreLienzo($event)" (dragleave)="dejarLienzo($event)" (drop)="soltarEnLienzo($event)">
+      <div class="fl-soltar" *ngIf="archivoEncima" aria-hidden="true">
+        <i class="fas fa-image"></i> Suelta la imagen o el audio sobre un mensaje para ponérsela, o en un espacio vacío para crear uno nuevo
+      </div>
+      <div class="fl-area" [style.width.px]="tamanoArea.ancho" [style.height.px]="tamanoArea.alto">
+        <svg class="fl-lineas" [attr.width]="tamanoArea.ancho" [attr.height]="tamanoArea.alto">
+          <g *ngFor="let l of lineas">
+            <path class="fl-linea__hit" [attr.d]="l.d" (click)="quitarConexion(l.conexion, $event)">
+              <title>Clic para quitar la conexión</title>
+            </path>
+            <path class="fl-linea" [attr.d]="l.d"></path>
+          </g>
+          <path class="fl-linea fl-linea--temporal" *ngIf="lineaTemporal" [attr.d]="lineaTemporal"></path>
+        </svg>
+
+        <div class="fl-nodo" *ngFor="let n of modelo.nodos; trackBy: trackId"
+             [class.is-selected]="seleccionId === n.id"
+             [class.is-inicio]="modelo.nodoInicio === n.id"
+             [class.is-destino]="conectando && conectando.desde !== n.id"
+             [style.left.px]="n.posicion.x" [style.top.px]="n.posicion.y"
+             [style.width.px]="ANCHO" [style.height.px]="altoNodo(n)"
+             (click)="clicNodo(n, $event)"
+             (drop)="soltarEnNodo(n, $event)"
+             [class.is-subiendo]="subiendoEn === n.id">
+          <div class="fl-nodo__head" (pointerdown)="empezarArrastre(n, $event)">
+            <span class="fl-nodo__entrada" aria-hidden="true"></span>
+            <i [class]="infoTipo(n.tipo).icono" aria-hidden="true"></i>
+            <strong>{{ infoTipo(n.tipo).titulo }}</strong>
+            <span class="fl-nodo__inicio" *ngIf="modelo.nodoInicio === n.id">Inicio</span>
+          </div>
+          <div class="fl-nodo__resumen" [class.con-media]="n.tipo === 'mensaje' && n.datos.mediaUrl">
+            <img class="fl-nodo__miniatura" *ngIf="n.tipo === 'mensaje' && n.datos.mediaUrl && n.datos.mediaTipo !== 'audio'" [src]="n.datos.mediaUrl" alt="">
+            <span class="fl-nodo__miniatura fl-nodo__miniatura--audio" *ngIf="n.tipo === 'mensaje' && n.datos.mediaUrl && n.datos.mediaTipo === 'audio'" aria-hidden="true"><i class="fas fa-headphones"></i></span>
+            <p>{{ subiendoEn === n.id ? 'Subiendo archivo…' : vistaPrevia(resumen(n)) }}</p>
+          </div>
+          <ul class="fl-nodo__salidas" *ngIf="salidas(n).length">
+            <li *ngFor="let s of salidas(n)">
+              <span class="fl-nodo__salida-texto">{{ s.etiqueta }}</span>
+              <button type="button" class="fl-puerto"
+                      [class.is-conectado]="conexionDe(n, s.clave)"
+                      [class.is-activo]="conectando?.desde === n.id && conectando?.salida === s.clave"
+                      (click)="empezarConexion(n, s.clave, $event)"
+                      [attr.aria-label]="'Conectar salida ' + s.etiqueta"></button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel derecho: simulador o propiedades -->
+    <aside class="fl-panel" *ngIf="simulador.abierto" aria-label="Simulador">
+      <div class="fl-panel__head">
+        <strong>Probar flujo</strong>
+        <div class="fl-panel__head-acciones">
+          <select [(ngModel)]="simulador.canal" (ngModelChange)="reiniciarSimulacion()" aria-label="Canal de la prueba">
+            <option value="WhatsApp">WhatsApp</option>
+            <option value="Instagram">Instagram</option>
+          </select>
+          <button type="button" class="fl-btn fl-btn--ghost" (click)="reiniciarSimulacion()" aria-label="Reiniciar"><i class="fas fa-redo" aria-hidden="true"></i></button>
+          <button type="button" class="fl-btn fl-btn--ghost" (click)="cerrarSimulador()" aria-label="Cerrar"><i class="fas fa-times" aria-hidden="true"></i></button>
+        </div>
+      </div>
+      <p class="fl-panel__nota">Usa el flujo tal como está en pantalla, aunque no lo hayas guardado. No envía mensajes ni aparta horarios.</p>
+      <div class="fl-sim__chat">
+        <ng-container *ngFor="let m of simulador.mensajes">
+          <div class="fl-msg fl-msg--yo" *ngIf="m.de === 'yo'">{{ m.texto }}</div>
+          <ng-container *ngIf="m.de === 'bot' && m.accion as a">
+            <div class="fl-msg" *ngIf="a.tipo === 'texto'">{{ a.texto }}</div>
+            <div class="fl-msg" *ngIf="a.tipo === 'imagen'"><img [src]="a.mediaUrl" alt="Imagen del mensaje"></div>
+            <div class="fl-msg" *ngIf="a.tipo === 'audio'">🎧 Nota de voz</div>
+            <div class="fl-msg" *ngIf="a.tipo === 'opciones'">
+              {{ a.texto }}
+              <div class="fl-msg__opciones">
+                <button type="button" *ngFor="let o of a.opciones" (click)="enviarSimulado(o.titulo, o.id)" [disabled]="simulador.terminado">{{ o.titulo }}</button>
+              </div>
+            </div>
+          </ng-container>
+        </ng-container>
+        <div class="fl-msg fl-msg--sistema" *ngIf="simulador.terminado && simulador.mensajes.length">Fin del flujo</div>
+        <div class="fl-msg fl-msg--sistema" *ngIf="simulador.cargando">Escribiendo…</div>
+      </div>
+      <form class="fl-sim__input" (ngSubmit)="enviarSimulado()">
+        <input name="sim" [(ngModel)]="simulador.texto" placeholder="Escribe como si fueras el paciente" [disabled]="simulador.terminado" aria-label="Mensaje de prueba">
+        <button type="submit" class="fl-btn fl-btn--primary" [disabled]="simulador.terminado || simulador.cargando" aria-label="Enviar">
+          <i class="fas fa-paper-plane" aria-hidden="true"></i>
+        </button>
+      </form>
+    </aside>
+
+    <aside class="fl-panel" *ngIf="!simulador.abierto && seleccionado as n" aria-label="Propiedades del bloque">
+      <div class="fl-panel__head">
+        <strong><i [class]="infoTipo(n.tipo).icono" aria-hidden="true"></i> {{ infoTipo(n.tipo).titulo }}</strong>
+        <div class="fl-panel__head-acciones">
+          <button type="button" class="fl-btn fl-btn--ghost" *ngIf="modelo.nodoInicio !== n.id" (click)="marcarInicio(n)">Empezar aquí</button>
+          <button type="button" class="fl-btn fl-btn--ghost fl-btn--danger" (click)="eliminarNodo(n)" aria-label="Eliminar bloque">
+            <i class="fas fa-trash" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="fl-panel__body" [ngSwitch]="n.tipo">
+        <!-- Mensaje -->
+        <ng-container *ngSwitchCase="'mensaje'">
+          <label class="fl-field">
+            <span>Texto</span>
+            <textarea rows="5" [(ngModel)]="n.datos.texto" (ngModelChange)="marcarCambio()"></textarea>
+            <small>
+              <code>{{ variableNombre }}</code> pone el nombre del contacto y <code>{{ variableTratamiento }}</code> el servicio o la promo de la campaña; <code>{{ variableInfo }}</code>, su descripción y precio.
+            </small>
+          </label>
+          <div class="fl-field">
+            <span>Imagen o audio <em>opcional</em></span>
+            <div class="fl-media" [class.is-encima]="archivoEnPanel"
+                 (dragover)="sobrePanel($event)" (dragleave)="archivoEnPanel = false" (drop)="archivoEnPanel = false; soltarEnNodo(n, $event)">
+              <ng-container *ngIf="subiendoEn === n.id; else contenidoMedia">
+                <span class="fl-media__estado"><i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Subiendo…</span>
+              </ng-container>
+              <ng-template #contenidoMedia>
+                <ng-container *ngIf="n.datos.mediaUrl; else sinMedia">
+                  <img *ngIf="n.datos.mediaTipo !== 'audio'" [src]="n.datos.mediaUrl" alt="Imagen del mensaje">
+                  <audio *ngIf="n.datos.mediaTipo === 'audio'" [src]="n.datos.mediaUrl" controls></audio>
+                  <div class="fl-media__acciones">
+                    <label class="fl-btn">
+                      <i class="fas fa-sync" aria-hidden="true"></i> Cambiar
+                      <input type="file" accept="image/jpeg,image/png,audio/*" (change)="elegirArchivo(n, $event)" hidden>
+                    </label>
+                    <button type="button" class="fl-btn fl-btn--danger" (click)="quitarMedia(n)"><i class="fas fa-trash" aria-hidden="true"></i> Quitar</button>
+                  </div>
+                </ng-container>
+                <ng-template #sinMedia>
+                  <label class="fl-media__vacio">
+                    <i class="fas fa-cloud-upload-alt" aria-hidden="true"></i>
+                    <strong>Arrastra aquí una imagen o un audio</strong>
+                    <span>o pulsa para elegirlo · JPG/PNG hasta 5 MB, audio hasta 16 MB</span>
+                    <input type="file" accept="image/jpeg,image/png,audio/*" (change)="elegirArchivo(n, $event)" hidden>
+                  </label>
+                </ng-template>
+              </ng-template>
+            </div>
+            <input type="url" [(ngModel)]="n.datos.mediaUrl" (ngModelChange)="marcarCambio()" placeholder="o pega la URL de una imagen o audio" aria-label="URL de imagen o audio">
+          </div>
+          <label class="fl-field" *ngIf="n.datos.mediaUrl">
+            <span>Tipo de archivo</span>
+            <select [(ngModel)]="n.datos.mediaTipo" (ngModelChange)="marcarCambio()">
+              <option value="imagen">Imagen</option>
+              <option value="audio">Audio</option>
+            </select>
+          </label>
+        </ng-container>
+
+        <!-- Pregunta -->
+        <ng-container *ngSwitchCase="'pregunta'">
+          <label class="fl-field">
+            <span>Pregunta</span>
+            <textarea rows="3" [(ngModel)]="n.datos.texto" (ngModelChange)="marcarCambio()"></textarea>
+          </label>
+          <span class="fl-field__titulo">Opciones</span>
+          <small class="fl-field__ayuda">
+            El bot entiende el botón, las frases de ejemplo y, si no le queda claro, le pregunta a la IA.
+            Si nada coincide, sale por “No entendió” (o repite la pregunta).
+          </small>
+          <div class="fl-rama" *ngFor="let r of n.datos.ramas; let i = index">
+            <div class="fl-rama__fila">
+              <input [(ngModel)]="r.etiqueta" (ngModelChange)="marcarCambio()" maxlength="20" [attr.aria-label]="'Texto del botón ' + (i + 1)" placeholder="Texto del botón">
+              <button type="button" class="fl-btn fl-btn--ghost" (click)="quitarRama(n, r)" [disabled]="n.datos.ramas.length <= 1" aria-label="Quitar opción">
+                <i class="fas fa-times" aria-hidden="true"></i>
+              </button>
+            </div>
+            <input [ngModel]="ejemplosTexto(r)" (ngModelChange)="fijarEjemplos(r, $event)" placeholder="Frases que significan lo mismo, separadas por coma" aria-label="Frases de ejemplo">
+            <select [(ngModel)]="r.intencion" (ngModelChange)="marcarCambio()" aria-label="Intención">
+              <option *ngFor="let it of intenciones" [value]="it.valor">{{ it.valor ? 'También si: ' + it.etiqueta.toLowerCase() : 'Sin intención extra' }}</option>
+            </select>
+          </div>
+          <button type="button" class="fl-btn" (click)="agregarRama(n)" [disabled]="n.datos.ramas.length >= 10">
+            <i class="fas fa-plus" aria-hidden="true"></i> Agregar opción
+          </button>
+          <small class="fl-field__ayuda" *ngIf="n.datos.ramas.length > 3">WhatsApp muestra más de 3 opciones como lista.</small>
+        </ng-container>
+
+        <!-- Pedir dato -->
+        <ng-container *ngSwitchCase="'capturar'">
+          <label class="fl-field">
+            <span>Qué dato</span>
+            <select [(ngModel)]="n.datos.campo" (ngModelChange)="marcarCambio()">
+              <option value="nombre">Nombre</option>
+              <option value="telefono">Teléfono (10 dígitos)</option>
+              <option value="correo">Correo</option>
+              <option value="texto">Texto libre</option>
+            </select>
+            <small *ngIf="n.datos.campo === 'nombre' || n.datos.campo === 'telefono'">Si después agenda, el bot ya no se lo vuelve a pedir.</small>
+          </label>
+          <label class="fl-field">
+            <span>Mensaje para pedirlo</span>
+            <textarea rows="3" [(ngModel)]="n.datos.texto" (ngModelChange)="marcarCambio()"></textarea>
+          </label>
+          <label class="fl-field">
+            <span>Si no es válido <em>opcional</em></span>
+            <input [(ngModel)]="n.datos.textoInvalido" (ngModelChange)="marcarCambio()" placeholder="Se usa un mensaje según el dato">
+          </label>
+          <label class="fl-field" *ngIf="n.datos.campo === 'texto'">
+            <span>Guardarlo como <em>opcional</em></span>
+            <input [(ngModel)]="n.datos.guardarComo" (ngModelChange)="marcarCambio()" placeholder="Ej. zona_a_tratar">
+            <small>Sirve para usarlo en una condición más adelante.</small>
+          </label>
+        </ng-container>
+
+        <!-- Condición -->
+        <ng-container *ngSwitchCase="'condicion'">
+          <label class="fl-field">
+            <span>Revisar</span>
+            <select [(ngModel)]="n.datos.tipo" (ngModelChange)="marcarCambio()">
+              <option value="es_paciente">Si ya es paciente</option>
+              <option value="horario">Si estamos en horario de atención</option>
+              <option value="canal">Por qué canal escribe</option>
+              <option value="etiqueta">Si el prospecto tiene una etiqueta</option>
+              <option value="campo">Un dato que se pidió antes</option>
+            </select>
+          </label>
+          <label class="fl-field" *ngIf="n.datos.tipo === 'canal'">
+            <span>Canal</span>
+            <select [(ngModel)]="n.datos.valor" (ngModelChange)="marcarCambio()">
+              <option value="WhatsApp">WhatsApp</option>
+              <option value="Instagram">Instagram</option>
+            </select>
+          </label>
+          <label class="fl-field" *ngIf="n.datos.tipo === 'etiqueta'">
+            <span>Etiqueta</span>
+            <input [(ngModel)]="n.datos.valor" (ngModelChange)="marcarCambio()" placeholder="Ej. botox">
+          </label>
+          <ng-container *ngIf="n.datos.tipo === 'campo'">
+            <label class="fl-field">
+              <span>Dato</span>
+              <input [(ngModel)]="n.datos.campo" (ngModelChange)="marcarCambio()" placeholder="nombre, telefono, correo o el nombre que le diste">
+            </label>
+            <label class="fl-field">
+              <span>Contiene <em>opcional</em></span>
+              <input [(ngModel)]="n.datos.valor" (ngModelChange)="marcarCambio()" placeholder="Vacío = sólo revisa que exista">
+            </label>
+          </ng-container>
+        </ng-container>
+
+        <!-- Espera -->
+        <ng-container *ngSwitchCase="'espera'">
+          <div class="fl-field fl-field--fila">
+            <label>
+              <span>Cuánto</span>
+              <input type="number" min="1" [(ngModel)]="n.datos.cantidad" (ngModelChange)="marcarCambio()">
+            </label>
+            <label>
+              <span>Unidad</span>
+              <select [(ngModel)]="n.datos.unidad" (ngModelChange)="marcarCambio()">
+                <option value="minutos">Minutos</option>
+                <option value="horas">Horas</option>
+                <option value="dias">Días</option>
+              </select>
+            </label>
+          </div>
+          <small class="fl-field__ayuda">Si el contacto escribe antes, el flujo sigue en ese momento.</small>
+          <label class="fl-field">
+            <span>Plantilla de WhatsApp <em>si pasan 24 h</em></span>
+            <select [(ngModel)]="n.datos.plantilla" (ngModelChange)="elegirPlantilla(n, $event)">
+              <option value="">Ninguna</option>
+              <option *ngFor="let p of plantillas" [value]="p.nombre">{{ p.nombre }} ({{ p.idioma }})</option>
+            </select>
+            <small>Pasadas 24 h desde su último mensaje, WhatsApp sólo deja enviar plantillas aprobadas. El bot manda la plantilla y sigue cuando conteste.</small>
+          </label>
+        </ng-container>
+
+        <!-- Agendar y pagar -->
+        <ng-container *ngSwitchCase="'agendar_pagar'">
+          <p class="fl-field__ayuda">Usa el agendamiento de siempre: el contacto elige horario, se le aparta 5 minutos y paga el anticipo con Stripe.</p>
+          <label class="fl-field">
+            <span>Qué ofrecer</span>
+            <select [ngModel]="n.datos.promocionId ? 'promo' : (n.datos.servicioId ? 'servicio' : 'catalogo')"
+                    (ngModelChange)="n.datos.promocionId = ''; n.datos.servicioId = ''; n.datos.modo = $event; marcarCambio()">
+              <option value="catalogo">Lo de la campaña que abrió el flujo</option>
+              <option value="servicio">Un servicio</option>
+              <option value="promo">Los servicios de una promoción</option>
+            </select>
+          </label>
+          <ng-container *ngIf="n.datos.servicioId || n.datos.modo === 'servicio'">
+            <label class="fl-field">
+              <span>Área</span>
+              <select [(ngModel)]="n.datos.servicioModel" (ngModelChange)="n.datos.servicioId = ''; marcarCambio()">
+                <option value="ServicioEstetico">Estética</option>
+                <option value="ServicioDental">Dental</option>
+              </select>
+            </label>
+            <label class="fl-field">
+              <span>Servicio</span>
+              <select [(ngModel)]="n.datos.servicioId" (ngModelChange)="marcarCambio()">
+                <option value="">Elige uno</option>
+                <option *ngFor="let s of (n.datos.servicioModel === 'ServicioDental' ? serviciosDentales : serviciosEsteticos)" [value]="s._id">{{ s.nombre }}</option>
+              </select>
+            </label>
+          </ng-container>
+          <label class="fl-field" *ngIf="n.datos.promocionId || n.datos.modo === 'promo'">
+            <span>Promoción</span>
+            <select [(ngModel)]="n.datos.promocionId" (ngModelChange)="marcarCambio()">
+              <option value="">Elige una</option>
+              <option *ngFor="let p of promociones" [value]="p._id">{{ p.nombre }}</option>
+            </select>
+          </label>
+          <small class="fl-field__ayuda" *ngIf="!n.datos.servicioId && !n.datos.promocionId && n.datos.modo !== 'servicio' && n.datos.modo !== 'promo'">
+            Usa el servicio o la promoción de la campaña. Si la campaña no trae ninguno, muestra el catálogo completo. Así el mismo flujo sirve para cualquier campaña.
+          </small>
+          <small class="fl-field__ayuda">“Pagó” sigue cuando Stripe confirma el anticipo. “No pagó” sigue si deja el agendamiento a medias más de 15 minutos.</small>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'fin'">
+          <p class="fl-field__ayuda">Aquí termina el flujo. El siguiente mensaje del contacto lo contesta el bot normal (menú, agenda, precios…).</p>
+        </ng-container>
+      </div>
+    </aside>
+  </div>
+</div>

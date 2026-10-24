@@ -1,11 +1,13 @@
 import { Component, EventEmitter, HostListener, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import Swal from 'sweetalert2';
-import { Campana, CampanasService, CanalCampana, DisparadorCampana } from '../../../services/campanas/campanas.service';
+import { Campana, CampanasService, CanalCampana, DisparadorCampana, disparadoresDe } from '../../../services/campanas/campanas.service';
 import { UserService, Usuario } from '../../../services/user/user.service';
 import { SelectorPublicacionComponent } from '../selector-publicacion/selector-publicacion.component';
 import { PromocionesService } from '../../../services/promociones/promociones.service';
+import { FlujosService } from '../../../services/flujos/flujos.service';
 
 // <input type="date"> trabaja con "YYYY-MM-DD" en hora local; el backend guarda
 // instantes. Se envía inicio y fin del día local para que una campaña que
@@ -24,7 +26,7 @@ const instanteLocal = (fecha: string, finDelDia: boolean): string => {
 @Component({
   selector: 'app-campana-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, SelectorPublicacionComponent],
+  imports: [CommonModule, FormsModule, RouterModule, SelectorPublicacionComponent],
   templateUrl: './campana-form.component.html',
   styleUrl: './campana-form.component.css'
 })
@@ -36,10 +38,12 @@ export class CampanaFormComponent implements OnInit {
   modelo!: Campana;
   nuevaPalabra = '';
   nuevaEtiqueta = '';
+  nuevoAnuncio = '';
   fechaInicio = '';
   fechaFin = '';
   doctores: Usuario[] = [];
   promociones: { _id: string; nombre: string; vigente: boolean }[] = [];
+  flujos: { _id: string; nombre: string; activo: boolean }[] = [];
   guardando = false;
 
   readonly variableNombre = '{{nombre}}';
@@ -47,13 +51,15 @@ export class CampanaFormComponent implements OnInit {
   readonly opcionesDisparador: { valor: DisparadorCampana; titulo: string; descripcion: string; icono: string }[] = [
     { valor: 'palabra_clave', titulo: 'Palabra clave', descripcion: 'Te escriben una palabra por mensaje.', icono: 'fas fa-comment-dots' },
     { valor: 'comentario', titulo: 'Comentario', descripcion: 'Comentan una palabra en una publicación.', icono: 'fas fa-comments' },
-    { valor: 'enlace', titulo: 'Enlace', descripcion: 'Entran por un link de anuncio, bio o QR.', icono: 'fas fa-link' }
+    { valor: 'enlace', titulo: 'Enlace', descripcion: 'Entran por un link de anuncio, bio o QR.', icono: 'fas fa-link' },
+    { valor: 'anuncio', titulo: 'Anuncio de Meta', descripcion: 'Tocan tu anuncio; basta con que digan “Hola”.', icono: 'fas fa-ad' }
   ];
 
   constructor(
     private campanasService: CampanasService,
     private userService: UserService,
-    private promocionesService: PromocionesService
+    private promocionesService: PromocionesService,
+    private flujosService: FlujosService
   ) {}
 
   get esEdicion(): boolean {
@@ -66,6 +72,7 @@ export class CampanaFormComponent implements OnInit {
       descripcion: '',
       canal: 'WhatsApp',
       disparador: 'palabra_clave',
+      disparadores: ['palabra_clave'],
       palabrasClave: [],
       coincidencia: 'contiene',
       publicacionId: '',
@@ -77,6 +84,8 @@ export class CampanaFormComponent implements OnInit {
       interes: 'Desconocido',
       idDoctor: null,
       promocionId: null,
+      anuncioIds: [],
+      flujoId: null,
       estado: 'Borrador'
     };
 
@@ -87,6 +96,8 @@ export class CampanaFormComponent implements OnInit {
           ...c,
           palabrasClave: [...c.palabrasClave],
           etiquetas: [...c.etiquetas],
+          anuncioIds: [...(c.anuncioIds || [])],
+          disparadores: [...disparadoresDe(c)],
           respuesta: { ...base.respuesta, ...c.respuesta }
         }
       : base;
@@ -100,6 +111,11 @@ export class CampanaFormComponent implements OnInit {
           : [];
       },
       error: () => this.doctores = []
+    });
+
+    this.flujosService.obtenerFlujos().subscribe({
+      next: (flujos) => this.flujos = flujos.map(f => ({ _id: f._id!, nombre: f.nombre, activo: f.estado === 'Activo' })),
+      error: () => this.flujos = []
     });
 
     // Se listan también las que aún no empiezan, para preparar la campaña antes
@@ -132,12 +148,25 @@ export class CampanaFormComponent implements OnInit {
 
   elegirCanal(canal: CanalCampana) {
     this.modelo.canal = canal;
-    if (canal === 'WhatsApp' && this.modelo.disparador === 'comentario') {
-      this.modelo.disparador = 'palabra_clave';
+    if (canal === 'WhatsApp' && this.tiene('comentario')) {
+      this.alternar('comentario');
+      if (!this.modelo.disparadores!.length) this.modelo.disparadores!.push('palabra_clave');
     }
   }
 
-  agregar(lista: string[], campo: 'nuevaPalabra' | 'nuevaEtiqueta', evento?: Event) {
+  tiene(disparador: DisparadorCampana): boolean {
+    return this.modelo.disparadores!.includes(disparador);
+  }
+
+  // Se pueden combinar: la misma campaña responde a la palabra, al comentario, al enlace y al anuncio
+  alternar(disparador: DisparadorCampana) {
+    const lista = this.modelo.disparadores!;
+    const i = lista.indexOf(disparador);
+    if (i >= 0) lista.splice(i, 1);
+    else lista.push(disparador);
+  }
+
+  agregar(lista: string[], campo: 'nuevaPalabra' | 'nuevaEtiqueta' | 'nuevoAnuncio', evento?: Event) {
     evento?.preventDefault();
     const valores = this[campo].split(',').map(v => v.trim()).filter(Boolean);
     for (const valor of valores) {
@@ -154,12 +183,22 @@ export class CampanaFormComponent implements OnInit {
     return (valor || '').toUpperCase().replace(/[^A-Z0-9-]/g, '');
   }
 
+  // Las palabras clave sólo aplican a los disparadores por texto
+  get usaPalabras(): boolean {
+    return this.tiene('palabra_clave') || this.tiene('comentario');
+  }
+
+  get flujoElegido() {
+    return this.flujos.find(f => f._id === this.modelo.flujoId) || null;
+  }
+
   get mensajeEntrada(): string {
     const m = this.modelo;
-    if (m.disparador === 'enlace') {
+    if (this.usaPalabras) return m.palabrasClave[0] || 'Mensaje con tu palabra clave';
+    if (this.tiene('enlace')) {
       return m.canal === 'WhatsApp' ? `${m.mensajeEnlace} ${m.codigo || 'CODIGO'}` : 'Entra desde tu enlace';
     }
-    return m.palabrasClave[0] || 'Mensaje con tu palabra clave';
+    return 'Hola';
   }
 
   vistaPrevia(texto: string): string {
@@ -169,7 +208,9 @@ export class CampanaFormComponent implements OnInit {
   private validar(): string | null {
     const m = this.modelo;
     if (!m.nombre.trim()) return 'Ponle un nombre a la campaña.';
-    if (m.disparador !== 'enlace' && m.palabrasClave.length === 0) return 'Agrega al menos una palabra clave.';
+    if (!m.disparadores!.length) return 'Elige al menos un disparador.';
+    if (this.usaPalabras && m.palabrasClave.length === 0) return 'Agrega al menos una palabra clave.';
+    if (this.tiene('anuncio') && m.anuncioIds.length === 0) return 'Agrega el ID de al menos un anuncio.';
     if (this.fechaInicio && this.fechaFin && this.fechaFin < this.fechaInicio) return 'La fecha de fin es anterior a la de inicio.';
     return null;
   }
@@ -178,6 +219,7 @@ export class CampanaFormComponent implements OnInit {
     // Lo que quedó escrito sin pulsar Enter también cuenta
     if (this.nuevaPalabra.trim()) this.agregar(this.modelo.palabrasClave, 'nuevaPalabra');
     if (this.nuevaEtiqueta.trim()) this.agregar(this.modelo.etiquetas, 'nuevaEtiqueta');
+    if (this.nuevoAnuncio.trim()) this.agregar(this.modelo.anuncioIds, 'nuevoAnuncio');
 
     const error = this.validar();
     if (error) {
@@ -188,7 +230,8 @@ export class CampanaFormComponent implements OnInit {
     const { _id, enlace, metricas, createdAt, estado, ...datos } = this.modelo;
     const payload: Partial<Campana> = {
       ...datos,
-      palabrasClave: datos.disparador === 'enlace' ? [] : datos.palabrasClave,
+      disparador: datos.disparadores![0],
+      palabrasClave: this.usaPalabras ? datos.palabrasClave : [],
       fechaInicio: this.fechaInicio ? instanteLocal(this.fechaInicio, false) : null,
       fechaFin: this.fechaFin ? instanteLocal(this.fechaFin, true) : null
     };

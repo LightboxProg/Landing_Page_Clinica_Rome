@@ -1,28 +1,25 @@
 :host {
   display: contents;
-  --primary-gold: #C5A028;
   --bg-main: #ffffff;
-  --bg-surface: #fafafa;
   --text-main: #111111;
   --text-muted: #737373;
-  --border-light: #eaeaea;
 }
 
 .perfil-paciente {
   min-height: 100vh;
-  background: var(--bg-surface);
+  background: var(--adm-superficie-2);
   padding: 40px;
-  font-family: 'Inter', -apple-system, sans-serif;
-  color: var(--text-main);
+  font-family: var(--body);
+  color: var(--adm-texto);
 }
 
 .perfil-header-premium {
-  background: radial-gradient(circle at top right, rgba(197, 160, 40, 0.06) 0%, transparent 60%), linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  background: var(--adm-banda);
   border-radius: 16px;
   padding: 40px;
   margin-bottom: 28px;
   box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
-  color: white;
+  color: #ffffff;
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
@@ -53,9 +50,9 @@
 .avatar-iniciales {
   font-size: 34px;
   font-weight: 700;
-  color: var(--primary-gold);
+  color: var(--adm-acento);
   letter-spacing: -0.02em;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--body);
 }
 
 .perfil-header-premium .badge-edad {
@@ -129,7 +126,7 @@
 .badge-lista-negra {
   background: rgba(220, 38, 38, 0.9);
   color: white;
-  border: 1px solid #b91c1c;
+  border: 1px solid var(--adm-error);
 }
 
 /* Quick Stats in Header */
@@ -148,7 +145,7 @@
 .quick-stats .stat-label {
   font-size: 11px;
   font-weight: 600;
-  color: #94a3b8; /* Slate 400 */
+  color: var(--adm-muy-tenue); /* Slate 400 */
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -157,7 +154,7 @@
   font-size: 15px;
   font-weight: 600;
   color: white;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--data);
 }
 
 /* Header Actions */
@@ -195,27 +192,27 @@
 }
 
 .tarjeta-info {
-  background: var(--bg-main);
+  background: var(--adm-superficie);
   border-radius: 16px;
-  border: 1px solid var(--border-light);
+  border: 1px solid var(--adm-borde);
   overflow: hidden;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
 }
 
 .tarjeta-info .titulo-seccion {
-  background: linear-gradient(to right, var(--bg-surface), #f5f5f7);
+  background: var(--adm-superficie);
   padding: 18px 24px;
   display: flex;
   align-items: center;
   gap: 12px;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--adm-borde);
 }
 
 .tarjeta-info .titulo-seccion h3 {
   margin: 0;
   font-size: 13px;
   font-weight: 700;
-  color: var(--text-main);
+  color: var(--adm-texto);
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
@@ -237,14 +234,14 @@
   margin: 0;
   font-size: 11px;
   font-weight: 800;
-  color: var(--primary-gold);
+  color: var(--adm-acento);
   text-transform: uppercase;
   letter-spacing: 0.12em;
 }
 
 .divider {
   height: 1px;
-  background: var(--border-light);
+  background: var(--adm-borde);
   margin: 0;
 }
 
@@ -256,7 +253,7 @@
 
 .tarjeta-info .dato .etiqueta {
   font-weight: 700;
-  color: var(--text-muted);
+  color: var(--adm-tenue);
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -266,19 +263,19 @@
 }
 
 .tarjeta-info .dato .etiqueta i {
-  color: var(--primary-gold);
+  color: var(--adm-acento);
   font-size: 11px;
 }
 
 .tarjeta-info .dato .valor {
-  color: var(--text-main);
+  color: var(--adm-texto);
   font-weight: 600;
   font-size: 14px;
   word-break: break-word;
 }
 
 .tarjeta-info .dato .valor.sin-dato {
-  color: var(--text-muted);
+  color: var(--adm-tenue);
   font-weight: 400;
   font-style: italic;
   opacity: 0.65;
@@ -310,7 +307,7 @@
   font-size: 13px !important;
   text-transform: uppercase !important;
   letter-spacing: 0.05em !important;
-  color: var(--text-muted) !important;
+  color: var(--adm-tenue) !important;
   cursor: pointer !important;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
   width: auto !important;
@@ -340,7 +337,7 @@
 }
 
 .tabs button:hover {
-  color: var(--text-main) !important;
+  color: var(--adm-texto) !important;
   background: rgba(255, 255, 255, 0.3) !important;
   border-color: rgba(255, 255, 255, 0.4) !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03) !important;
@@ -348,8 +345,8 @@
 }
 
 .tabs button.active {
-  color: var(--text-main) !important;
-  background: rgba(255, 255, 255, 0.75) !important;
+  color: var(--adm-texto) !important;
+  background: var(--adm-superficie) !important;
   border: 1px solid rgba(255, 255, 255, 0.9) !important;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06), inset 0 1px 1px rgba(255, 255, 255, 0.8) !important;
   font-weight: 700 !important;
@@ -365,11 +362,11 @@
 
 /* Formularios y Edición */
 .tarjeta-edicion {
-  background: var(--bg-main);
+  background: var(--adm-superficie);
   border-radius: 8px;
   padding: 32px;
   margin-bottom: 24px;
-  border: 1px solid var(--primary-gold);
+  border: 1px solid var(--adm-laton);
   box-shadow: 0 4px 12px rgba(197, 160, 40, 0.05);
 }
 
@@ -377,14 +374,14 @@
   margin: 0 0 24px 0;
   font-size: 16px;
   font-weight: 600;
-  color: var(--text-main);
+  color: var(--adm-texto);
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
 .tarjeta-edicion h3 i {
-  color: var(--primary-gold);
+  color: var(--adm-acento);
 }
 
 .form-edicion {
@@ -402,26 +399,26 @@
 .campo label {
   font-weight: 600;
   font-size: 11px;
-  color: var(--text-muted);
+  color: var(--adm-tenue);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .campo input, .tarjeta-seccion textarea {
   padding: 10px 12px;
-  border: 1px solid var(--border-light);
+  border: 1px solid var(--adm-input-borde);
   border-radius: 6px;
-  background: var(--bg-surface);
+  background: var(--adm-superficie-2);
   font-family: inherit;
   font-size: 13px;
-  color: var(--text-main);
+  color: var(--adm-texto);
   transition: all 0.2s ease;
 }
 
 .campo input:focus, .tarjeta-seccion textarea:focus {
   outline: none;
-  border-color: var(--primary-gold);
-  background: var(--bg-main);
+  border-color: var(--adm-laton);
+  background: var(--adm-input-fondo);
 }
 
 .campo.campo-full {
@@ -449,35 +446,35 @@
 }
 
 .btn-guardar, .btn-primario {
-  background: var(--text-main);
-  border: 1px solid var(--text-main);
-  color: white;
+  background: var(--adm-primario);
+  border: 1px solid var(--adm-primario);
+  color: var(--adm-sobre-primario);
 }
 
 .btn-guardar:hover, .btn-primario:hover {
-  background: #000;
-  border-color: #000;
+  background: var(--adm-primario);
+  border-color: var(--adm-primario);
 }
 
 .btn-cancelar {
   background: transparent;
-  border: 1px solid var(--border-light);
-  color: var(--text-muted);
+  border: 1px solid var(--adm-borde);
+  color: var(--adm-tenue);
 }
 
 .btn-cancelar:hover {
-  background: var(--bg-surface);
-  color: var(--text-main);
+  background: var(--adm-superficie-2);
+  color: var(--adm-texto);
 }
 
 .btn-secundario {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-light);
-  color: var(--text-main);
+  background: var(--adm-superficie-2);
+  border: 1px solid var(--adm-borde);
+  color: var(--adm-texto);
 }
 
 .btn-secundario:hover {
-  border-color: var(--text-main);
+  border-color: var(--adm-primario);
 }
 
 /* Secciones (Alergias/Medicamentos) */
@@ -498,14 +495,14 @@
 
 .tarjeta-seccion .titulo-seccion i {
   font-size: 16px;
-  color: var(--text-muted);
+  color: var(--adm-tenue);
 }
 
 .tarjeta-seccion .titulo-seccion h3 {
   margin: 0;
   font-size: 15px;
   font-weight: 600;
-  color: var(--text-main);
+  color: var(--adm-texto);
 }
 
 .tarjeta-seccion textarea {
@@ -531,7 +528,7 @@
 .categoria-citas h4 {
   font-size: 13px;
   font-weight: 800;
-  color: var(--primary-gold);
+  color: var(--adm-acento);
   text-transform: uppercase;
   letter-spacing: 0.1em;
   margin: 0 0 16px 0;
@@ -539,36 +536,36 @@
   align-items: center;
   gap: 8px;
   padding-bottom: 12px;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--adm-borde);
 }
 
 .cita-card {
-  background: white;
-  border: 1px solid var(--border-light);
+  background: var(--adm-superficie);
+  border: 1px solid var(--adm-borde);
   border-radius: 8px;
   padding: 20px;
   margin-bottom: 16px;
-  border-left: 4px solid var(--text-muted);
+  border-left: 4px solid #737373;
   transition: all 0.2s ease;
   box-shadow: 0 2px 8px rgba(0,0,0,0.02);
 }
 
 .cita-card:hover {
-  border-color: var(--primary-gold);
-  border-left-color: var(--primary-gold);
+  border-color: var(--adm-laton);
+  border-left-color: var(--adm-laton);
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
 .cita-titulo {
   font-weight: 700;
   font-size: 15px;
-  color: var(--text-main);
+  color: var(--adm-texto);
   margin-bottom: 8px;
 }
 
 .cita-fecha, .cita-doctor {
   font-size: 13px;
-  color: var(--text-muted);
+  color: var(--adm-tenue);
   margin-bottom: 4px;
 }
 
@@ -581,15 +578,15 @@
   padding: 4px 8px;
   border-radius: 4px;
   margin-top: 12px;
-  border: 1px solid var(--border-light);
-  background: var(--bg-main);
-  color: var(--text-muted);
+  border: 1px solid var(--adm-borde);
+  background: var(--adm-superficie);
+  color: var(--adm-tenue);
 }
 
-.cita-estado.Pendiente { color: #d97706; border-color: #fde68a; background: #fffbeb; }
-.cita-estado.Confirmada { color: #16a34a; border-color: #bbf7d0; background: #f0fdf4; }
-.cita-estado.Cancelada { color: #dc2626; border-color: #fecaca; background: #fef2f2; }
-.cita-estado.Completada { color: #2563eb; border-color: #bfdbfe; background: #eff6ff; }
+.cita-estado.Pendiente { color: var(--adm-aviso); border-color: var(--adm-aviso-borde); background: var(--adm-aviso-fondo); }
+.cita-estado.Confirmada { color: var(--adm-ok); border-color: var(--adm-ok-borde); background: var(--adm-ok-fondo); }
+.cita-estado.Cancelada { color: var(--adm-error); border-color: var(--adm-error-borde); background: var(--adm-error-fondo); }
+.cita-estado.Completada { color: var(--adm-info); border-color: var(--adm-info-borde); background: var(--adm-info-fondo); }
 
 /* Estilos de cobro y pagos en citas del perfil */
 .cita-header-row {
@@ -611,7 +608,7 @@
 .cita-payment-footer {
   margin-top: 12px;
   padding-top: 10px;
-  border-top: 1px dashed var(--border-light);
+  border-top: 1px dashed var(--adm-borde);
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -620,9 +617,9 @@
 .perfil-badge-pagado {
   font-size: 11px;
   font-weight: 700;
-  color: #166534;
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
+  color: var(--adm-ok);
+  background: var(--adm-ok-fondo);
+  border: 1px solid var(--adm-ok-borde);
   padding: 3px 8px;
   border-radius: 4px;
   text-transform: uppercase;
@@ -653,11 +650,11 @@
 
 /* Galería */
 .btn-subir-evidencia {
-  background: linear-gradient(135deg, var(--text-main) 0%, #1e293b 100%);
+  background: var(--adm-primario);
   border: none;
   padding: 12px 24px;
   border-radius: 8px;
-  color: white;
+  color: var(--adm-sobre-primario);
   font-weight: 600;
   font-size: 13px;
   cursor: pointer;
@@ -669,7 +666,7 @@
 }
 
 .btn-subir-evidencia:hover {
-  background: linear-gradient(135deg, #000000 0%, #0f172a 100%);
+  background: var(--adm-primario);
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(15, 23, 42, 0.2);
 }
@@ -685,7 +682,7 @@
   aspect-ratio: 1;
   border-radius: 12px;
   overflow: hidden;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--adm-borde);
   cursor: pointer;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -701,7 +698,7 @@
 .galeria-overlay {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(15, 23, 42, 0.7);
+  background: var(--adm-velo);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   display: flex;
@@ -740,10 +737,10 @@
   grid-column: 1 / -1;
   text-align: center;
   padding: 48px;
-  color: var(--text-muted);
+  color: var(--adm-tenue);
   font-size: 13px;
-  background: var(--bg-surface);
-  border: 1px dashed var(--border-light);
+  background: var(--adm-superficie-2);
+  border: 1px dashed var(--adm-borde);
   border-radius: 12px;
 }
 
@@ -762,8 +759,8 @@
 }
 
 .membresia-card {
-  background: white;
-  border: 1px solid var(--border-light);
+  background: var(--adm-superficie);
+  border: 1px solid var(--adm-borde);
   border-radius: 8px;
   padding: 24px;
   transition: all 0.2s ease;
@@ -771,7 +768,7 @@
 }
 
 .membresia-card:hover {
-  border-color: var(--primary-gold);
+  border-color: var(--adm-laton);
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
@@ -781,14 +778,14 @@
   align-items: flex-start;
   margin-bottom: 20px;
   padding-bottom: 16px;
-  border-bottom: 1px dashed var(--border-light);
+  border-bottom: 1px dashed var(--adm-borde);
 }
 
 .membresia-header h4 {
   margin: 0;
   font-size: 15px;
   font-weight: 700;
-  color: var(--text-main);
+  color: var(--adm-texto);
   line-height: 1.4;
 }
 
@@ -799,15 +796,15 @@
   letter-spacing: 0.05em;
   padding: 4px 8px;
   border-radius: 4px;
-  border: 1px solid var(--border-light);
+  border: 1px solid var(--adm-borde);
 }
 
-.membresia-status.al_corriente { color: #16a34a; background: #f0fdf4; border-color: #bbf7d0; }
-.membresia-status.atrasada { color: #b54708; background: #fff6ed; border-color: #f9d4ae; }
-.membresia-status.pendiente_pago { color: #475467; background: #f8fafc; }
-.membresia-status.liquidada { color: #3538cd; background: #eef4ff; border-color: #c7d7fe; }
-.membresia-status.cancelada { color: #b42318; background: #fef3f2; border-color: #fecdca; }
-.m-vencido { color: #b54708; }
+.membresia-status.al_corriente { color: var(--adm-ok); background: var(--adm-ok-fondo); border-color: var(--adm-ok-borde); }
+.membresia-status.atrasada { color: var(--adm-aviso); background: var(--adm-aviso-fondo); border-color: var(--adm-aviso-borde); }
+.membresia-status.pendiente_pago { color: var(--adm-texto-2); background: var(--adm-superficie-2); }
+.membresia-status.liquidada { color: var(--adm-info); background: var(--adm-info-fondo); border-color: var(--adm-info-borde); }
+.membresia-status.cancelada { color: var(--adm-error); background: var(--adm-error-fondo); border-color: var(--adm-error-borde); }
+.m-vencido { color: var(--adm-aviso); }
 
 .membresia-body {
   display: flex;
@@ -822,14 +819,14 @@
 }
 
 .m-label {
-  color: var(--text-muted);
+  color: var(--adm-tenue);
   font-weight: 500;
 }
 
 .m-valor {
-  color: var(--text-main);
+  color: var(--adm-texto);
   font-weight: 600;
-  font-family: 'JetBrains Mono', monospace; /* Para números */
+  font-family: var(--data); /* Para números */
 }
 
 /* Modales */
@@ -838,7 +835,7 @@
   padding: 60px;
   font-size: 14px;
   font-weight: 500;
-  color: var(--text-muted);
+  color: var(--adm-tenue);
 }
 
 .modal-imagen {
@@ -931,7 +928,7 @@
 
 .zoom-controls button.cerrar-modal:hover {
   background: rgba(239, 68, 68, 0.2);
-  color: #ef4444;
+  color: var(--adm-error);
 }
 
 /* Formulario Cita Modal */
@@ -939,14 +936,14 @@
   margin: 0 0 24px 0;
   font-size: 18px;
   font-weight: 600;
-  color: var(--text-main);
+  color: var(--adm-texto);
   letter-spacing: -0.02em;
 }
 
 .form-modal-cita label {
   font-weight: 600;
   font-size: 11px;
-  color: var(--text-muted);
+  color: var(--adm-tenue);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-top: 16px;
@@ -959,12 +956,12 @@
 .form-modal-cita select {
   width: 100%;
   padding: 10px 12px;
-  border: 1px solid var(--border-light);
+  border: 1px solid var(--adm-input-borde);
   border-radius: 6px;
-  background: var(--bg-surface);
+  background: var(--adm-superficie-2);
   font-family: inherit;
   font-size: 13px;
-  color: var(--text-main);
+  color: var(--adm-texto);
   transition: all 0.2s ease;
 }
 
@@ -972,8 +969,8 @@
 .form-modal-cita textarea:focus,
 .form-modal-cita select:focus {
   outline: none;
-  border-color: var(--primary-gold);
-  background: var(--bg-main);
+  border-color: var(--adm-laton);
+  background: var(--adm-input-fondo);
 }
 
 /* Dos campos que se leen juntos (inicio/fin, costo/anticipo) */
@@ -988,7 +985,7 @@
 .form-modal-cita .campo-ayuda {
   margin: 6px 0 0;
   font-size: 11px;
-  color: var(--text-muted);
+  color: var(--adm-tenue);
 }
 
 .form-modal-cita .campo-error {
@@ -1006,18 +1003,18 @@
   gap: 12px;
   margin-top: 18px;
   padding: 12px 14px;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-light);
-  border-left: 3px solid var(--primary-gold);
+  background: var(--adm-superficie-2);
+  border: 1px solid var(--adm-borde);
+  border-left: 3px solid var(--adm-laton);
   border-radius: 6px;
   font-size: 12px;
-  color: var(--text-muted);
+  color: var(--adm-tenue);
 }
 
 .form-modal-cita .resumen-cita strong {
   font-size: 18px;
   font-weight: 700;
-  color: var(--text-main);
+  color: var(--adm-texto);
 }
 
 .form-modal-cita .botones-modal {
@@ -1035,17 +1032,17 @@
 .cita-notas {
   margin: 10px 0 0;
   padding-left: 10px;
-  border-left: 2px solid var(--border-light);
+  border-left: 2px solid var(--adm-borde);
   font-size: 12px;
   line-height: 1.5;
-  color: var(--text-muted);
+  color: var(--adm-tenue);
   white-space: pre-line;
 }
 
 .cita-cuenta {
   margin: 12px 0 0;
   padding-top: 10px;
-  border-top: 1px solid var(--border-light);
+  border-top: 1px solid var(--adm-borde);
 }
 
 .cita-cuenta__row {
@@ -1058,14 +1055,14 @@
 
 .cita-cuenta__row dt {
   font-size: 11px;
-  color: var(--text-muted);
+  color: var(--adm-tenue);
 }
 
 .cita-cuenta__row dd {
   margin: 0;
   font-size: 12px;
   font-weight: 600;
-  color: var(--text-main);
+  color: var(--adm-texto);
   font-variant-numeric: tabular-nums;
 }
 
@@ -1074,10 +1071,10 @@
 .cita-cuenta__row--total {
   margin-top: 4px;
   padding-top: 7px;
-  border-top: 1px dashed var(--border-light);
+  border-top: 1px dashed var(--adm-borde);
 }
 
-.cita-cuenta__row--total dt { font-weight: 600; color: var(--text-main); }
+.cita-cuenta__row--total dt { font-weight: 600; color: var(--adm-texto); }
 .cita-cuenta__row--total dd { font-size: 15px; font-weight: 700; }
 
 @media (max-width: 520px) {
@@ -1124,8 +1121,8 @@
 
 /* Additional tweaks for Minimalist Professional look */
 .perfil-header .avatar {
-  background: var(--bg-main);
-  border: 1px solid var(--border-light);
+  background: var(--adm-superficie);
+  border: 1px solid var(--adm-borde);
   box-shadow: 0 4px 12px rgba(0,0,0,0.03);
 }
 
@@ -1158,12 +1155,12 @@
   gap: 0.4rem;
   margin: 0;
   padding: 0.45rem 0.75rem;
-  border: 1px solid var(--rule, #d6dbe1);
+  border: 1px solid var(--rule, var(--adm-borde));
   border-radius: 6px;
   font-size: 0.85rem;
   cursor: pointer;
 }
-.modo-cita label.activo { border-color: var(--brass, #B1994C); background: rgba(177, 153, 76, 0.08); }
+.modo-cita label.activo { border-color: var(--brass, var(--adm-laton)); background: rgba(177, 153, 76, 0.08); }
 .modo-cita label.deshabilitado { opacity: 0.45; cursor: not-allowed; }
 .modo-cita input { margin: 0; width: auto; }
 
@@ -1172,13 +1169,13 @@
 .paquete-card {
   padding: 0.85rem 1rem;
   margin-bottom: 0.6rem;
-  border: 1px solid var(--rule, #d6dbe1);
-  border-left: 3px solid var(--brass, #B1994C);
+  border: 1px solid var(--rule, var(--adm-borde));
+  border-left: 3px solid var(--brass, var(--adm-laton));
   border-radius: 6px;
-  background: #fff;
+  background: var(--adm-superficie);
 }
 .paquete-card.inactivo { border-left-color: #c3c8cf; opacity: 0.75; }
 .paquete-card__head { display: flex; justify-content: space-between; gap: 1rem; }
 .paquete-card__estado { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: #77642F; }
-.paquete-card__meta { margin: 0.25rem 0 0.4rem; font-size: 0.8rem; color: #626C7A; }
+.paquete-card__meta { margin: 0.25rem 0 0.4rem; font-size: 0.8rem; color: var(--adm-tenue); }
 .paquete-card ul { margin: 0; padding-left: 1.1rem; font-size: 0.875rem; }

@@ -1,0 +1,95 @@
+<div class="si-page">
+  <header class="si-header">
+    <div>
+      <span class="si-eyebrow">Configuración</span>
+      <h1>Sistema</h1>
+      <p>Si algo falla (un pago que no se volvió cita, un mensaje que Meta rechazó, una tarea que se detuvo) aparece aquí.</p>
+    </div>
+    <button type="button" class="si-btn" (click)="cargar()" [disabled]="cargando">
+      <i class="fas fa-rotate" [class.fa-spin]="cargando" aria-hidden="true"></i> Actualizar
+    </button>
+  </header>
+
+  <div class="si-aviso si-aviso--error" *ngIf="error" role="alert">{{ error }}</div>
+
+  <ng-container *ngIf="salud">
+    <section class="si-estado" aria-label="Estado de los servicios">
+      <div class="si-servicio" [class.is-mal]="!salud.baseDeDatos.ok">
+        <i class="fas" [class.fa-circle-check]="salud.baseDeDatos.ok" [class.fa-circle-xmark]="!salud.baseDeDatos.ok" aria-hidden="true"></i>
+        <div><strong>Base de datos</strong><span>{{ salud.baseDeDatos.detalle }}</span></div>
+      </div>
+      <div class="si-servicio" [class.is-mal]="!salud.bot.ok">
+        <i class="fas" [class.fa-circle-check]="salud.bot.ok" [class.fa-circle-xmark]="!salud.bot.ok" aria-hidden="true"></i>
+        <div><strong>Bot (WhatsApp e Instagram)</strong><span>{{ salud.bot.detalle }}</span></div>
+      </div>
+      <div class="si-servicio" [class.is-mal]="!salud.stripe.ok">
+        <i class="fas" [class.fa-circle-check]="salud.stripe.ok" [class.fa-circle-xmark]="!salud.stripe.ok" aria-hidden="true"></i>
+        <div><strong>Stripe</strong><span>{{ salud.stripe.detalle }}</span></div>
+      </div>
+      <div class="si-servicio">
+        <i class="fas fa-server" aria-hidden="true"></i>
+        <div><strong>Servidor</strong><span>Encendido desde {{ salud.servidor.desde | date:'dd/MM HH:mm' }}</span></div>
+      </div>
+    </section>
+
+    <section class="si-card">
+      <h2>Tareas programadas</h2>
+      <p class="si-tenue" *ngIf="!salud.jobs.length">Todavía no corren desde el último reinicio; aparecen en un minuto.</p>
+      <ul class="si-lista">
+        <li *ngFor="let j of salud.jobs">
+          <span class="si-punto" [class.is-mal]="j.ultimoError || jobAtrasado(j.ultimaCorrida, j.nombre)" aria-hidden="true"></span>
+          <div class="si-lista__main">
+            <strong>{{ nombreJob(j.nombre) }}</strong>
+            <span class="si-tenue">
+              Última vez {{ j.ultimaCorrida | date:'HH:mm:ss' }} · tardó {{ j.duracionMs }} ms · {{ j.corridas }} corridas
+              <ng-container *ngIf="jobAtrasado(j.ultimaCorrida, j.nombre)"> · <b class="si-mal">lleva tiempo sin correr</b></ng-container>
+            </span>
+            <span class="si-mal" *ngIf="j.ultimoError">Último error ({{ j.ultimoError.fecha | date:'dd/MM HH:mm' }}): {{ j.ultimoError.mensaje }}</span>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <section class="si-card" *ngIf="faltantes.length">
+      <h2>Falta configurar</h2>
+      <p class="si-tenue">Variables del <code>.env</code> del backend que están vacías. Se ponen en el servidor y se reinicia.</p>
+      <ul class="si-config">
+        <li *ngFor="let c of faltantes"><code>{{ c.clave }}</code><span>{{ c.para }}</span></li>
+      </ul>
+    </section>
+  </ng-container>
+
+  <section class="si-card">
+    <div class="si-card__head">
+      <h2>Errores</h2>
+      <div class="si-filtro" role="radiogroup" aria-label="Filtro de errores">
+        <button type="button" role="radio" [attr.aria-checked]="soloPendientes" [class.is-active]="soloPendientes" (click)="cambiarFiltro(true)">Sin revisar</button>
+        <button type="button" role="radio" [attr.aria-checked]="!soloPendientes" [class.is-active]="!soloPendientes" (click)="cambiarFiltro(false)">Todos (30 días)</button>
+      </div>
+      <button type="button" class="si-btn si-btn--sec" *ngIf="soloPendientes && errores.length" (click)="marcar('todos')">Marcar todos como revisados</button>
+    </div>
+
+    <p class="si-vacio" *ngIf="!cargando && !errores.length">
+      <i class="fas fa-circle-check" aria-hidden="true"></i> {{ soloPendientes ? 'Nada pendiente.' : 'Sin errores en los últimos 30 días.' }}
+    </p>
+
+    <ul class="si-errores">
+      <li *ngFor="let e of errores" [class.is-revisado]="e.revisado">
+        <button type="button" class="si-error" (click)="abierto = abierto === e._id ? null : e._id" [attr.aria-expanded]="abierto === e._id">
+          <span class="si-chip">{{ nombreOrigen(e.origen) }}</span>
+          <span class="si-error__msg">{{ e.mensaje }}</span>
+          <span class="si-error__veces" *ngIf="e.veces > 1">×{{ e.veces }}</span>
+          <span class="si-tenue si-error__fecha">{{ e.ultimaVez | date:'dd/MM HH:mm' }}</span>
+        </button>
+        <div class="si-detalle" *ngIf="abierto === e._id">
+          <p *ngIf="e.ruta"><b>Dónde:</b> <code>{{ e.ruta }}</code><ng-container *ngIf="e.status"> ({{ e.status }})</ng-container></p>
+          <p *ngIf="e.usuario"><b>Usuario:</b> {{ e.usuario }}</p>
+          <p><b>Primera vez:</b> {{ e.primeraVez | date:'dd/MM/yy HH:mm' }} · <b>última:</b> {{ e.ultimaVez | date:'dd/MM/yy HH:mm' }}</p>
+          <p *ngIf="contexto(e)"><b>Contexto:</b> <code>{{ contexto(e) }}</code></p>
+          <pre *ngIf="e.stack">{{ e.stack }}</pre>
+          <button type="button" class="si-btn si-btn--sec" *ngIf="!e.revisado" (click)="marcar(e._id)">Marcar como revisado</button>
+        </div>
+      </li>
+    </ul>
+  </section>
+</div>
