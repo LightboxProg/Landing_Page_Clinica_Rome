@@ -1,21 +1,41 @@
 <div class="legal-page">
   <section class="page-header">
     <div class="container">
-      <h1 class="page-title">Aviso de Privacidad Integral</h1>
+      <h1 class="page-title">{{ tipoAviso === 'integral' ? 'Aviso de Privacidad Integral' : 'Aviso de Privacidad para Recepción' }}</h1>
       <div class="elegant-detail"></div>
-      <p class="page-subtitle">Comprometidos con la protección de tus datos personales</p>
+      <p class="page-subtitle">
+        {{ tipoAviso === 'integral' ? 'Comprometidos con la protección de tus datos personales en nuestras plataformas' : 'Información sobre el tratamiento de datos personales en nuestras instalaciones y sucursal' }}
+      </p>
+
+      <nav class="legal-tabs" aria-label="Modalidad del aviso de privacidad">
+        <button
+          type="button"
+          class="legal-tab-btn"
+          [class.active]="tipoAviso === 'integral'"
+          (click)="setTipoAviso('integral')">
+          Aviso Integral (Página Web)
+        </button>
+        <button
+          type="button"
+          class="legal-tab-btn"
+          [class.active]="tipoAviso === 'recepcion'"
+          (click)="setTipoAviso('recepcion')">
+          Aviso para Recepción (Sucursal)
+        </button>
+      </nav>
     </div>
   </section>
 
   <section class="section legal-content">
     <div class="container">
-      <div class="legal-card">
+      <!-- AVISO INTEGRAL -->
+      <div class="legal-card" *ngIf="tipoAviso === 'integral'">
         <div class="legal-section">
           <h2>1. Identidad y Domicilio del Responsable</h2>
-          <p>El responsable del tratamiento de sus datos personales es la persona moral <strong>STEORTES, S. DE R.L. DE C.V.</strong>, que opera bajo el nombre comercial <strong>ROME HARMONY CLINIC</strong> (en adelante, <strong>"LA CLÍNICA"</strong>).</p>
+          <p>El responsable del tratamiento de sus datos personales es la persona moral <strong>STEORTES, S. DE R.L. DE C.V.</strong>, que opera bajo el nombre comercial <strong>ROME ARMONY CLINIC</strong> (en adelante, <strong>"LA CLÍNICA"</strong>).</p>
           <p><strong>LA CLÍNICA</strong> señala como domicilio para oír y recibir todo tipo de notificaciones el ubicado en:</p>
           <address>
-            Calle Pozo Bravo No. 229, Colonia Villa Teresa, C.P. 20126, Aguascalientes, Ags., México.
+            Dirección: Calle Pozo Bravo No. 229, Colonia Villa Teresa, C.P. 20126, Aguascalientes, Ags., México.
           </address>
         </div>
 
@@ -53,7 +73,7 @@
             <li>Uso de testimoniales y fotografías de resultados (previo consentimiento específico) para fines de marketing y redes sociales.</li>
             <li>Realización de encuestas de satisfacción y estudios de mercado.</li>
           </ol>
-          <p><strong>Mecanismo para negarse a finalidades secundarias:</strong> Si usted no desea que sus datos sean tratados para estos fines adicionales, puede enviar un correo electrónico a <a href="mailto:contacto@clinicarome.com">contacto&#64;clinicarome.com</a> manifestando su negativa.</p>
+          <p><strong>Mecanismo para negarse a finalidades secundarias:</strong> Si usted no desea que sus datos sean tratados para estos fines adicionales, puede enviar un correo electrónico a [Insertar Correo Electrónico de Contacto] manifestando su negativa.</p>
         </div>
 
         <div class="legal-section">
@@ -93,13 +113,60 @@
           <p><strong>LA CLÍNICA</strong> se reserva el derecho de efectuar en cualquier momento modificaciones o actualizaciones al presente Aviso de Privacidad. Cualquier cambio será informado a través de:</p>
           <ul>
             <li>Anuncios visibles en el domicilio de la Clínica.</li>
-            <li>Nuestra página web: <a href="#">www.romearmonyclinic.com</a>.</li>
+            <li>Nuestra página web: [Insertar Sitio Web].</li>
           </ul>
         </div>
 
         <div class="legal-section">
           <h2>9. Consentimiento del Titular</h2>
           <p>Al proporcionar sus datos personales a <strong>STEORTES, S. DE R.L. DE C.V.</strong>, usted reconoce que ha leído y entendido este Aviso de Privacidad. En el caso de los datos sensibles y financieros, se entenderá que otorga su consentimiento expreso al firmar el formato de ingreso a la clínica.</p>
+        </div>
+      </div>
+
+      <!-- AVISO RECEPCIÓN -->
+      <div class="legal-card" *ngIf="tipoAviso === 'recepcion'">
+        <div class="legal-section">
+          <h2>1. Responsable del Tratamiento de sus Datos Personales</h2>
+          <p>El responsable del tratamiento de sus datos personales es la persona moral <strong>STEORTES, S. DE R.L. DE C.V.</strong>, que opera bajo el nombre comercial <strong>ROME ARMONY CLINIC</strong> (en adelante, <strong>"LA CLÍNICA"</strong>), con domicilio en:</p>
+          <address>
+            Calle Pozo Bravo No. 229, Colonia Villa Teresa, C.P. 20126, Aguascalientes, Ags.
+          </address>
+        </div>
+
+        <div class="legal-section">
+          <h2>2. Datos Personales que se Recaban</h2>
+          <p>Para cumplir con las finalidades del servicio, <strong>LA CLÍNICA</strong> recabará:</p>
+          <ul>
+            <li><strong>Identificación y Contacto:</strong> Nombre completo, edad, domicilio, teléfono y correo electrónico.</li>
+            <li><strong>Datos Sensibles:</strong> Información sobre su estado de salud presente y futuro, historial clínico, alergias, antecedentes genéticos y cualquier otra información necesaria para procedimientos médicos o estéticos.</li>
+            <li><strong>Datos Patrimoniales:</strong> Información para fines de facturación y pago de servicios.</li>
+          </ul>
+        </div>
+
+        <div class="legal-section">
+          <h2>3. Finalidades del Tratamiento</h2>
+          <p>Sus datos serán tratados para las siguientes finalidades primarias (necesarias para el servicio):</p>
+          <ol>
+            <li>Prestación de servicios de medicina estética y salud.</li>
+            <li>Integración y resguardo del expediente clínico conforme a la normativa sanitaria.</li>
+            <li>Gestión de citas y seguimiento de tratamientos.</li>
+            <li>Emisión de comprobantes fiscales (facturación).</li>
+          </ol>
+          <p>De forma secundaria (no necesaria para la relación jurídica), para:</p>
+          <ol>
+            <li>Envío de promociones y publicidad sobre nuevos tratamientos.</li>
+            <li>Evaluaciones de calidad del servicio.</li>
+          </ol>
+        </div>
+
+        <div class="legal-section">
+          <h2>4. Derechos ARCO</h2>
+          <p>Usted tiene derecho al <strong>Acceso, Rectificación, Cancelación u Oposición</strong> al tratamiento de sus datos. Para ejercerlos, deberá enviar una solicitud por escrito al domicilio en Calle Pozo Bravo No. 229 o al correo electrónico que la clínica designe para tal efecto, adjuntando identificación oficial vigente.</p>
+        </div>
+
+        <div class="legal-section">
+          <h2>5. Transferencia de Datos</h2>
+          <p>Se informa que <strong>LA CLÍNICA</strong> no transferirá sus datos personales a terceros sin su consentimiento, salvo las excepciones previstas en el <strong>artículo 37 de la LFPDPPP</strong> y para dar cumplimiento a obligaciones sanitarias ante las autoridades correspondientes.</p>
         </div>
       </div>
     </div>
