@@ -1,6 +1,6 @@
 export const environment = {
     production: true,
-    apiUrl: 'backendclinicarome-production.up.railway.app/landingRome',
+    apiUrl: 'https://backendclinicarome-production.up.railway.app/landingRome',
     // Arranque: en línea sólo se agendan promociones (el backend lo exige con AGENDA_WEB_SOLO_PROMOS)
     agendaSoloPromos: true,
     // Arranque: el catálogo y la compra de membresías en línea no se muestran (recepción las sigue vendiendo)
