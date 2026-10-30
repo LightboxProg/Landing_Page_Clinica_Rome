@@ -1,0 +1,149 @@
+<section class="book">
+  <p *ngIf="cargando" class="estado u-data">Cargando la promoción…</p>
+
+  <div class="form-card panel" *ngIf="!cargando && noDisponible">
+    <h1 class="form-card__title">Esta promoción ya no está disponible</h1>
+    <p class="form-card__note">Pudo haber cerrado o agotado su cupo. Revisa las promociones vigentes.</p>
+    <div class="form-card__actions">
+      <a routerLink="/promociones" class="btn btn--solid">Ver promociones</a>
+    </div>
+  </div>
+
+  <div class="pay" *ngIf="!cargando && item">
+
+    <!-- Izquierda: el paso en curso -->
+    <div class="form-card panel">
+
+      <ol class="pasos u-data" aria-label="Pasos">
+        <li [class.is-on]="paso === 'numero'" [class.is-done]="paso !== 'numero'">1 · Tu número</li>
+        <li [class.is-on]="paso === 'confirmar'" [class.is-done]="paso === 'pago'">2 · Confirmar</li>
+        <li [class.is-on]="paso === 'pago'">3 · Pago</li>
+      </ol>
+
+      <!-- PASO 1: número con lada -->
+      <ng-container *ngIf="paso === 'numero'">
+        <h1 class="form-card__title">¿Cuál es tu WhatsApp?</h1>
+        <p class="form-card__note">
+          Con este número identificamos tu pago y te contactamos para agendar tu cita.
+        </p>
+
+        <div class="field">
+          <label for="lada">País</label>
+          <select id="lada" [(ngModel)]="lada">
+            <option *ngFor="let l of ladas" [value]="l.lada">{{ l.pais }} (+{{ l.lada }})</option>
+            <option value="otra">Otro país</option>
+          </select>
+        </div>
+
+        <div class="field" *ngIf="lada === 'otra'">
+          <label for="ladaOtra">Lada del país</label>
+          <div class="tel">
+            <span class="tel__lada u-data" aria-hidden="true">+</span>
+            <input type="tel" id="ladaOtra" [(ngModel)]="ladaOtra" (ngModelChange)="limpiarLada()"
+                   placeholder="44" inputmode="numeric" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="telefono">Número de WhatsApp</label>
+          <div class="tel">
+            <span class="tel__lada u-data" aria-hidden="true">+{{ ladaFinal || '—' }}</span>
+            <input type="tel" id="telefono" [(ngModel)]="telefono" (ngModelChange)="limpiarTelefono()"
+                   [placeholder]="lada === '52' ? '449 123 4567' : 'Número'" inputmode="numeric" autocomplete="tel-national"
+                   (keyup.enter)="continuar()" />
+            <span class="tel__cuenta u-data" *ngIf="lada === '52'" [class.is-ok]="telefono.length === 10">{{ telefono.length }}/10</span>
+          </div>
+        </div>
+
+        <div class="form-card__actions">
+          <a routerLink="/promociones" class="btn btn--line">Atrás</a>
+          <button class="btn btn--solid" [disabled]="!telefonoValido" (click)="continuar()" type="button">Continuar</button>
+        </div>
+      </ng-container>
+
+      <!-- PASO 2: confirmar número -->
+      <ng-container *ngIf="paso === 'confirmar'">
+        <h1 class="form-card__title">Confirma tu número</h1>
+        <p class="form-card__note">
+          Revisa que esté bien: con él te buscamos por WhatsApp después de pagar.
+        </p>
+
+        <p class="confirmar u-data">
+          <i class="fab fa-whatsapp" aria-hidden="true"></i> {{ telefonoLegible }}
+        </p>
+
+        <div class="form-card__actions">
+          <button class="btn btn--line" (click)="cambiarNumero()" type="button">Cambiar número</button>
+          <button class="btn btn--solid" (click)="confirmarNumero()" type="button">Sí, es correcto</button>
+        </div>
+      </ng-container>
+
+      <!-- PASO 3: términos y tarjeta dentro de la página -->
+      <ng-container *ngIf="paso === 'pago'">
+        <h1 class="form-card__title">{{ restante > 0 ? 'Pago del anticipo' : 'Pago' }}</h1>
+        <p class="numero-ok u-data">
+          Número: <strong>{{ telefonoLegible }}</strong>
+          <button type="button" class="link" (click)="cambiarNumero()" [disabled]="pagando">Cambiar</button>
+        </p>
+
+        <label class="terminos" [class.is-on]="aceptaTerminos">
+          <input type="checkbox" [(ngModel)]="aceptaTerminos" (ngModelChange)="alCambiarTerminos()" [disabled]="pagando || pagoListo || !!urlPago" />
+          <span class="terminos__caja" aria-hidden="true"><i class="fas fa-check"></i></span>
+          <span class="terminos__texto">
+            Acepto los <a href="/aviso-terminos" target="_blank" rel="noopener">términos y condiciones</a>
+            y el <a href="/aviso-privacidad" target="_blank" rel="noopener">aviso de privacidad</a>.
+          </span>
+        </label>
+        <p class="aviso" *ngIf="!aceptaTerminos && !pagoListo && !urlPago">
+          Marca la casilla para mostrar el formulario de pago.
+        </p>
+
+        <div class="field" *ngIf="pagoListo">
+          <label for="correo">Correo para tu comprobante</label>
+          <input type="email" id="correo" [(ngModel)]="correo" placeholder="tucorreo@dominio.com"
+                 autocomplete="email" [disabled]="pagando" />
+        </div>
+
+        <!-- Stripe monta aquí su formulario (tarjeta, Link, etc.) -->
+        <div id="pago-stripe" class="pay__stripe" [hidden]="!!urlPago"></div>
+        <p class="aviso u-data" *ngIf="pagoCargando">Cargando formulario de pago…</p>
+        <p class="aviso" *ngIf="urlPago">Al continuar se abre la página segura de Stripe para capturar tu tarjeta.</p>
+
+        <p class="error" *ngIf="pagoError" role="alert">
+          <i class="fas fa-triangle-exclamation" aria-hidden="true"></i> {{ pagoError }}
+        </p>
+
+        <div class="form-card__actions">
+          <button class="btn btn--solid" [disabled]="!puedePagar" (click)="pagar()" type="button">
+            {{ pagando ? 'Procesando pago…' : 'Pagar ' + (montoAhora | currency:'MXN':'symbol-narrow':'1.0-0') }}
+          </button>
+        </div>
+
+        <p class="form-card__secure u-data">
+          <i class="fas fa-lock" aria-hidden="true"></i> El cobro lo procesa Stripe. No guardamos tu tarjeta.
+        </p>
+      </ng-container>
+    </div>
+
+    <!-- Derecha: lo que está comprando -->
+    <aside class="panel resumen">
+      <p class="u-eyebrow">{{ promo.nombre }}</p>
+      <h2 class="resumen__nombre">{{ item.nombre }}</h2>
+      <dl class="resumen__datos">
+        <div *ngIf="item.precioLista > precio">
+          <dt>Precio normal</dt><dd class="u-data"><s>{{ item.precioLista | currency:'MXN':'symbol-narrow':'1.0-0' }}</s></dd>
+        </div>
+        <div>
+          <dt>Precio de promoción</dt><dd class="u-data">{{ precio | currency:'MXN':'symbol-narrow':'1.0-0' }}</dd>
+        </div>
+        <div class="resumen__total">
+          <dt>{{ restante > 0 ? 'Anticipo hoy' : 'Pagas hoy' }}</dt><dd class="u-data">{{ montoAhora | currency:'MXN':'symbol-narrow':'1.0-0' }}</dd>
+        </div>
+        <div *ngIf="restante > 0">
+          <dt>En clínica</dt><dd class="u-data">{{ restante | currency:'MXN':'symbol-narrow':'1.0-0' }}</dd>
+        </div>
+      </dl>
+      <p class="resumen__nota">Al pagar te llevamos a WhatsApp para agendar tu cita.</p>
+    </aside>
+  </div>
+</section>

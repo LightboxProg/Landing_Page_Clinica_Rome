@@ -30,11 +30,21 @@ export interface Promocion {
   descripcion?: string;
   items: ItemPromocion[];
   limites: { cupoTotal: number | null; unaVezPorPaciente: boolean };
+  // Cómo se compra en la landing (escoger fecha o pago rápido) y si se cobra completo o anticipo
+  pago?: { modo: 'Fecha' | 'Rapido'; tipo: 'Completo' | 'Anticipo'; anticipo: number | null };
   fechaInicio: string;
   fechaFin: string;
   activo: boolean;
   fotos?: { url: string; key: string }[];
   usos?: number;
+}
+
+export interface PagoPromoSesion {
+  clientSecret?: string;
+  publishableKey?: string;
+  url?: string;
+  monto: number;
+  cobro: 'completo' | 'anticipo';
 }
 
 export const ETIQUETAS_DESCUENTO: Record<TipoDescuento, string> = {
@@ -96,5 +106,22 @@ export class PromocionesService {
   // Activas que todavía no abren, la más cercana primero
   obtenerPromocionesProximas(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/promociones/proximas`);
+  }
+
+  // Pago rápido: sólo número con lada y términos. Con clientSecret el formulario de Stripe
+  // va dentro de la página; si no, `url` lleva al checkout de Stripe
+  crearPagoPromo(datos: { promocionId: string; itemId: string; lada: string; telefono: string; aceptaTerminos: boolean }): Observable<PagoPromoSesion> {
+    return this.http.post<PagoPromoSesion>(`${this.apiUrl}/promos/pago`, datos);
+  }
+
+  verificarPagoPromo(sessionId: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/promos/pago/${sessionId}`);
+  }
+
+  // Admin: pagos rápidos (por defecto sólo los pagados)
+  listarPagosPromo(filtros: { desde?: string; hasta?: string; estado?: string } = {}): Observable<any[]> {
+    const params: any = {};
+    for (const [clave, valor] of Object.entries(filtros)) if (valor) params[clave] = valor;
+    return this.http.get<any[]>(`${this.apiUrl}/promos/pagos`, { params });
   }
 }

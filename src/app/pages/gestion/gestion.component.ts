@@ -10,8 +10,9 @@ import { GestionServiciosDentalesComponent } from '../../components/servicios-de
 import { GestionCategoriasDentalesComponent } from '../../components/gestion-categorias-dentales/gestion-categorias-dentales.component';
 import { CorteDiarioComponent } from '../../components/corte-diario/corte-diario.component';
 import { GestionPromocionesComponent } from '../../components/gestion-promociones/gestion-promociones.component';
+import { PagosPromoComponent } from '../../components/pagos-promo/pagos-promo.component';
 
-type TabGestion = 'servicios' | 'serviciosDentales' | 'membresias' | 'suscripciones' | 'corteDiario' | 'promociones';
+type TabGestion = 'servicios' | 'serviciosDentales' | 'membresias' | 'suscripciones' | 'corteDiario' | 'pagosPromo' | 'promociones';
 
 interface InfoTab {
   titulo: string;
@@ -24,6 +25,7 @@ interface InfoTab {
 // Mismo agrupamiento que el navbar: la página sólo muestra las pestañas de su grupo
 const INFO: Record<TabGestion, InfoTab> = {
   corteDiario: { titulo: 'Corte del día', corto: 'Corte del día', descripcion: 'Lo cobrado hoy en clínica y en línea, separado por área y método de pago.', icono: 'fa-receipt', grupo: 'Caja' },
+  pagosPromo: { titulo: 'Pagos de promociones', corto: 'Pagos de promociones', descripcion: 'Quién pagó una promoción en la página, con su número, para agendarle por WhatsApp.', icono: 'fa-tags', grupo: 'Caja' },
   suscripciones: { titulo: 'Membresías contratadas', corto: 'Membresías contratadas', descripcion: 'Cobros automáticos, atrasos y links de pago de cada paciente.', icono: 'fa-id-card', grupo: 'Caja' },
   servicios: { titulo: 'Servicios estéticos', corto: 'Estéticos', descripcion: 'Tratamientos, precios y categorías que se muestran en la página y en el bot.', icono: 'fa-spa', grupo: 'Configuración' },
   serviciosDentales: { titulo: 'Servicios dentales', corto: 'Dentales', descripcion: 'Tratamientos dentales, precios y categorías.', icono: 'fa-tooth', grupo: 'Configuración' },
@@ -44,7 +46,8 @@ const TABS = Object.keys(INFO) as TabGestion[];
     GestionServiciosDentalesComponent, 
     GestionCategoriasDentalesComponent,
     CorteDiarioComponent,
-    GestionPromocionesComponent
+    GestionPromocionesComponent,
+    PagosPromoComponent
   ],
   templateUrl: './gestion.component.html',
   styleUrl: './gestion.component.css'

@@ -81,11 +81,57 @@
                placeholder="4491234567" inputmode="numeric" maxlength="10" />
       </div>
       <div class="field">
+        <label for="pmFechaNac">Fecha de nacimiento *</label>
+        <input type="date" id="pmFechaNac" [(ngModel)]="nuevoPaciente.fechaNac" (ngModelChange)="alCambiarFechaNac()"
+               [max]="hoy" required />
+      </div>
+      <div class="field">
         <label for="pmMail">Correo electrónico (para tu recibo)</label>
         <input type="email" id="pmMail" [(ngModel)]="nuevoPaciente.correoElectronico"
                placeholder="tucorreo@dominio.com" />
       </div>
     </div>
+
+    <!-- Menor de edad: la membresía queda a cargo de su padre, madre o tutor -->
+    <fieldset class="tutor" *ngIf="esMenor">
+      <legend class="tutor__titulo">Datos del padre, madre o tutor</legend>
+      <p class="tutor__nota">
+        El titular tiene {{ edadPaciente }} {{ edadPaciente === 1 ? 'año' : 'años' }}. Por ser menor de edad,
+        un adulto responsable debe autorizar la membresía y acompañarlo a sus citas.
+      </p>
+
+      <div class="form-card__grid">
+        <div class="field">
+          <label for="pmTutorNombre">Nombre(s) *</label>
+          <input type="text" id="pmTutorNombre" [(ngModel)]="tutor.nombre" autocomplete="off" />
+        </div>
+        <div class="field">
+          <label for="pmTutorApeP">Primer apellido *</label>
+          <input type="text" id="pmTutorApeP" [(ngModel)]="tutor.apeP" autocomplete="off" />
+        </div>
+        <div class="field">
+          <label for="pmTutorApeM">Segundo apellido</label>
+          <input type="text" id="pmTutorApeM" [(ngModel)]="tutor.apeM" autocomplete="off" />
+        </div>
+        <div class="field">
+          <label for="pmTutorParentesco">Parentesco *</label>
+          <select id="pmTutorParentesco" [(ngModel)]="tutor.parentesco">
+            <option value="" disabled>Elige una opción</option>
+            <option *ngFor="let p of parentescos" [value]="p">{{ p }}</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="pmTutorTel">Teléfono del tutor *</label>
+          <input type="tel" id="pmTutorTel" [(ngModel)]="tutor.telefono" (ngModelChange)="limpiarTelefonoTutor()"
+                 placeholder="4491234567" inputmode="numeric" maxlength="10" />
+        </div>
+        <div class="field">
+          <label for="pmTutorMail">Correo del tutor</label>
+          <input type="email" id="pmTutorMail" [(ngModel)]="tutor.correoElectronico"
+                 placeholder="tucorreo@dominio.com" />
+        </div>
+      </div>
+    </fieldset>
 
     <p class="alert" *ngIf="errorRegistro" role="alert">
       <i class="fas fa-triangle-exclamation" aria-hidden="true"></i>

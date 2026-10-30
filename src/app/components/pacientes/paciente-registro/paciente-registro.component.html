@@ -35,6 +35,34 @@
                 </div>
             </div>
 
+            <!-- Tutor: sólo para menores de edad -->
+            <div class="seccion-formulario" *ngIf="esMenor" formGroupName="tutor">
+                <div class="encabezado-seccion"><i class="fas fa-user-shield"></i>
+                    <h2>Padre, Madre o Tutor ({{ edadPaciente }} {{ edadPaciente === 1 ? 'año' : 'años' }})</h2>
+                </div>
+                <div class="grid-campos">
+                    <div class="grupo-campo"><label>Nombre *</label><input formControlName="nombre" placeholder="Nombre"></div>
+                    <div class="grupo-campo"><label>Apellido Paterno *</label><input formControlName="apeP"
+                            placeholder="Apellido paterno"></div>
+                    <div class="grupo-campo"><label>Apellido Materno</label><input formControlName="apeM"
+                            placeholder="Apellido materno"></div>
+                    <div class="grupo-campo">
+                        <label>Parentesco *</label>
+                        <select formControlName="parentesco">
+                            <option value="" disabled>Elige una opción</option>
+                            <option value="Madre">Madre</option>
+                            <option value="Padre">Padre</option>
+                            <option value="Tutor legal">Tutor legal</option>
+                            <option value="Otro familiar">Otro familiar</option>
+                        </select>
+                    </div>
+                    <div class="grupo-campo"><label>Teléfono (10 dígitos) *</label><input type="tel" formControlName="telefono"
+                            placeholder="4491234567" inputmode="numeric" maxlength="10"></div>
+                    <div class="grupo-campo"><label>Correo</label><input type="email" formControlName="correoElectronico"
+                            placeholder="correo@ejemplo.com"></div>
+                </div>
+            </div>
+
             <!-- Contacto -->
             <div class="seccion-formulario">
                 <div class="encabezado-seccion"><i class="fas fa-address-book"></i>

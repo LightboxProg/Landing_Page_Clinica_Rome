@@ -48,10 +48,10 @@
           <s *ngIf="item.precioLista > item.precioFinal">{{ item.precioLista | currency:'MXN':'symbol-narrow':'1.0-0' }}</s>
           {{ item.precioFinal | currency:'MXN':'symbol-narrow':'1.0-0' }}
         </p>
-        <a *ngIf="agendarParams(item, p) as params" class="pcard__book u-data"
-           routerLink="/agendar-cita" [queryParams]="params"
-           [attr.aria-label]="(item.tipo === 'Paquete' ? 'Comprar ' : 'Agendar ') + item.nombre">
-          {{ item.tipo === 'Paquete' ? 'Comprar' : 'Agendar' }} <i class="fas fa-arrow-right" aria-hidden="true"></i>
+        <a *ngIf="enlaceItem(item, p) as enlace" class="pcard__book u-data"
+           [routerLink]="enlace.ruta" [queryParams]="enlace.params"
+           [attr.aria-label]="(item.tipo === 'Paquete' || esPagoRapido(p) ? 'Comprar ' : 'Agendar ') + item.nombre">
+          {{ item.tipo === 'Paquete' || esPagoRapido(p) ? 'Comprar' : 'Agendar' }} <i class="fas fa-arrow-right" aria-hidden="true"></i>
         </a>
       </li>
     </ul>

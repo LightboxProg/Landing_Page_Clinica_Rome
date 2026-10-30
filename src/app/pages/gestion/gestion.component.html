@@ -57,6 +57,11 @@
       <app-corte-diario></app-corte-diario>
     </div>
 
+    <!-- Tab: Pagos rápidos de promociones -->
+    <div class="tab-panel" *ngIf="tabActivo === 'pagosPromo'">
+      <app-pagos-promo></app-pagos-promo>
+    </div>
+
     <!-- Tab: Promociones -->
     <div class="tab-panel" *ngIf="tabActivo === 'promociones'">
       <app-gestion-promociones></app-gestion-promociones>

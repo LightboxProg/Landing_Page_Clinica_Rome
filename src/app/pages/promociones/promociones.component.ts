@@ -158,6 +158,19 @@ export class PromocionesComponent implements OnInit, OnDestroy {
     return null;
   }
 
+  // Si la promo es de pago rápido, servicios y paquetes se pagan sólo con número en /pagar-promo;
+  // si es de escoger fecha, van a la agenda
+  esPagoRapido(promo: any): boolean {
+    return promo?.pago?.modo !== 'Fecha';
+  }
+
+  enlaceItem(item: any, promo: any): { ruta: string; params: any } {
+    if (this.esPagoRapido(promo) && (item.tipo === 'Servicio' || item.tipo === 'Paquete')) {
+      return { ruta: '/pagar-promo', params: { promo: promo._id, item: item._id } };
+    }
+    return { ruta: '/agendar-cita', params: this.agendarParams(item, promo) };
+  }
+
   nombreItem(item: any): string {
     return item.tipo === 'Categoria' ? `Todo ${item.nombre}` : item.nombre;
   }

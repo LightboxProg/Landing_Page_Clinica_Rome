@@ -9,6 +9,7 @@ import { PasarelaMembresiasComponent } from './components/membresias/pasarela-me
 import { CheckoutStatusComponent } from './components/membresias/checkout-status/checkout-status.component';
 import { LoginPageComponent } from './pages/login/login.component';
 import { AgendarCitaComponent } from './pages/agendar-cita/agendar-cita.component';
+import { PagarPromoComponent } from './pages/pagar-promo/pagar-promo.component';
 import { NosotrosComponent } from './pages/nosotros/nosotros.component';
 import { ContactoComponent } from './pages/contacto/contacto.component';
 import { authGuard } from './guards/auth.guard';
@@ -60,6 +61,7 @@ export const routes: Routes = [
     component: CheckoutLayoutComponent,
     children: [
       { path: 'agendar-cita', component: AgendarCitaComponent },
+      { path: 'pagar-promo', component: PagarPromoComponent },
       environment.membresiasPublicas
         ? { path: 'pasarela-membresias/:id', component: PasarelaMembresiasComponent }
         : { path: 'pasarela-membresias/:id', redirectTo: '' },

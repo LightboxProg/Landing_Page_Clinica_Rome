@@ -46,7 +46,20 @@ export class PromoPortadaComponent implements OnInit, OnDestroy {
     return `${dias > 0 ? dias + 'd ' : ''}${dos(horas)}h ${dos(minutos)}m ${dos(segundos)}s`;
   }
 
-  // A dónde lleva "Agendar" de cada renglón; las categorías no tienen un servicio que agendar
+  // A dónde lleva "Agendar/Comprar" de cada renglón; las categorías no tienen un servicio que agendar.
+  // Si la promo es de pago rápido, servicios y paquetes se pagan sólo con número en /pagar-promo.
+  esPagoRapido(promo: any): boolean {
+    return promo?.pago?.modo !== 'Fecha';
+  }
+
+  enlaceItem(item: any, promo: any): { ruta: string; params: any } | null {
+    if (this.esPagoRapido(promo) && (item.tipo === 'Servicio' || item.tipo === 'Paquete')) {
+      return { ruta: '/pagar-promo', params: { promo: promo._id, item: item._id } };
+    }
+    const params = this.agendarParams(item, promo);
+    return params ? { ruta: '/agendar-cita', params } : null;
+  }
+
   agendarParams(item: any, promo: any): any {
     if (item.tipo === 'Servicio') return { servicio: item.servicioId };
     if (item.tipo === 'Paquete') return { promo: promo._id, paquete: item._id };

@@ -453,6 +453,14 @@
   accent-color: var(--coffee-medium);
 }
 
+.check input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--coffee-medium);
+}
+
+.form-group > label.pago-titulo { margin-top: 12px; }
+
 .check .cupo {
   width: 90px;
   padding: 6px 10px;

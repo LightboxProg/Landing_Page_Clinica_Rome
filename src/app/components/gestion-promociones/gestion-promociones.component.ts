@@ -28,6 +28,9 @@ interface Borrador {
   usarCupo: boolean;
   cupoTotal: number | null;
   unaVezPorPaciente: boolean;
+  pagoModo: 'Fecha' | 'Rapido';
+  pagoTipo: 'Completo' | 'Anticipo';
+  pagoAnticipo: number | null;
   fotos: { url: string; key: string }[];
 }
 
@@ -119,6 +122,9 @@ export class GestionPromocionesComponent implements OnInit, OnDestroy {
       usarCupo: false,
       cupoTotal: null,
       unaVezPorPaciente: false,
+      pagoModo: 'Rapido',
+      pagoTipo: 'Completo',
+      pagoAnticipo: null,
       fotos: []
     });
   }
@@ -141,6 +147,9 @@ export class GestionPromocionesComponent implements OnInit, OnDestroy {
       usarCupo: !!p.limites?.cupoTotal,
       cupoTotal: p.limites?.cupoTotal || null,
       unaVezPorPaciente: !!p.limites?.unaVezPorPaciente,
+      pagoModo: p.pago?.modo === 'Fecha' ? 'Fecha' : 'Rapido',
+      pagoTipo: p.pago?.tipo === 'Anticipo' ? 'Anticipo' : 'Completo',
+      pagoAnticipo: p.pago?.anticipo ?? null,
       fotos: [...(p.fotos || [])]
     });
   }
@@ -284,6 +293,7 @@ export class GestionPromocionesComponent implements OnInit, OnDestroy {
       }
     }
     if (b.usarCupo && !(Number(b.cupoTotal) >= 1)) return 'El cupo debe ser de al menos 1.';
+    if (b.pagoTipo === 'Anticipo' && !(Number(b.pagoAnticipo) > 0)) return 'Captura el monto del anticipo.';
     return null;
   }
 
@@ -326,6 +336,7 @@ export class GestionPromocionesComponent implements OnInit, OnDestroy {
       activo: b.activo,
       items: b.items,
       limites: { cupoTotal: b.usarCupo ? b.cupoTotal : null, unaVezPorPaciente: b.unaVezPorPaciente },
+      pago: { modo: b.pagoModo, tipo: b.pagoTipo, anticipo: b.pagoTipo === 'Anticipo' ? b.pagoAnticipo : null },
       fotosBase64,
       fotosEliminar: this.fotosEliminar
     };

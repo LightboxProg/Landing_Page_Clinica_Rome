@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { BookingService } from '../../../services/booking/booking.service';
 import { MembresiasService } from '../../../services/membresias/membresias.service';
+import { PromocionesService } from '../../../services/promociones/promociones.service';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -31,11 +32,17 @@ export class CheckoutStatusComponent implements OnInit {
   cita: any = null;
   verificandoCita = false;
 
+  // Pago rápido de promoción: número que pagó y el WhatsApp a donde se le manda
+  promo: any = null;
+  verificandoPromo = false;
+  promoSinConfirmar = false;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private bookingService: BookingService,
-    private membresiasService: MembresiasService
+    private membresiasService: MembresiasService,
+    private promosService: PromocionesService
   ) {}
 
   // Determina el estado del pago y el tipo a partir de la url y query params
@@ -59,14 +66,15 @@ export class CheckoutStatusComponent implements OnInit {
             this.verificandoCita = false;
           }
         });
+      } else if (this.type === 'promo' && this.sessionId) {
+        this.verificarPromo();
       } else if (this.type !== 'cita' && this.sessionId) {
         this.verificarMembresia();
       }
     } else if (url.includes('cancel')) {
       this.status = 'canceled';
     } else {
-      const defaultRedirect = this.type === 'cita' ? '/agendar-cita' : '/membresias';
-      this.router.navigate([defaultRedirect]);
+      this.volver();
     }
   }
 
@@ -104,9 +112,32 @@ export class CheckoutStatusComponent implements OnInit {
     });
   }
 
+  verificarPromo(): void {
+    if (!this.sessionId) return;
+    this.verificandoPromo = true;
+    this.promoSinConfirmar = false;
+    this.promosService.verificarPagoPromo(this.sessionId).subscribe({
+      next: (res) => {
+        this.promo = res;
+        this.verificandoPromo = false;
+        // Ya pagó: se le manda al WhatsApp de la clínica para agendar
+        if (res?.whatsappUrl) setTimeout(() => (window.location.href = res.whatsappUrl), 4000);
+      },
+      error: () => {
+        if (++this.intentos < 4) {
+          // Stripe puede tardar unos segundos en marcar el pago
+          setTimeout(() => this.verificarPromo(), 2500);
+        } else {
+          this.verificandoPromo = false;
+          this.promoSinConfirmar = true;
+        }
+      }
+    });
+  }
+
   // Redirecciona al catalogo o al agendador segun corresponda
   volver(): void {
-    const defaultRedirect = this.type === 'cita' ? '/agendar-cita' : '/membresias';
+    const defaultRedirect = this.type === 'cita' ? '/agendar-cita' : this.type === 'promo' ? '/promociones' : '/membresias';
     this.router.navigate([defaultRedirect]);
   }
 }

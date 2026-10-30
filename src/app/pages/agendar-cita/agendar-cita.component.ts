@@ -32,6 +32,17 @@ export class AgendarCitaComponent implements OnInit, OnDestroy {
     genero: 'Otro'
   };
 
+  // Padre, madre o tutor: se pide sólo si la fecha de nacimiento es de un menor
+  tutor = {
+    nombre: '',
+    apeP: '',
+    apeM: '',
+    parentesco: '',
+    telefono: '',
+    correoElectronico: ''
+  };
+  readonly parentescos = ['Madre', 'Padre', 'Tutor legal', 'Otro familiar'];
+
   doctores: DoctorPublic[] = [];
   selectedDoctorId: string = '';
   selectedTipoCita: string = '';
@@ -145,7 +156,7 @@ export class AgendarCitaComponent implements OnInit, OnDestroy {
       this.paqueteNoDisponible = true;
       return;
     }
-    this.paquete = { ...item, promocionNombre: promo.nombre, fechaFin: promo.fechaFin };
+    this.paquete = { ...item, promocionNombre: promo.nombre, fechaFin: promo.fechaFin, pago: promo.pago };
     this.servicioUrl = String(item.servicios[0].servicioId);
   }
 
@@ -155,10 +166,15 @@ export class AgendarCitaComponent implements OnInit, OnDestroy {
       .join(' + ');
   }
 
-  // Con promoción el anticipo no pasa del precio final, igual que el backend.
+  // Con promoción manda lo que dice la promo (completo o su anticipo, topado al precio),
+  // igual que el backend. Sin promo, el anticipo de la configuración de disponibilidad.
   get montoApartado(): number {
     const anticipo = this.activeConfig?.montoAnticipo;
     const promo = this.promoDelServicio;
+    if (promo?.pago) {
+      const deLaPromo = Number(promo.pago.anticipo) || 0;
+      return promo.pago.tipo === 'Anticipo' && deLaPromo > 0 ? Math.min(deLaPromo, promo.precioFinal) : promo.precioFinal;
+    }
     if (anticipo !== undefined && anticipo !== null) {
       return promo ? Math.min(Number(anticipo), promo.precioFinal) : Number(anticipo);
     }
@@ -179,8 +195,8 @@ export class AgendarCitaComponent implements OnInit, OnDestroy {
   // Mejor promoción vigente para el servicio elegido (sólo estética), con la
   // misma regla que promociones.service.mejorPrecio. El backend la vuelve a
   // calcular al pagar; aquí sólo se muestra.
-  get promoDelServicio(): { nombre: string; precioFinal: number; fechaFin?: string } | null {
-    if (this.paquete) return { nombre: this.paquete.promocionNombre, precioFinal: this.paquete.precioFinal, fechaFin: this.paquete.fechaFin };
+  get promoDelServicio(): { nombre: string; precioFinal: number; fechaFin?: string; pago?: any } | null {
+    if (this.paquete) return { nombre: this.paquete.promocionNombre, precioFinal: this.paquete.precioFinal, fechaFin: this.paquete.fechaFin, pago: this.paquete.pago };
     return this.promoPara(this.selectedService);
   }
 
@@ -221,10 +237,10 @@ export class AgendarCitaComponent implements OnInit, OnDestroy {
     this.onServiceChange();
   }
 
-  private promoPara(s: any): { nombre: string; precioFinal: number; fechaFin?: string } | null {
+  private promoPara(s: any): { nombre: string; precioFinal: number; fechaFin?: string; pago?: any } | null {
     if (!s || this.selectedTipoCita === 'Dental' || !s.costo) return null;
     const categoriaId = s.categoria ? String(s.categoria._id || s.categoria) : null;
-    let mejor: { nombre: string; precioFinal: number; fechaFin?: string } | null = null;
+    let mejor: { nombre: string; precioFinal: number; fechaFin?: string; pago?: any } | null = null;
     for (const p of this.promocionesVigentes) {
       for (const item of p.items || []) {
         const aplica = (item.tipo === 'Servicio' && String(item.servicioId) === String(s._id))
@@ -232,7 +248,7 @@ export class AgendarCitaComponent implements OnInit, OnDestroy {
         if (!aplica) continue;
         const precioFinal = precioConDescuento(s.costo, item.tipoDescuento, item.valor);
         if (precioFinal < s.costo && (!mejor || precioFinal < mejor.precioFinal)) {
-          mejor = { nombre: p.nombre, precioFinal, fechaFin: p.fechaFin };
+          mejor = { nombre: p.nombre, precioFinal, fechaFin: p.fechaFin, pago: p.pago };
         }
       }
     }
@@ -384,10 +400,52 @@ export class AgendarCitaComponent implements OnInit, OnDestroy {
     });
   }
 
+  // Años cumplidos a hoy según la fecha de nacimiento ("YYYY-MM-DD"); null si no hay fecha
+  get edadPaciente(): number | null {
+    const [y, m, d] = String(this.nuevoPaciente.fechaNac || '').split('-').map(Number);
+    if (!y || !m || !d) return null;
+    const hoy = new Date();
+    let edad = hoy.getFullYear() - y;
+    if (hoy.getMonth() + 1 < m || (hoy.getMonth() + 1 === m && hoy.getDate() < d)) edad--;
+    return edad;
+  }
+
+  get esMenor(): boolean {
+    const edad = this.edadPaciente;
+    return edad !== null && edad >= 0 && edad < 18;
+  }
+
+  get tutorCompleto(): boolean {
+    const t = this.tutor;
+    return !!(t.nombre.trim() && t.apeP.trim() && t.parentesco && t.telefono.length === 10);
+  }
+
+  // Al detectar que es menor, el teléfono de contacto suele ser el del tutor
+  alCambiarFechaNac(): void {
+    if (this.esMenor && !this.tutor.telefono) this.tutor.telefono = this.telefonoInput;
+  }
+
+  limpiarTelefonoTutor(): void {
+    this.tutor.telefono = (this.tutor.telefono || '').replace(/\D/g, '').slice(0, 10);
+  }
+
   // Registra un nuevo paciente y aparta el slot
   registrarPaciente(): void {
     if (!this.nuevoPaciente.nombre || !this.nuevoPaciente.apeP) {
       this.errorMessage = 'El nombre y el primer apellido son obligatorios.';
+      return;
+    }
+    const edad = this.edadPaciente;
+    if (edad === null) {
+      this.errorMessage = 'La fecha de nacimiento es obligatoria.';
+      return;
+    }
+    if (edad < 0) {
+      this.errorMessage = 'La fecha de nacimiento no puede ser futura.';
+      return;
+    }
+    if (this.esMenor && !this.tutorCompleto) {
+      this.errorMessage = 'Para menores de edad necesitamos el nombre, parentesco y teléfono del padre, madre o tutor.';
       return;
     }
     this.loading = true;
@@ -397,7 +455,8 @@ export class AgendarCitaComponent implements OnInit, OnDestroy {
       ...this.nuevoPaciente,
       telefonoPaciente: Number(cleanPhone),
       telefonoWhatsapp: Number(cleanPhone),
-      apodo: this.nuevoPaciente.nombre
+      apodo: this.nuevoPaciente.nombre,
+      ...(this.esMenor ? { tutor: { ...this.tutor, telefono: Number(this.tutor.telefono) } } : {})
     };
 
     this.bookingService.crearPaciente(payload).subscribe({
@@ -406,7 +465,7 @@ export class AgendarCitaComponent implements OnInit, OnDestroy {
         this.apartarSlotYProceder(res._id);
       },
       error: (err) => {
-        this.errorMessage = 'No se pudo crear el registro del paciente.';
+        this.errorMessage = err.error?.mensaje && err.status === 400 ? err.error.mensaje : 'No se pudo crear el registro del paciente.';
         this.loading = false;
       }
     });
@@ -779,8 +838,9 @@ export class AgendarCitaComponent implements OnInit, OnDestroy {
   }
 }
 
-// Colores de la landing (styles.css): porcelana, tinta, latón y arcilla para errores
-const APARIENCIA_PAGO = {
+// Colores de la landing (styles.css): porcelana, tinta, latón y arcilla para errores.
+// También lo usa el pago rápido de promociones.
+export const APARIENCIA_PAGO = {
   theme: 'stripe' as const,
   variables: {
     colorPrimary: '#101A2C',

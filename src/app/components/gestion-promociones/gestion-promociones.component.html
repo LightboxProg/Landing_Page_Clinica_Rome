@@ -215,6 +215,29 @@
             <input type="checkbox" [(ngModel)]="b.activo" name="activo" />
             Activa (si la desmarcas queda pausada)
           </label>
+
+          <label class="pago-titulo">Cómo se compra en la página</label>
+          <label class="check">
+            <input type="radio" [(ngModel)]="b.pagoModo" name="pagoModo" value="Fecha" />
+            Escoger fecha (elige horario disponible y paga)
+          </label>
+          <label class="check">
+            <input type="radio" [(ngModel)]="b.pagoModo" name="pagoModo" value="Rapido" />
+            Pago rápido (sólo número, paga y pasa a WhatsApp)
+          </label>
+
+          <label class="pago-titulo">Pago en línea</label>
+          <label class="check">
+            <input type="radio" [(ngModel)]="b.pagoTipo" name="pagoTipo" value="Completo" />
+            Pago completo (se cobra el precio de promoción)
+          </label>
+          <label class="check">
+            <input type="radio" [(ngModel)]="b.pagoTipo" name="pagoTipo" value="Anticipo" />
+            Pago parcial (anticipo)
+            <input *ngIf="b.pagoTipo === 'Anticipo'" type="number" min="1" [(ngModel)]="b.pagoAnticipo" name="pagoAnticipo"
+                   class="form-control cupo" placeholder="500" aria-label="Monto del anticipo" />
+            <span *ngIf="b.pagoTipo === 'Anticipo'" class="hint">MXN · el resto en clínica</span>
+          </label>
         </div>
 
         <div class="form-group">
@@ -287,6 +310,9 @@
             <ng-container *ngIf="p.limites?.cupoTotal"> · {{ p.usos || 0 }} / {{ p.limites.cupoTotal }} usadas</ng-container>
             <ng-container *ngIf="!p.limites?.cupoTotal && p.usos"> · {{ p.usos }} cita(s)</ng-container>
             <ng-container *ngIf="p.limites?.unaVezPorPaciente"> · una por paciente</ng-container>
+            · {{ p.pago?.modo === 'Fecha' ? 'escoger fecha' : 'pago rápido' }}
+            <ng-container *ngIf="p.pago?.tipo === 'Anticipo'; else pagoCompleto"> · anticipo {{ p.pago?.anticipo | currency:'MXN':'symbol-narrow':'1.0-0' }}</ng-container>
+            <ng-template #pagoCompleto> · pago completo</ng-template>
           </div>
           <div class="chips">
             <span class="chip" *ngFor="let item of p.items" [ngClass]="'chip--' + item.tipo">{{ resumenItem(item) }}</span>

@@ -1,0 +1,55 @@
+<div class="pagos">
+  <div class="pagos__toolbar">
+    <label>Desde <input type="date" [(ngModel)]="desde" (change)="cargar()" /></label>
+    <label>Hasta <input type="date" [(ngModel)]="hasta" (change)="cargar()" /></label>
+    <label>Estado
+      <select [(ngModel)]="estado" (change)="cargar()">
+        <option value="pagado">Pagados</option>
+        <option value="pendiente">Pendientes</option>
+        <option value="expirado">Expirados</option>
+        <option value="todos">Todos</option>
+      </select>
+    </label>
+    <span class="pagos__total">
+      {{ pagos.length }} pago(s) · {{ total | currency:'MXN':'symbol':'1.2-2' }}
+    </span>
+  </div>
+
+  <p *ngIf="cargando" class="pagos__estado">Cargando…</p>
+  <p *ngIf="error" class="pagos__estado pagos__estado--error">{{ error }}</p>
+  <p *ngIf="!cargando && !error && pagos.length === 0" class="pagos__estado">No hay pagos con estos filtros.</p>
+
+  <div class="pagos__tabla" *ngIf="!cargando && pagos.length > 0">
+    <table>
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Número</th>
+          <th>Promoción</th>
+          <th>Tratamiento</th>
+          <th>Cobro</th>
+          <th>Pagó</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of pagos">
+          <td>{{ (p.pagadoEn || p.createdAt) | date:'d MMM y, HH:mm' }}</td>
+          <td class="td-bold">
+            <a [href]="whatsapp(p)" target="_blank" rel="noopener" title="Abrir WhatsApp">
+              <i class="fab fa-whatsapp" aria-hidden="true"></i> {{ p.telefonoLegible }}
+            </a>
+          </td>
+          <td>{{ p.promocionNombre }}</td>
+          <td>{{ p.itemNombre }}</td>
+          <td>
+            {{ p.cobro === 'anticipo' ? 'Anticipo' : 'Completo' }}
+            <small *ngIf="p.cobro === 'anticipo'">de {{ p.costoFinal | currency:'MXN':'symbol-narrow':'1.0-0' }}</small>
+          </td>
+          <td class="td-bold">{{ p.monto | currency:'MXN':'symbol':'1.2-2' }}</td>
+          <td><span class="estado" [class]="'estado estado--' + p.estado">{{ p.estado }}</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

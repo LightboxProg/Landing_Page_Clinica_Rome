@@ -316,8 +316,9 @@
                placeholder="tucorreo@dominio.com" [disabled]="loading" />
       </div>
       <div class="field">
-        <label for="fechaNac">Fecha de nacimiento</label>
-        <input type="date" id="fechaNac" [(ngModel)]="nuevoPaciente.fechaNac" [disabled]="loading" />
+        <label for="fechaNac">Fecha de nacimiento *</label>
+        <input type="date" id="fechaNac" [(ngModel)]="nuevoPaciente.fechaNac" (ngModelChange)="alCambiarFechaNac()"
+               [max]="getMinDate()" required [disabled]="loading" />
       </div>
       <div class="field">
         <label for="genero">Género</label>
@@ -329,10 +330,55 @@
       </div>
     </div>
 
+    <!-- Menor de edad: el expediente queda a cargo de su padre, madre o tutor -->
+    <fieldset class="tutor" *ngIf="esMenor">
+      <legend class="tutor__titulo">Datos del padre, madre o tutor</legend>
+      <p class="tutor__nota">
+        El paciente tiene {{ edadPaciente }} {{ edadPaciente === 1 ? 'año' : 'años' }}. Por ser menor de edad,
+        un adulto responsable debe acompañarlo a la cita y autorizar el tratamiento.
+      </p>
+
+      <div class="form-card__grid">
+        <div class="field">
+          <label for="tutorNombre">Nombre(s) *</label>
+          <input type="text" id="tutorNombre" [(ngModel)]="tutor.nombre" autocomplete="off" [disabled]="loading" />
+        </div>
+        <div class="field">
+          <label for="tutorApeP">Primer apellido *</label>
+          <input type="text" id="tutorApeP" [(ngModel)]="tutor.apeP" autocomplete="off" [disabled]="loading" />
+        </div>
+        <div class="field">
+          <label for="tutorApeM">Segundo apellido</label>
+          <input type="text" id="tutorApeM" [(ngModel)]="tutor.apeM" autocomplete="off" [disabled]="loading" />
+        </div>
+        <div class="field">
+          <label for="tutorParentesco">Parentesco *</label>
+          <select id="tutorParentesco" [(ngModel)]="tutor.parentesco" [disabled]="loading">
+            <option value="" disabled>Elige una opción</option>
+            <option *ngFor="let p of parentescos" [value]="p">{{ p }}</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="tutorTelefono">Teléfono del tutor *</label>
+          <div class="tel">
+            <span class="tel__lada u-data" aria-hidden="true">+52</span>
+            <input type="tel" id="tutorTelefono" [(ngModel)]="tutor.telefono" (ngModelChange)="limpiarTelefonoTutor()"
+                   placeholder="449 123 4567" inputmode="numeric" [disabled]="loading" />
+            <span class="tel__cuenta u-data" [class.is-ok]="tutor.telefono.length === 10">{{ tutor.telefono.length }}/10</span>
+          </div>
+        </div>
+        <div class="field">
+          <label for="tutorCorreo">Correo del tutor</label>
+          <input type="email" id="tutorCorreo" [(ngModel)]="tutor.correoElectronico"
+                 placeholder="tucorreo@dominio.com" [disabled]="loading" />
+        </div>
+      </div>
+    </fieldset>
+
     <div class="form-card__actions">
       <button class="btn btn--line" (click)="volverPaso(2)" [disabled]="loading" type="button">Atrás</button>
       <button class="btn btn--solid" (click)="registrarPaciente()" type="button"
-              [disabled]="loading || !nuevoPaciente.nombre || !nuevoPaciente.apeP">
+              [disabled]="loading || !nuevoPaciente.nombre || !nuevoPaciente.apeP || !nuevoPaciente.fechaNac || (esMenor && !tutorCompleto)">
         {{ loading ? 'Guardando…' : 'Continuar' }}
       </button>
     </div>

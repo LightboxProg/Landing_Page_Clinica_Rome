@@ -36,12 +36,23 @@ export class PasarelaMembresiasComponent implements OnInit {
     telefonoPaciente: '',
     correoElectronico: '',
     genero: 'Otro',            // valor por defecto
-    fechaNac: new Date(),      // valor por defecto (cambiar si capturas fecha)
+    fechaNac: '',              // "YYYY-MM-DD"; obligatoria
     enListaNegra: false,
     finado: false
   };
   registrando: boolean = false;
   errorRegistro: string = '';
+
+  // Padre, madre o tutor: se pide sólo si la fecha de nacimiento es de un menor
+  tutor = {
+    nombre: '',
+    apeP: '',
+    apeM: '',
+    parentesco: '',
+    telefono: '',
+    correoElectronico: ''
+  };
+  readonly parentescos = ['Madre', 'Padre', 'Tutor legal', 'Otro familiar'];
 
   // Paso 3: Confirmación
   pacienteEncontrado: any = null;
@@ -113,6 +124,43 @@ export class PasarelaMembresiasComponent implements OnInit {
     });
   }
 
+  // Años cumplidos a hoy según "YYYY-MM-DD"; null si no hay fecha
+  private edad(fecha: string): number | null {
+    const [y, m, d] = fecha.split('-').map(Number);
+    if (!y || !m || !d) return null;
+    const hoy = new Date();
+    let edad = hoy.getFullYear() - y;
+    if (hoy.getMonth() + 1 < m || (hoy.getMonth() + 1 === m && hoy.getDate() < d)) edad--;
+    return edad;
+  }
+
+  get hoy(): string {
+    return new Date().toLocaleDateString('en-CA');
+  }
+
+  get edadPaciente(): number | null {
+    return this.edad(String(this.nuevoPaciente.fechaNac || ''));
+  }
+
+  get esMenor(): boolean {
+    const edad = this.edadPaciente;
+    return edad !== null && edad >= 0 && edad < 18;
+  }
+
+  get tutorCompleto(): boolean {
+    const t = this.tutor;
+    return !!(t.nombre.trim() && t.apeP.trim() && t.parentesco && t.telefono.length === 10);
+  }
+
+  // Al detectar que es menor, el teléfono de contacto suele ser el del tutor
+  alCambiarFechaNac(): void {
+    if (this.esMenor && !this.tutor.telefono) this.tutor.telefono = this.soloDigitos(String(this.nuevoPaciente.telefonoPaciente || ''));
+  }
+
+  limpiarTelefonoTutor(): void {
+    this.tutor.telefono = this.soloDigitos(this.tutor.telefono || '').slice(0, 10);
+  }
+
   registrarPaciente(): void {
     const p = this.nuevoPaciente;
     if (!p.nombre?.trim() || !p.apeP?.trim() || !p.apeM?.trim()) {
@@ -128,6 +176,15 @@ export class PasarelaMembresiasComponent implements OnInit {
       this.errorRegistro = 'Revisa tu correo electrónico.';
       return;
     }
+    const edad = this.edad(String(p.fechaNac || ''));
+    if (edad === null || edad < 0) {
+      this.errorRegistro = 'Escribe tu fecha de nacimiento.';
+      return;
+    }
+    if (this.esMenor && !this.tutorCompleto) {
+      this.errorRegistro = 'Para menores de edad necesitamos el nombre, parentesco y teléfono del padre, madre o tutor.';
+      return;
+    }
 
     // El expediente exige apodo; si no lo dan, se usa el nombre
     const payload = {
@@ -137,7 +194,8 @@ export class PasarelaMembresiasComponent implements OnInit {
       apeM: p.apeM.trim(),
       apodo: p.apodo?.trim() || p.nombre.trim(),
       telefonoPaciente: Number(telefono),
-      telefonoWhatsapp: Number(telefono)
+      telefonoWhatsapp: Number(telefono),
+      ...(this.esMenor ? { tutor: { ...this.tutor, telefono: Number(this.tutor.telefono) } } : {})
     } as any;
 
     this.registrando = true;
@@ -152,7 +210,9 @@ export class PasarelaMembresiasComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al registrar paciente:', err);
-        this.errorRegistro = 'No pudimos crear tu expediente. Revisa tus datos e intenta de nuevo.';
+        this.errorRegistro = err.status === 400 && err.error?.mensaje
+          ? err.error.mensaje
+          : 'No pudimos crear tu expediente. Revisa tus datos e intenta de nuevo.';
         this.registrando = false;
       }
     });

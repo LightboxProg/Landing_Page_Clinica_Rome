@@ -36,8 +36,48 @@ export class PacienteRegistroComponent implements OnInit {
       fechaNac: ['', Validators.required],
       altura: [''],
       peso: [''],
-      direccion: ['']
+      direccion: [''],
+      // Padre, madre o tutor: sus validaciones se activan sólo si el paciente es menor
+      tutor: this.fb.group({
+        nombre: [''],
+        apeP: [''],
+        apeM: [''],
+        parentesco: [''],
+        telefono: [''],
+        correoElectronico: ['', Validators.email]
+      })
     });
+    this.registerForm.get('fechaNac')?.valueChanges.subscribe(() => this.actualizarTutor());
+  }
+
+  // Años cumplidos a hoy según "YYYY-MM-DD"; null si no hay fecha
+  get edadPaciente(): number | null {
+    const [y, m, d] = String(this.registerForm?.get('fechaNac')?.value || '').split('-').map(Number);
+    if (!y || !m || !d) return null;
+    const hoy = new Date();
+    let edad = hoy.getFullYear() - y;
+    if (hoy.getMonth() + 1 < m || (hoy.getMonth() + 1 === m && hoy.getDate() < d)) edad--;
+    return edad;
+  }
+
+  get esMenor(): boolean {
+    const edad = this.edadPaciente;
+    return edad !== null && edad >= 0 && edad < 18;
+  }
+
+  private actualizarTutor(): void {
+    const tutor = this.registerForm.get('tutor') as FormGroup;
+    const requeridos: Record<string, any[]> = {
+      nombre: [Validators.required],
+      apeP: [Validators.required],
+      parentesco: [Validators.required],
+      telefono: [Validators.required, Validators.pattern(/^[0-9]{10}$/)]
+    };
+    for (const [campo, validadores] of Object.entries(requeridos)) {
+      const control = tutor.get(campo)!;
+      control.setValidators(this.esMenor ? validadores : null);
+      control.updateValueAndValidity({ emitEvent: false });
+    }
   }
 
   loadCountries() {
@@ -93,7 +133,8 @@ export class PacienteRegistroComponent implements OnInit {
       peso: form.peso,
       direccion: form.direccion,
       enListaNegra: false,
-      finado: false
+      finado: false,
+      ...(this.esMenor ? { tutor: form.tutor } : {})
     };
     this.pacientesService.crearPaciente(nuevoPaciente).subscribe({
       next: () => {
@@ -101,7 +142,7 @@ export class PacienteRegistroComponent implements OnInit {
         this.limpiarFormulario();
         this.pacientesService.obtenerPacientes(); // refrescar lista
       },
-      error: (err) => this.swal.error('Error al registrar', err)
+      error: (err) => this.swal.error(err.error?.mensaje || 'No se pudo registrar al paciente.', 'Error al registrar')
     });
   }
 }

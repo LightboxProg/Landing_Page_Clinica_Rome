@@ -108,8 +108,8 @@
           </span>
 
           <ng-container *ngIf="abierta; else cerrada">
-            <a class="offer__book u-data" routerLink="/agendar-cita" [queryParams]="agendarParams(item, p)">
-              {{ item.tipo === 'Paquete' ? 'Comprar' : 'Agendar' }} <i class="fas fa-arrow-right" aria-hidden="true"></i>
+            <a *ngIf="enlaceItem(item, p) as enlace" class="offer__book u-data" [routerLink]="enlace.ruta" [queryParams]="enlace.params">
+              {{ item.tipo === 'Paquete' || esPagoRapido(p) ? 'Comprar' : 'Agendar' }} <i class="fas fa-arrow-right" aria-hidden="true"></i>
             </a>
           </ng-container>
           <ng-template #cerrada>

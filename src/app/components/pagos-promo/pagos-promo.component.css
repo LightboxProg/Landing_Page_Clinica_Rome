@@ -1,0 +1,62 @@
+/* Pagos rápidos de promociones — mismos colores del panel que el corte del día */
+
+.pagos { padding: 1.5rem 0; font-family: var(--body); color: var(--adm-texto); }
+
+.pagos__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.5rem;
+  background: var(--adm-superficie);
+  border: 1px solid var(--adm-borde);
+  border-radius: 16px;
+}
+
+.pagos__toolbar label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--adm-tenue);
+}
+
+.pagos__toolbar input,
+.pagos__toolbar select {
+  padding: 0.5rem 0.7rem;
+  background: var(--adm-superficie-2);
+  border: 1px solid var(--adm-borde);
+  border-radius: 8px;
+  color: var(--adm-texto);
+  font: inherit;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.pagos__total { margin-left: auto; font-weight: 600; }
+
+.pagos__estado { color: var(--adm-tenue); }
+.pagos__estado--error { color: var(--adm-error); }
+
+.pagos__tabla {
+  overflow-x: auto;
+  background: var(--adm-superficie);
+  border: 1px solid var(--adm-borde);
+  border-radius: 16px;
+}
+
+table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+th, td { padding: 0.8rem 1rem; text-align: left; border-bottom: 1px solid var(--adm-borde); white-space: nowrap; }
+th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--adm-tenue); background: var(--adm-superficie-2); }
+tbody tr:last-child td { border-bottom: 0; }
+.td-bold { font-weight: 600; }
+td a { color: var(--adm-teal); text-decoration: none; }
+td small { display: block; color: var(--adm-tenue); }
+
+.estado { padding: 0.2rem 0.6rem; border-radius: 40px; font-size: 0.75rem; text-transform: capitalize; background: var(--adm-superficie-2); }
+.estado--pagado { color: var(--adm-ok); }
+.estado--expirado { color: var(--adm-tenue); }
+.estado--reembolsado { color: var(--adm-error); }

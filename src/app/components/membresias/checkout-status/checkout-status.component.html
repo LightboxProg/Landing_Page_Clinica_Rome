@@ -2,9 +2,47 @@
 
   <!-- ÉXITO -->
   <div class="res__card panel" *ngIf="status === 'success'">
-    <p class="res__mark res__mark--ok" aria-hidden="true" *ngIf="type === 'cita' || membresia"><i class="fas fa-check"></i></p>
+    <p class="res__mark res__mark--ok" aria-hidden="true" *ngIf="type === 'cita' || membresia || promo"><i class="fas fa-check"></i></p>
 
-    <ng-container *ngIf="type === 'cita'; else okMembresia">
+    <ng-container *ngIf="type === 'promo'">
+      <ng-container *ngIf="verificandoPromo">
+        <h1 class="res__title">Confirmando tu pago…</h1>
+        <p class="res__note">Esto toma unos segundos. No cierres esta página.</p>
+      </ng-container>
+
+      <ng-container *ngIf="promo">
+        <h1 class="res__title">Recibimos tu pago</h1>
+        <p class="res__note">
+          Te llevamos a WhatsApp para agendar tu cita con la clínica.
+        </p>
+        <div class="res__cita">
+          <dl class="res__datos">
+            <div><dt>Promoción</dt><dd>{{ promo.promocionNombre }}</dd></div>
+            <div><dt>Tratamiento</dt><dd>{{ promo.itemNombre }}</dd></div>
+            <div><dt>Pagaste con el número</dt><dd class="u-data">{{ promo.telefono }}</dd></div>
+            <div><dt>Pagaste</dt><dd class="u-data">{{ promo.monto | currency:'MXN':'symbol-narrow':'1.0-0' }}</dd></div>
+            <div *ngIf="promo.costoFinal > promo.monto"><dt>En clínica</dt><dd class="u-data">{{ promo.costoFinal - promo.monto | currency:'MXN':'symbol-narrow':'1.0-0' }}</dd></div>
+          </dl>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="promoSinConfirmar">
+        <h1 class="res__title">Estamos confirmando tu pago</h1>
+        <p class="res__note">
+          Stripe todavía no nos confirma el cobro. Si ya se hizo el cargo a tu tarjeta,
+          escríbenos por WhatsApp con tu referencia.
+        </p>
+        <div class="res__actions">
+          <button class="btn btn--line" (click)="verificarPromo()" type="button">Revisar de nuevo</button>
+        </div>
+      </ng-container>
+    </ng-container>
+
+    <ng-container *ngIf="type !== 'cita' && type !== 'promo'">
+      <ng-container *ngTemplateOutlet="okMembresia"></ng-container>
+    </ng-container>
+
+    <ng-container *ngIf="type === 'cita'">
       <h1 class="res__title">Tu cita está confirmada</h1>
       <p class="res__note">
         Recibimos tu pago y el horario quedó reservado a tu nombre. Te enviaremos
@@ -61,7 +99,13 @@
       Referencia {{ sessionId.substring(0, 18) }}
     </p>
 
-    <div class="res__actions">
+    <div class="res__actions" *ngIf="type === 'promo'">
+      <a *ngIf="promo?.whatsappUrl" [href]="promo.whatsappUrl" class="btn btn--solid">
+        <i class="fab fa-whatsapp" aria-hidden="true"></i> Continuar en WhatsApp
+      </a>
+    </div>
+
+    <div class="res__actions" *ngIf="type !== 'promo'">
       <button class="btn btn--solid" (click)="volver()" type="button">
         {{ type === 'cita' ? 'Volver a citas' : 'Ver membresías' }}
       </button>
@@ -73,9 +117,12 @@
   <div class="res__card panel" *ngIf="status === 'canceled'">
     <p class="res__mark res__mark--stop" aria-hidden="true"><i class="fas fa-xmark"></i></p>
 
-    <ng-container *ngIf="type === 'cita'; else cancelMembresia">
+    <ng-container *ngIf="type === 'cita' || type === 'promo'; else cancelMembresia">
       <h1 class="res__title">No se completó el pago</h1>
-      <p class="res__note">
+      <p class="res__note" *ngIf="type === 'promo'">
+        No se hizo ningún cargo a tu tarjeta. Puedes volver a la promoción cuando quieras.
+      </p>
+      <p class="res__note" *ngIf="type === 'cita'">
         El horario volvió a quedar disponible y no se hizo ningún cargo a tu
         tarjeta. Puedes elegir otro horario cuando quieras.
       </p>
