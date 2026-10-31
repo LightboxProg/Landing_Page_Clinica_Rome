@@ -47,7 +47,10 @@
             <small *ngIf="p.cobro === 'anticipo'">de {{ p.costoFinal | currency:'MXN':'symbol-narrow':'1.0-0' }}</small>
           </td>
           <td class="td-bold">{{ p.monto | currency:'MXN':'symbol':'1.2-2' }}</td>
-          <td><span class="estado" [class]="'estado estado--' + p.estado">{{ p.estado }}</span></td>
+          <td>
+            <span class="estado" [class]="'estado estado--' + p.estado">{{ p.estado }}</span>
+            <small *ngIf="p.montoReembolsado > 0 && p.estado !== 'reembolsado'">Reembolso parcial {{ p.montoReembolsado | currency:'MXN':'symbol':'1.2-2' }}</small>
+          </td>
         </tr>
       </tbody>
     </table>
