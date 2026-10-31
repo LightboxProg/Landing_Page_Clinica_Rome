@@ -30,6 +30,7 @@ export class CorteDiarioComponent implements OnInit {
   citasDental: any[] = [];
   citasEstetica: any[] = [];
   pagosMembresia: any[] = [];
+  pagosPromo: any[] = [];
 
   constructor(
     private citasService: CitasService,
@@ -48,6 +49,7 @@ export class CorteDiarioComponent implements OnInit {
         this.corteData = data;
         this.procesarCortesSeparados(data.citas);
         this.sumarMembresias(data.pagosMembresia || []);
+        this.sumarPagosPromo(data.pagosPromo || []);
         this.cargando = false;
       },
       error: (err: any) => {
@@ -123,6 +125,14 @@ export class CorteDiarioComponent implements OnInit {
   // Fecha corta para el depósito: "31 oct"
   diaCorto(fecha: string | null): string {
     return fecha ? new Date(fecha).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', timeZone: 'UTC' }) : '';
+  }
+
+  // Pagos rápidos de promociones (número + Stripe, sin cita): las promociones son de estética
+  sumarPagosPromo(pagos: any[]): void {
+    this.pagosPromo = pagos;
+    const t = this.totalesEstetica;
+    pagos.forEach(p => { t.stripe += p.monto; t.stripeSinDato += 1; });
+    t.granTotal = t.efectivo + t.tarjeta + t.transferencia + t.stripe;
   }
 
   // Enganches y parcialidades de membresías: son tratamientos estéticos

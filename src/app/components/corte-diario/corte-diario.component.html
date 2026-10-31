@@ -344,6 +344,35 @@
         </div>
       </div>
 
+      <!-- Pagos rápidos de promociones del día (sin cita: la clínica agenda por WhatsApp) -->
+      <div class="corte-table-section" *ngIf="pagosPromo.length > 0">
+        <h4 class="section-title"><i class="fas fa-tags"></i> Pagos de Promociones (en línea)</h4>
+        <div class="table-container">
+          <table class="corte-table">
+            <thead>
+              <tr>
+                <th>Número</th>
+                <th>Promoción</th>
+                <th>Tratamiento</th>
+                <th>Cobro</th>
+                <th>Hora</th>
+                <th>Monto</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let p of pagosPromo">
+                <td class="td-bold">{{ p.telefono }}</td>
+                <td>{{ p.promocionNombre }}</td>
+                <td>{{ p.itemNombre }}</td>
+                <td>{{ p.cobro === 'anticipo' ? 'Anticipo de ' + (p.costoFinal | currency:'MXN':'symbol':'1.0-0') : 'Completo' }}</td>
+                <td>{{ p.fecha | date:'HH:mm' }}</td>
+                <td class="td-price td-bold text-success">{{ p.monto | currency:'MXN':'symbol':'1.2-2' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <!-- Pagos de membresías del día -->
       <div class="corte-table-section" *ngIf="pagosMembresia.length > 0">
         <h4 class="section-title"><i class="fas fa-id-card"></i> Pagos de Membresías</h4>
