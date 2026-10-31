@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { PromocionesService, precioConDescuento } from '../../services/promociones/promociones.service';
 import { RevealDirective } from '../../directives/reveal.directive';
+import { CarruselComponent } from '../../components/carrusel/carrusel.component';
 
 interface Categoria {
   _id: string;
@@ -39,7 +40,7 @@ interface FilaTarifa {
   descripcion?: string;
   precio: string;
   duracion?: string;
-  foto?: string;
+  fotos?: string[];
   // Precio de promoción vigente, ya formateado; sólo estética
   promo?: string;
 }
@@ -56,7 +57,7 @@ interface BloqueTarifa {
 @Component({
   selector: 'app-servicios',
   standalone: true,
-  imports: [CommonModule, RevealDirective, RouterLink],
+  imports: [CarruselComponent, CommonModule, RevealDirective, RouterLink],
   templateUrl: './servicios.component.html',
   styleUrl: './servicios.component.css'
 })
@@ -304,7 +305,7 @@ export class ServiciosComponent implements OnInit, OnDestroy {
         descripcion: cat.descripcion,
         desde: this.formatearPrecio(Math.min(...servicios.map(s => s.costo))),
         filas: servicios.map(s => ({
-          ...this.aFila(s._id, s.nombre, s.descripcion, s.costo, s.duracion, this.fotoDe(s)),
+          ...this.aFila(s._id, s.nombre, s.descripcion, s.costo, s.duracion, this.fotosDe(s)),
           promo: this.precioPromo(s)
         }))
       });
@@ -313,7 +314,7 @@ export class ServiciosComponent implements OnInit, OnDestroy {
     return bloques;
   }
 
-  private aFila(id: string, nombre: string, descripcion: string | undefined, costo: number, duracion?: string, foto?: string): FilaTarifa {
+  private aFila(id: string, nombre: string, descripcion: string | undefined, costo: number, duracion?: string, fotos: string[] = []): FilaTarifa {
     return {
       id,
       nombre: this.nombreBase(nombre),
@@ -321,7 +322,7 @@ export class ServiciosComponent implements OnInit, OnDestroy {
       descripcion,
       precio: this.formatearPrecio(costo),
       duracion,
-      foto
+      fotos
     };
   }
 
@@ -343,17 +344,16 @@ export class ServiciosComponent implements OnInit, OnDestroy {
     return mejor === null ? undefined : this.formatearPrecio(mejor);
   }
 
-  // La foto del tratamiento, si el servicio trae una que sirva. El catálogo
+  // Las fotos del tratamiento (su carrusel), las que sirvan. El catálogo
   // arrastra logotipos y banners corporativos cargados por error en el campo
   // de imagen; esos no son fotos del tratamiento y no entran.
-  private fotoDe(servicio: Servicio): string | undefined {
-    const url = servicio.foto?.url || servicio.fotos?.[0]?.url;
-    if (!url) return undefined;
-
-    const u = url.toLowerCase();
-    if (u.includes('canaco') || u.includes('logo') || u.includes('banner')) return undefined;
-
-    return url;
+  private fotosDe(servicio: Servicio): string[] {
+    const urls = servicio.fotos?.length ? servicio.fotos.map(f => f.url) : [servicio.foto?.url];
+    return urls.filter((url): url is string => {
+      if (!url) return false;
+      const u = url.toLowerCase();
+      return !(u.includes('canaco') || u.includes('logo') || u.includes('banner'));
+    });
   }
 
   /* ------------------------------------------------------------------

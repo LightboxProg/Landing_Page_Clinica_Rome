@@ -22,10 +22,10 @@
       <p class="feature__note u-data">Apartas en línea con anticipo; el resto se liquida en clínica.</p>
     </div>
 
-    <figure class="feature__media" [class.is-empty]="!portadaDe(p)">
-      <img *ngIf="portadaDe(p) as foto" [src]="foto" [alt]="p.nombre" width="800" height="1000" />
+    <figure class="feature__media" [class.is-empty]="!portadasDe(p).length">
+      <app-carrusel *ngIf="portadasDe(p).length" [fotos]="portadasDe(p)" [alt]="p.nombre" [intervalo]="5000" [perezoso]="false"></app-carrusel>
       <!-- Sin banner todavía: el descuento más grande de la promo hace de portada -->
-      <div *ngIf="!portadaDe(p)" class="feature__plate">
+      <div *ngIf="!portadasDe(p).length" class="feature__plate">
         <img src="assets/images/Manual_Rome-10-removebg.png" alt="" class="feature__mark" width="66" height="54" />
         <p class="feature__plate-big" *ngIf="mayorAhorro(p) as pct">Hasta <em>{{ pct }}%</em> menos</p>
         <p class="feature__plate-small u-data">ROME Harmony Clinic · {{ rangoDe(p) }}</p>
@@ -38,8 +38,8 @@
   <div class="u-shell feature__cures" #precios>
     <ul class="pcards">
       <li class="pcard" *ngFor="let item of p.items.slice(0, maxItems)">
-        <div class="pcard__plate" [class.is-empty]="!item.foto">
-          <img *ngIf="item.foto" [src]="item.foto" [alt]="item.nombre" loading="lazy" width="400" height="300" />
+        <div class="pcard__plate" [class.is-empty]="!fotosItem(item).length">
+          <app-carrusel *ngIf="fotosItem(item).length" [fotos]="fotosItem(item)" [alt]="item.nombre"></app-carrusel>
           <span class="pcard__tag u-data" *ngIf="item.etiqueta">{{ item.etiqueta }}</span>
         </div>
         <h3 class="pcard__name">{{ item.tipo === 'Categoria' ? 'Todo ' + item.nombre : item.nombre }}</h3>

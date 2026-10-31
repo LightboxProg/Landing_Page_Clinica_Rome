@@ -77,7 +77,7 @@
            [class.offer--soon]="!abierta" [appReveal]="i">
 
     <div class="offer__media" *ngIf="p.fotos?.length">
-      <img [src]="p.fotos[0].url" [alt]="p.nombre" loading="lazy" />
+      <app-carrusel [fotos]="urlsFotos(p)" [alt]="p.nombre"></app-carrusel>
     </div>
 
     <header class="offer__head">

@@ -5,6 +5,7 @@ import { forkJoin } from 'rxjs';
 import { PromocionesService } from '../../services/promociones/promociones.service';
 import { RevealDirective } from '../../directives/reveal.directive';
 import { PromoPortadaComponent } from '../../components/promo-portada/promo-portada.component';
+import { CarruselComponent } from '../../components/carrusel/carrusel.component';
 
 // Las promociones abren y cierran por día en la zona de la clínica
 const ZONA = 'America/Mexico_City';
@@ -19,7 +20,7 @@ interface Cuenta {
 @Component({
   selector: 'app-promociones',
   standalone: true,
-  imports: [CommonModule, RouterModule, RevealDirective, PromoPortadaComponent],
+  imports: [CommonModule, RouterModule, RevealDirective, PromoPortadaComponent, CarruselComponent],
   templateUrl: './promociones.component.html',
   styleUrl: './promociones.component.css'
 })
@@ -181,6 +182,10 @@ export class PromocionesComponent implements OnInit, OnDestroy {
       .join(' + ');
     const modalidad = item.modalidad === 'Sesiones' ? 'Sesiones a favor' : 'En una visita';
     return servicios ? `${servicios} · ${modalidad}` : modalidad;
+  }
+
+  urlsFotos(p: any): string[] {
+    return (p.fotos || []).map((f: any) => f.url).filter(Boolean);
   }
 
   trackById(_: number, x: any): string {

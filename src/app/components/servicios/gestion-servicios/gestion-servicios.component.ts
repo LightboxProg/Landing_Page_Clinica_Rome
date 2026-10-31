@@ -24,7 +24,7 @@ export class GestionServiciosComponent implements OnInit {
   guardando = false;
   mensajeError = '';
   mensajeExito = '';
-  fotoExistente: any = null;
+  fotosExistentes: { url: string; key: string }[] = [];
   cargandoSeed = false;
 
   constructor(
@@ -50,7 +50,7 @@ export class GestionServiciosComponent implements OnInit {
 
   abrirModalNuevo(): void {
     this.editandoId = null;
-    this.fotoExistente = null;
+    this.fotosExistentes = [];
     this.mensajeError = '';
     this.mostrarModal = true;
     // Reset form in the child
@@ -59,7 +59,8 @@ export class GestionServiciosComponent implements OnInit {
 
   onEditar(serv: any): void {
     this.editandoId = serv._id;
-    this.fotoExistente = serv.foto || null;
+    // Los servicios viejos sólo traen `foto`
+    this.fotosExistentes = serv.fotos?.length ? serv.fotos : (serv.foto?.url ? [serv.foto] : []);
     this.mensajeError = '';
     this.mostrarModal = true;
     setTimeout(() => {

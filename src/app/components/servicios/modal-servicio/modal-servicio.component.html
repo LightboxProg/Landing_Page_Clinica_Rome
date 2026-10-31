@@ -50,31 +50,27 @@
         <input id="servPalabras" type="text" [(ngModel)]="formData.palabrasClave" placeholder="botox, facial, ..." />
       </div>
 
-      <!-- Foto existente -->
-      <div class="form-group" *ngIf="editandoId && fotoExistente?.url && !fotoPreview">
-        <label>Foto actual</label>
-        <div class="foto-existente">
-          <img [src]="fotoExistente.url" alt="Foto del servicio" style="max-height: 180px; border-radius: 10px; object-fit: cover;" />
-          <span style="display: block; font-size: 12px; color: var(--adm-tenue); margin-top: 6px;">Foto actual — selecciona otra para reemplazar</span>
-        </div>
-      </div>
-
-      <!-- Subir foto nueva -->
+      <!-- Fotos: varias, arman el carrusel del servicio -->
       <div class="form-group">
-        <label>Foto del servicio</label>
-        <div class="file-upload-area" (click)="fileInputFoto.click()" *ngIf="!fotoPreview">
+        <label>Fotos del servicio</label>
+        <div class="fotos-grid existentes" *ngIf="fotosActuales.length">
+          <div class="foto-item" *ngFor="let f of fotosActuales; let i = index">
+            <img [src]="f.url" [alt]="'Foto ' + (i + 1)" />
+            <button type="button" class="foto-remove" (click)="removerFotoActual(f.key)" title="Quitar foto"><i class="fas fa-times"></i></button>
+          </div>
+        </div>
+        <div class="fotos-grid" *ngIf="fotosNuevas.length">
+          <div class="foto-item nueva" *ngFor="let f of fotosNuevas; let i = index">
+            <img [src]="f.preview" alt="Foto nueva" />
+            <button type="button" class="foto-remove" (click)="removerFotoNueva(i)" title="Quitar foto"><i class="fas fa-times"></i></button>
+          </div>
+        </div>
+        <div class="file-upload-area" (click)="fileInputFoto.click()">
           <i class="fas fa-cloud-upload-alt"></i>
-          <span>{{ fotoExistente?.url ? 'Seleccionar nueva foto' : 'Click para seleccionar imagen' }}</span>
-          <small>JPG, PNG, WebP</small>
+          <span>{{ fotosActuales.length || fotosNuevas.length ? 'Agregar más fotos' : 'Click para seleccionar imágenes' }}</span>
+          <small>JPG, PNG, WebP · puedes elegir varias; la primera es la portada</small>
         </div>
-        <input #fileInputFoto type="file" accept="image/*" (change)="onFotoSeleccionada($event)" style="display: none;" />
-        
-        <div class="foto-preview-container" *ngIf="fotoPreview" style="position: relative; margin-top: 10px;">
-          <img [src]="fotoPreview" alt="Preview" style="max-height: 180px; border-radius: 10px; object-fit: cover;" />
-          <button class="foto-remove-btn" (click)="removerFotoNueva()" style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.6); color: white; border: none; border-radius: 4px; padding: 4px 8px; cursor: pointer;">
-            <i class="fas fa-times"></i> Quitar
-          </button>
-        </div>
+        <input #fileInputFoto type="file" accept="image/*" multiple (change)="onFotosSeleccionadas($event)" style="display: none;" />
       </div>
 
       <!-- Audio -->

@@ -96,8 +96,8 @@
               <li class="item" *ngFor="let fila of bloque.filas; trackBy: trackByFila">
                 <!-- Every row keeps its plate, photographed or not, so the
                      column holds one edge down the whole tariff. -->
-                <div class="item__plate" [class.is-empty]="!fila.foto">
-                  <img *ngIf="fila.foto" [src]="fila.foto" [alt]="fila.nombre" loading="lazy" />
+                <div class="item__plate" [class.is-empty]="!fila.fotos?.length">
+                  <app-carrusel *ngIf="fila.fotos?.length" [fotos]="fila.fotos!" [alt]="fila.nombre"></app-carrusel>
                   <span class="item__tag u-data" *ngIf="fila.promo">Promoción</span>
                 </div>
 

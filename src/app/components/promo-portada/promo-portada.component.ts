@@ -1,13 +1,14 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { CarruselComponent } from '../carrusel/carrusel.component';
 
 // Portada de una promoción vigente: banner (su primera foto), reloj de cierre y sus precios
 // con Agendar a la mano. La usan el inicio y la página de promociones.
 @Component({
   selector: 'app-promo-portada',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, CarruselComponent],
   templateUrl: './promo-portada.component.html',
   styleUrl: './promo-portada.component.css'
 })
@@ -76,8 +77,14 @@ export class PromoPortadaComponent implements OnInit, OnDestroy {
     return (item.servicios || []).map((s: any) => (s.cantidad > 1 ? `${s.cantidad} × ${s.nombre}` : s.nombre)).join(' · ');
   }
 
-  portadaDe(p: any): string | null {
-    return p?.fotos?.[0]?.url || p?.foto?.url || null;
+  // Fotos del banner de la promoción: arman el carrusel de la portada
+  portadasDe(p: any): string[] {
+    const urls = (p?.fotos || []).map((f: any) => f.url).filter(Boolean);
+    return urls.length ? urls : (p?.foto?.url ? [p.foto.url] : []);
+  }
+
+  fotosItem(item: any): string[] {
+    return item.fotos?.length ? item.fotos : (item.foto ? [item.foto] : []);
   }
 
   // Mayor porcentaje de ahorro entre los renglones con precio (para la portada sin foto)

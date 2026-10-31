@@ -15,7 +15,11 @@ export class ModalServicioComponent {
   @Input() categorias: any[] = [];
   @Input() guardando = false;
   @Input() mensajeError = '';
-  @Input() fotoExistente: any = null;
+  // Fotos ya guardadas del servicio: se pueden quitar una por una; las nuevas se agregan al final
+  @Input() set fotosExistentes(fotos: { url: string; key: string }[] | null) {
+    this.fotosActuales = [...(fotos || [])];
+    this.fotosEliminar = [];
+  }
 
   @Output() cerrar = new EventEmitter<void>();
   @Output() guardar = new EventEmitter<FormData>();
@@ -25,8 +29,9 @@ export class ModalServicioComponent {
     duracion: '', palabrasClave: '', beneficios: '', activo: true
   };
 
-  fotoSeleccionada: File | null = null;
-  fotoPreview: string | null = null;
+  fotosActuales: { url: string; key: string }[] = [];
+  fotosEliminar: string[] = [];
+  fotosNuevas: { file: File; preview: string }[] = [];
   audioSeleccionado: File | null = null;
   audioNombre = '';
 
@@ -44,19 +49,24 @@ export class ModalServicioComponent {
   }
 
   // ===== File handling =====
-  onFotoSeleccionada(event: Event): void {
+  // Se pueden elegir varias a la vez; arman el carrusel del servicio en la página
+  onFotosSeleccionadas(event: Event): void {
     const input = event.target as HTMLInputElement;
-    if (input.files && input.files[0]) {
-      this.fotoSeleccionada = input.files[0];
+    for (const file of Array.from(input.files || [])) {
       const reader = new FileReader();
-      reader.onload = (e) => this.fotoPreview = e.target?.result as string;
-      reader.readAsDataURL(input.files[0]);
+      reader.onload = (e) => this.fotosNuevas.push({ file, preview: e.target?.result as string });
+      reader.readAsDataURL(file);
     }
+    input.value = '';
   }
 
-  removerFotoNueva(): void {
-    this.fotoSeleccionada = null;
-    this.fotoPreview = null;
+  removerFotoNueva(i: number): void {
+    this.fotosNuevas.splice(i, 1);
+  }
+
+  removerFotoActual(key: string): void {
+    this.fotosEliminar.push(key);
+    this.fotosActuales = this.fotosActuales.filter(f => f.key !== key);
   }
 
   onAudioSeleccionado(event: Event): void {
@@ -73,8 +83,7 @@ export class ModalServicioComponent {
   }
 
   limpiarArchivos(): void {
-    this.fotoSeleccionada = null;
-    this.fotoPreview = null;
+    this.fotosNuevas = [];
     this.audioSeleccionado = null;
     this.audioNombre = '';
   }
@@ -106,7 +115,8 @@ export class ModalServicioComponent {
       fd.append('beneficios', JSON.stringify(arr));
     }
 
-    if (this.fotoSeleccionada) fd.append('foto', this.fotoSeleccionada, this.fotoSeleccionada.name);
+    for (const { file } of this.fotosNuevas) fd.append('fotos', file, file.name);
+    if (this.fotosEliminar.length) fd.append('fotosEliminar', JSON.stringify(this.fotosEliminar));
     if (this.audioSeleccionado) fd.append('audio', this.audioSeleccionado, this.audioSeleccionado.name);
 
     this.guardar.emit(fd);

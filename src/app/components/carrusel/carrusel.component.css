@@ -1,0 +1,78 @@
+/* Llena al contenedor: él pone tamaño, borde y fondo */
+:host { display: block; width: 100%; height: 100%; }
+
+.carrusel { position: relative; width: 100%; height: 100%; }
+
+.carrusel__pista {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+.carrusel__pista::-webkit-scrollbar { display: none; }
+
+.carrusel__foto {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  scroll-snap-align: start;
+  user-select: none;
+}
+
+.carrusel__flecha {
+  position: absolute;
+  top: 50%;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  margin-top: -1.05rem;
+  padding: 0;
+  background: rgba(16, 26, 44, 0.55);
+  border: 0;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 0.8rem;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.25s ease, background-color 0.25s ease;
+}
+.carrusel__flecha--izq { left: 0.6rem; }
+.carrusel__flecha--der { right: 0.6rem; }
+.carrusel:hover .carrusel__flecha,
+.carrusel__flecha:focus-visible { opacity: 1; }
+.carrusel__flecha:hover { background: rgba(16, 26, 44, 0.8); }
+/* En pantallas táctiles no hay hover: las flechas siempre a la vista */
+@media (hover: none) {
+  .carrusel__flecha { opacity: 0.85; }
+}
+
+.carrusel__puntos {
+  position: absolute;
+  left: 50%;
+  bottom: 0.6rem;
+  z-index: 1;
+  display: flex;
+  gap: 0.35rem;
+  padding: 0.3rem 0.5rem;
+  background: rgba(16, 26, 44, 0.35);
+  border-radius: 999px;
+  transform: translateX(-50%);
+}
+.carrusel__punto {
+  width: 0.45rem;
+  height: 0.45rem;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.5);
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.25s ease, transform 0.25s ease;
+}
+.carrusel__punto.is-on { background: #fff; transform: scale(1.25); }

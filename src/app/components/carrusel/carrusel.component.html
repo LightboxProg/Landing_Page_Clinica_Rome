@@ -1,0 +1,22 @@
+<div class="carrusel" (mouseenter)="pausar(true)" (mouseleave)="pausar(false)"
+     [attr.aria-roledescription]="fotos.length > 1 ? 'carrusel' : null">
+  <div class="carrusel__pista" #pista (scroll)="alDeslizar()">
+    <img *ngFor="let foto of fotos; let i = index" class="carrusel__foto" [src]="foto"
+         [alt]="fotos.length > 1 ? alt + ' (' + (i + 1) + ' de ' + fotos.length + ')' : alt"
+         [attr.loading]="perezoso || i > 0 ? 'lazy' : null" draggable="false" />
+  </div>
+
+  <ng-container *ngIf="fotos.length > 1">
+    <button type="button" class="carrusel__flecha carrusel__flecha--izq" (click)="anterior($event)" aria-label="Foto anterior">
+      <i class="fas fa-chevron-left" aria-hidden="true"></i>
+    </button>
+    <button type="button" class="carrusel__flecha carrusel__flecha--der" (click)="siguiente($event)" aria-label="Foto siguiente">
+      <i class="fas fa-chevron-right" aria-hidden="true"></i>
+    </button>
+    <div class="carrusel__puntos">
+      <button type="button" *ngFor="let foto of fotos; let i = index" class="carrusel__punto"
+              [class.is-on]="i === actual" (click)="punto($event, i)"
+              [attr.aria-label]="'Ver foto ' + (i + 1)" [attr.aria-current]="i === actual ? 'true' : null"></button>
+    </div>
+  </ng-container>
+</div>
