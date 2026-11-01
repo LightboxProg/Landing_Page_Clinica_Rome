@@ -10,16 +10,26 @@
         <option value="todos">Todos</option>
       </select>
     </label>
-    <span class="pagos__total">
-      {{ pagos.length }} pago(s) · {{ total | currency:'MXN':'symbol':'1.2-2' }}
-    </span>
+    <label class="pagos__buscar">Buscar
+      <input type="search" [(ngModel)]="busqueda" placeholder="Número, promoción, tratamiento o folio" />
+    </label>
+  </div>
+
+  <div class="pagos__resumen" *ngIf="!cargando && pagos.length > 0">
+    <div><span>Pagos</span><strong>{{ filtrados.length }}</strong></div>
+    <div><span>Cobrado</span><strong>{{ total | currency:'MXN':'symbol':'1.2-2' }}</strong></div>
+    <div><span>Comisión Stripe</span><strong class="neg">−{{ totalComision | currency:'MXN':'symbol':'1.2-2' }}</strong></div>
+    <div class="destacado"><span>Recibes (sin comisión)</span><strong>{{ totalNeto | currency:'MXN':'symbol':'1.2-2' }}</strong></div>
+    <small *ngIf="sinDato">{{ sinDato }} pago(s) sin dato de comisión todavía: cuentan completos.</small>
   </div>
 
   <p *ngIf="cargando" class="pagos__estado">Cargando…</p>
   <p *ngIf="error" class="pagos__estado pagos__estado--error">{{ error }}</p>
-  <p *ngIf="!cargando && !error && pagos.length === 0" class="pagos__estado">No hay pagos con estos filtros.</p>
+  <p *ngIf="!cargando && !error && filtrados.length === 0" class="pagos__estado">
+    {{ pagos.length && busqueda ? 'Ningún pago coincide con la búsqueda.' : 'No hay pagos con estos filtros.' }}
+  </p>
 
-  <div class="pagos__tabla" *ngIf="!cargando && pagos.length > 0">
+  <div class="pagos__tabla" *ngIf="!cargando && filtrados.length > 0">
     <table>
       <thead>
         <tr>
@@ -29,11 +39,13 @@
           <th>Tratamiento</th>
           <th>Cobro</th>
           <th>Pagó</th>
+          <th>Comisión</th>
+          <th>Recibes</th>
           <th>Estado</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let p of pagos">
+        <tr *ngFor="let p of filtrados">
           <td>{{ (p.pagadoEn || p.createdAt) | date:'d MMM y, HH:mm' }}</td>
           <td class="td-bold">
             <a [href]="whatsapp(p)" target="_blank" rel="noopener" title="Abrir WhatsApp">
@@ -47,6 +59,11 @@
             <small *ngIf="p.cobro === 'anticipo'">de {{ p.costoFinal | currency:'MXN':'symbol-narrow':'1.0-0' }}</small>
           </td>
           <td class="td-bold">{{ p.monto | currency:'MXN':'symbol':'1.2-2' }}</td>
+          <td class="neg">{{ p.stripe?.comision != null ? '−' + (p.stripe.comision | currency:'MXN':'symbol':'1.2-2') : '—' }}</td>
+          <td class="td-bold">
+            {{ p.stripe?.neto != null ? (p.stripe.neto | currency:'MXN':'symbol':'1.2-2') : '—' }}
+            <small *ngIf="p.stripe?.disponibleEl">disponible {{ p.stripe.disponibleEl | date:'d MMM':'UTC' }}</small>
+          </td>
           <td>
             <span class="estado" [class]="'estado estado--' + p.estado">{{ p.estado }}</span>
             <small *ngIf="p.montoReembolsado > 0 && p.estado !== 'reembolsado'">Reembolso parcial {{ p.montoReembolsado | currency:'MXN':'symbol':'1.2-2' }}</small>

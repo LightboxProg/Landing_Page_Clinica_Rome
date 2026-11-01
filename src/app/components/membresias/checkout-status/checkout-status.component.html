@@ -13,7 +13,7 @@
       <ng-container *ngIf="promo">
         <h1 class="res__title">Recibimos tu pago</h1>
         <p class="res__note">
-          Te llevamos a WhatsApp para agendar tu cita con la clínica.
+          Descarga tu recibo y mándanos un mensaje por WhatsApp para agendar tu cita.
         </p>
         <div class="res__cita">
           <dl class="res__datos">
@@ -96,12 +96,16 @@
     </ng-template>
 
     <p class="res__ref u-data" *ngIf="sessionId">
-      Referencia {{ sessionId.substring(0, 18) }}
+      <ng-container *ngIf="promo?.folio; else referencia">Folio {{ promo.folio }}</ng-container>
+      <ng-template #referencia>Referencia {{ sessionId.substring(0, 18) }}</ng-template>
     </p>
 
-    <div class="res__actions" *ngIf="type === 'promo'">
-      <a *ngIf="promo?.whatsappUrl" [href]="promo.whatsappUrl" class="btn btn--solid">
-        <i class="fab fa-whatsapp" aria-hidden="true"></i> Continuar en WhatsApp
+    <div class="res__actions" *ngIf="type === 'promo' && promo">
+      <a *ngIf="promo.whatsappUrl" [href]="promo.whatsappUrl" target="_blank" rel="noopener" class="btn btn--solid">
+        <i class="fab fa-whatsapp" aria-hidden="true"></i> Mandar mensaje por WhatsApp
+      </a>
+      <a [href]="reciboUrl" download class="btn btn--line">
+        <i class="fas fa-file-arrow-down" aria-hidden="true"></i> Descargar recibo
       </a>
     </div>
 

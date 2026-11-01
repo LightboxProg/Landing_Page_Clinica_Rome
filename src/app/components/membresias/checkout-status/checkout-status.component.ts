@@ -120,8 +120,6 @@ export class CheckoutStatusComponent implements OnInit {
       next: (res) => {
         this.promo = res;
         this.verificandoPromo = false;
-        // Ya pagó: se le manda al WhatsApp de la clínica para agendar
-        if (res?.whatsappUrl) setTimeout(() => (window.location.href = res.whatsappUrl), 4000);
       },
       error: () => {
         if (++this.intentos < 4) {
@@ -133,6 +131,11 @@ export class CheckoutStatusComponent implements OnInit {
         }
       }
     });
+  }
+
+  // PDF del recibo; el backend lo manda como descarga
+  get reciboUrl(): string {
+    return `${environment.apiUrl}/promos/pago/${this.sessionId}/recibo`;
   }
 
   // Redirecciona al catalogo o al agendador segun corresponda

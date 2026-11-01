@@ -36,7 +36,26 @@
   letter-spacing: normal;
 }
 
-.pagos__total { margin-left: auto; font-weight: 600; }
+.pagos__buscar { flex: 1 1 260px; }
+.pagos__buscar input { width: 100%; }
+
+.pagos__resumen {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem 2rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.5rem;
+  background: var(--adm-superficie);
+  border: 1px solid var(--adm-borde);
+  border-radius: 16px;
+}
+.pagos__resumen div { display: flex; flex-direction: column; gap: 0.2rem; }
+.pagos__resumen span { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--adm-tenue); }
+.pagos__resumen strong { font-size: 1.15rem; }
+.pagos__resumen .destacado strong { color: var(--adm-ok); font-size: 1.35rem; }
+.pagos__resumen small { flex-basis: 100%; color: var(--adm-tenue); }
+.neg { color: var(--adm-error); }
 
 .pagos__estado { color: var(--adm-tenue); }
 .pagos__estado--error { color: var(--adm-error); }

@@ -20,6 +20,7 @@ export class PagosPromoComponent implements OnInit {
   desde = '';
   hasta = '';
   estado = 'pagado';
+  busqueda = '';
 
   constructor(private promosService: PromocionesService) {}
 
@@ -46,8 +47,40 @@ export class PagosPromoComponent implements OnInit {
     });
   }
 
+  // Busca por número (con o sin lada/espacios), promoción, tratamiento o folio
+  get filtrados(): any[] {
+    const texto = this.normalizar(this.busqueda);
+    if (!texto) return this.pagos;
+    const digitos = texto.replace(/\D/g, '');
+    return this.pagos.filter(p =>
+      (digitos.length >= 3 && String(p.telefono || '').includes(digitos)) ||
+      [p.promocionNombre, p.itemNombre, p.folio].some(campo => this.normalizar(campo).includes(texto))
+    );
+  }
+
+  private get pagados(): any[] {
+    return this.filtrados.filter(p => p.estado === 'pagado');
+  }
+
   get total(): number {
-    return this.pagos.filter(p => p.estado === 'pagado').reduce((suma, p) => suma + (p.monto || 0), 0);
+    return this.pagados.reduce((suma, p) => suma + (p.monto || 0), 0);
+  }
+
+  get totalComision(): number {
+    return this.pagados.reduce((suma, p) => suma + (p.stripe?.comision || 0), 0);
+  }
+
+  // Lo que deposita Stripe (los pagos sin dato todavía cuentan por su monto completo)
+  get totalNeto(): number {
+    return this.pagados.reduce((suma, p) => suma + (p.stripe?.neto ?? p.monto ?? 0), 0);
+  }
+
+  get sinDato(): number {
+    return this.pagados.filter(p => p.stripe?.neto == null).length;
+  }
+
+  private normalizar(texto: string): string {
+    return String(texto || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
   }
 
   whatsapp(pago: any): string {

@@ -131,7 +131,15 @@ export class CorteDiarioComponent implements OnInit {
   sumarPagosPromo(pagos: any[]): void {
     this.pagosPromo = pagos;
     const t = this.totalesEstetica;
-    pagos.forEach(p => { t.stripe += p.monto; t.stripeSinDato += 1; });
+    pagos.forEach(p => {
+      t.stripe += p.monto;
+      if (p.stripeNeto != null) {
+        t.stripeComision += p.stripeComision || 0;
+        t.stripeNeto += p.stripeNeto;
+      } else {
+        t.stripeSinDato += 1;
+      }
+    });
     t.granTotal = t.efectivo + t.tarjeta + t.transferencia + t.stripe;
   }
 
