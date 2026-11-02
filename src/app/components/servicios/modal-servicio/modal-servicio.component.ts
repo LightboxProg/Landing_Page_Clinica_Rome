@@ -26,7 +26,7 @@ export class ModalServicioComponent {
 
   formData: any = {
     nombre: '', categoria: '', descripcion: '', costo: null,
-    duracion: '', palabrasClave: '', beneficios: '', activo: true
+    duracion: '', duracionTratamiento: '', palabrasClave: '', beneficios: '', activo: true
   };
 
   fotosActuales: { url: string; key: string }[] = [];
@@ -43,7 +43,7 @@ export class ModalServicioComponent {
   resetForm(): void {
     this.formData = {
       nombre: '', categoria: '', descripcion: '', costo: null,
-      duracion: '', palabrasClave: '', beneficios: '', activo: true
+      duracion: '', duracionTratamiento: '', palabrasClave: '', beneficios: '', activo: true
     };
     this.limpiarArchivos();
   }
@@ -104,6 +104,7 @@ export class ModalServicioComponent {
     fd.append('descripcion', this.formData.descripcion.trim());
     fd.append('costo', String(Number(this.formData.costo)));
     fd.append('duracion', this.formData.duracion?.trim() || '');
+    fd.append('duracionTratamiento', this.formData.duracionTratamiento?.trim() || '');
     fd.append('activo', String(this.formData.activo));
 
     if (this.formData.palabrasClave?.trim()) {

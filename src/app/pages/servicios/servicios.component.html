@@ -114,7 +114,10 @@
                   <p class="item__price item__price--promo u-data" *ngIf="fila.promo">
                     <s>{{ fila.precio }}</s> {{ fila.promo }}
                   </p>
-                  <p class="item__dur u-data" *ngIf="fila.duracion">{{ fila.duracion }}</p>
+                  <p class="item__dur u-data" *ngIf="fila.duracionTratamiento">
+                    <span class="item__dur-label">Duración del tratamiento</span>
+                    {{ fila.duracionTratamiento }}
+                  </p>
                   <a *ngIf="fila.promo" class="item__book u-data" routerLink="/agendar-cita" [queryParams]="{ servicio: fila.id }">
                     Agendar con promoción <i class="fas fa-arrow-right" aria-hidden="true"></i>
                   </a>

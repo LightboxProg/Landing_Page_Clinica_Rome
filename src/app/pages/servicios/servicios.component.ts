@@ -23,6 +23,7 @@ interface Servicio {
   descripcion: string;
   costo: number;
   duracion?: string;
+  duracionTratamiento?: string;
   duracionMinutos?: number;
   foto?: { url: string; key: string };
   fotos?: { url: string; key: string }[];
@@ -39,7 +40,7 @@ interface FilaTarifa {
   variante: string | null;
   descripcion?: string;
   precio: string;
-  duracion?: string;
+  duracionTratamiento?: string;
   fotos?: string[];
   // Precio de promoción vigente, ya formateado; sólo estética
   promo?: string;
@@ -279,7 +280,7 @@ export class ServiciosComponent implements OnInit, OnDestroy {
     }
 
     return this.categoriasDentalesDefault.map((cat, i) => {
-      const filas = cat.servicios.map((s, j) => this.aFila(`def-${i}-${j}`, s.nombre, s.descripcion, s.costo, s.duracion));
+      const filas = cat.servicios.map((s, j) => this.aFila(`def-${i}-${j}`, s.nombre, s.descripcion, s.costo));
       return {
         id: `def-${i}`,
         ancla: `cat-def-${i}`,
@@ -305,7 +306,7 @@ export class ServiciosComponent implements OnInit, OnDestroy {
         descripcion: cat.descripcion,
         desde: this.formatearPrecio(Math.min(...servicios.map(s => s.costo))),
         filas: servicios.map(s => ({
-          ...this.aFila(s._id, s.nombre, s.descripcion, s.costo, s.duracion, this.fotosDe(s)),
+          ...this.aFila(s._id, s.nombre, s.descripcion, s.costo, s.duracionTratamiento, this.fotosDe(s)),
           promo: this.precioPromo(s)
         }))
       });
@@ -314,14 +315,14 @@ export class ServiciosComponent implements OnInit, OnDestroy {
     return bloques;
   }
 
-  private aFila(id: string, nombre: string, descripcion: string | undefined, costo: number, duracion?: string, fotos: string[] = []): FilaTarifa {
+  private aFila(id: string, nombre: string, descripcion: string | undefined, costo: number, duracionTratamiento?: string, fotos: string[] = []): FilaTarifa {
     return {
       id,
       nombre: this.nombreBase(nombre),
       variante: this.variante(nombre),
       descripcion,
       precio: this.formatearPrecio(costo),
-      duracion,
+      duracionTratamiento,
       fotos
     };
   }

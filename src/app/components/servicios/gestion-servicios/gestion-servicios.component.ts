@@ -70,6 +70,7 @@ export class GestionServiciosComponent implements OnInit {
         descripcion: serv.descripcion,
         costo: serv.costo,
         duracion: serv.duracion || '',
+        duracionTratamiento: serv.duracionTratamiento || '',
         palabrasClave: (serv.palabrasClave || []).join(', '),
         beneficios: (serv.beneficios || []).join(', '),
         activo: serv.activo

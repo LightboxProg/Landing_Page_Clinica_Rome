@@ -391,6 +391,15 @@
   text-transform: uppercase;
   color: #8c6d59;
   white-space: nowrap;
+  text-align: right;
+}
+.item__dur-label {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: #a8907f;
 }
 
 /* ============================================================

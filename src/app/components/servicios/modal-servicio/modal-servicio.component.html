@@ -35,9 +35,14 @@
           <input id="servCosto" type="number" [(ngModel)]="formData.costo" placeholder="0.00" min="0" />
         </div>
         <div class="form-group">
-          <label for="servDuracion">Duración</label>
+          <label for="servDuracion">Duración de la cita</label>
           <input id="servDuracion" type="text" [(ngModel)]="formData.duracion" placeholder="Ej: 45 min" />
         </div>
+      </div>
+
+      <div class="form-group">
+        <label for="servDuracionTratamiento">Duración del tratamiento <small>(se muestra en la página)</small></label>
+        <input id="servDuracionTratamiento" type="text" [(ngModel)]="formData.duracionTratamiento" placeholder="Ej: 9 - 12 meses" />
       </div>
 
       <div class="form-group">
