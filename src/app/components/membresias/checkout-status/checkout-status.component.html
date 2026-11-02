@@ -101,7 +101,7 @@
     </p>
 
     <div class="res__actions" *ngIf="type === 'promo' && promo">
-      <a *ngIf="promo.whatsappUrl" [href]="promo.whatsappUrl" target="_blank" rel="noopener" class="btn btn--solid">
+      <a *ngIf="promo.whatsappUrl" [href]="promo.whatsappUrl" target="_blank" rel="noopener" class="btn res__wa">
         <i class="fab fa-whatsapp" aria-hidden="true"></i> Mandar mensaje por WhatsApp
       </a>
       <a [href]="reciboUrl" download class="btn btn--line">

@@ -71,6 +71,23 @@
 .res__actions { margin-top: 2rem; display: grid; gap: 0.6rem; }
 .res__actions .btn { width: 100%; }
 
+/* Botón de WhatsApp: el tema viejo pinta los enlaces en :visited/:hover/:focus y en iPhone
+   el texto quedaba del color del fondo. Color propio en todos los estados. */
+.res__actions a.res__wa,
+.res__actions a.res__wa:link,
+.res__actions a.res__wa:visited,
+.res__actions a.res__wa:hover,
+.res__actions a.res__wa:focus,
+.res__actions a.res__wa:active {
+  background: #1F7A45;
+  border-color: #1F7A45;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF;
+  text-decoration: none;
+}
+.res__actions a.res__wa:hover { background: #18633A; border-color: #18633A; }
+.res__actions a.res__wa i { color: inherit; }
+
 /* ---------- datos de la cita pagada ---------- */
 .res__cita {
   margin: 1.5rem 0 0;
