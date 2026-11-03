@@ -1,0 +1,41 @@
+/* Lo demás viene de pagar-promo.component.css (form-card, field, tel, terminos, pasos) */
+
+.concepto {
+  margin: 0.4rem 0 1.5rem;
+  padding: 0.9rem 1.1rem;
+  background: var(--porcelain);
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
+}
+.concepto > div { display: flex; justify-content: space-between; gap: 1rem; padding: 0.35rem 0; font-size: 0.92rem; }
+.concepto dt { color: var(--ink-soft); }
+.concepto dd { margin: 0; color: var(--ink); font-weight: 500; text-align: right; }
+
+.listo__mark {
+  display: grid;
+  place-items: center;
+  width: 3.2rem;
+  height: 3.2rem;
+  margin: 0.5rem auto 1rem;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--porcelain);
+  font-size: 1.2rem;
+}
+.listo__title, .listo__note { text-align: center; }
+
+/* Mismo botón de WhatsApp que la confirmación de pago: color propio en todos los estados
+   para que el tema viejo no le pinte el texto */
+.form-card__actions a.listo__wa,
+.form-card__actions a.listo__wa:link,
+.form-card__actions a.listo__wa:visited,
+.form-card__actions a.listo__wa:hover,
+.form-card__actions a.listo__wa:focus,
+.form-card__actions a.listo__wa:active {
+  background: #1F7A45;
+  border-color: #1F7A45;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF;
+  text-decoration: none;
+}
+.form-card__actions a.listo__wa:hover { background: #18633A; border-color: #18633A; }

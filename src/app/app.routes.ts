@@ -10,6 +10,7 @@ import { CheckoutStatusComponent } from './components/membresias/checkout-status
 import { LoginPageComponent } from './pages/login/login.component';
 import { AgendarCitaComponent } from './pages/agendar-cita/agendar-cita.component';
 import { PagarPromoComponent } from './pages/pagar-promo/pagar-promo.component';
+import { AceptarTerminosComponent } from './pages/aceptar-terminos/aceptar-terminos.component';
 import { NosotrosComponent } from './pages/nosotros/nosotros.component';
 import { ContactoComponent } from './pages/contacto/contacto.component';
 import { authGuard } from './guards/auth.guard';
@@ -62,6 +63,9 @@ export const routes: Routes = [
     children: [
       { path: 'agendar-cita', component: AgendarCitaComponent },
       { path: 'pagar-promo', component: PagarPromoComponent },
+      // Enlace que recepción manda a quien pagó por OXXO, transferencia, etc.
+      { path: 'aceptar/:codigo', component: AceptarTerminosComponent },
+      { path: 'aceptar', component: AceptarTerminosComponent },
       environment.membresiasPublicas
         ? { path: 'pasarela-membresias/:id', component: PasarelaMembresiasComponent }
         : { path: 'pasarela-membresias/:id', redirectTo: '' },

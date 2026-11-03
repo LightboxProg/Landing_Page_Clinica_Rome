@@ -1,0 +1,56 @@
+/* Lo demás viene de pagos-promo.component.css (toolbar, tabla, estados) */
+
+.pagos__total { margin-left: auto; font-weight: 600; }
+
+.nuevo { align-items: flex-end; }
+.nuevo__concepto { flex: 2 1 280px; }
+.nuevo__concepto input { width: 100%; }
+
+.nuevo__crear,
+.creado__acciones button,
+.creado__acciones a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 1rem;
+  background: var(--adm-teal);
+  border: 0;
+  border-radius: 8px;
+  color: var(--adm-sobre-primario);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+.nuevo__crear:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.creado {
+  margin: -0.5rem 0 1.5rem;
+  padding: 1rem 1.5rem;
+  background: var(--adm-superficie-2);
+  border: 1px dashed var(--adm-teal);
+  border-radius: 16px;
+}
+.creado p { margin: 0 0 0.4rem; }
+.creado.publico { margin: 0 0 1.25rem; border-style: solid; }
+.nuevo__titulo { margin: 0 0 0.6rem; color: var(--adm-tenue); font-size: 0.9rem; }
+.creado code { display: block; margin-bottom: 0.75rem; word-break: break-all; color: var(--adm-teal); }
+.creado__acciones { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.creado__acciones a { background: #1F7A45; color: #fff; }
+
+.acciones { white-space: nowrap; }
+.acciones button,
+.acciones a {
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  margin-right: 0.25rem;
+  background: var(--adm-superficie-2);
+  border: 1px solid var(--adm-borde);
+  border-radius: 8px;
+  color: var(--adm-texto);
+  cursor: pointer;
+}
+.acciones button:hover,
+.acciones a:hover { border-color: var(--adm-teal); color: var(--adm-teal); }

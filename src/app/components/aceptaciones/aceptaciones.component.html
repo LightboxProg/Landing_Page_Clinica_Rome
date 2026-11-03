@@ -1,0 +1,114 @@
+<div class="pagos">
+
+  <!-- Enlace público fijo: no hay que crearlo -->
+  <div class="creado publico">
+    <p><strong>Enlace público</strong> · sirve para todos: sólo ponen su número y aceptan.</p>
+    <code>{{ enlacePublico }}</code>
+    <div class="creado__acciones">
+      <button type="button" (click)="copiarPublico()"><i class="fas fa-copy" aria-hidden="true"></i> Copiar</button>
+      <a [href]="whatsappPublico" target="_blank" rel="noopener"><i class="fab fa-whatsapp" aria-hidden="true"></i> Enviar por WhatsApp</a>
+    </div>
+  </div>
+
+  <p class="nuevo__titulo">O crea un enlace para un pago en específico (con concepto y monto):</p>
+
+  <!-- Nuevo enlace -->
+  <form class="pagos__toolbar nuevo" (ngSubmit)="crear()">
+    <label class="nuevo__concepto">Concepto del pago
+      <input type="text" [(ngModel)]="concepto" name="concepto" placeholder="Ej. Anticipo Buen Fin — Heart Lips" required />
+    </label>
+    <label>Forma de pago
+      <select [(ngModel)]="metodoPago" name="metodoPago">
+        <option *ngFor="let m of metodos" [value]="m">{{ m }}</option>
+      </select>
+    </label>
+    <label>Monto (opcional)
+      <input type="number" min="0" [(ngModel)]="monto" name="monto" placeholder="500" />
+    </label>
+    <label>WhatsApp del cliente (opcional)
+      <input type="tel" [(ngModel)]="telefonoEnvio" name="telefonoEnvio" placeholder="449 123 4567" />
+    </label>
+    <button type="submit" class="nuevo__crear" [disabled]="!concepto.trim() || creando">
+      <i class="fas fa-link" aria-hidden="true"></i> {{ creando ? 'Creando…' : 'Crear enlace' }}
+    </button>
+  </form>
+
+  <div class="creado" *ngIf="nuevo">
+    <p>Enlace listo para <strong>{{ nuevo.concepto }}</strong>:</p>
+    <code>{{ enlace(nuevo) }}</code>
+    <div class="creado__acciones">
+      <button type="button" (click)="copiar(nuevo)"><i class="fas fa-copy" aria-hidden="true"></i> Copiar</button>
+      <a [href]="whatsapp(nuevo)" target="_blank" rel="noopener"><i class="fab fa-whatsapp" aria-hidden="true"></i> Enviar por WhatsApp</a>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="pagos__toolbar">
+    <label>Estado
+      <select [(ngModel)]="estado" (change)="cargar()">
+        <option value="todos">Todos</option>
+        <option value="aceptado">Aceptados</option>
+        <option value="pendiente">Pendientes</option>
+      </select>
+    </label>
+    <label class="pagos__buscar">Buscar
+      <input type="search" [(ngModel)]="busqueda" placeholder="Número, concepto o quién lo creó" />
+    </label>
+    <span class="pagos__total">{{ filtrados.length }} enlace(s) · {{ aceptadas }} aceptado(s)</span>
+  </div>
+
+  <p *ngIf="cargando" class="pagos__estado">Cargando…</p>
+  <p *ngIf="error" class="pagos__estado pagos__estado--error">{{ error }}</p>
+  <p *ngIf="!cargando && !error && filtrados.length === 0" class="pagos__estado">
+    {{ lista.length && busqueda ? 'Ningún enlace coincide con la búsqueda.' : 'Todavía no hay enlaces.' }}
+  </p>
+
+  <div class="pagos__tabla" *ngIf="!cargando && filtrados.length > 0">
+    <table>
+      <thead>
+        <tr>
+          <th>Creado</th>
+          <th>Concepto</th>
+          <th>Forma de pago</th>
+          <th>Monto</th>
+          <th>Estado</th>
+          <th>Aceptó con</th>
+          <th>Aceptado el</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let a of filtrados">
+          <td>
+            {{ a.createdAt | date:'d MMM y, HH:mm' }}
+            <small *ngIf="a.creadoPorNombre">por {{ a.creadoPorNombre }}</small>
+          </td>
+          <td class="td-bold">
+            {{ a.concepto }}
+            <small *ngIf="a.origen === 'publico'">llegó por el enlace público</small>
+          </td>
+          <td>{{ a.metodoPago || '—' }}</td>
+          <td>{{ a.monto != null ? (a.monto | currency:'MXN':'symbol':'1.2-2') : '—' }}</td>
+          <td><span class="estado" [class]="'estado estado--' + (a.estado === 'aceptado' ? 'pagado' : 'pendiente')">{{ a.estado }}</span></td>
+          <td class="td-bold">
+            <a *ngIf="a.telefono" [href]="'https://wa.me/' + a.telefono" target="_blank" rel="noopener" title="Abrir WhatsApp">
+              <i class="fab fa-whatsapp" aria-hidden="true"></i> {{ a.telefonoLegible }}
+            </a>
+            <span *ngIf="!a.telefono">—</span>
+          </td>
+          <td>
+            {{ a.aceptadoEn ? (a.aceptadoEn | date:'d MMM y, HH:mm') : '—' }}
+            <small *ngIf="a.ip" [title]="a.dispositivo">IP {{ a.ip }}</small>
+          </td>
+          <td class="acciones">
+            <ng-container *ngIf="a.estado === 'pendiente'">
+              <button type="button" (click)="copiar(a)" title="Copiar enlace"><i class="fas fa-copy"></i></button>
+              <a [href]="whatsapp(a)" target="_blank" rel="noopener" title="Enviar por WhatsApp"><i class="fab fa-whatsapp"></i></a>
+              <button type="button" (click)="borrar(a)" title="Borrar enlace"><i class="fas fa-trash"></i></button>
+            </ng-container>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

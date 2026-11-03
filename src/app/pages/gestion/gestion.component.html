@@ -62,6 +62,11 @@
       <app-pagos-promo></app-pagos-promo>
     </div>
 
+    <!-- Tab: Aceptación de términos (pagos por OXXO, transferencia…) -->
+    <div class="tab-panel" *ngIf="tabActivo === 'aceptaciones'">
+      <app-aceptaciones></app-aceptaciones>
+    </div>
+
     <!-- Tab: Promociones -->
     <div class="tab-panel" *ngIf="tabActivo === 'promociones'">
       <app-gestion-promociones></app-gestion-promociones>

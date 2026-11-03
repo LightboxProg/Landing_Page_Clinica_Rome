@@ -53,6 +53,7 @@ const MENU: SeccionMenu[] = [
     id: 'caja', label: 'Caja', icon: 'fa-cash-register', items: [
       { label: 'Corte del día', icon: 'fa-receipt', link: '/admin/configuracion', tab: 'corteDiario', roles: CAJA },
       { label: 'Pagos de promociones', icon: 'fa-tags', link: '/admin/configuracion', tab: 'pagosPromo', roles: CAJA },
+      { label: 'Aceptación de términos', icon: 'fa-file-signature', link: '/admin/configuracion', tab: 'aceptaciones', roles: CAJA },
       { label: 'Membresías contratadas', icon: 'fa-id-card', link: '/admin/configuracion', tab: 'suscripciones' }
     ]
   },

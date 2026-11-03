@@ -1,0 +1,115 @@
+<section class="book">
+  <p *ngIf="cargando" class="estado u-data">Cargando…</p>
+
+  <div class="form-card panel" *ngIf="!cargando && noExiste">
+    <h1 class="form-card__title">Este enlace no está disponible</h1>
+    <p class="form-card__note">Revisa que el enlace esté completo o pide uno nuevo a la clínica.</p>
+  </div>
+
+  <div class="form-card panel" *ngIf="!cargando && solicitud">
+
+    <p class="u-eyebrow">Aceptación de términos</p>
+    <dl class="concepto" *ngIf="!solicitud.publico">
+      <div><dt>Concepto</dt><dd>{{ solicitud.concepto }}</dd></div>
+      <div><dt>Forma de pago</dt><dd>{{ solicitud.metodoPago }}</dd></div>
+      <div *ngIf="solicitud.monto != null"><dt>Monto</dt><dd class="u-data">{{ solicitud.monto | currency:'MXN':'symbol-narrow':'1.0-2' }}</dd></div>
+    </dl>
+
+    <ol class="pasos u-data" aria-label="Pasos" *ngIf="paso !== 'listo'">
+      <li [class.is-on]="paso === 'numero'" [class.is-done]="paso !== 'numero'">1 · Tu número</li>
+      <li [class.is-on]="paso === 'confirmar'" [class.is-done]="paso === 'aceptar'">2 · Confirmar</li>
+      <li [class.is-on]="paso === 'aceptar'">3 · Aceptar</li>
+    </ol>
+
+    <!-- PASO 1: número con lada -->
+    <ng-container *ngIf="paso === 'numero'">
+      <h1 class="form-card__title">¿Cuál es tu WhatsApp?</h1>
+      <p class="form-card__note">Con este número queda registrada tu aceptación.</p>
+
+      <div class="field">
+        <label for="lada">País</label>
+        <select id="lada" [(ngModel)]="lada">
+          <option *ngFor="let l of ladas" [value]="l.lada">{{ l.pais }} (+{{ l.lada }})</option>
+          <option value="otra">Otro país</option>
+        </select>
+      </div>
+
+      <div class="field" *ngIf="lada === 'otra'">
+        <label for="ladaOtra">Lada del país</label>
+        <div class="tel">
+          <span class="tel__lada u-data" aria-hidden="true">+</span>
+          <input type="tel" id="ladaOtra" [(ngModel)]="ladaOtra" (ngModelChange)="limpiarLada()" placeholder="44" inputmode="numeric" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="telefono">Número de WhatsApp</label>
+        <div class="tel">
+          <span class="tel__lada u-data" aria-hidden="true">+{{ ladaFinal || '—' }}</span>
+          <input type="tel" id="telefono" [(ngModel)]="telefono" (ngModelChange)="limpiarTelefono()"
+                 [placeholder]="lada === '52' ? '449 123 4567' : 'Número'" inputmode="numeric" autocomplete="tel-national"
+                 (keyup.enter)="continuar()" />
+          <span class="tel__cuenta u-data" *ngIf="lada === '52'" [class.is-ok]="telefono.length === 10">{{ telefono.length }}/10</span>
+        </div>
+      </div>
+
+      <div class="form-card__actions">
+        <button class="btn btn--solid" [disabled]="!telefonoValido" (click)="continuar()" type="button">Continuar</button>
+      </div>
+    </ng-container>
+
+    <!-- PASO 2: confirmar número -->
+    <ng-container *ngIf="paso === 'confirmar'">
+      <h1 class="form-card__title">Confirma tu número</h1>
+      <p class="form-card__note">Revisa que esté bien antes de continuar.</p>
+      <p class="confirmar u-data"><i class="fab fa-whatsapp" aria-hidden="true"></i> {{ telefonoLegible }}</p>
+      <div class="form-card__actions">
+        <button class="btn btn--line" (click)="cambiarNumero()" type="button">Cambiar número</button>
+        <button class="btn btn--solid" (click)="paso = 'aceptar'" type="button">Sí, es correcto</button>
+      </div>
+    </ng-container>
+
+    <!-- PASO 3: aceptar -->
+    <ng-container *ngIf="paso === 'aceptar'">
+      <h1 class="form-card__title">Acepta los términos</h1>
+      <p class="numero-ok u-data">
+        Número: <strong>{{ telefonoLegible }}</strong>
+        <button type="button" class="link" (click)="cambiarNumero()" [disabled]="enviando">Cambiar</button>
+      </p>
+
+      <label class="terminos" [class.is-on]="acepta">
+        <input type="checkbox" [(ngModel)]="acepta" [disabled]="enviando" />
+        <span class="terminos__caja" aria-hidden="true"><i class="fas fa-check"></i></span>
+        <span class="terminos__texto">
+          Acepto los <a href="/aviso-terminos" target="_blank" rel="noopener">términos y condiciones</a>
+          y el <a href="/aviso-privacidad" target="_blank" rel="noopener">aviso de privacidad</a>.
+        </span>
+      </label>
+
+      <p class="error" *ngIf="error" role="alert">
+        <i class="fas fa-triangle-exclamation" aria-hidden="true"></i> {{ error }}
+      </p>
+
+      <div class="form-card__actions">
+        <button class="btn btn--solid" [disabled]="!acepta || enviando" (click)="enviar()" type="button">
+          {{ enviando ? 'Registrando…' : 'Aceptar' }}
+        </button>
+      </div>
+    </ng-container>
+
+    <!-- LISTO -->
+    <ng-container *ngIf="paso === 'listo' && resultado">
+      <p class="listo__mark" aria-hidden="true"><i class="fas fa-check"></i></p>
+      <h1 class="form-card__title listo__title">¡Listo, quedó registrado!</h1>
+      <p class="form-card__note listo__note">
+        Aceptaste los términos y condiciones y el aviso de privacidad con el número
+        <strong>{{ resultado.telefono }}</strong><ng-container *ngIf="resultado.aceptadoEn"> el {{ fecha(resultado.aceptadoEn) }}</ng-container>.
+      </p>
+      <div class="form-card__actions" *ngIf="resultado.whatsappUrl">
+        <a [href]="resultado.whatsappUrl" target="_blank" rel="noopener" class="btn listo__wa">
+          <i class="fab fa-whatsapp" aria-hidden="true"></i> Mandar mensaje por WhatsApp
+        </a>
+      </div>
+    </ng-container>
+  </div>
+</section>

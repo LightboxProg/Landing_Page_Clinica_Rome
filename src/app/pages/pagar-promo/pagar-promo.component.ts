@@ -5,8 +5,8 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { PromocionesService } from '../../services/promociones/promociones.service';
 import { APARIENCIA_PAGO } from '../agendar-cita/agendar-cita.component';
 
-// Ladas más comunes entre los pacientes; "Otra" deja escribirla
-const LADAS = [
+// Ladas más comunes entre los pacientes; "Otra" deja escribirla. También la usa /aceptar
+export const LADAS = [
   { lada: '52', pais: 'México' },
   { lada: '1', pais: 'EE. UU. / Canadá' },
   { lada: '34', pais: 'España' },
