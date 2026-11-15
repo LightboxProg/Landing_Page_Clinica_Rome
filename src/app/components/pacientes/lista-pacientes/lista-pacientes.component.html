@@ -5,9 +5,12 @@
       <div class="contador-pacientes"><span class="numero">{{pacientes.length}}</span><span class="texto">Pacientes</span></div>
     </div>
     <div class="lista-elementos">
-      <div *ngFor="let paciente of pacientes" class="elemento-wrapper">
+      <div *ngFor="let paciente of visibles; trackBy: porId" class="elemento-wrapper">
         <app-element-paciente [paciente]="paciente"></app-element-paciente>
       </div>
+      <button *ngIf="restantes > 0" type="button" class="boton-ver-mas" (click)="verMas()">
+        Ver más <span>({{restantes}} restantes)</span>
+      </button>
       <div *ngIf="pacientes.length === 0" class="sin-resultados">
         <i class="fas fa-inbox"></i><p>No se encontraron pacientes</p>
       </div>

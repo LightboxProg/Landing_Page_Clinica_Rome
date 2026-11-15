@@ -75,4 +75,4 @@ export class PacientesService {
   guardarMedicamentos(id: string, medicamentos: string): Observable<Paciente> {
     return this.http.put<Paciente>(`${this.apiUrl}/${id}/medicamentos`, { medicamentos });
   }
-}
+} 

@@ -96,7 +96,8 @@
               aria-label="Menú de usuario">
         <span class="avatar" aria-hidden="true">
           {{ iniciales || '?' }}
-          <span class="avatar-alerta" *ngIf="googleDesconectado" title="Google Calendar desconectado"></span>
+          <span class="avatar-alerta" *ngIf="googleDesconectado || metaDesconectado"
+                [title]="googleDesconectado ? 'Google Calendar desconectado' : 'Instagram desconectado'"></span>
         </span>
         <span class="user-text">
           <span class="user-name">{{ usuarioNombre }}</span>
@@ -105,13 +106,14 @@
         <i class="fas fa-chevron-down chevron" aria-hidden="true"></i>
       </button>
 
-      <!-- Siempre montado: el regreso de Google (?linked=) lo procesa este componente -->
+      <!-- Siempre montado: el regreso de Google (?linked=) y de Facebook (?meta=) lo procesan estos componentes -->
       <div class="dropdown-menu user-dropdown" [class.visible]="abierto === 'usuario'">
         <div class="user-dropdown-head">
           <strong>{{ usuarioNombre }}</strong>
           <small>{{ usuarioTipo }}</small>
         </div>
         <app-auth-google *ngIf="usuarioTipo === 'Administrador'"></app-auth-google>
+        <app-auth-meta *ngIf="usuarioTipo === 'Administrador'" (requiereAtencion)="metaDesconectado = $event"></app-auth-meta>
         <button type="button" *ngIf="usuarioTipo === 'Especialista'" (click)="copiarEnlaceCitas()">
           <i class="fas fa-share-nodes" aria-hidden="true"></i> Copiar mi enlace de citas
         </button>

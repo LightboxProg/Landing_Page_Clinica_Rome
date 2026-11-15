@@ -4,6 +4,7 @@ import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { Subscription, filter } from 'rxjs';
 import { AuthService } from '../../../services/auth/auth.service';
 import { AuthGoogleComponent } from '../../../components/auth-google/auth-google.component';
+import { AuthMetaComponent } from '../../../components/auth-meta/auth-meta.component';
 import { AuthGoogleService } from '../../../services/auth-google/auth-google.service';
 import { BusquedaRapidaComponent, DestinoRapido } from '../busqueda-rapida/busqueda-rapida.component';
 import { TemaService } from '../../../services/tema/tema.service';
@@ -87,7 +88,7 @@ const BARRA_MOVIL = ['agenda', 'chats', 'pacientes'];
 @Component({
   selector: 'app-admin-navbar',
   standalone: true,
-  imports: [CommonModule, RouterLink, AuthGoogleComponent, RelativeTimePipe, BusquedaRapidaComponent],
+  imports: [CommonModule, RouterLink, AuthGoogleComponent, AuthMetaComponent, RelativeTimePipe, BusquedaRapidaComponent],
   templateUrl: './admin-navbar.component.html',
   styleUrl: './admin-navbar.component.scss'
 })
@@ -104,6 +105,8 @@ export class AdminNavbarComponent implements OnInit, OnDestroy {
   notifications: any[] = [];
   // Aviso en el avatar del administrador cuando Google Calendar está desconectado
   googleDesconectado = false;
+  // Lo mismo para Instagram (sin conectar o con el token vencido); lo avisa app-auth-meta
+  metaDesconectado = false;
   // Errores sin revisar de las últimas 24 h (Configuración → Sistema)
   erroresNuevos = 0;
 

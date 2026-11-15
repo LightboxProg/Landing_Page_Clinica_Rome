@@ -270,7 +270,7 @@ $alto-control: 38px;
   strong { color: var(--adm-texto); font-size: 0.9rem; }
   small { color: var(--adm-tenue); font-size: 0.74rem; }
 }
-.user-dropdown app-auth-google { display: block; margin: 0 2px 6px; }
+.user-dropdown app-auth-google, .user-dropdown app-auth-meta { display: block; margin: 0 2px 6px; }
 .dropdown-menu .logout { color: var(--adm-error); i { color: var(--adm-error); } }
 
 /* ---------- notificaciones ---------- */

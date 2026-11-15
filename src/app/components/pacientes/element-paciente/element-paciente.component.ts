@@ -23,7 +23,6 @@ export class ElementPacienteComponent implements OnInit {
   tipo = 'permanente';
   categoria = 'Otro';
   nivelGravedad = 1;
-  pacientesEnListaNegra: string[] = [];
   usuarioActual: any;
 
   constructor(
@@ -36,35 +35,6 @@ export class ElementPacienteComponent implements OnInit {
 
   ngOnInit() {
     this.usuarioActual = this.authService.getUsuario(); // Corregido
-    this.cargarListaNegraIds();
-  }
-
-
-  cargarListaNegraIds() {
-    this.listaNegraService.obtenerTodas().subscribe({
-      next: (res: any) => {
-        console.log('Respuesta lista negra:', res);
-        let lista = Array.isArray(res) ? res : (res?.data || []);
-        this.pacientesEnListaNegra = lista
-          .filter((item: any) => item && item.paciente) 
-          .map((item: any) => {
-    
-            const pacienteId = typeof item.paciente === 'string'
-              ? item.paciente
-              : item.paciente?._id;
-            return pacienteId;
-          })
-          .filter((id: string) => id); // eliminar undefined
-      },
-      error: (err) => {
-        console.error('Error al cargar lista negra:', err);
-        this.pacientesEnListaNegra = [];
-      }
-    });
-  }
-
-  estaEnListaNegra(): boolean {
-    return this.pacientesEnListaNegra.includes(this.paciente._id!);
   }
 
   abrirListaNegra() {
@@ -98,7 +68,6 @@ export class ElementPacienteComponent implements OnInit {
       next: () => {
         this.swal.success('Paciente agregado a lista negra');
         this.showListaNegraModal = false;
-        this.cargarListaNegraIds();
         this.pacientesService.obtenerPacientes(); // refrescar
       },
       error: (err) => {

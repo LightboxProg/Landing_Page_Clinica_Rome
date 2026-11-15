@@ -1,0 +1,89 @@
+.meta-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--adm-borde-suave);
+  border-left-width: 4px;
+}
+
+.meta-box.ok {
+  border-left-color: var(--adm-ok);
+}
+
+.meta-box.alerta {
+  border-left-color: var(--adm-error);
+  background: var(--adm-error-fondo);
+}
+
+.meta-icono {
+  font-size: 1.15rem;
+  color: var(--adm-texto);
+}
+
+.meta-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.meta-titulo {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--adm-texto);
+}
+
+.meta-info small {
+  font-size: 0.72rem;
+  color: var(--adm-tenue);
+  overflow-wrap: anywhere;
+}
+
+.meta-info small.meta-aviso {
+  color: var(--adm-aviso);
+}
+
+.meta-accion {
+  background: transparent;
+  border: none;
+  color: var(--adm-tenue);
+  padding: 4px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.meta-accion:hover {
+  background: var(--adm-hover);
+  color: var(--adm-texto);
+}
+
+/* Azul de Facebook: el botón lleva a su inicio de sesión */
+.meta-boton {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #1877f2;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.meta-boton:hover {
+  background: #166fe5;
+}
+
+.meta-cargando {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  font-size: 0.8rem;
+  color: var(--adm-tenue);
+}

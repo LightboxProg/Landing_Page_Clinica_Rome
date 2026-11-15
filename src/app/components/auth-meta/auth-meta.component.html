@@ -1,0 +1,53 @@
+<div class="auth-meta" *ngIf="!loading; else cargando">
+  <!-- Conectado y con el token vigente -->
+  <div *ngIf="activo" class="meta-box ok">
+    <i class="fab fa-instagram meta-icono" aria-hidden="true"></i>
+    <div class="meta-info">
+      <span class="meta-titulo">Instagram activo</span>
+      <small>
+        &#64;{{ estado?.instagram?.usuario }} ·
+        {{ estado?.token?.vence ? 'vence ' + (estado?.token?.vence | date:'shortDate') : 'no vence' }}
+      </small>
+      <small class="meta-aviso" *ngIf="estado?.aviso">{{ estado?.aviso }}</small>
+    </div>
+    <button type="button" class="meta-accion" *ngIf="(estado?.paginas?.length ?? 0) > 1" (click)="elegirPagina()"
+            title="Cambiar de página" aria-label="Cambiar de página">
+      <i class="fas fa-right-left" aria-hidden="true"></i>
+    </button>
+    <button type="button" class="meta-accion" (click)="conectar()" title="Volver a conectar" aria-label="Volver a conectar">
+      <i class="fas fa-sync-alt" aria-hidden="true"></i>
+    </button>
+    <button type="button" class="meta-accion" (click)="desconectar()" title="Desconectar" aria-label="Desconectar Instagram">
+      <i class="fas fa-link-slash" aria-hidden="true"></i>
+    </button>
+  </div>
+
+  <!-- Se autorizaron varias páginas: falta elegir una -->
+  <div *ngIf="porElegir" class="meta-box alerta">
+    <i class="fab fa-instagram meta-icono" aria-hidden="true"></i>
+    <div class="meta-info">
+      <span class="meta-titulo">Instagram sin cuenta elegida</span>
+      <small>Elige qué cuenta usará el bot</small>
+    </div>
+    <button type="button" class="meta-boton" (click)="elegirPagina()">Elegir</button>
+  </div>
+
+  <!-- Sin conectar, o el token dejó de servir -->
+  <div *ngIf="!activo && !porElegir" class="meta-box alerta">
+    <i class="fab fa-instagram meta-icono" aria-hidden="true"></i>
+    <div class="meta-info">
+      <span class="meta-titulo">{{ tokenInvalido ? 'Instagram: vuelve a conectar' : 'Instagram desconectado' }}</span>
+      <small>{{ tokenInvalido ? (estado?.token?.motivo || 'El token dejó de servir') : 'Conéctalo con tu cuenta de Facebook' }}</small>
+    </div>
+    <button type="button" class="meta-boton" (click)="conectar()">
+      <i class="fab fa-facebook" aria-hidden="true"></i> Conectar
+    </button>
+  </div>
+</div>
+
+<ng-template #cargando>
+  <div class="meta-cargando">
+    <i class="fas fa-circle-notch fa-spin" aria-hidden="true"></i>
+    <span>Verificando Instagram...</span>
+  </div>
+</ng-template>
