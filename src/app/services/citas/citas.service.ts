@@ -21,6 +21,9 @@ export interface CitaPayload {
   origen?: string;
   // Agendar aunque el médico ya tenga algo a esa hora (el backend responde 409 si no)
   forzar?: boolean;
+  // Sesión de un plan de tratamiento aceptado: sin costo
+  cotizacionId?: string;
+  cotizacionItemId?: string;
   googleEventId?: string;
   googleEventLink?: string;
 

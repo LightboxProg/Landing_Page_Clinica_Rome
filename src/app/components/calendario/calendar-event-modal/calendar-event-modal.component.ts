@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CitasService } from '../../../services/citas/citas.service';
 import { AuthService } from '../../../services/auth/auth.service';
+import { tiene } from '../../../services/auth/permisos';
 import { SwalService } from '../../../services/swal/swal.service';
 import { PromocionesService } from '../../../services/promociones/promociones.service';
 
@@ -270,7 +271,7 @@ export class CalendarEventModalComponent implements OnChanges {
     private promosService: PromocionesService
   ) {
     const user = this.authService.getUsuario();
-    this.puedeVender = user?.tipo === 'Administrador' || user?.tipo === 'Recepcionista';
+    this.puedeVender = tiene(user?.tipo, 'cobrar');
   }
 
   ngOnChanges(changes: SimpleChanges): void {

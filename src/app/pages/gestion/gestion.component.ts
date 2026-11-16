@@ -12,6 +12,8 @@ import { CorteDiarioComponent } from '../../components/corte-diario/corte-diario
 import { GestionPromocionesComponent } from '../../components/gestion-promociones/gestion-promociones.component';
 import { PagosPromoComponent } from '../../components/pagos-promo/pagos-promo.component';
 import { AceptacionesComponent } from '../../components/aceptaciones/aceptaciones.component';
+import { AuthService } from '../../services/auth/auth.service';
+import { Permiso, tiene } from '../../services/auth/permisos';
 
 type TabGestion = 'servicios' | 'serviciosDentales' | 'membresias' | 'suscripciones' | 'corteDiario' | 'pagosPromo' | 'aceptaciones' | 'promociones';
 
@@ -20,19 +22,20 @@ interface InfoTab {
   corto: string;
   descripcion: string;
   icono: string;
-  grupo: 'Caja' | 'Configuración';
+  grupo: 'Caja' | 'Configuración' | 'Marketing';
+  permiso: Permiso;
 }
 
 // Mismo agrupamiento que el navbar: la página sólo muestra las pestañas de su grupo
 const INFO: Record<TabGestion, InfoTab> = {
-  corteDiario: { titulo: 'Corte del día', corto: 'Corte del día', descripcion: 'Lo cobrado hoy en clínica y en línea, separado por área y método de pago.', icono: 'fa-receipt', grupo: 'Caja' },
-  pagosPromo: { titulo: 'Pagos de promociones', corto: 'Pagos de promociones', descripcion: 'Quién pagó una promoción en la página, con su número, para agendarle por WhatsApp.', icono: 'fa-tags', grupo: 'Caja' },
-  aceptaciones: { titulo: 'Aceptación de términos', corto: 'Aceptación de términos', descripcion: 'Enlaces para que quien pagó por OXXO, transferencia, etc. acepte términos y aviso de privacidad.', icono: 'fa-file-signature', grupo: 'Caja' },
-  suscripciones: { titulo: 'Membresías contratadas', corto: 'Membresías contratadas', descripcion: 'Cobros automáticos, atrasos y links de pago de cada paciente.', icono: 'fa-id-card', grupo: 'Caja' },
-  servicios: { titulo: 'Servicios estéticos', corto: 'Estéticos', descripcion: 'Tratamientos, precios y categorías que se muestran en la página y en el bot.', icono: 'fa-spa', grupo: 'Configuración' },
-  serviciosDentales: { titulo: 'Servicios dentales', corto: 'Dentales', descripcion: 'Tratamientos dentales, precios y categorías.', icono: 'fa-tooth', grupo: 'Configuración' },
-  membresias: { titulo: 'Planes de membresía', corto: 'Planes de membresía', descripcion: 'Los planes a plazos que se pueden contratar en línea o en recepción.', icono: 'fa-crown', grupo: 'Configuración' },
-  promociones: { titulo: 'Promociones', corto: 'Promociones', descripcion: 'Descuentos por temporada, paquetes y límites por paciente.', icono: 'fa-percent', grupo: 'Configuración' }
+  corteDiario: { titulo: 'Corte del día', corto: 'Corte del día', descripcion: 'Lo cobrado hoy en clínica y en línea, separado por área y método de pago.', icono: 'fa-receipt', grupo: 'Caja', permiso: 'corteDiario' },
+  pagosPromo: { titulo: 'Pagos de promociones', corto: 'Pagos de promociones', descripcion: 'Quién pagó una promoción en la página, con su número, para agendarle por WhatsApp.', icono: 'fa-tags', grupo: 'Caja', permiso: 'pagosPromo' },
+  aceptaciones: { titulo: 'Aceptación de términos', corto: 'Aceptación de términos', descripcion: 'Enlaces para que quien pagó por OXXO, transferencia, etc. acepte términos y aviso de privacidad.', icono: 'fa-file-signature', grupo: 'Caja', permiso: 'aceptaciones' },
+  suscripciones: { titulo: 'Membresías contratadas', corto: 'Membresías contratadas', descripcion: 'Cobros automáticos, atrasos y links de pago de cada paciente.', icono: 'fa-id-card', grupo: 'Caja', permiso: 'suscripciones' },
+  servicios: { titulo: 'Servicios estéticos', corto: 'Estéticos', descripcion: 'Tratamientos, precios y categorías que se muestran en la página y en el bot.', icono: 'fa-spa', grupo: 'Configuración', permiso: 'catalogo' },
+  serviciosDentales: { titulo: 'Servicios dentales', corto: 'Dentales', descripcion: 'Tratamientos dentales, precios y categorías.', icono: 'fa-tooth', grupo: 'Configuración', permiso: 'catalogo' },
+  membresias: { titulo: 'Planes de membresía', corto: 'Planes de membresía', descripcion: 'Los planes a plazos que se pueden contratar en línea o en recepción.', icono: 'fa-crown', grupo: 'Configuración', permiso: 'catalogo' },
+  promociones: { titulo: 'Promociones', corto: 'Promociones', descripcion: 'Descuentos por temporada, paquetes y límites por paciente.', icono: 'fa-percent', grupo: 'Marketing', permiso: 'promociones' }
 };
 const TABS = Object.keys(INFO) as TabGestion[];
 
@@ -65,16 +68,22 @@ export class GestionComponent implements OnInit, OnDestroy {
   }
 
   get tabsDelGrupo(): TabGestion[] {
-    return TABS.filter(t => INFO[t].grupo === this.actual.grupo);
+    return this.permitidas.filter(t => INFO[t].grupo === this.actual.grupo);
   }
 
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  // Las pestañas que el rol puede abrir (la ruta ya garantiza que hay al menos una)
+  private readonly permitidas: TabGestion[];
+
+  constructor(private route: ActivatedRoute, private router: Router, auth: AuthService) {
+    const tipo = auth.getUsuario()?.tipo;
+    this.permitidas = TABS.filter(t => tiene(tipo, INFO[t].permiso));
+  }
 
   // La pestaña vive en la URL (?tab=) para que el menú lleve directo a ella
   ngOnInit(): void {
     this.sub = this.route.queryParamMap.subscribe(params => {
       const tab = params.get('tab') as TabGestion;
-      this.tabActivo = TABS.includes(tab) ? tab : 'servicios';
+      this.tabActivo = this.permitidas.includes(tab) ? tab : this.permitidas[0];
     });
   }
 

@@ -23,8 +23,16 @@
         <span class="ul-stat-label">Especialistas</span>
       </div>
       <div class="ul-stat-chip tipo-recepcionista">
-        <span class="ul-stat-num">{{ countByTipo('Recepcionista') }}</span>
-        <span class="ul-stat-label">Recepcionistas</span>
+        <span class="ul-stat-num">{{ countByTipo('Secretaria') }}</span>
+        <span class="ul-stat-label">Secretarias</span>
+      </div>
+      <div class="ul-stat-chip tipo-recepcionista">
+        <span class="ul-stat-num">{{ countByTipo('Marketing') }}</span>
+        <span class="ul-stat-label">Marketing</span>
+      </div>
+      <div class="ul-stat-chip tipo-recepcionista">
+        <span class="ul-stat-num">{{ countByTipo('Contador') }}</span>
+        <span class="ul-stat-label">Contadores</span>
       </div>
     </div>
   </div>
@@ -48,7 +56,9 @@
         <option value="Administrador">Administrador</option>
         <option value="Doctor">Doctor</option>
         <option value="Especialista">Especialista</option>
-        <option value="Recepcionista">Recepcionista</option>
+        <option value="Secretaria">Secretaria</option>
+        <option value="Marketing">Marketing</option>
+        <option value="Contador">Contador</option>
       </select>
       <select id="filter-atencion"
         *ngIf="!filtroTipo || filtroTipo === 'Doctor' || filtroTipo === 'Especialista'"
@@ -98,7 +108,9 @@
                 'fa-crown': user.tipo === 'Administrador',
                 'fa-user-md': user.tipo === 'Doctor',
                 'fa-spa': user.tipo === 'Especialista',
-                'fa-user-tie': user.tipo === 'Recepcionista'
+                'fa-user-tie': user.tipo === 'Secretaria',
+                'fa-bullhorn': user.tipo === 'Marketing',
+                'fa-calculator': user.tipo === 'Contador'
               }"></i>
               {{ user.tipo }}
             </span>
@@ -243,7 +255,9 @@
                 <i class="fas fa-user-shield"></i>
                 <select formControlName="tipo">
                   <option value="Administrador">Administrador</option>
-                  <option value="Recepcionista">Recepcionista</option>
+                  <option value="Secretaria">Secretaria</option>
+                  <option value="Marketing">Marketing</option>
+                  <option value="Contador">Contador</option>
                   <option value="Doctor">Doctor</option>
                   <option value="Especialista">Especialista</option>
                 </select>

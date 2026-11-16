@@ -39,6 +39,8 @@ const normalizar = (texto: string) =>
 })
 export class BusquedaRapidaComponent implements OnInit, AfterViewInit {
   @Input() destinos: DestinoRapido[] = [];
+  // Sólo quien puede abrir el expediente busca pacientes aquí
+  @Input() conPacientes = true;
   @Output() cerrar = new EventEmitter<void>();
   @ViewChild('campo') campo?: ElementRef<HTMLInputElement>;
 
@@ -51,6 +53,7 @@ export class BusquedaRapidaComponent implements OnInit, AfterViewInit {
   constructor(private http: HttpClient, private router: Router) {}
 
   ngOnInit(): void {
+    if (!this.conPacientes) return;
     if (cachePacientes && Date.now() - cachePacientes.cargados < VIGENCIA_CACHE) {
       this.pacientes = cachePacientes.datos;
       return;

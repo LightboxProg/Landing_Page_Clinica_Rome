@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../services/auth/auth.service';
+import { inicioDe } from '../../../services/auth/permisos';
 import { PushNotificationService } from '../../../services/notifications/push-notification.service';
 
 @Component({
@@ -26,7 +27,7 @@ export class LoginComponent {
   ) {
     // Si ya está logueado, redirigir al panel
     if (this.authService.isLoggedIn()) {
-      this.router.navigate(['/admin/gestion']);
+      this.router.navigateByUrl(inicioDe(this.authService.getUsuario()?.tipo));
     }
   }
 
@@ -52,7 +53,7 @@ export class LoginComponent {
           this.pushService.requestPermission('usuario', response.usuario.id);
         }
 
-        this.router.navigate(['/admin/gestion']);
+        this.router.navigateByUrl(inicioDe(response?.usuario?.tipo));
       },
       error: (err) => {
         this.cargando = false;

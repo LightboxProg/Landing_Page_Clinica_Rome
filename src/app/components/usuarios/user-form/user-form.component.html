@@ -115,7 +115,9 @@
               <select id="f-tipo" formControlName="tipo" class="uf-input uf-select">
                 <option value="">Seleccionar rol...</option>
                 <option value="Administrador">Administrador</option>
-                <option value="Recepcionista">Recepcionista</option>
+                <option value="Secretaria">Secretaria</option>
+                <option value="Marketing">Marketing</option>
+                <option value="Contador">Contador</option>
                 <option value="Doctor">Doctor (Dental)</option>
                 <option value="Especialista">Especialista (Estetico)</option>
               </select>
@@ -137,7 +139,9 @@
               'fa-crown':     form.get('tipo')?.value === 'Administrador',
               'fa-user-md':   form.get('tipo')?.value === 'Doctor',
               'fa-spa':       form.get('tipo')?.value === 'Especialista',
-              'fa-user-tie':  form.get('tipo')?.value === 'Recepcionista'
+              'fa-user-tie':  form.get('tipo')?.value === 'Secretaria',
+              'fa-bullhorn':  form.get('tipo')?.value === 'Marketing',
+              'fa-calculator': form.get('tipo')?.value === 'Contador'
             }"></i>
             {{ form.get('tipo')?.value }}
             <span *ngIf="form.get('atencion')?.value" class="uf-atencion">

@@ -1179,3 +1179,16 @@
 .paquete-card__estado { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: #77642F; }
 .paquete-card__meta { margin: 0.25rem 0 0.4rem; font-size: 0.8rem; color: var(--adm-tenue); }
 .paquete-card ul { margin: 0; padding-left: 1.1rem; font-size: 0.875rem; }
+
+/* Planes y cotizaciones: mismas tarjetas que las membresías, pero se abren en el cotizador */
+.tarjeta-seccion .titulo-con-accion { justify-content: space-between; flex-wrap: wrap; }
+.cotizacion-card {
+  display: block;
+  width: 100%;
+  margin: 0;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+}
+.cotizacion-card:focus-visible { outline: 2px solid var(--adm-acento); outline-offset: 2px; }

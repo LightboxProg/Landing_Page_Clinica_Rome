@@ -1,6 +1,6 @@
 <div class="tarjeta-paciente" [ngClass]="{'paciente-finado': paciente.finado}">
   <div class="indicador-finado" *ngIf="paciente.finado"><i class="fas fa-cross"></i><span>Finado</span></div>
-  <div class="contenido-tarjeta" (click)="verPerfil()">
+  <div class="contenido-tarjeta" [class.solo-lectura]="!puedeEditar" (click)="verPerfil()">
     <div class="contenedor-avatar">
       <div class="avatar-circulo">
         <span class="avatar-iniciales">{{ obtenerIniciales() }}</span>
@@ -30,7 +30,7 @@
       </div>
     </div>
   </div>
-  <div class="contenedor-acciones">
+  <div class="contenedor-acciones" *ngIf="puedeEditar">
     <button class="boton-accion boton-asignar" (click)="$event.stopPropagation()">
       <i class="fas fa-calendar-check"></i>
       <span>Asignar</span>

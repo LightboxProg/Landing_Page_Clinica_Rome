@@ -12,11 +12,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ListaNegraService } from '../../../services/lista-negra/lista-negra.service';
 import { SwalService } from '../../../services/swal/swal.service';
 import { AuthService } from '../../../services/auth/auth.service';
+import { tiene } from '../../../services/auth/permisos';
 import { ModalComponent } from '../../modal/modal.component';
 import { UserService, Usuario } from '../../../services/user/user.service';
 import { MembresiasService, ETIQUETAS_ESTADO } from '../../../services/membresias/membresias.service';
 import { FotosService } from '../../../services/fotos/fotos.service';
 import { CalendarEventModalComponent } from '../../calendario/calendar-event-modal/calendar-event-modal.component';
+import { Cotizacion, CotizacionesService } from '../../../services/cotizaciones/cotizaciones.service';
 
 @Component({
   selector: 'app-perfil-paciente',
@@ -33,6 +35,7 @@ export class PerfilPacienteComponent implements OnInit {
   listaNegra: any = null;
   esAdmin = false;
   puedeVender = false;
+  puedeCotizar = false;
 
   isModalOpen = false;
   selectedEvent: any = null;
@@ -67,8 +70,10 @@ export class PerfilPacienteComponent implements OnInit {
   isDraggingZoom = false;
   startX = 0;
   startY = 0;
-  tabActivo: 'info' | 'alergias' | 'citas' | 'galeria' | 'membresias' = 'citas';
+  tabActivo: 'info' | 'alergias' | 'citas' | 'galeria' | 'membresias' | 'planes' = 'citas';
   membresias: any[] = [];
+  // Cotizaciones del paciente; las aceptadas son sus planes de tratamiento
+  cotizaciones: Cotizacion[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -85,7 +90,8 @@ export class PerfilPacienteComponent implements OnInit {
     private serviciosService: ServiciosService,
     private categoriasDentalesService: CategoriasDentalesService,
     private serviciosDentalesService: ServiciosDentalesService,
-    private promosService: PromocionesService
+    private promosService: PromocionesService,
+    private cotizacionesService: CotizacionesService
   ) { }
 
   ngOnInit() {
@@ -98,11 +104,58 @@ export class PerfilPacienteComponent implements OnInit {
       this.cargarFotos(id);
       this.cargarDoctores();
       this.cargarMembresias(id);
+      this.cargarCotizaciones(id);
       this.cargarCatalogos();
     }
     const usuario = this.authService.getUsuario();
     this.esAdmin = usuario?.tipo === 'Administrador';
-    this.puedeVender = usuario?.tipo === 'Administrador' || usuario?.tipo === 'Recepcionista';
+    this.puedeVender = tiene(usuario?.tipo, 'cobrar');
+    this.puedeCotizar = tiene(usuario?.tipo, 'cotizar');
+  }
+
+  cargarCotizaciones(id: string) {
+    if (!tiene(this.authService.getUsuario()?.tipo, 'cotizar')) return;
+    this.cotizacionesService.listar({ pacienteId: id }).subscribe({
+      next: (res) => this.cotizaciones = res || [],
+      error: () => this.cotizaciones = []
+    });
+  }
+
+  irACotizar() {
+    this.router.navigate(['/admin/cotizador'], { queryParams: { paciente: this.paciente?._id } });
+  }
+
+  abrirCotizacion(c: Cotizacion) {
+    this.router.navigate(['/admin/cotizador', c._id]);
+  }
+
+  // Misma paleta que las membresías: aceptada en verde, pendiente en gris, el resto en rojo
+  estadoCotizacion(c: Cotizacion): { clase: string; etiqueta: string } {
+    if (c.estado === 'Aceptada') return { clase: 'al_corriente', etiqueta: 'Plan aceptado' };
+    if (c.estado === 'Rechazada') return { clase: 'cancelada', etiqueta: 'Rechazada' };
+    if (c.vencida) return { clase: 'cancelada', etiqueta: 'Vencida' };
+    return { clase: 'pendiente_pago', etiqueta: 'Pendiente' };
+  }
+
+  // Sesiones de planes aceptados que todavía puede agendar en la rama activa
+  get sesionesPlan(): { valor: string; cotizacionId: string; itemId: string; servicioId: string; nombre: string; folio: number; restantes: number }[] {
+    return this.cotizaciones
+      .filter(c => c.estado === 'Aceptada')
+      .flatMap(c => c.items
+        .filter(i => i.tipo === 'Servicio' && i.area === this.citaTipo && (i.restantes || 0) > 0)
+        .map(i => ({ valor: `${c._id}:${i._id}`, cotizacionId: c._id, itemId: i._id!, servicioId: i.refId, nombre: i.nombre || '', folio: c.folio, restantes: i.restantes || 0 })));
+  }
+
+  get sesionPlanSeleccionada() {
+    return this.sesionesPlan.find(s => s.valor === this.citaForm.sesionPlan) || null;
+  }
+
+  // Sesión del plan: el tratamiento sale del renglón y la cita va sin costo
+  onSesionPlanChange() {
+    this.citaForm.servicioId = this.sesionPlanSeleccionada?.servicioId || '';
+    this.citaForm.costoTotal = 0;
+    this.citaForm.montoAnticipo = 0;
+    this.recalcularFin();
   }
 
   cargarPaciente(id: string) {
@@ -186,9 +239,11 @@ export class PerfilPacienteComponent implements OnInit {
       anticipoMetodoPago: 'Ninguno' as MetodoPago,
       notas: '',
       // Normal: a precio de lista o promo. Paquete: se vende uno. Sesion: usa una a favor.
-      modo: 'Normal' as 'Normal' | 'Paquete' | 'Sesion',
+      // Plan: usa una sesión de un plan de tratamiento aceptado (estética o dental).
+      modo: 'Normal' as 'Normal' | 'Paquete' | 'Sesion' | 'Plan',
       paqueteVenta: '',
-      paquetePacienteId: ''
+      paquetePacienteId: '',
+      sesionPlan: ''
     };
   }
 
@@ -232,6 +287,7 @@ export class PerfilPacienteComponent implements OnInit {
   onModoChange() {
     this.citaForm.paqueteVenta = '';
     this.citaForm.paquetePacienteId = '';
+    this.citaForm.sesionPlan = '';
     this.citaForm.servicioId = '';
     this.citaForm.costoTotal = 0;
     this.citaForm.montoAnticipo = 0;
@@ -325,7 +381,13 @@ export class PerfilPacienteComponent implements OnInit {
       this.swal.error('No se encontró el expediente del paciente.');
       return;
     }
-    const modo = this.citaTipo === 'Estetica' ? this.citaForm.modo : 'Normal';
+    // Dental sólo tiene tratamiento normal o sesión del plan
+    const modo = this.citaTipo === 'Estetica' || this.citaForm.modo === 'Plan' ? this.citaForm.modo : 'Normal';
+    const plan = modo === 'Plan' ? this.sesionPlanSeleccionada : null;
+    if (modo === 'Plan' && !plan) {
+      this.swal.error('Elige el tratamiento del plan.');
+      return;
+    }
     const venta = modo === 'Paquete' ? this.paqueteVentaSeleccionado : null;
     if (modo === 'Paquete' && !venta) {
       this.swal.error('Elige el paquete que se va a vender.');
@@ -375,7 +437,8 @@ export class PerfilPacienteComponent implements OnInit {
       montoAnticipo: anticipo,
       anticipoMetodoPago: anticipo > 0 ? this.citaForm.anticipoMetodoPago : 'Ninguno',
       ...(venta ? { promocionId: venta.promocionId, paqueteItemId: venta.itemId } : {}),
-      ...(modo === 'Sesion' ? { paquetePacienteId: this.citaForm.paquetePacienteId } : {})
+      ...(modo === 'Sesion' ? { paquetePacienteId: this.citaForm.paquetePacienteId } : {}),
+      ...(plan ? { cotizacionId: plan.cotizacionId, cotizacionItemId: plan.itemId, costoTotal: 0, montoAnticipo: 0, anticipoMetodoPago: 'Ninguno' as MetodoPago } : {})
     };
 
     this.enviarCita(payload);
@@ -391,6 +454,7 @@ export class PerfilPacienteComponent implements OnInit {
         if (this.paciente?._id) {
           this.cargarCitas(this.paciente._id);
           this.cargarPaquetes(this.paciente._id);
+          this.cargarCotizaciones(this.paciente._id);
         }
       },
       error: async (err) => {

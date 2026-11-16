@@ -327,7 +327,7 @@
                   [title]="p.activo ? 'Pausar' : 'Reactivar'" [attr.aria-label]="p.activo ? 'Pausar promoción' : 'Reactivar promoción'">
             <i class="fas" [ngClass]="p.activo ? 'fa-pause' : 'fa-play'"></i>
           </button>
-          <button type="button" class="btn-icon btn-delete-promo" (click)="eliminarPromocion(p)" title="Eliminar" aria-label="Eliminar promoción">
+          <button type="button" class="btn-icon btn-delete-promo" *ngIf="puedeEliminar" (click)="eliminarPromocion(p)" title="Eliminar" aria-label="Eliminar promoción">
             <i class="fas fa-trash-alt"></i>
           </button>
         </div>

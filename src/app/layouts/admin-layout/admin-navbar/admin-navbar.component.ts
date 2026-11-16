@@ -13,7 +13,7 @@ import { RelativeTimePipe } from '../../../pipes/relative-time.pipe';
 import { SwalService } from '../../../services/swal/swal.service';
 import { SistemaService } from '../../../services/sistema/sistema.service';
 
-type Rol = 'Administrador' | 'Recepcionista' | 'Doctor' | 'Especialista';
+import { Permiso, inicioDe, tiene } from '../../../services/auth/permisos';
 
 interface ItemMenu {
   label: string;
@@ -21,8 +21,8 @@ interface ItemMenu {
   link?: string;
   // Pestaña de /admin/configuracion
   tab?: string;
-  // Sólo los roles que el backend deja usar la página; sin roles, todos
-  roles?: Rol[];
+  // Quién lo ve (services/auth/permisos.ts)
+  permiso: Permiso;
   accion?: 'copiarEnlace';
   // Muestra el punto rojo de errores nuevos (sólo Sistema)
   alerta?: 'errores';
@@ -34,50 +34,50 @@ interface SeccionMenu {
   icon: string;
   // Sección de un solo destino: va directo, sin desplegable
   link?: string;
+  permiso?: Permiso;
   items?: ItemMenu[];
 }
 
-const CAJA: Rol[] = ['Administrador', 'Recepcionista'];
-
 // Ordenado por uso: lo diario (agenda, chats, pacientes) va primero y a un clic
 const MENU: SeccionMenu[] = [
-  { id: 'agenda', label: 'Agenda', icon: 'fa-calendar-check', link: '/admin/gestion' },
-  { id: 'chats', label: 'Chats', icon: 'fa-comments', link: '/admin/chats' },
+  { id: 'agenda', label: 'Agenda', icon: 'fa-calendar-check', link: '/admin/gestion', permiso: 'agenda' },
+  { id: 'chats', label: 'Chats', icon: 'fa-comments', link: '/admin/chats', permiso: 'chats' },
   {
     id: 'pacientes', label: 'Pacientes', icon: 'fa-notes-medical', items: [
-      { label: 'Lista de pacientes', icon: 'fa-list', link: '/admin/pacientes' },
-      { label: 'Registrar paciente', icon: 'fa-user-plus', link: '/admin/pacientes/registro' },
-      { label: 'Lista negra', icon: 'fa-ban', link: '/admin/pacientes/lista-negra' }
+      { label: 'Lista de pacientes', icon: 'fa-list', link: '/admin/pacientes', permiso: 'listaPacientes' },
+      { label: 'Registrar paciente', icon: 'fa-user-plus', link: '/admin/pacientes/registro', permiso: 'expediente' },
+      { label: 'Lista negra', icon: 'fa-ban', link: '/admin/pacientes/lista-negra', permiso: 'expediente' }
     ]
   },
   {
     id: 'caja', label: 'Caja', icon: 'fa-cash-register', items: [
-      { label: 'Corte del día', icon: 'fa-receipt', link: '/admin/configuracion', tab: 'corteDiario', roles: CAJA },
-      { label: 'Pagos de promociones', icon: 'fa-tags', link: '/admin/configuracion', tab: 'pagosPromo', roles: CAJA },
-      { label: 'Aceptación de términos', icon: 'fa-file-signature', link: '/admin/configuracion', tab: 'aceptaciones', roles: CAJA },
-      { label: 'Membresías contratadas', icon: 'fa-id-card', link: '/admin/configuracion', tab: 'suscripciones' }
+      { label: 'Cotizador', icon: 'fa-calculator', link: '/admin/cotizador', permiso: 'cotizar' },
+      { label: 'Corte del día', icon: 'fa-receipt', link: '/admin/configuracion', tab: 'corteDiario', permiso: 'corteDiario' },
+      { label: 'Pagos de promociones', icon: 'fa-tags', link: '/admin/configuracion', tab: 'pagosPromo', permiso: 'pagosPromo' },
+      { label: 'Aceptación de términos', icon: 'fa-file-signature', link: '/admin/configuracion', tab: 'aceptaciones', permiso: 'aceptaciones' },
+      { label: 'Membresías contratadas', icon: 'fa-id-card', link: '/admin/configuracion', tab: 'suscripciones', permiso: 'suscripciones' }
     ]
   },
   {
     id: 'marketing', label: 'Marketing', icon: 'fa-bullhorn', items: [
-      { label: 'Prospectos', icon: 'fa-address-book', link: '/admin/leads' },
-      { label: 'Campañas WhatsApp / IG', icon: 'fa-bullseye', link: '/admin/campanas', roles: CAJA },
-      { label: 'Flujos del bot', icon: 'fa-project-diagram', link: '/admin/flujos', roles: CAJA },
-      { label: 'Uso de IA', icon: 'fa-robot', link: '/admin/uso-ia', roles: CAJA },
-      { label: 'Mensajería masiva', icon: 'fa-paper-plane', link: '/admin/mensajeria', roles: CAJA },
-      { label: 'Publicar en Instagram', icon: 'fab fa-instagram', link: '/admin/instagram', roles: CAJA }
+      { label: 'Prospectos', icon: 'fa-address-book', link: '/admin/leads', permiso: 'prospectos' },
+      { label: 'Campañas WhatsApp / IG', icon: 'fa-bullseye', link: '/admin/campanas', permiso: 'marketing' },
+      { label: 'Flujos del bot', icon: 'fa-project-diagram', link: '/admin/flujos', permiso: 'marketing' },
+      { label: 'Uso de IA', icon: 'fa-robot', link: '/admin/uso-ia', permiso: 'marketing' },
+      { label: 'Mensajería masiva', icon: 'fa-paper-plane', link: '/admin/mensajeria', permiso: 'marketing' },
+      { label: 'Publicar en Instagram', icon: 'fab fa-instagram', link: '/admin/instagram', permiso: 'marketing' },
+      { label: 'Promociones', icon: 'fa-percent', link: '/admin/configuracion', tab: 'promociones', permiso: 'promociones' }
     ]
   },
   {
     id: 'config', label: 'Configuración', icon: 'fa-sliders', items: [
-      { label: 'Servicios estéticos', icon: 'fa-spa', link: '/admin/configuracion', tab: 'servicios' },
-      { label: 'Servicios dentales', icon: 'fa-tooth', link: '/admin/configuracion', tab: 'serviciosDentales' },
-      { label: 'Planes de membresía', icon: 'fa-crown', link: '/admin/configuracion', tab: 'membresias' },
-      { label: 'Promociones', icon: 'fa-percent', link: '/admin/configuracion', tab: 'promociones' },
-      { label: 'Mis horarios', icon: 'fa-clock', link: '/admin/disponibilidad', roles: ['Especialista'] },
-      { label: 'Copiar mi enlace de citas', icon: 'fa-share-nodes', accion: 'copiarEnlace', roles: ['Especialista'] },
-      { label: 'Usuarios', icon: 'fa-user-shield', link: '/admin/usuarios', roles: ['Administrador'] },
-      { label: 'Sistema', icon: 'fa-heart-pulse', link: '/admin/sistema', roles: ['Administrador'], alerta: 'errores' }
+      { label: 'Servicios estéticos', icon: 'fa-spa', link: '/admin/configuracion', tab: 'servicios', permiso: 'catalogo' },
+      { label: 'Servicios dentales', icon: 'fa-tooth', link: '/admin/configuracion', tab: 'serviciosDentales', permiso: 'catalogo' },
+      { label: 'Planes de membresía', icon: 'fa-crown', link: '/admin/configuracion', tab: 'membresias', permiso: 'catalogo' },
+      { label: 'Mis horarios', icon: 'fa-clock', link: '/admin/disponibilidad', permiso: 'misHorarios' },
+      { label: 'Copiar mi enlace de citas', icon: 'fa-share-nodes', accion: 'copiarEnlace', permiso: 'misHorarios' },
+      { label: 'Usuarios', icon: 'fa-user-shield', link: '/admin/usuarios', permiso: 'admin' },
+      { label: 'Sistema', icon: 'fa-heart-pulse', link: '/admin/sistema', permiso: 'admin', alerta: 'errores' }
     ]
   }
 ];
@@ -144,7 +144,8 @@ export class AdminNavbarComponent implements OnInit, OnDestroy {
     }
 
     this.secciones = MENU
-      .map(s => ({ ...s, items: s.items?.filter(i => this.puedeVer(i)) }))
+      .filter(s => !s.permiso || tiene(this.usuarioTipo, s.permiso))
+      .map(s => ({ ...s, items: s.items?.filter(i => tiene(this.usuarioTipo, i.permiso)) }))
       .filter(s => s.link || (s.items && s.items.length > 0));
 
     // Todo lo que se puede abrir desde el menú también se encuentra en el buscador
@@ -176,8 +177,13 @@ export class AdminNavbarComponent implements OnInit, OnDestroy {
     this.subs.forEach(s => s.unsubscribe());
   }
 
-  private puedeVer(item: ItemMenu): boolean {
-    return !item.roles || item.roles.includes(this.usuarioTipo as Rol);
+  get inicio(): string {
+    return inicioDe(this.usuarioTipo);
+  }
+
+  // Marketing y contador ven la lista de pacientes, no el expediente
+  get buscaPacientes(): boolean {
+    return tiene(this.usuarioTipo, 'expediente');
   }
 
   get seccionesBarraMovil(): SeccionMenu[] {

@@ -1,0 +1,244 @@
+<div class="cz-page">
+  <header class="cz-header">
+    <div>
+      <span class="cz-eyebrow">Caja</span>
+      <h1>
+        <ng-container *ngIf="cotizacion; else tituloNueva">
+          {{ cotizacion.estado === 'Aceptada' ? 'Plan de tratamiento' : 'Cotización' }} #{{ cotizacion.folio }}
+        </ng-container>
+        <ng-template #tituloNueva>Nueva cotización</ng-template>
+      </h1>
+      <p>Suma tratamientos estéticos, dentales y planes, aplica descuentos y, si el paciente acepta, se vuelve su plan de tratamiento.</p>
+    </div>
+    <div class="cz-header__lado" *ngIf="cotizacion">
+      <span class="cz-estado" [attr.data-estado]="cotizacion.vencida ? 'Vencida' : cotizacion.estado">
+        {{ cotizacion.vencida ? 'Vencida' : cotizacion.estado }}
+      </span>
+      <button type="button" class="cz-btn" (click)="nueva()"><i class="fas fa-plus" aria-hidden="true"></i> Nueva cotización</button>
+    </div>
+  </header>
+
+  <!-- Paciente -->
+  <section class="cz-tarjeta cz-paciente" aria-label="Paciente">
+    <ng-container *ngIf="paciente; else elegirPacienteTpl">
+      <div class="cz-paciente__dato">
+        <span class="cz-etiqueta">Paciente</span>
+        <strong>{{ nombrePaciente() }}</strong>
+        <span class="cz-tenue" *ngIf="paciente.telefonoWhatsapp || paciente.telefonoPaciente">{{ paciente.telefonoWhatsapp || paciente.telefonoPaciente }}</span>
+      </div>
+      <div class="cz-paciente__acciones">
+        <a class="cz-enlace" [routerLink]="['/admin/pacientes/perfil', paciente._id]">Ver ficha</a>
+        <button type="button" class="cz-enlace" *ngIf="!cotizacion" (click)="cambiarPaciente()">Cambiar</button>
+      </div>
+    </ng-container>
+    <ng-template #elegirPacienteTpl>
+      <label class="cz-campo cz-paciente__buscar">
+        <span>Paciente</span>
+        <input type="search" [(ngModel)]="busquedaPaciente" placeholder="Busca por nombre o teléfono" autocomplete="off">
+      </label>
+      <ul class="cz-resultados" *ngIf="resultadosPaciente.length">
+        <li *ngFor="let p of resultadosPaciente">
+          <button type="button" (click)="elegirPaciente(p)">
+            <strong>{{ nombrePaciente(p) }}</strong>
+            <span>{{ p.telefonoWhatsapp || p.telefonoPaciente }}</span>
+          </button>
+        </li>
+      </ul>
+    </ng-template>
+  </section>
+
+  <div class="cz-grid" [class.cz-grid--lectura]="soloLectura">
+    <!-- Catálogo -->
+    <aside class="cz-tarjeta cz-catalogo" *ngIf="!soloLectura" aria-label="Catálogo">
+      <div class="cz-pestanas" role="tablist" aria-label="Tipo de tratamiento">
+        <button type="button" role="tab" *ngFor="let p of pestanas" [attr.aria-selected]="pestana === p.valor"
+                [class.activa]="pestana === p.valor" (click)="pestana = p.valor">
+          {{ p.etiqueta }}
+          <span class="cz-contador" *ngIf="contarEnPestana(p.valor) as n">{{ n }}</span>
+        </button>
+      </div>
+      <input type="search" class="cz-input" [(ngModel)]="busqueda" placeholder="Buscar tratamiento" aria-label="Buscar tratamiento">
+      <p class="cz-tenue cz-vacio" *ngIf="cargandoCatalogo">Cargando catálogo…</p>
+      <p class="cz-tenue cz-vacio" *ngIf="!cargandoCatalogo && opciones.length === 0">Sin tratamientos{{ busqueda ? ' con "' + busqueda + '"' : '' }}.</p>
+      <ul class="cz-opciones">
+        <li *ngFor="let o of opciones">
+          <button type="button" (click)="agregar(o)" [attr.aria-label]="'Agregar ' + o.nombre">
+            <span class="cz-opcion__texto">
+              <strong>{{ o.nombre }}</strong>
+              <small *ngIf="o.detalle">{{ o.detalle }}</small>
+            </span>
+            <span class="cz-opcion__precio">${{ o.precio | number:'1.2-2' }}</span>
+            <i class="fas fa-plus" aria-hidden="true"></i>
+          </button>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Renglones -->
+    <section class="cz-tarjeta cz-renglones" aria-label="Tratamientos cotizados">
+      <h2>Tratamientos</h2>
+      <p class="cz-tenue cz-vacio" *ngIf="items.length === 0">Elige tratamientos del catálogo para empezar.</p>
+
+      <article class="cz-renglon" *ngFor="let it of items; let i = index">
+        <div class="cz-renglon__titulo">
+          <span class="cz-area" [attr.data-area]="it.area">{{ areas[it.area] }}</span>
+          <strong>{{ it.nombre }}</strong>
+          <button type="button" class="cz-quitar" *ngIf="!soloLectura" (click)="quitar(i)" [attr.aria-label]="'Quitar ' + it.nombre">
+            <i class="fas fa-times" aria-hidden="true"></i>
+          </button>
+        </div>
+
+        <div class="cz-renglon__campos">
+          <label class="cz-campo cz-campo--corto">
+            <span>{{ it.tipo === 'Plan' ? 'Cantidad' : 'Sesiones' }}</span>
+            <input type="number" min="1" max="100" step="1" [(ngModel)]="it.sesiones" (ngModelChange)="cambio()" [disabled]="soloLectura">
+          </label>
+
+          <div class="cz-campo">
+            <span>Precio c/u</span>
+            <div class="cz-precio" *ngIf="calculado(i) as c; else sinCalculo">
+              <s *ngIf="c.promocion" class="cz-tenue">${{ c.precioLista | number:'1.2-2' }}</s>
+              <strong>${{ (c.promocion?.precio ?? c.precioLista) | number:'1.2-2' }}</strong>
+            </div>
+            <ng-template #sinCalculo><span class="cz-tenue">—</span></ng-template>
+            <label class="cz-check" *ngIf="it.area === 'Estetica'">
+              <input type="checkbox" [(ngModel)]="it.usarPromo" (ngModelChange)="cambio()" [disabled]="soloLectura">
+              <span>{{ calculado(i)?.promocion ? 'Promo: ' + calculado(i)?.promocion?.nombre : 'Aplicar promo si hay' }}</span>
+            </label>
+          </div>
+
+          <div class="cz-campo">
+            <span>Descuento</span>
+            <ng-container *ngTemplateOutlet="campoDescuento; context: { $implicit: it.descuento, etiqueta: 'Descuento de ' + it.nombre }"></ng-container>
+          </div>
+
+          <div class="cz-campo cz-importe">
+            <span>Importe</span>
+            <strong>{{ calculado(i) ? '$' + (calculado(i)!.importe | number:'1.2-2') : '—' }}</strong>
+          </div>
+        </div>
+
+        <div class="cz-uso" *ngIf="cotizacion?.estado === 'Aceptada' && it.tipo === 'Servicio'">
+          <div class="cz-uso__barra" role="progressbar" [attr.aria-valuenow]="it.usadas" aria-valuemin="0" [attr.aria-valuemax]="it.sesiones"
+               [attr.aria-label]="'Sesiones usadas de ' + it.nombre">
+            <span [style.width.%]="((it.usadas || 0) / it.sesiones) * 100"></span>
+          </div>
+          <span>{{ it.usadas || 0 }} de {{ it.sesiones }} sesiones usadas · quedan {{ it.restantes }}</span>
+        </div>
+      </article>
+    </section>
+
+    <!-- Descuentos, pago y totales -->
+    <aside class="cz-tarjeta cz-resumen" aria-label="Resumen">
+      <h2>Descuentos por área y general</h2>
+      <div class="cz-campo" *ngIf="hayEstetica">
+        <span>Todo lo estético</span>
+        <ng-container *ngTemplateOutlet="campoDescuento; context: { $implicit: descuentoEstetica, etiqueta: 'Descuento de estética' }"></ng-container>
+      </div>
+      <div class="cz-campo" *ngIf="hayDental">
+        <span>Todo lo dental</span>
+        <ng-container *ngTemplateOutlet="campoDescuento; context: { $implicit: descuentoDental, etiqueta: 'Descuento dental' }"></ng-container>
+      </div>
+      <div class="cz-campo">
+        <span>General (sobre el total)</span>
+        <ng-container *ngTemplateOutlet="campoDescuento; context: { $implicit: descuentoGeneral, etiqueta: 'Descuento general' }"></ng-container>
+      </div>
+
+      <h2>Forma de pago</h2>
+      <div class="cz-segmento" role="radiogroup" aria-label="Forma de pago">
+        <label [class.activo]="pago.modalidad === 'Contado'">
+          <input type="radio" name="modalidad" value="Contado" [(ngModel)]="pago.modalidad" (ngModelChange)="cambio()" [disabled]="soloLectura"> Contado
+        </label>
+        <label [class.activo]="pago.modalidad === 'Plazos'">
+          <input type="radio" name="modalidad" value="Plazos" [(ngModel)]="pago.modalidad" (ngModelChange)="cambio()" [disabled]="soloLectura"> A plazos
+        </label>
+      </div>
+      <div class="cz-plazos" *ngIf="pago.modalidad === 'Plazos'">
+        <label class="cz-campo">
+          <span>Enganche</span>
+          <input type="number" min="0" step="0.01" [(ngModel)]="pago.enganche" (ngModelChange)="cambio()" [disabled]="soloLectura">
+        </label>
+        <label class="cz-campo">
+          <span>Pagos</span>
+          <input type="number" min="1" max="104" step="1" [(ngModel)]="pago.parcialidades" (ngModelChange)="cambio()" [disabled]="soloLectura">
+        </label>
+        <label class="cz-campo">
+          <span>Cada</span>
+          <select [(ngModel)]="pago.frecuencia" (ngModelChange)="cambio()" [disabled]="soloLectura">
+            <option value="semanal">Semana</option>
+            <option value="quincenal">Quincena</option>
+            <option value="mensual">Mes</option>
+          </select>
+        </label>
+      </div>
+      <p class="cz-tenue cz-nota" *ngIf="calculo?.pago?.modalidad === 'Plazos'">{{ textoPago(calculo?.pago) }}</p>
+
+      <ng-container *ngIf="!soloLectura">
+        <label class="cz-campo">
+          <span>Vigencia (días)</span>
+          <input type="number" min="1" max="90" step="1" [(ngModel)]="vigenciaDias" (ngModelChange)="cambio()">
+        </label>
+        <label class="cz-campo">
+          <span>Notas para el paciente</span>
+          <textarea rows="2" [(ngModel)]="notas" (ngModelChange)="cambio()" maxlength="2000"></textarea>
+        </label>
+      </ng-container>
+      <p class="cz-nota" *ngIf="soloLectura && notas">{{ notas }}</p>
+
+      <dl class="cz-totales" *ngIf="calculo" [class.is-calculando]="calculando">
+        <div><dt>Precio de lista</dt><dd>${{ calculo.totales.lista | number:'1.2-2' }}</dd></div>
+        <div *ngIf="calculo.totales.promociones"><dt>Promociones</dt><dd>−${{ calculo.totales.promociones | number:'1.2-2' }}</dd></div>
+        <div *ngIf="calculo.totales.descuentosRenglon"><dt>Descuentos por tratamiento</dt><dd>−${{ calculo.totales.descuentosRenglon | number:'1.2-2' }}</dd></div>
+        <div *ngIf="calculo.totales.descuentoEstetica"><dt>Descuento estética</dt><dd>−${{ calculo.totales.descuentoEstetica | number:'1.2-2' }}</dd></div>
+        <div *ngIf="calculo.totales.descuentoDental"><dt>Descuento dental</dt><dd>−${{ calculo.totales.descuentoDental | number:'1.2-2' }}</dd></div>
+        <div *ngIf="calculo.totales.descuentoGeneral"><dt>Descuento general</dt><dd>−${{ calculo.totales.descuentoGeneral | number:'1.2-2' }}</dd></div>
+        <div class="cz-total"><dt>Total</dt><dd>${{ calculo.totales.total | number:'1.2-2' }}</dd></div>
+      </dl>
+      <p class="cz-error" *ngIf="errorCalculo" role="alert">{{ errorCalculo }}</p>
+      <p class="cz-tenue cz-nota" *ngIf="cotizacion && cotizacion.estado === 'Pendiente'">
+        Válida hasta el {{ cotizacion.vigenciaHasta | date:'d MMM y' }}{{ sucio ? ' (al guardar se recalcula)' : '' }}.
+      </p>
+      <p class="cz-tenue cz-nota" *ngIf="cotizacion?.estado === 'Rechazada'">
+        Rechazada{{ cotizacion?.motivoRechazo ? ': ' + cotizacion?.motivoRechazo : '' }}.
+      </p>
+
+      <div class="cz-acciones">
+        <ng-container *ngIf="!soloLectura">
+          <button type="button" class="cz-btn cz-btn--primario" (click)="aceptar()" [disabled]="guardando || !!errorCalculo || items.length === 0 || !paciente">
+            <i class="fas fa-check" aria-hidden="true"></i> Paciente acepta
+          </button>
+          <button type="button" class="cz-btn" (click)="guardar()" [disabled]="guardando || !!errorCalculo || items.length === 0 || !paciente">
+            <i class="fas fa-save" aria-hidden="true"></i> {{ cotizacion ? 'Guardar cambios' : 'Guardar pendiente' }}
+          </button>
+        </ng-container>
+        <div class="cz-acciones__fila">
+          <button type="button" class="cz-btn" (click)="descargarPdf()" [disabled]="guardando || !!errorCalculo || items.length === 0 || !paciente">
+            <i class="fas fa-file-pdf" aria-hidden="true"></i> PDF
+          </button>
+          <button type="button" class="cz-btn" (click)="enviarWhatsApp()" [disabled]="guardando || !!errorCalculo || items.length === 0 || !paciente">
+            <i class="fab fa-whatsapp" aria-hidden="true"></i> WhatsApp
+          </button>
+        </div>
+        <button type="button" class="cz-btn cz-btn--peligro" *ngIf="cotizacion?.estado === 'Pendiente'" (click)="rechazar()">
+          Rechazar
+        </button>
+        <a class="cz-enlace" *ngIf="cotizacion?.membresiaId" [routerLink]="['/admin/configuracion']" [queryParams]="{ tab: 'suscripciones' }">
+          Ver cobros en Membresías contratadas
+        </a>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<!-- Tipo y valor de un descuento -->
+<ng-template #campoDescuento let-d let-etiqueta="etiqueta">
+  <div class="cz-descuento">
+    <select [(ngModel)]="d.tipo" (ngModelChange)="d.valor = 0; cambio()" [disabled]="soloLectura" [attr.aria-label]="etiqueta + ': tipo'">
+      <option value="Ninguno">Sin descuento</option>
+      <option value="Porcentaje">%</option>
+      <option value="Monto">$</option>
+    </select>
+    <input type="number" min="0" step="0.01" *ngIf="d.tipo !== 'Ninguno'" [(ngModel)]="d.valor" (ngModelChange)="cambio()"
+           [disabled]="soloLectura" [attr.aria-label]="etiqueta + ': valor'">
+  </div>
+</ng-template>

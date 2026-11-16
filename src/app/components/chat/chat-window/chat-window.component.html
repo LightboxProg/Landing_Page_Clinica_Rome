@@ -15,10 +15,10 @@
 
     <!-- Quick CRM Actions -->
     <div class="quick-actions">
-      <div class="action-chip" title="Agendar Cita" (click)="startScheduling()">
+      <div class="action-chip" *ngIf="puedeAgendar" title="Agendar Cita" (click)="startScheduling()">
         <i class="fas fa-calendar-plus"></i> Agendar
       </div>
-      <div class="action-chip" title="Ver Expediente" (click)="verExpediente.emit(conversacionActiva)">
+      <div class="action-chip" *ngIf="puedeVerExpediente" title="Ver Expediente" (click)="verExpediente.emit(conversacionActiva)">
         <i class="fas fa-user-medical"></i> Expediente
       </div>
       <div class="action-chip" title="Añadir Nota" (click)="agregarNota.emit(conversacionActiva)">

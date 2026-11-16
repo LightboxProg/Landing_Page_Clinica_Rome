@@ -3,6 +3,7 @@ import { Paciente, PacientesService } from '../../../services/pacientes/paciente
 import { Router } from '@angular/router';
 import { ListaNegraService } from '../../../services/lista-negra/lista-negra.service';
 import { AuthService } from '../../../services/auth/auth.service';
+import { tiene } from '../../../services/auth/permisos';
 import { SwalService } from '../../../services/swal/swal.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -24,6 +25,8 @@ export class ElementPacienteComponent implements OnInit {
   categoria = 'Otro';
   nivelGravedad = 1;
   usuarioActual: any;
+  // Marketing y contador sólo ven la lista: sin expediente, asignar ni lista negra
+  puedeEditar = false;
 
   constructor(
     private router: Router,
@@ -35,6 +38,7 @@ export class ElementPacienteComponent implements OnInit {
 
   ngOnInit() {
     this.usuarioActual = this.authService.getUsuario(); // Corregido
+    this.puedeEditar = tiene(this.usuarioActual?.tipo, 'expediente');
   }
 
   abrirListaNegra() {
@@ -80,6 +84,7 @@ export class ElementPacienteComponent implements OnInit {
   }
 
   verPerfil() {
+    if (!this.puedeEditar) return;
     this.router.navigate(['/admin/pacientes/perfil', this.paciente._id]);
   }
 

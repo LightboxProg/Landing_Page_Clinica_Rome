@@ -187,7 +187,7 @@ export class ChatsComponent implements OnInit, OnDestroy {
       // Ir directamente a su agenda
       this.router.navigate(['/admin/gestion'], { queryParams: { doctor: user.id } });
     } else {
-      // Admin o Recepcionista: Escoger tipo de cita
+      // Administrador o secretaria: escoger tipo de cita
       Swal.fire({
         title: 'Nueva Cita',
         text: 'Selecciona el departamento:',

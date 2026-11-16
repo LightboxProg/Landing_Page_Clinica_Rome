@@ -66,6 +66,8 @@ $sombraTarjeta: 0 10px 40px rgba(26, 43, 60, 0.15);
   padding: 1.5rem;
   gap: 1.5rem;
   cursor: pointer;
+
+  &.solo-lectura { cursor: default; }
 }
 
 .contenedor-avatar {

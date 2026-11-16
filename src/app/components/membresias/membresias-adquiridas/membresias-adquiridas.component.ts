@@ -8,6 +8,8 @@ import {
   ETIQUETAS_ESTADO, calcularCuota
 } from '../../../services/membresias/membresias.service';
 import { SwalService } from '../../../services/swal/swal.service';
+import { AuthService } from '../../../services/auth/auth.service';
+import { tiene } from '../../../services/auth/permisos';
 import { environment } from '../../../../environments/environment';
 
 type Filtro = 'vigentes' | 'atrasada' | 'pendiente_pago' | 'liquidada' | 'cancelada' | 'todas';
@@ -24,6 +26,8 @@ export class MembresiasAdquiridasComponent implements OnInit {
   loading = true;
   error = '';
   accesoDenegado = false;
+  // El contador consulta: sin vender, cobrar, mandar links ni cancelar
+  readonly puedeOperar: boolean;
 
   filtro: Filtro = 'vigentes';
   busqueda = '';
@@ -60,8 +64,11 @@ export class MembresiasAdquiridasComponent implements OnInit {
   constructor(
     private membresiasService: MembresiasService,
     private swal: SwalService,
-    private http: HttpClient
-  ) {}
+    private http: HttpClient,
+    auth: AuthService
+  ) {
+    this.puedeOperar = tiene(auth.getUsuario()?.tipo, 'operarMembresias');
+  }
 
   ngOnInit(): void {
     this.cargarMembresias();

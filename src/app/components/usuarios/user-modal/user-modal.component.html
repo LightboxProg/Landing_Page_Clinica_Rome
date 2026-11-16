@@ -21,13 +21,15 @@
               'tipo-admin': usuario.tipo === 'Administrador',
               'tipo-doctor': usuario.tipo === 'Doctor',
               'tipo-especialista': usuario.tipo === 'Especialista',
-              'tipo-recepcionista': usuario.tipo === 'Recepcionista'
+              'tipo-recepcionista': usuario.tipo === 'Secretaria' || usuario.tipo === 'Marketing' || usuario.tipo === 'Contador'
             }">
               <i class="fas" [ngClass]="{
                 'fa-crown': usuario.tipo === 'Administrador',
                 'fa-user-md': usuario.tipo === 'Doctor',
                 'fa-stethoscope': usuario.tipo === 'Especialista',
-                'fa-user-tie': usuario.tipo === 'Recepcionista'
+                'fa-user-tie': usuario.tipo === 'Secretaria',
+                'fa-bullhorn': usuario.tipo === 'Marketing',
+                'fa-calculator': usuario.tipo === 'Contador'
               }"></i>
             </span>
           </div>

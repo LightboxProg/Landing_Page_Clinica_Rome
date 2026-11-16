@@ -13,6 +13,8 @@ import {
 import { CategoriasService } from '../../services/categorias/categorias.service';
 import { ServiciosService } from '../../services/servicios/servicios.service';
 import { SwalService } from '../../services/swal/swal.service';
+import { AuthService } from '../../services/auth/auth.service';
+import { tiene } from '../../services/auth/permisos';
 
 type EstadoPromo = 'activa' | 'proxima' | 'terminada' | 'pausada';
 
@@ -58,12 +60,18 @@ export class GestionPromocionesComponent implements OnInit, OnDestroy {
   guardando = false;
   timerInterval: any = null;
 
+  // Marketing crea y edita; borrar sólo el administrador (igual que en el backend)
+  readonly puedeEliminar: boolean;
+
   constructor(
     private promosService: PromocionesService,
     private categoriasService: CategoriasService,
     private serviciosService: ServiciosService,
-    private swal: SwalService
-  ) {}
+    private swal: SwalService,
+    auth: AuthService
+  ) {
+    this.puedeEliminar = tiene(auth.getUsuario()?.tipo, 'admin');
+  }
 
   ngOnInit(): void {
     this.cargarPromociones();

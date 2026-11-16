@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ChatMessageComponent } from '../chat-message/chat-message.component';
 import { AuthService } from '../../../services/auth/auth.service';
+import { tiene } from '../../../services/auth/permisos';
 import { UserService, Usuario } from '../../../services/user/user.service';
 import { ServiciosService } from '../../../services/servicios/servicios.service';
 import { ServiciosDentalesService } from '../../../services/servicios-dentales/servicios-dentales.service';
@@ -40,6 +41,10 @@ export class ChatWindowComponent implements OnInit {
   occupiedEvents: any[] = []; // Nueva variable para mostrar bloqueos
   isLoadingAvailability = false;
 
+  // Marketing contesta chats pero no agenda ni abre expedientes
+  puedeAgendar = true;
+  puedeVerExpediente = true;
+
   @Output() mensajeEnviado = new EventEmitter<string>();
   @Output() cerrarChat = new EventEmitter<void>();
   @Output() nuevoMensajeChange = new EventEmitter<string>();
@@ -63,6 +68,8 @@ export class ChatWindowComponent implements OnInit {
 
   checkUserRole() {
     const user = this.authService.getUsuario();
+    this.puedeAgendar = tiene(user?.tipo, 'agendar');
+    this.puedeVerExpediente = tiene(user?.tipo, 'expediente');
     if (user?.tipo === 'Doctor' || user?.tipo === 'Especialista') {
       this.selectedDoctor = user as any;
       if (user.tipo === 'Especialista') {

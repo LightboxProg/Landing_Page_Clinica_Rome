@@ -44,6 +44,9 @@
       </div>
       
       <div class="header-actions">
+        <button class="btn-editar" *ngIf="puedeCotizar" (click)="irACotizar()">
+          <i class="fas fa-calculator"></i> Cotizar
+        </button>
         <button class="btn-editar" *ngIf="!editando" (click)="editando = true">
           <i class="fas fa-pen"></i> Editar Perfil
         </button>
@@ -141,6 +144,9 @@
         </button>
         <button (click)="tabActivo='membresias'" [class.active]="tabActivo === 'membresias'">
           Membresías
+        </button>
+        <button *ngIf="puedeCotizar" (click)="tabActivo='planes'" [class.active]="tabActivo === 'planes'">
+          Planes y cotizaciones
         </button>
         <button (click)="tabActivo='galeria'" [class.active]="tabActivo === 'galeria'">
           Galería
@@ -307,6 +313,39 @@
           </div>
         </div>
       </div>
+
+      <!-- Cotizaciones; la aceptada es su plan de tratamiento y sus citas toman sesiones de ella -->
+      <div *ngIf="tabActivo === 'planes'" class="tab-content">
+        <div class="tarjeta-seccion">
+          <div class="titulo-seccion titulo-con-accion">
+            <h3>Planes y cotizaciones</h3>
+            <button class="btn-primario" (click)="irACotizar()"><i class="fas fa-plus"></i> Nueva cotización</button>
+          </div>
+          <div class="membresias-grid">
+            <button type="button" *ngFor="let c of cotizaciones" class="membresia-card cotizacion-card" (click)="abrirCotizacion(c)">
+              <div class="membresia-header">
+                <h4>{{ c.estado === 'Aceptada' ? 'Plan de tratamiento' : 'Cotización' }} #{{ c.folio }}</h4>
+                <span class="membresia-status" [ngClass]="estadoCotizacion(c).clase">{{ estadoCotizacion(c).etiqueta }}</span>
+              </div>
+              <div class="membresia-body">
+                <div class="m-dato" *ngFor="let i of c.items">
+                  <span class="m-label">{{ i.nombre }}</span>
+                  <span class="m-valor" *ngIf="c.estado === 'Aceptada' && i.tipo === 'Servicio'; else importeTpl">{{ i.usadas || 0 }}/{{ i.sesiones }} sesiones</span>
+                  <ng-template #importeTpl><span class="m-valor">${{ i.importe | number:'1.2-2' }}</span></ng-template>
+                </div>
+                <div class="m-dato"><span class="m-label">Total</span> <span class="m-valor">${{ c.totales.total | number:'1.2-2' }}</span></div>
+                <div class="m-dato">
+                  <span class="m-label">{{ c.estado === 'Pendiente' ? 'Válida hasta' : 'Fecha' }}</span>
+                  <span class="m-valor">{{ (c.estado === 'Pendiente' ? c.vigenciaHasta : (c.aceptadaEl || c.createdAt)) | date:'d MMM y' }}</span>
+                </div>
+              </div>
+            </button>
+            <div *ngIf="cotizaciones.length === 0" class="sin-registros">
+              Sin cotizaciones. Arma una con "Nueva cotización".
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
   </div>
 </div>
@@ -404,22 +443,37 @@
   <form (ngSubmit)="registrarCita()" class="form-modal-cita">
     <h3>Registrar cita {{ citaTipo === 'Dental' ? 'dental' : 'estética' }}</h3>
 
-    <!-- Estética: cita normal, venta de un paquete de promoción o sesión a favor -->
-    <div class="modo-cita" *ngIf="citaTipo === 'Estetica'" role="radiogroup" aria-label="Tipo de cita">
+    <!-- Estética: cita normal, venta de un paquete de promoción o sesión a favor.
+         Estética y dental: sesión de un plan de tratamiento aceptado. -->
+    <div class="modo-cita" *ngIf="citaTipo === 'Estetica' || sesionesPlan.length > 0" role="radiogroup" aria-label="Tipo de cita">
       <label [class.activo]="citaForm.modo === 'Normal'">
         <input type="radio" name="modo" value="Normal" [(ngModel)]="citaForm.modo" (ngModelChange)="onModoChange()"> Tratamiento
       </label>
-      <label [class.activo]="citaForm.modo === 'Paquete'" [class.deshabilitado]="paquetesEnVenta.length === 0">
-        <input type="radio" name="modo" value="Paquete" [(ngModel)]="citaForm.modo" (ngModelChange)="onModoChange()"
-               [disabled]="paquetesEnVenta.length === 0"> Vender paquete
-      </label>
-      <label [class.activo]="citaForm.modo === 'Sesion'" [class.deshabilitado]="paquetesConSesiones.length === 0">
-        <input type="radio" name="modo" value="Sesion" [(ngModel)]="citaForm.modo" (ngModelChange)="onModoChange()"
-               [disabled]="paquetesConSesiones.length === 0"> Usar sesión a favor
+      <ng-container *ngIf="citaTipo === 'Estetica'">
+        <label [class.activo]="citaForm.modo === 'Paquete'" [class.deshabilitado]="paquetesEnVenta.length === 0">
+          <input type="radio" name="modo" value="Paquete" [(ngModel)]="citaForm.modo" (ngModelChange)="onModoChange()"
+                 [disabled]="paquetesEnVenta.length === 0"> Vender paquete
+        </label>
+        <label [class.activo]="citaForm.modo === 'Sesion'" [class.deshabilitado]="paquetesConSesiones.length === 0">
+          <input type="radio" name="modo" value="Sesion" [(ngModel)]="citaForm.modo" (ngModelChange)="onModoChange()"
+                 [disabled]="paquetesConSesiones.length === 0"> Usar sesión a favor
+        </label>
+      </ng-container>
+      <label *ngIf="sesionesPlan.length > 0" [class.activo]="citaForm.modo === 'Plan'">
+        <input type="radio" name="modo" value="Plan" [(ngModel)]="citaForm.modo" (ngModelChange)="onModoChange()"> Sesión del plan
       </label>
     </div>
 
-    <ng-container *ngIf="citaTipo !== 'Estetica' || citaForm.modo === 'Normal'">
+    <ng-container *ngIf="citaForm.modo === 'Plan'">
+      <label for="cita-plan">Tratamiento del plan *</label>
+      <select id="cita-plan" name="sesionPlan" [(ngModel)]="citaForm.sesionPlan" (ngModelChange)="onSesionPlanChange()" required>
+        <option value="" disabled>Elige el tratamiento</option>
+        <option *ngFor="let s of sesionesPlan" [value]="s.valor">{{ s.nombre }} — plan #{{ s.folio }}, quedan {{ s.restantes }}</option>
+      </select>
+      <p class="campo-ayuda">La sesión ya está pagada con el plan de tratamiento: la cita se registra sin costo.</p>
+    </ng-container>
+
+    <ng-container *ngIf="citaForm.modo === 'Normal'">
       <label for="cita-cat">Categoría</label>
       <select id="cita-cat" name="categoria" [(ngModel)]="citaForm.categoriaId" (ngModelChange)="onCategoriaChange()">
         <option value="">Todas las categorías</option>
@@ -495,7 +549,7 @@
     </p>
 
     <!-- Contabilidad (una sesión a favor no lleva) -->
-    <div class="campo-par" *ngIf="citaTipo !== 'Estetica' || citaForm.modo !== 'Sesion'">
+    <div class="campo-par" *ngIf="citaForm.modo !== 'Sesion' && citaForm.modo !== 'Plan'">
       <div>
         <label for="cita-costo">Costo del tratamiento</label>
         <input id="cita-costo" type="number" min="0" step="1" name="costo" [(ngModel)]="citaForm.costoTotal"

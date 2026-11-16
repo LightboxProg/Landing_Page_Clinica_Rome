@@ -1,5 +1,5 @@
 <nav class="admin-navbar" aria-label="Panel administrativo">
-  <a class="navbar-brand" routerLink="/admin/gestion" aria-label="Ir a la agenda">
+  <a class="navbar-brand" [routerLink]="inicio" aria-label="Ir al inicio">
     <img src="assets/images/rome-logo-blanco.webp" alt="ROME Harmony Clinic" class="brand-logo" width="73" height="38" />
   </a>
 
@@ -156,4 +156,4 @@
   </section>
 </div>
 
-<app-busqueda-rapida *ngIf="buscando" [destinos]="destinos" (cerrar)="buscando = false"></app-busqueda-rapida>
+<app-busqueda-rapida *ngIf="buscando" [destinos]="destinos" [conPacientes]="buscaPacientes" (cerrar)="buscando = false"></app-busqueda-rapida>

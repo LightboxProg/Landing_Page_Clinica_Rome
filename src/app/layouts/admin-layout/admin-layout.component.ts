@@ -2,12 +2,13 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { AdminNavbarComponent } from './admin-navbar/admin-navbar.component';
+import { CotizadorRapidoComponent } from './cotizador-rapido/cotizador-rapido.component';
 import { TemaService } from '../../services/tema/tema.service';
 
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, AdminNavbarComponent],
+  imports: [CommonModule, RouterOutlet, AdminNavbarComponent, CotizadorRapidoComponent],
   templateUrl: './admin-layout.component.html',
   styles: [`
     .admin-wrapper {

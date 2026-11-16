@@ -12,6 +12,7 @@ import { CalendarService } from '../../services/calendar/calendar.service';
 import { CitasService } from '../../services/citas/citas.service';
 import { UserService, Usuario } from '../../services/user/user.service';
 import { AuthService } from '../../services/auth/auth.service';
+import { tiene } from '../../services/auth/permisos';
 import { CalendarSidebarComponent, CitaDelDia, EspecialistaAgenda } from '../../components/calendario/calendar-sidebar/calendar-sidebar.component';
 import { CalendarEventModalComponent } from '../../components/calendario/calendar-event-modal/calendar-event-modal.component';
 import { NuevaCitaComponent } from '../../components/calendario/nueva-cita/nueva-cita.component';
@@ -37,6 +38,8 @@ export class CalendarioAdminComponent implements OnInit {
   especialistas: EspecialistaAgenda[] = [];
   doctorIdSeleccionado = '';
   isDoctorOrSpecialist = false;
+  // El contador consulta la agenda pero no agenda ni mueve citas
+  puedeAgendar = true;
 
   titulo = '';
   vista: Vista = 'timeGridWeek';
@@ -130,6 +133,10 @@ export class CalendarioAdminComponent implements OnInit {
 
   checkRole() {
     const user = this.authService.getUsuario();
+    this.puedeAgendar = tiene(user?.tipo, 'agendar');
+    if (!this.puedeAgendar) {
+      this.calendarOptions = { ...this.calendarOptions, editable: false, selectable: false };
+    }
     if (user?.tipo === 'Doctor' || user?.tipo === 'Especialista') {
       this.isDoctorOrSpecialist = true;
       this.doctorIdSeleccionado = user.id;
@@ -250,7 +257,7 @@ export class CalendarioAdminComponent implements OnInit {
       classNames: e.cobrado ? ['cita-cobrada'] : [],
       // Sólo se mueven citas del sistema que no se han cobrado; los eventos que
       // sólo existen en Google no tienen cita que actualizar
-      editable: !!e.citaId && !e.cobrado,
+      editable: this.puedeAgendar && !!e.citaId && !e.cobrado,
       extendedProps: { ...e, colorAgenda: color }
     };
   }
@@ -335,6 +342,7 @@ export class CalendarioAdminComponent implements OnInit {
   }
 
   nuevaCita(inicio: Date | null = null, fin: Date | null = null): void {
+    if (!this.puedeAgendar) return;
     if (this.especialistas.length === 0) {
       this.swal.warning('No hay doctores ni especialistas registrados para agendar.');
       return;

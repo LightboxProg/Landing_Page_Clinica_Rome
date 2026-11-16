@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { Rol } from '../auth/permisos';
 
 export interface Usuario {
   _id?: string;
@@ -11,7 +12,7 @@ export interface Usuario {
   apeM?: string;
   telefono: string;
   correo: string;
-  tipo: 'Administrador' | 'Recepcionista' | 'Doctor' | 'Especialista';
+  tipo: Rol;
   especialidad?: string;
   atencion?: 'Dental' | 'Estetica';
   activo?: boolean;

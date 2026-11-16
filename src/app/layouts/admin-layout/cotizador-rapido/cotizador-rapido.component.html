@@ -1,0 +1,161 @@
+<ng-container *ngIf="permitido && !enCotizador">
+  <button #boton type="button" class="cr-fab" [class.cr-fab--alto]="enChats" [class.cr-fab--oculto]="abierto"
+          (click)="abrir()" aria-haspopup="dialog" [attr.aria-expanded]="abierto" title="Cotizar rápido">
+    <i class="fas fa-calculator" aria-hidden="true"></i>
+    <span class="cr-fab__texto">Cotizar</span>
+    <span class="cr-fab__contador" *ngIf="items.length" aria-label="tratamientos en la cotización">{{ items.length }}</span>
+  </button>
+
+  <div class="cr-velo" *ngIf="abierto" (click)="cerrar()"></div>
+
+  <section class="cr-panel" *ngIf="abierto" role="dialog" aria-modal="true" aria-labelledby="cr-titulo">
+    <header class="cr-panel__head">
+      <div>
+        <h2 id="cr-titulo">¿Cuánto saldría?</h2>
+        <p>Suma tratamientos y arma el plan de pagos. Para guardarla, pásala al cotizador.</p>
+      </div>
+      <button type="button" class="cr-cerrar" (click)="cerrar()" aria-label="Cerrar">
+        <i class="fas fa-times" aria-hidden="true"></i>
+      </button>
+    </header>
+
+    <div class="cr-panel__cuerpo">
+      <!-- Buscar y agregar -->
+      <div class="cr-buscar">
+        <i class="fas fa-search" aria-hidden="true"></i>
+        <input #buscador type="search" [(ngModel)]="busqueda" placeholder="Busca un tratamiento o plan" aria-label="Buscar tratamiento o plan" autocomplete="off">
+      </div>
+      <p class="cr-tenue cr-ayuda" *ngIf="cargandoCatalogo">Cargando tratamientos…</p>
+      <ul class="cr-resultados" *ngIf="resultados.length">
+        <li *ngFor="let o of resultados">
+          <button type="button" (click)="agregar(o)" [attr.aria-label]="'Agregar ' + o.nombre">
+            <span class="cr-area" [attr.data-area]="o.area">{{ areas[o.area] }}</span>
+            <span class="cr-resultado__nombre">{{ o.nombre }}</span>
+            <span class="cr-resultado__precio">${{ o.precio | number:'1.0-2' }}</span>
+          </button>
+        </li>
+      </ul>
+      <p class="cr-tenue cr-ayuda" *ngIf="busqueda.trim() && !cargandoCatalogo && resultados.length === 0">Sin resultados.</p>
+
+      <!-- Renglones -->
+      <p class="cr-vacio" *ngIf="items.length === 0">Agrega tratamientos estéticos, dentales o planes para ver el total.</p>
+      <ul class="cr-renglones" *ngIf="items.length">
+        <li *ngFor="let it of items; let i = index" class="cr-renglon">
+          <div class="cr-renglon__fila">
+            <span class="cr-area" [attr.data-area]="it.area">{{ areas[it.area] }}</span>
+            <strong class="cr-renglon__nombre">{{ it.nombre }}</strong>
+            <button type="button" class="cr-icono" (click)="quitar(i)" [attr.aria-label]="'Quitar ' + it.nombre">
+              <i class="fas fa-trash-alt" aria-hidden="true"></i>
+            </button>
+          </div>
+          <div class="cr-renglon__fila">
+            <div class="cr-stepper" role="group" [attr.aria-label]="'Sesiones de ' + it.nombre">
+              <button type="button" (click)="sumarSesion(it, -1)" [disabled]="it.sesiones <= 1" aria-label="Una sesión menos">−</button>
+              <span>{{ it.sesiones }} {{ it.tipo === 'Plan' ? 'pza' : (it.sesiones === 1 ? 'sesión' : 'sesiones') }}</span>
+              <button type="button" (click)="sumarSesion(it, 1)" aria-label="Una sesión más">+</button>
+            </div>
+            <div class="cr-descuento">
+              <select [(ngModel)]="it.descuento.tipo" (ngModelChange)="it.descuento.valor = 0; cambio()" [attr.aria-label]="'Descuento de ' + it.nombre">
+                <option value="Ninguno">Sin desc.</option>
+                <option value="Porcentaje">%</option>
+                <option value="Monto">$</option>
+              </select>
+              <input type="number" min="0" step="0.01" *ngIf="it.descuento.tipo !== 'Ninguno'" [(ngModel)]="it.descuento.valor" (ngModelChange)="cambio()"
+                     [attr.aria-label]="'Valor del descuento de ' + it.nombre">
+            </div>
+            <span class="cr-importe">
+              <ng-container *ngIf="calculado(i) as c; else sinImporte">
+                <s class="cr-tenue" *ngIf="c.importe !== c.importeLista">${{ c.importeLista | number:'1.2-2' }}</s>
+                ${{ c.importe | number:'1.2-2' }}
+              </ng-container>
+              <ng-template #sinImporte>—</ng-template>
+            </span>
+          </div>
+          <p class="cr-promo" *ngIf="calculado(i)?.promocion as promo">
+            <i class="fas fa-tag" aria-hidden="true"></i> Promo {{ promo.nombre }}: ${{ promo.precio | number:'1.2-2' }} c/u
+          </p>
+        </li>
+      </ul>
+
+      <ng-container *ngIf="items.length">
+        <!-- Descuento general -->
+        <div class="cr-linea">
+          <span>Descuento general</span>
+          <div class="cr-descuento">
+            <select [(ngModel)]="descuentoGeneral.tipo" (ngModelChange)="descuentoGeneral.valor = 0; cambio()" aria-label="Descuento general">
+              <option value="Ninguno">Sin desc.</option>
+              <option value="Porcentaje">%</option>
+              <option value="Monto">$</option>
+            </select>
+            <input type="number" min="0" step="0.01" *ngIf="descuentoGeneral.tipo !== 'Ninguno'" [(ngModel)]="descuentoGeneral.valor" (ngModelChange)="cambio()" aria-label="Valor del descuento general">
+          </div>
+        </div>
+
+        <!-- Total -->
+        <div class="cr-total" [class.is-calculando]="calculando" aria-live="polite">
+          <span>Total</span>
+          <strong>${{ total | number:'1.2-2' }}</strong>
+          <small *ngIf="ahorro > 0">Ahorra ${{ ahorro | number:'1.2-2' }} sobre ${{ calculo?.totales?.lista | number:'1.2-2' }}</small>
+        </div>
+
+        <!-- Plan de pagos -->
+        <h3 class="cr-subtitulo">Plan de pagos</h3>
+        <div class="cr-segmento" role="radiogroup" aria-label="Forma de pago">
+          <button type="button" role="radio" [attr.aria-checked]="pago.modalidad === 'Contado'" [class.activo]="pago.modalidad === 'Contado'" (click)="cambiarModalidad('Contado')">Contado</button>
+          <button type="button" role="radio" [attr.aria-checked]="pago.modalidad === 'Plazos'" [class.activo]="pago.modalidad === 'Plazos'" (click)="cambiarModalidad('Plazos')">A plazos</button>
+        </div>
+
+        <ng-container *ngIf="pago.modalidad === 'Plazos'">
+          <label class="cr-campo">
+            <span>Enganche <small class="cr-tenue" *ngIf="total">({{ porcentajeEnganche() }}%)</small></span>
+            <input type="number" min="0" step="1" [(ngModel)]="pago.enganche" (ngModelChange)="cambio()">
+          </label>
+          <div class="cr-chips" aria-label="Enganche rápido">
+            <button type="button" *ngFor="let p of enganches" (click)="engancheEn(p)" [disabled]="!total">{{ p }}%</button>
+          </div>
+          <div class="cr-dos">
+            <label class="cr-campo">
+              <span>Pagos</span>
+              <input type="number" min="1" max="104" step="1" [(ngModel)]="pago.parcialidades" (ngModelChange)="cambio()">
+            </label>
+            <label class="cr-campo">
+              <span>Cada</span>
+              <select [(ngModel)]="pago.frecuencia" (ngModelChange)="cambio()">
+                <option value="semanal">Semana</option>
+                <option value="quincenal">Quincena</option>
+                <option value="mensual">Mes</option>
+              </select>
+            </label>
+          </div>
+          <div class="cr-chips" aria-label="Número de pagos rápido">
+            <button type="button" *ngFor="let n of plazos" (click)="pago.parcialidades = n; cambio()" [class.activo]="pago.parcialidades === n">{{ n }} pagos</button>
+          </div>
+        </ng-container>
+
+        <p class="cr-error" *ngIf="errorCalculo" role="alert">{{ errorCalculo }}</p>
+
+        <table class="cr-calendario" *ngIf="calendario.length > 1">
+          <caption class="cr-tenue">{{ calculo?.pago?.parcialidades }} pagos de ${{ calculo?.pago?.montoParcialidad | number:'1.2-2' }} después del enganche</caption>
+          <thead><tr><th scope="col">Fecha</th><th scope="col">Concepto</th><th scope="col">Monto</th></tr></thead>
+          <tbody>
+            <tr *ngFor="let p of calendario" [class.cr-calendario__enganche]="p.etiqueta === 'Enganche'">
+              <td>{{ p.etiqueta === 'Enganche' ? 'Hoy' : (p.fecha | date:'d MMM y') }}</td>
+              <td>{{ p.etiqueta }}</td>
+              <td>${{ p.monto | number:'1.2-2' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </ng-container>
+    </div>
+
+    <footer class="cr-panel__pie" *ngIf="items.length">
+      <button type="button" class="cr-btn cr-btn--texto" (click)="limpiar()">Limpiar</button>
+      <button type="button" class="cr-btn" (click)="copiar()" [disabled]="!calculo || !!errorCalculo">
+        <i class="far fa-copy" aria-hidden="true"></i> Copiar
+      </button>
+      <button type="button" class="cr-btn cr-btn--primario" (click)="crearCotizacion()" [disabled]="!!errorCalculo">
+        Crear cotización <i class="fas fa-arrow-right" aria-hidden="true"></i>
+      </button>
+    </footer>
+  </section>
+</ng-container>

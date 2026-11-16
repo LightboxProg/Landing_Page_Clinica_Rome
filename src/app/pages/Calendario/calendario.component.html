@@ -31,7 +31,7 @@
           {{ v.etiqueta }}
         </button>
       </div>
-      <button type="button" class="btn-nueva" (click)="nuevaCita()" title="Nueva cita (N)">
+      <button type="button" class="btn-nueva" *ngIf="puedeAgendar" (click)="nuevaCita()" title="Nueva cita (N)">
         <i class="fas fa-plus" aria-hidden="true"></i> Nueva cita
       </button>
       </div>
